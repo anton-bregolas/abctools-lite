@@ -1425,13 +1425,6 @@ function generateAndSaveWebsiteFull() {
 
     theOutput +="       }\n";
     theOutput +="\n";
-    theOutput +="       function resizeIframe() {\n";
-    theOutput +="           const iframe = document.getElementById('tuneFrame');\n";
-    theOutput +="           iframe.style.width = (window.innerWidth-3) + 'px';\n";
-    theOutput +="           var otherElementsHeight = getElementsTotalHeight();\n";
-    theOutput +="           iframe.style.height = (window.innerHeight-otherElementsHeight) + 'px';\n";
-    theOutput +="       }\n";
-    theOutput +="\n";
     theOutput +="       function setSelectedTuneByName(optionText) {\n";
     theOutput +="           var gotMatch = false;\n";
     theOutput +="           for (let i = 0; i < tuneSelector.options.length; i++) {\n";
@@ -1445,12 +1438,6 @@ function generateAndSaveWebsiteFull() {
     theOutput +="               tuneSelector.dispatchEvent(new Event('change'));\n";
     theOutput +="           }\n";
     theOutput +="       }\n";
-    theOutput +="\n";
-    theOutput +="       // Resize the iframe on window resize\n";
-    theOutput +="       window.addEventListener('resize', resizeIframe);\n";
-    theOutput +="\n";
-    theOutput +="       // Initial call to ensure it fits when the page loads\n";
-    theOutput +="       resizeIframe();\n";
     theOutput +="\n";
     theOutput +="       // Restore state\n";
     theOutput +="       if (gAllowStatePersistence){\n";
