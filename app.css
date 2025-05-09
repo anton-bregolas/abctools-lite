@@ -1,5 +1,6 @@
 html {
   -webkit-text-size-adjust: 100%; /* 2 */
+	scrollbar-gutter: stable;
 }
 
 ::-webkit-file-upload-button {
@@ -13,6 +14,7 @@ justify-content: center;
 padding:0px; 
 margin:0px;
 touch-action: pan-x pan-y;
+width:100%;
 }
 
  /* unvisited link */
@@ -36,7 +38,12 @@ a:active {
 } 
 
 #app-container{
-text-align: center;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	/* margin-left: 32px; */
 }
 
 .whistle {
@@ -91,18 +98,28 @@ user-select: none;
 	}
 }
 
+#notation-container {
+	width: 50%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
 #notation-holder {
 text-align: center;
 margin-bottom:50px;
 height:100%;
 display:none;
 width:850px;
-margin-left:auto;
-margin-right:auto;
+/* margin-left:auto;
+margin-right:auto; */
 flex-flow:column;
 }
 
 #abc {
+max-width: 830px;
+min-width: 140px;
+min-height: 18px;
 font-family:"Courier";
 font-size: 13pt;
 line-height: 16pt;
@@ -1887,11 +1904,12 @@ opacity:.25;
 background-color: #FAFAFF;
 position:fixed;
 top: 0px;
+left: calc(50% - 850px / 2);
 width:850px;
 z-index: 100;
-padding-bottom:16px; 
+padding-bottom:16px;
+/* margin-left: 16px;  */
 display:none;
-margin-right:auto;
 }
 
 #notation-spacer{
@@ -1976,12 +1994,12 @@ display:block;
 
 
 #notation-placeholder{
+/* position: absolute; */
 font-family:"Helvetica";
 font-size:12pt;
 display:none;
 width:850px;
 background-color:white;
-
 }
 
 #notation-placeholder-text{
@@ -2134,6 +2152,11 @@ body.noui #app-container{
 		margin-right: 0% !important;
 	}
 
+body.noui #notation-container{
+		display: inline-block !important;
+		width: 95% !important;
+ }
+
 body.noui .notation-holder{
 		display: inline-block !important;
 		text-align: center !important;
@@ -2202,11 +2225,15 @@ body.noui svg {
 		margin-right: 0% !important;
 	}
 
+	#notation-container{
+		display: inline-block !important;
+		width: 95% !important;
+ 	}
+
 	.notation-holder{
 		display: inline-block !important;
 		text-align: center !important;
 		margin-bottom:0px !important;
-		width:97% !important;
 		margin-left: 3% !important;
 		margin-right: 0% !important;
 		position:static !important;
@@ -6326,6 +6353,19 @@ padding-right: 30px; /* space for badge */
 	}
 }
 
+@media screen and (min-width: 1798px) {
+
+	#app-container {
+		flex-direction: row;
+		justify-content: center;
+		align-items: flex-start;
+	}
+
+	#noscroller {
+		left: calc(50% - 850px);
+		margin-left: 0;
+	}
+}
 
 
 
