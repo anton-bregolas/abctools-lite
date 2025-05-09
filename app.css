@@ -43,8 +43,6 @@ a:active {
 	flex-direction: column;
 	align-items: center;
 	text-align: center;
-	background-color: grey;
-	border: 1px solid black;
 	/* margin-left: 32px; */
 }
 
@@ -105,8 +103,6 @@ user-select: none;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	background-color: gold;
-	border: 1px solid orange;
 }
 
 #notation-holder {
@@ -1914,16 +1910,12 @@ z-index: 100;
 padding-bottom:16px;
 /* margin-left: 16px;  */
 display:none;
-background-color: transparent;
-border: 1px solid green;
 }
 
 #notation-spacer{
 background-color: white;
-width:50%;
+width: 100%;
 /* margin-right: 24px; */
-background-color: pink;
-border: 1px solid red;
 }
 
 #shareurlcaption{
@@ -2008,8 +2000,6 @@ font-size:12pt;
 display:none;
 width:850px;
 background-color:white;
-background-color:cyan;
-border: 1px solid blue;
 }
 
 #notation-placeholder-text{
@@ -6368,6 +6358,10 @@ padding-right: 30px; /* space for badge */
 	#app-container {
 		flex-direction: row;
 		justify-content: center;
+		align-items: flex-start;
+	}
+
+	#notation-container {
 		align-items: flex-start;
 	}
 
