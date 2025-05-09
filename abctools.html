@@ -40,7 +40,7 @@
 		<script>
 		// Register service worker
 		if ('serviceWorker' in navigator){
-			navigator.serviceWorker.register('https://anton-bregolas.github.io/abctools-mod/service_worker.js',{updateViaCache: "none"})
+			navigator.serviceWorker.register('./service_worker.js',{updateViaCache: "none"})
 			.then(reg => {
 				console.log("Service Worker Registered!");
 			})
