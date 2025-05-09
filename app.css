@@ -43,7 +43,6 @@ a:active {
 	flex-direction: column;
 	align-items: center;
 	text-align: center;
-	/* margin-left: 32px; */
 }
 
 .whistle {
@@ -1908,14 +1907,12 @@ left: calc(50% - 850px / 2);
 width:850px;
 z-index: 100;
 padding-bottom:16px;
-/* margin-left: 16px;  */
 display:none;
 }
 
 #notation-spacer{
 background-color: white;
 width: 100%;
-/* margin-right: 24px; */
 }
 
 #shareurlcaption{
@@ -1994,7 +1991,6 @@ display:block;
 
 
 #notation-placeholder{
-/* position: absolute; */
 font-family:"Helvetica";
 font-size:12pt;
 display:none;
@@ -6363,11 +6359,6 @@ padding-right: 30px; /* space for badge */
 
 	#notation-spacer {
 		margin-right: 24px;
-	}
-
-	#notation-container,
-	#notation-spacer {
-		width: 50%;
 	}
 
 	#noscroller {
