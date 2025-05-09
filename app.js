@@ -12491,17 +12491,33 @@ function Render(renderAll,tuneNumber) {
 
 		if (isDesktopBrowser()){
 			// Show the notation block
-			if (gIsMaximized)
+			if (gIsMaximized) {
+
 				gTheNotation.style.display = "flex";
-			else
+				// Clear the notation column's alignment
+				gTheNotation.parentElement.style.removeProperty("align-items");
+
+			} else {
+
 				gTheNotation.style.display = "inline";
+				// Align the notation column to the left for two-column view
+				if (window.innerWidth >= 1798) gTheNotation.parentElement.style.alignItems = "flex-start";
+			}
 		}
 		else{
 			// Show the notation block
-			if (gIsMaximized)
+			if (gIsMaximized) {
+
 				gTheNotation.style.display = "flex";
-			else
+				// Clear the notation column's alignment
+				gTheNotation.parentElement.style.removeProperty("align-items");
+			
+			} else {
+				
 				gTheNotation.style.display = "block";
+				// Align the notation column to the left for two-column view
+				if (window.innerWidth >= 1798) gTheNotation.parentElement.style.alignItems = "flex-start";
+			}
 
 		}
 
@@ -22311,7 +22327,10 @@ function DoMaximize(){
 	document.getElementById("noscroller").style.display = "none";
 	document.getElementById("notation-spacer").style.display = "none";
 	gTheNotation.style.display = "flex";
-	gTheNotation.style.float = "none";
+	// Clear the notation column's alignment
+	gTheNotation.parentElement.style.removeProperty("align-items");
+
+	// gTheNotation.style.float = "none";
 
 	gIsMaximized = true;
 
@@ -22357,6 +22376,9 @@ function DoMinimize(){
 
 	document.getElementById("zoombutton").src = "img/zoomout.png"
 
+	// Clear the notation column's alignment
+	gTheNotation.parentElement.style.removeProperty("align-items");
+
 	if (giPadTwoColumn){
 		var elem = document.getElementById("notation-holder").style.width = "850px";
 	}
@@ -22388,7 +22410,7 @@ function DoMinimize(){
 
 	if (isDesktopBrowser()){
 		gTheNotation.style.display = "inline";
-		gTheNotation.style.float = "left";
+		// gTheNotation.style.float = "left";
 		// gTheNotation.style.marginLeft = gNotationLeftMarginBeforeMaximize;
 
 	}
@@ -22504,6 +22526,12 @@ function ToggleMaximize(){
 	else{
 
 		DoMaximize();
+
+		// NB: Buggy behavior, prevents notation from zooming properly
+		// Steps to reproduce: 
+		// 1. Zoom out to 2-column view with both notation and ABC open;
+		// 2. Press toggle button to close ABC editor
+		// 3. Try zooming in and out on notation - it's now bugged
 
 		// 2 Jul 2024 - Moved this here to avoid binding error on Firefox at start
 		document.getElementById("zoombutton").src = "img/zoomin.png"
@@ -44411,6 +44439,9 @@ function HandleWindowResize(){
 				
 				// elem.style.marginLeft = marginLeft+"px";
 
+				// Clear the notation column's alignment
+				gTheNotation.parentElement.style.removeProperty("align-items");
+
 				// Reset the number of rows in the ABC editor
 				gTheABC.rows = 12;
 
@@ -44436,6 +44467,9 @@ function HandleWindowResize(){
 				// Two column display
 
 				var elem = document.getElementById("app-container");
+
+				// Align the notation column to the left
+				gTheNotation.parentElement.style.alignItems = "flex-start";
 
 				// var marginLeft = (windowWidth - 1700)/2;
 				
@@ -44478,7 +44512,7 @@ function HandleWindowResize(){
 
 				gIsOneColumn = false;
 
-				// Hide the zoom suggestion banne
+				// Hide the zoom suggestion banner
 				document.getElementById("zoombanner").style.display = "none";
 
 				elem = document.getElementById("notation-placeholder-text");

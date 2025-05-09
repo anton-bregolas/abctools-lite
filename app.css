@@ -6361,10 +6361,6 @@ padding-right: 30px; /* space for badge */
 		align-items: flex-start;
 	}
 
-	#notation-container {
-		align-items: flex-start;
-	}
-
 	#notation-spacer {
 		margin-right: 24px;
 	}
