@@ -22,8 +22,7 @@
 		<meta name="theme-color" content="#ffffff">
 		<meta name="apple-mobile-web-app-title" content="ABC Tools">
 		<meta name="application-name" content="ABC Tools">
-		<meta name="viewport" content="width=860" /> 
-		<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0" />  -->
+		<meta name="viewport" content="width=860" />
 		<link rel="apple-touch-icon" sizes="60x60" href="https://michaeleskin.com/abctools/img/abc-apple-icon-60x60.png">
 		<link rel="apple-touch-icon" sizes="72x72" href="https://michaeleskin.com/abctools/img/abc-apple-icon-72x72.png">
 		<link rel="apple-touch-icon" sizes="76x76" href="https://michaeleskin.com/abctools/img/abc-apple-icon-76x76.png">
@@ -39,15 +38,15 @@
 		
 		<script>
 		// Register service worker
-		// if ('serviceWorker' in navigator){
-		// 	navigator.serviceWorker.register('https://michaeleskin.com/abctools/service_worker.js',{updateViaCache: "none"})
-		// 	.then(reg => {
-		// 		console.log("Service Worker Registered!");
-		// 	})
-		// 	.catch(err => {
-		// 		console.log("Service Worker Registration failed: "+err);
-		//  	});
-		// }	
+		if ('serviceWorker' in navigator){
+			navigator.serviceWorker.register('https://michaeleskin.com/abctools/service_worker.js',{updateViaCache: "none"})
+			.then(reg => {
+				console.log("Service Worker Registered!");
+			})
+			.catch(err => {
+				console.log("Service Worker Registration failed: "+err);
+		 	});
+		}	
 		</script>		
 		
 		<link rel="manifest" href="https://michaeleskin.com/abctools/img/abc-manifest.json">
