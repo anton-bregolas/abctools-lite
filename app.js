@@ -22432,7 +22432,7 @@ function DoMinimize(){
 			if (giPadTwoColumn){
 
 				// Reset text box symmetrical resize 
-				// gTheABC.style.marginLeft = "0px";
+				gTheABC.style.marginLeft = "0px";
 				gTheABC.style.width = "832px";
 
 				gInitialTextBoxWidth = 832;
@@ -22453,7 +22453,7 @@ function DoMinimize(){
 				gInitialTextBoxWidth = gTheABC.offsetWidth;
 			}
 
-			// ResizeTextBox();
+			ResizeTextBox();
 
 			gForceInitialTextBoxRecalc = false;
 
@@ -22465,7 +22465,7 @@ function DoMinimize(){
 
 			gTheABC.style.width = gInitialTextBoxWidth+"px";
 
-			// gTheABC.style.marginLeft = "0px";
+			gTheABC.style.marginLeft = "0px";
 
 			var elem = document.getElementById("notenlinks");
 			gInitialTextBoxContainerWidth = elem.offsetWidth;
@@ -45338,23 +45338,23 @@ function ShowHelp(){
 // 
 // Try to restrict the recalc rate to something reasonable
 //
-// var RESIZETEXTBOX_DEBOUNCEMS = 20;
+var RESIZETEXTBOX_DEBOUNCEMS = 20;
 
-// var gLastResizeTextboxTime = 0;
+var gLastResizeTextboxTime = 0;
 
-// function ResizeTextBox(){
+function ResizeTextBox(){
 
-	// if (gIsMaximized){
-	// 	return;
-	// }
+	if (gIsMaximized){
+		return;
+	}
 
-	// var theTime = Date.now();
+	var theTime = Date.now();
 
-	// var deltaTime = theTime - gLastResizeTextboxTime;
+	var deltaTime = theTime - gLastResizeTextboxTime;
 
-	// if (deltaTime > RESIZETEXTBOX_DEBOUNCEMS) {
+	if (deltaTime > RESIZETEXTBOX_DEBOUNCEMS) {
 
-	// 	gLastResizeTextboxTime = theTime;
+		gLastResizeTextboxTime = theTime;
 		
 		//console.log("ResizeTextBox");
 
@@ -45362,71 +45362,71 @@ function ShowHelp(){
 		// console.log("Initial container width = "+gInitialTextBoxContainerWidth);
 		// console.log("Initial container left = "+gInitialTextBoxContainerLeft);
 
-		// var currentWidth = gTheABC.offsetWidth;
+		var currentWidth = gTheABC.offsetWidth;
 
 		// console.log("current width = "+gTheABC.offsetWidth);
 		// console.log("containerWidth = "+gInitialTextBoxContainerWidth);
 
-		// var theOffset = (gInitialTextBoxContainerWidth - gInitialTextBoxWidth)/2;
+		var theOffset = (gInitialTextBoxContainerWidth - gInitialTextBoxWidth)/2;
 
 		// console.log("theOffset = "+theOffset);
 
-		// if ((currentWidth > gInitialTextBoxContainerWidth) && (!giPadTwoColumn)){
+		if ((currentWidth > gInitialTextBoxContainerWidth) && (!giPadTwoColumn)){
 
 			// console.log("Setting the marginLeft for stretch");
 
-			// var theDelta = ((currentWidth - gInitialTextBoxWidth)/2)-theOffset;
+			var theDelta = ((currentWidth - gInitialTextBoxWidth)/2)-theOffset;
 
-			// if (theDelta <= gInitialTextBoxContainerLeft){
+			if (theDelta <= gInitialTextBoxContainerLeft){
 
-			// 	gTheABC.style.marginLeft = -theDelta+"px";
+				gTheABC.style.marginLeft = -theDelta+"px";
 
-			// 	if (!gIsOneColumn){
+				if (!gIsOneColumn){
 
 					//debugger;
 
-					// var theAppContainer = document.getElementById("app-container");
+					var theAppContainer = document.getElementById("app-container");
 
-					// var theAppContainerMargin = theAppContainer.style.marginLeft;
+					var theAppContainerMargin = theAppContainer.style.marginLeft;
 
-					// if (theAppContainerMargin){
+					if (theAppContainerMargin){
 
-					// 	theAppContainerMargin = theAppContainer.style.marginLeft.replace("px","");
+						theAppContainerMargin = theAppContainer.style.marginLeft.replace("px","");
 
-					// 	theAppContainerMarginFloat = parseFloat(theAppContainerMargin);
+						theAppContainerMarginFloat = parseFloat(theAppContainerMargin);
 
-					// 	if (!isNaN(theAppContainerMarginFloat)){
+						if (!isNaN(theAppContainerMarginFloat)){
 
-					// 		// There is some edge delta factor
-					// 		theAppContainerMarginFloat -= 48;
+							// There is some edge delta factor
+							theAppContainerMarginFloat -= 48;
 
-					// 		if (theDelta < theAppContainerMarginFloat){
+							if (theDelta < theAppContainerMarginFloat){
 
-					// 			// Slide the notation to the right but don't allow wrapping
-					// 			gTheNotation.style.marginLeft = theDelta+"px";
+								// Slide the notation to the right but don't allow wrapping
+								gTheNotation.style.marginLeft = theDelta+"px";
 
-					// 		}
-					// 	}
+							}
+						}
 
-					// }
+					}
 
-		// 		}
+				}
 
-		// 	}
+			}
 
-		// }
-		// else{
+		}
+		else{
 
 			// console.log("Setting the marginLeft to 0px");
 
-			// gTheABC.style.marginLeft = "0px";
+			gTheABC.style.marginLeft = "0px";
 
 			// Reset the notation left margin
-			// gTheNotation.style.marginLeft = theDelta+"px";
+			gTheNotation.style.marginLeft = theDelta+"px";
 
-	// 	}
-// 	}
-// }
+		}
+	}
+}
 
 //
 // Allow tall dialogs to scroll on mobile and short screens
@@ -46688,61 +46688,61 @@ function MaximizeEditor(){
 
 	gTheABC.style.width = ((window.innerWidth-gTheNotation.offsetWidth)-125)+"px";
 
-// 	setTimeout(function(){
+setTimeout(function(){
 
-// 		var currentWidth = gTheABC.offsetWidth;
+		var currentWidth = gTheABC.offsetWidth;
 
-// 		// console.log("current width = "+gTheABC.offsetWidth);
-// 		// console.log("containerWidth = "+gInitialTextBoxContainerWidth);
+		// console.log("current width = "+gTheABC.offsetWidth);
+		// console.log("containerWidth = "+gInitialTextBoxContainerWidth);
 
-// 		var theOffset = (gInitialTextBoxContainerWidth - gInitialTextBoxWidth)/2;
+		var theOffset = (gInitialTextBoxContainerWidth - gInitialTextBoxWidth)/2;
 
-// 		// console.log("theOffset = "+theOffset);
+		// console.log("theOffset = "+theOffset);
 
-// 		if (currentWidth > gInitialTextBoxContainerWidth){
+		if (currentWidth > gInitialTextBoxContainerWidth){
 
 			// console.log("Setting the marginLeft for stretch");
 
-			// var theDelta = ((currentWidth - gInitialTextBoxWidth)/2)-theOffset;
+			var theDelta = ((currentWidth - gInitialTextBoxWidth)/2)-theOffset;
 
-			// if (theDelta <= gInitialTextBoxContainerLeft){
+			if (theDelta <= gInitialTextBoxContainerLeft){
 
-			// 	gTheABC.style.marginLeft = -theDelta+"px";
+				gTheABC.style.marginLeft = -theDelta+"px";
 
-			// 	if (!gIsOneColumn){
+				if (!gIsOneColumn){
 
 					//debugger;
 
-// 					var theAppContainer = document.getElementById("app-container");
+					var theAppContainer = document.getElementById("app-container");
 
-// 					var theAppContainerMargin = theAppContainer.style.marginLeft;
+					var theAppContainerMargin = theAppContainer.style.marginLeft;
 
-// 					if (theAppContainerMargin){
+					if (theAppContainerMargin){
 
-// 						theAppContainerMargin = theAppContainer.style.marginLeft.replace("px","");
+						theAppContainerMargin = theAppContainer.style.marginLeft.replace("px","");
 
-// 						theAppContainerMarginFloat = parseFloat(theAppContainerMargin);
+						theAppContainerMarginFloat = parseFloat(theAppContainerMargin);
 
-// 						if (!isNaN(theAppContainerMarginFloat)){
+						if (!isNaN(theAppContainerMarginFloat)){
 
-// 							// There is some edge delta factor
-// 							theAppContainerMarginFloat -= 48;
+							// There is some edge delta factor
+							theAppContainerMarginFloat -= 48;
 
-// 							if (theDelta < theAppContainerMarginFloat){
+							if (theDelta < theAppContainerMarginFloat){
 
-// 								// Slide the notation to the right but don't allow wrapping
-// 								gTheNotation.style.marginLeft = theDelta+"px";
+								// Slide the notation to the right but don't allow wrapping
+								gTheNotation.style.marginLeft = theDelta+"px";
 
-// 							}
-// 						}
+							}
+						}
 
-// 					}
+					}
 
-// 				}
+				}
 
-// 			}
-// 		}
-// 	},100);
+			}
+		}
+	},100);
 }
 
 //
@@ -49427,7 +49427,7 @@ function DoStartup() {
 			// iPad two column is always fixed width
 			document.body.display = "block";
 			gInitialTextBoxWidth = 832;
-			// gTheABC.style.marginLeft = 0+"px";
+			gTheABC.style.marginLeft = 0+"px";
 			gTheABC.style.width = gInitialTextBoxWidth+"px";
 
 		}
@@ -49446,9 +49446,9 @@ function DoStartup() {
 		// console.log("Initial container width = "+gInitialTextBoxContainerWidth);
 		// console.log("Initial container left = "+gInitialTextBoxContainerLeft);
 
-		// if (isPureDesktopBrowser()){
-		// 	new ResizeObserver(ResizeTextBox).observe(gTheABC);
-		// }
+		if (isPureDesktopBrowser()){
+			new ResizeObserver(ResizeTextBox).observe(gTheABC);
+		}
 
 		// Hook window resize events
 		window.onresize = function(){
@@ -49458,7 +49458,7 @@ function DoStartup() {
 			if (!gIsMaximized){
 
 				// Reset text box symmetrical resize 
-				// gTheABC.style.marginLeft = 0+"px";
+				gTheABC.style.marginLeft = 0+"px";
 				gTheABC.style.width = gInitialTextBoxWidth+"px";
 
 				var elem = document.getElementById("notenlinks");
@@ -49473,7 +49473,7 @@ function DoStartup() {
 				// console.log("Initial container width = "+gInitialTextBoxContainerWidth);
 				// console.log("Initial container left = "+gInitialTextBoxContainerLeft);
 
-				// ResizeTextBox();
+				ResizeTextBox();
 
 				gGotWindowResizeWhileMaximized = false;
 
