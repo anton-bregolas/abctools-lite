@@ -168,22 +168,26 @@
 				</div>
 				
 			</div>
-			
-			<div id="notation-spacer" class="hidden-print relativebox"></div>
-			
-			<div id="notation-placeholder" class="hidden-print relativebox">
 
-				<p id="notation-placeholder-text"><strong>Notation will appear here when you enter some ABC.</strong><br><br><br>Click <strong>Open</strong> to open an existing ABC, MusicXML, BWW, or MIDI file.<br><br>Click <strong>Add</strong> to add a new ABC tune or tune template.</p>
-
-				<p id="desktop_use_message"><strong>Drag-and-drop</strong> an ABC, MusicXML, BWW, or MIDI file on the editor area to add it.<br><br><br><strong>Resize the ABC Editor</strong> by clicking and dragging its lower right corner.</p>
-
-				<p id="notation-placeholder-text-2">Click <strong>Search for Tunes</strong> to find tunes by name.</p>
-
-				<input class="notation-placeholder-button btn btn-placeholder" onclick="showWelcomeScreen();" type="button" value="Show Intro Screen" title="Shows the intro screen"/>
+			<div id="notation-container">
 			
-			</div>
+				<div id="notation-spacer" class="hidden-print relativebox"></div>
+				
+				<div id="notation-placeholder" class="hidden-print relativebox">
+
+					<p id="notation-placeholder-text"><strong>Notation will appear here when you enter some ABC.</strong><br><br><br>Click <strong>Open</strong> to open an existing ABC, MusicXML, BWW, or MIDI file.<br><br>Click <strong>Add</strong> to add a new ABC tune or tune template.</p>
+
+					<p id="desktop_use_message"><strong>Drag-and-drop</strong> an ABC, MusicXML, BWW, or MIDI file on the editor area to add it.<br><br><br><strong>Resize the ABC Editor</strong> by clicking and dragging its lower right corner.</p>
+
+					<p id="notation-placeholder-text-2">Click <strong>Search for Tunes</strong> to find tunes by name.</p>
+
+					<input class="notation-placeholder-button btn btn-placeholder" onclick="showWelcomeScreen();" type="button" value="Show Intro Screen" title="Shows the intro screen"/>
+				
+				</div>
+				
+				<div id="notation-holder" class="notation-holder relativebox pagebreak">
+				</div>
 			
-			<div id="notation-holder" class="notation-holder relativebox pagebreak">
 			</div>
 		
 		</div>
@@ -227,7 +231,7 @@
 	<script type="text/javascript" src="website_generator.js?v=2486"></script><!-- Generate website -->	
 	<script type="text/javascript" src="pdf-website-import.js?v=2486"></script><!-- PDF and website import -->	
 	<script type="text/javascript" src="context-menu.js?v=2486"></script><!-- Dropdown context menus -->	
-	<script type="text/javascript" src="app-min.js?v=2486"></script><!-- main application business logic -->
+	<script type="text/javascript" src="app.js"></script><!-- main application business logic -->
 	<script type="text/javascript" src="api-keys.js?v=2486"></script><!-- API keys used by the tool -->
 
 </html>

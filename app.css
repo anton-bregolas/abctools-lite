@@ -116,9 +116,6 @@ flex-flow:column;
 }
 
 #abc {
-max-width: 830px;
-min-width: 140px;
-min-height: 18px;
 font-family:"Courier";
 font-size: 13pt;
 line-height: 16pt;
