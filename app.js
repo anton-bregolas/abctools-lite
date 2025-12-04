@@ -332,8 +332,8 @@ var gUseComhaltasABC = false;
 var gForceComhaltasABC = false;
 
 // Zoom banner has been hidden
-var gZoomBannerHidden = false;
-var gZoomBannerAlwaysHidden = false;
+var gZoomBannerHidden = true;
+var gZoomBannerAlwaysHidden = true;
 
 // Initial text box width
 var gInitialTextBoxWidth;
@@ -52892,7 +52892,7 @@ function restoreStateFromLocalStorage() {
 
     UpdateLocalStorage();
 
-    showWelcomeScreen();
+    // showWelcomeScreen();
 
   }
 
@@ -54263,8 +54263,8 @@ function showWelcomeScreen() {
   // Keep track of dialogs
   sendGoogleAnalytics("dialog", "showWelcomeScreen");
 
-  var modal_msg = '<p style="text-align:center;font-size:18pt;font-family:helvetica">Welcome to My ABC Transcription Tools!</p>';
-  modal_msg += '<p style="font-size:12pt;line-height:16pt;font-family:helvetica"><strong>Please visit my <a href="userguide.html" target="_blank" title="ABC Transcription Tools User Guide">User Guide</a> page for complete instructions and demo videos on how to use the tools.</strong></p>';
+  var modal_msg = '<p style="text-align:center;font-size:18pt;font-family:helvetica">Welcome to ABC Tools Lite, an unofficial fork of Michael Eskin’s ABC Transcription Tools</p>';
+  modal_msg += '<p style="font-size:12pt;line-height:16pt;font-family:helvetica"><strong>Please visit <a href="https://michaeleskin.com/abctools/userguide.html" target="_blank" title="ABC Transcription Tools User Guide">ABC Transcription Tools User Guide</a> page for complete instructions and demo videos on how to use the tools.</strong></p>';
   if (gIsQuickEditor) {
     modal_msg += '<p style="font-size:12pt;line-height:16pt;font-family:helvetica">The Quick Editor is optimized for editing and playback of larger tunebooks.</p>';
   }
@@ -54303,7 +54303,7 @@ function showZoomInstructionsScreen() {
   // Keep track of dialogs
   sendGoogleAnalytics("dialog", "showZoomInstructionsScreen");
 
-  var modal_msg = '<p style="text-align:center;font-size:18pt;font-family:helvetica">Welcome to My ABC Transcription Tools!</p>';
+  var modal_msg = '<p style="text-align:center;font-size:18pt;font-family:helvetica">Welcome to ABC Tools Lite, an unofficial fork of Michael Eskin’s ABC Transcription Tools</p>';
   modal_msg += '<p style="font-size:12pt;line-height:16pt;font-family:helvetica">Since this is your first time using the tools, here is some useful information to help you get started:</p>';
   modal_msg += '<p style="font-size:12pt;line-height:16pt;font-family:helvetica">In this view, you may scroll through the tune notation.</p>';
 
@@ -54321,7 +54321,7 @@ function showZoomInstructionsScreen() {
     modal_msg += '<p style="font-size:12pt;line-height:16pt;font-family:helvetica">In the ABC editor, click the Zoom-Out arrows at the top-right to view notation full screen.</p>';
   }
 
-  modal_msg += '<p style="font-size:12pt;line-height:16pt;font-family:helvetica">Please visit my <a href="userguide.html" target="_blank" title="ABC Transcription Tools User Guide">User Guide</a> page for complete instructions and demo videos on how to use the tools.</p>';
+  modal_msg += '<p style="font-size:12pt;line-height:16pt;font-family:helvetica">Please visit <a href="https://michaeleskin.com/abctools/userguide.html" target="_blank" title="ABC Transcription Tools User Guide">ABC Transcription Tools User Guide</a> page for complete instructions and demo videos on how to use the tools.</p>';
 
   DayPilot.Modal.alert(modal_msg, {
     theme: "modal_flat",
@@ -54350,22 +54350,6 @@ function TipJarReminderDialog() {
   DayPilot.Modal.alert(modal_msg, {
     theme: "modal_flat",
     top: 75,
-    scrollWithPage: (AllowDialogsToScroll())
-  });
-
-}
-
-// Show the Syntax Highlighting info dialog
-//
-function SyntaxHighlightInfoDialog() {
-
-  // Keep track of dialogs
-  var modal_msg = '<p style="text-align:center;font-size:17pt;font-family:helvetica">ABC Syntax Highlighting is Enabled</p>';
-  modal_msg += '<p style="font-size:14pt;line-height:18pt;font-family:helvetica;text-align:center;margin-top:36px;">Please try out the new ABC syntax highlighting features.</p>';
-  modal_msg += '<p style="font-size:14pt;line-height:20pt;font-family:helvetica;text-align:center;margin-top:36px;">If you decide you don\'t like it,<br/>you can easily disable it from the Settings dialog.</p>';
-  DayPilot.Modal.alert(modal_msg, {
-    theme: "modal_flat",
-    top: 150,
     scrollWithPage: (AllowDialogsToScroll())
   });
 
@@ -54970,7 +54954,8 @@ function makeCenteredPromptString(thePrompt) {
 // Send a Google analytics event
 //
 function sendGoogleAnalytics(theCategory, theAction, theLabel) {
-
+  
+  return;
   // Don't send analytics if offline
   if (!navigator.onLine) {
     //console.log("sendGoogleAnalytics - Offline: Not sending info ")
@@ -60616,19 +60601,6 @@ function DoStartup() {
   if (gAllowMIDIInput) {
 
     initMIDI();
-
-  }
-
-  // Put up reminder about syntax highlighting
-  if ((!isFromShare) && isPureDesktopBrowser() && (!gEnableSyntaxMessageDelivered)){
-
-    SyntaxHighlightInfoDialog();
-
-    gEnableSyntaxMessageDelivered = true;
-
-    if (gLocalStorageAvailable) {
-      localStorage.EnableSyntaxMessageDelivered = true;
-    }
 
   }
 

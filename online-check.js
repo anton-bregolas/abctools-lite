@@ -10,24 +10,24 @@ function setOnlineTitle(){
 		if (!gIsQuickEditor){
 			if (gSamplesOnline){
 				if (elem){
-					elem.innerHTML = "ABC Transcription Tools";
+					elem.innerHTML = "ABC Tools Lite";
 				}
 			}
 			else{
 				if (elem){
-					elem.innerHTML = "ABC Transcription Tools (Offline Mode)";
+					elem.innerHTML = "ABC Tools Lite (Offline)";
 				}		
 			}
 		}
 		else{
 			if (gSamplesOnline){
 				if (elem){
-					elem.innerHTML = "ABC Transcription Tools Quick Editor";
+					elem.innerHTML = "ABC Tools Lite Quick Editor";
 				}
 			}
 			else{
 				if (elem){
-					elem.innerHTML = "ABC Transcription Tools Quick Editor (Offline Mode)";
+					elem.innerHTML = "ABC Tools Lite Quick Editor (Offline Mode)";
 				}		
 			}
 		}

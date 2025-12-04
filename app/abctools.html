@@ -92,7 +92,7 @@
 
         // Register service worker
         if ('serviceWorker' in navigator){
-            navigator.serviceWorker.register('https://michaeleskin.com/app/service_worker.js',{updateViaCache: "none"})
+            navigator.serviceWorker.register('/service_worker.js',{updateViaCache: "none"})
             .then(reg => {
                 console.log("Service Worker Registered!");
             })
@@ -140,7 +140,7 @@
 
         function doRedirect() {
 
-            window.location.href = "https://michaeleskin.com/abctools/abctools.html";
+            window.location.href = "/abctools.html";
 
         }
 
