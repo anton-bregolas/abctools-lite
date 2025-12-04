@@ -253,7 +253,7 @@ padding:12px;}
 #sortbutton{
 	height:42px;
 	padding:12px;
-	margin-right:24px;
+	margin-right: 24px;
 }
 
 @media (hover: hover) {
@@ -685,28 +685,28 @@ opacity: 0.4;
 padding:12px;
 }
 
-#ceoltasdialog,#injectheaderstring,#injectallmidiparams,#injectharmonicatab,#injectboxtab,#injectfiddlefingerings,#injectmd,#injectmelody,#injectstaffwidth,#injectmetronome,#injectshapenotes,#injectsectionheader,#injecttunenumbers,#addtunetitlenumbers,#compliancedialog,#ceoltastransform,#injectbcbox{
+#ceoltasdialog,#injectheaderstring,#injectallmidiparams,#injectharmonicatab,#injectboxtab,#injectfiddlefingerings,#injectmd,#injectmelody,#injectstaffwidth,#injectmetronome,#injectshapenotes,#injectsectionheader,#injecttunenumbers,#addtunetitlenumbers,#compliancedialog,#ceoltastransform,#injectbcbox,#normalizediacriticals,#customcssgenerator{
 height:42px;
 padding:12px;
 margin-right:24px;
 }
 
-#injectbambooflute,#injectclicktrackall,#injectchords,#injectheadertemplate,#injectanglotab,#looper_metronomebutton,#injectlargeprint,#pdfinjectlargeprint,#tunebookbuilder_add,#injectfontsettings,#removetunetitlenumbers,#ceoltasdialoginverse,#compliancetransform,#compliancedialoginverse,#fiddlefingeringsdialog,#fiddlefingeringsdialog2,#fiddlefingeringsdialog3,#fiddlefingeringsdialog4,#injectbagpipedrones,#websitefull,#injectheaderstringfh,#injectcsdbox,#pdfusebrowserprint,#websitelightbox,#websitesimple{
+#injectbambooflute,#injectclicktrackall,#injectchords,#injectheadertemplate,#injectanglotab,#looper_metronomebutton,#injectlargeprint,#pdfinjectlargeprint,#tunebookbuilder_add,#injectfontsettings,#removetunetitlenumbers,#ceoltasdialoginverse,#compliancetransform,#compliancedialoginverse,#fiddlefingeringsdialog0,#fiddlefingeringsdialog1,#fiddlefingeringsdialog2,#fiddlefingeringsdialog3,#fiddlefingeringsdialog4,#websitefull,#injectheaderstringfh,#injectcsdbox,#websitelightbox,#websitesimple,#escapediacriticals,#injectbagpipedrones{
 height:42px;
 padding:12px;
 }
 
-#fiddlefingeringsdialog2, #fiddlefingeringsdialog3, #fiddlefingeringsdialog4{
-	margin-top:16px;
+#fiddlefingeringsdialog1, #fiddlefingeringsdialog2, #fiddlefingeringsdialog3, #fiddlefingeringsdialog4{
+	margin-top:24px;
 }
 
-#addnewreel,#addnewjig,#changetuneorder,#cull_select_all,#mobile_tune_order_up,#smartdraw_add_set_name,#smartdraw_delete_set_name,#addnewtunetemplate,#addsongtemplate,#addbodhrantemplate,#search-previous,#search-next,#search-replace,#search-replace-all,#search-load,#websiteimages,#tuneset_select_all,#tuneset_open_in_player,#tuneset_open_in_editor,#title_normalize_forward{
+#addnewreel,#addnewjig,#changetuneorder,#cull_select_all,#mobile_tune_order_up,#smartdraw_add_set_name,#smartdraw_delete_set_name,#addnewtunetemplate,#addsongtemplate,#addbodhrantemplate,#search-previous,#search-next,#search-replace,#search-replace-all,#search-load,#websiteimages,#tuneset_select_all,#tuneset_open_in_player,#tuneset_open_in_editor,#title_normalize_forward,#pdfusebrowserprint{
 height:42px;
 padding:12px;
 margin-right:24px;
 }
 
-#addnewhornpipe,#searchandaddtunes,#culltunes,#cull_clear_selection,#mobile_tune_order_down,#smartdraw_export,#addnewsong,#addboxfingeringtemplate,#search-save,#adddatabasetemplate,#tunesettunes,#tuneset_clear_selection,#tuneset_append_to_abc,#title_normalize_inverse{
+#addnewhornpipe,#searchandaddtunes,#culltunes,#cull_clear_selection,#mobile_tune_order_down,#smartdraw_export,#addnewsong,#addboxfingeringtemplate,#search-save,#addpdfannotationstemplate,#tunesettunes,#tuneset_clear_selection,#tuneset_append_to_abc,#title_normalize_inverse{
 height:42px;
 padding:12px;
 }
@@ -730,7 +730,7 @@ padding:12px;
 #tunebookbuilder-play{
 height:42px;
 padding:12px;
-margin-right:18px;
+margin-right:24px;
 }
 
 #tunebookbuilder-add{
@@ -741,7 +741,7 @@ padding:12px;
 #tunebookbuilder-add-play{
 height:42px;
 padding:12px;
-margin-right:18px;
+margin-right:24px;
 }
 
 #addtunebookheaders{
@@ -1379,7 +1379,7 @@ top:20px;
 height:42px;
 padding:12px;
 width:auto;
-margin-right:24px;
+margin-right:18px;
 }
 
 @media (hover: hover) {
@@ -1514,10 +1514,24 @@ width:auto;
 margin-right:20px;
 }
 
-@media (hover: hover) {
-	.reset_roll_parameters:hover{
+.reset_roll_parameters:hover{
 	background: palegreen;
-	}
+}
+
+
+.customthemeeditor {
+	display: inline-block;
+}
+
+#customthemeeditor{
+height:42px;
+padding:12px;
+width:auto;
+margin-right:20px;
+}
+
+.loadimpulsebutton:hover{
+	background: palegreen;
 }
 
 .loadimpulsebutton {
@@ -1549,6 +1563,34 @@ margin-left:20px;
 
 .resetsettings:hover{
 	background: palegreen;
+}
+
+#loadinstrumentbutton{
+height:42px;
+padding:12px;
+width:auto;
+}
+
+.loadinstrumentbutton:hover{
+	background: palegreen;
+}
+
+label.btn.loadinstrumentbutton {
+  display: inline-block;
+}
+
+#configurecustominstruments{
+height:42px;
+padding:12px;
+margin-left:14px;
+width:auto;
+}
+
+#launchcustominstrumentbuilder{
+height:42px;
+padding:12px;
+margin-left:14px;
+width:auto;
 }
 
 .managedatabases {
@@ -1931,6 +1973,17 @@ z-index:101;
 display:none;
 }
 
+.jumpbutton{
+position:fixed;
+width:48px;
+height:48px;
+right:112px;
+top:16px;
+padding:4px;
+z-index:101;
+display:none;
+}
+
 .helpbutton{
 position:fixed;
 width:48px;
@@ -1947,6 +2000,28 @@ position:fixed;
 width:48px;
 height:48px;
 right:24px;
+bottom:16px;
+padding:4px;
+z-index:101;
+display:none;
+}
+
+.qerewindbutton{
+position:fixed;
+width:48px;
+height:48px;
+right:112px;
+bottom:16px;
+padding:4px;
+z-index:101;
+display:none;
+}
+
+.qetempobutton{
+position:fixed;
+width:48px;
+height:48px;
+right:200px;
 bottom:16px;
 padding:4px;
 z-index:101;
@@ -2021,31 +2096,59 @@ margin-right:0px;
 opacity:1.0;
 }
 
-
 /* Spinner */
-#loading-bar-spinner.spinner {
-left: 50%;
-margin-left: -23px;
-top: 35%;
-margin-top: -23px;
-position: fixed;
-z-index: 100100 !important;
-animation: loading-bar-spinner 400ms linear infinite; 
-display:none;
+/* Overlay (dims the background) */
+#spinnerOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6); /* semi-transparent black */
+  z-index: 100099; /* just under spinner elements */
+  display: none;
+  text-align: center;
 }
 
-#loading-bar-spinner.spinner .spinner-icon {
-width: 46px;
-height: 46px;
-border:  solid 4px transparent;
-border-top-color:  #00C8B1 !important;
-border-left-color: #00C8B1 !important;
-border-radius: 50%;
+/* Container for spinner + label */
+#spinnerContainer {
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 100100; /* ensure container sits above overlay */
+}
+
+/* Label above spinner */
+#spinnerLabel {
+  margin-bottom: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #00FFC4; 
+  font-family: sans-serif;
+  text-shadow: 0 0 8px rgba(0,0,0,0.8); /* optional glow for readability */
+}
+
+#loading-bar-spinner {
+  margin: 0 auto;
+  animation: loading-bar-spinner 400ms linear infinite; 
+  transform-origin: 50% 50%; /* ensure spin around its own center */
+  display: inline-block;     /* keeps dimensions respected for centering */
+}
+
+#spinner-icon {
+  width: 48px;   /* reduced size */
+  height: 48px;
+  border: solid 6px transparent; /* thinner border for smaller size */
+  border-top-color:  #00E62A !important;
+  border-left-color: #00CCB4 !important;
+  border-radius: 50%;
 }
 
 @keyframes loading-bar-spinner {
-0%   { transform: rotate(0deg);   transform: rotate(0deg); }
-100% { transform: rotate(360deg); transform: rotate(360deg); }
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* For better tune visual layout on the displayed version.
@@ -2111,24 +2214,49 @@ left:-5000px;
 @media (hover: hover) {
 	.zoombutton:hover{
 	background: palegreen;
+	opacity: 1.0 !important;
+	}
+}
+
+@media (hover: hover) {
+	.jumpbutton:hover{
+	background: palegreen;
+	opacity: 1.0 !important;
+	}
+}
+
+@media (hover: hover) {
+	.qerewindbutton:hover{
+	background: palegreen;
+	opacity: 1.0 !important;
+	}
+}
+
+@media (hover: hover) {
+	.qetempobutton:hover{
+	background: palegreen;
+	opacity: 1.0 !important;
 	}
 }
 
 @media (hover: hover) {
 	.playbuttonicon:hover{
 	background: palegreen;
+	opacity: 1.0 !important;
 	}
 }
 
 @media (hover: hover) {
 	.helpbutton:hover{
 	background: palegreen;
+	opacity: 1.0 !important;
 	}
 }
 
 @media (hover: hover) {
 	.pdfbuttonicon:hover{
 	background: palegreen;
+	opacity: 1.0 !important;
 	}
 }
 
@@ -2515,7 +2643,7 @@ body.noui svg {
 	font-size:12pt;
 	line-height:11px;
 	font-family:helvetica;
-	margin-top:10px;
+	margin-top:9px;
 	display:flex;
 }
 
@@ -2544,11 +2672,20 @@ body.noui svg {
 	display:flex;
 }
 
+.configure_settings_form_text_checkbox_fs2{
+	font-size:12pt;
+	line-height:11px;
+	font-family:helvetica;
+	margin-top:14px;
+	margin-bottom:24px;
+	display:flex;
+}
+
 .configure_settings_form_text_fs{
 	font-size:12pt;
-	line-height:24px;
+	line-height:20px;
 	font-family:helvetica;
-	margin-top:20px;
+	margin-top:18px;
 	display:flex;
 }
 
@@ -2557,7 +2694,7 @@ body.noui svg {
 	font-family:helvetica;
 	margin-left:12px;
 	width: 60px;
-	margin-top:-2px;
+	margin-top:-4px;
 	padding:4px;
 }
 
@@ -2692,7 +2829,7 @@ margin-top:-7px;
 	font-size:12pt;
 	line-height:16px;
 	font-family:helvetica;
-	margin-top:18px;
+	margin-top:14px;
 	display:flex;
 }
 
@@ -3065,6 +3202,46 @@ margin-top:-7px;
 	margin-top:-4px;
 }
 
+.configure_customstring_form_text{
+	font-size:12pt;
+	line-height:24px;
+	font-family:helvetica;
+	margin-top:16px;
+	display:flex;
+}
+
+.configure_customstring_form_text>input{
+	font-size:12pt;
+	font-family:helvetica;
+	margin-left: 12px;
+	width: 60px;
+	margin-top:-4px;
+}
+
+.configure_customstring_form_text_wide{
+	font-size:12pt;
+	line-height:24px;
+	font-family:helvetica;
+	margin-top:16px;
+	display:flex;
+}
+
+.configure_customstring_form_text_wide>input{
+	font-size:12pt;
+	font-family:helvetica;
+	margin-left: 12px;
+	width: 300px;
+	margin-top:-4px;
+}
+
+.configure_customstring_form_text_checkbox{
+	font-size:12pt;
+	line-height:24px;
+	font-family:helvetica;
+	margin-top:24px;
+	display:flex;
+}
+
 .configure_sectionheader_form_text{
 	font-size:12pt;
 	line-height:24px;
@@ -3083,7 +3260,7 @@ margin-top:-7px;
 
 .configure_tab_settings_form_text{
 	font-size:12pt;
-	line-height:42px;
+	line-height:32px;
 	font-family:helvetica;
 	margin-top:6px;
 	display:flex;
@@ -3099,7 +3276,7 @@ margin-top:-7px;
 
 .configure_tab_settings_form_text_wide{
 	font-size:12pt;
-	line-height:42px;
+	line-height:32px;
 	font-family:helvetica;
 	margin-top:10px;
 	display:flex;
@@ -3372,7 +3549,7 @@ color:black;
 font-size:11pt;
 font-family:"Helvetica";
 height:32px;
-width:190px;
+width:220px;
 margin-left:8px;
 padding-left:10px;
 margin-top:-7px;
@@ -3406,7 +3583,7 @@ color:black;
 font-size:11pt;
 font-family:"Helvetica";
 height:32px;
-width:190px;
+width:220px;
 margin-left:4px;
 padding-left:10px;
 margin-top:-7px;
@@ -3426,7 +3603,7 @@ margin-top:-7px;
 	margin-right:10px;
 }
 
-#looper_text_1,#looper_text_2,#looper_text_3,#looper_text_4,#looper_text_5,#looper_text_6,#looper_percent_span_1,#looper_percent_span_2,#looper_percent_span_3{
+#looper_text_1,#looper_text_2,#looper_text_3,#looper_text_4,#looper_text_5,#looper_text_6,#looper_text_7,#looper_percent_span_1,#looper_percent_span_2,#looper_percent_span_3{
 	-webkit-user-select: none;
     user-select: none;
 }
@@ -3502,7 +3679,7 @@ margin-top:-7px;
 
 .configure_ui_options_form_text{
 	font-size:12pt;
-	line-height:16px;
+	line-height:24px;
 	font-family:helvetica;
 	margin-top:24px;
 	display:flex;
@@ -3613,7 +3790,6 @@ margin-top:-7px;
 	}
 }
 
-
 #default_anglo_fingerings{
 	height:42px;
 	margin-top: 9px;
@@ -3622,6 +3798,18 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.default_anglo_fingerings:hover{
+	background: palegreen;
+	}
+}
+
+#inject_tablature_colors{
+	height:42px;
+	margin-top: 12px;
+	padding:12px;
+}
+
+@media (hover: hover) {
+	.inject_tablature_colors:hover{
 	background: palegreen;
 	}
 }
@@ -3647,6 +3835,31 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.save_custom_harmonica_tuning:hover{
+	background: palegreen;
+	}
+}
+
+#load_custom_anglo_names{
+	height:42px;
+	margin-top: 9px;
+	padding:12px;
+}
+
+@media (hover: hover) {
+	.load_custom_anglo_names:hover{
+	background: palegreen;
+	}
+}
+
+#save_custom_anglo_names{
+	height:42px;
+	margin-top: 9px;
+	padding:12px;
+	margin-right:24px;
+}
+
+@media (hover: hover) {
+	.save_custom_anglo_names:hover{
 	background: palegreen;
 	}
 }
@@ -3700,10 +3913,29 @@ margin-top:-7px;
 	}
 }
 
-#import_website{
+#import_website_local{
 	height:42px;
 	margin-top: 9px;
 	padding:12px;
+	margin-right:18px;
+}
+
+@media (hover: hover) {
+	.import_website_local:hover{
+	background: palegreen;
+	}
+}
+
+#import_website_remote{
+	height:42px;
+	margin-top: 9px;
+	padding:12px;
+}
+
+@media (hover: hover) {
+	.import_website_remote:hover{
+	background: palegreen;
+	}
 }
 
 @media (hover: hover) {
@@ -3716,7 +3948,6 @@ margin-top:-7px;
 	height:42px;
 	margin-top: 9px;
 	padding:12px;
-	margin-right:24px;
 }
 
 @media (hover: hover) {
@@ -4203,7 +4434,7 @@ color:black;
 font-size:11pt;
 font-family:"Helvetica";
 height:32px;
-width:120px;
+width:145px;
 margin-left:10px;
 padding-left:10px;
 margin-top:-7px;
@@ -4973,6 +5204,22 @@ margin-top:-9px;
 margin-left:12px;
 }
 
+.incipits_striptags_text{
+font-size:12pt;
+line-height:12px;
+font-family:helvetica;
+margin-top:24px;
+display:flex;
+}
+
+.incipits_striptags_text>input{
+font-size:12pt;
+font-family:helvetica;
+width: 200px;
+margin-top:-9px;
+margin-left:12px;
+}
+
 .configure_website_form_text{
 font-size:12pt;
 line-height:12px;
@@ -5642,6 +5889,116 @@ padding-right: 30px; /* space for badge */
 /*  box-shadow: none !important;*/
 }
 
+/* Attention style */
+.attention {
+  color: red !important;
+  background-color:#FFC0C0 !important;
+  animation: pulse 1.25s infinite;
+}
+
+/* Pulsing animation */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08);  }
+  100% { transform: scale(1); }
+}
+
+/* Custom ABC per-tune line number gutter */
+.CodeMirror-gutters {
+border-right: 1px solid #ddd;
+background: #f7f7f7;
+}
+.abc-line-gutter {
+width: 2.3em;              /* tweak if you expect >999 lines */
+text-align: right;
+color: #666;
+}
+.abc-line-gutter .abc-ln {
+padding: 0 0.5em 0 0;      /* right-pad so numbers aren’t cramped */
+line-height: 1.0;          /* plays nicely with wrapped lines */
+}
+
+.cm-abc-bar        { color:#006999;}  /* barlines & repeats */
+.cm-abc-ending     { color:#006999;}  /* digits in |1, :|2, [1, [2, ... */
+.cm-abc-header-tag { color:#0000A0; font-weight:bold;} /* X: T: L: ... */
+.cm-abc-header-val { color:#040404;}    /* entire header value line */
+.cm-abc-header-title { color:#00608a; font-weight:bold; }/* special T: titles */
+.cm-abc-note { color:#000000; }  /* notes/rests */
+.cm-abc-string     { color:#6200a8; }     /* "chords" */
+.cm-abc-builtin    { color:#487830; }     /* note-chords [CEG] */
+.cm-abc-qualifier  { color:#73160d; }     /* !trill! +orn+ */
+.cm-abc-number     { color:#010604; }  /* tuplets */
+.cm-abc-operator   { color:#050505; }     /* ties/slurs () - */
+.cm-abc-comment    { color:#005231; font-style:italic; }
+.cm-abc-meta       { color:#5924bc; font-weight:bold; }
+.cm-abc-font-directive {color: #7c2243;}
+.cm-abc-note-prefix { color:#148500; } 
+.cm-abc-extended-directive {color: #B00023;  }
+.cm-abc-abccss { color:#a300a3; }     /* Custom CSS */
+.cm-abc-atom { color:#020109; }     /* Inline directives */
+
+/* Editor box */
+.CodeMirror{
+	resize:both;
+	border:1px solid #ccc;
+	text-align:left;
+	overflow:auto;
+}
+
+/* Helpful on WebKit: make sure text selection is “owned” by CM’s layers */
+.CodeMirror pre {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* iOS/touch patch: let the native scrollbar show */
+@supports (-webkit-touch-callout: none) {
+  .CodeMirror-scroll {
+    /* undo CM’s hiding tricks */
+    margin-right: 0 !important;
+    padding-right: 0 !important;
+    overflow-y: scroll !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Optional: reserve gutter so layout doesn't shift when bar appears */
+  .CodeMirror-scroll {
+    scrollbar-gutter: stable both-edges;
+  }
+  /* Optional: style WebKit scrollbar so it’s visible */
+  .CodeMirror-scroll::-webkit-scrollbar { width: 12px; }
+  .CodeMirror-scroll::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.35);
+    border-radius: 6px;
+  }
+}
+
+#layout_mode{
+display:inline;
+-webkit-appearance: none;
+-moz-appearance: none;
+appearance: none;
+background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%238C98F2'><polygon points='0,0 100,0 50,50'/></svg>") no-repeat;
+background-size: 12px;
+background-position: calc(100% - 10px) center;
+background-repeat: no-repeat;
+background-color: #efefef;
+color:black;
+font-size:11pt;
+font-family:"Helvetica";
+height:32px;
+width:280px;
+margin-left:4px;
+margin-right:14px;
+padding-left:10px;
+margin-top:-7px;
+}
+
+/*
+body{
+	color:green;
+}
+*/
+
 /******************************************************************************/
 /* STYLES RELATED TO BUTTONS                                                  */
 /******************************************************************************/
@@ -5748,6 +6105,11 @@ padding-right: 30px; /* space for badge */
 }
 
 .btn-transposetokey{
+  --color: black;
+  --background-color: #f0fff0;
+}
+
+.btn-cssgenerator {
   --color: black;
   --background-color: #f0fff0;
 }
@@ -6124,7 +6486,7 @@ padding-right: 30px; /* space for badge */
 
 .btn-rawmode-on{
   --color: black;
-  --background-color: #E7F9E7;
+  --background-color: #E9BEE9;
 }
 
 .btn-rawmode-off{
@@ -6303,6 +6665,7 @@ padding-right: 30px; /* space for badge */
 
 	.playbuttonicon:hover {
 	    transform: matrix(1.05, 0, 0, 1.05, 0, 0); 
+	  	transition: opacity 0s ease 1.25s; 
 	}
 
 	.zoombutton
@@ -6311,6 +6674,33 @@ padding-right: 30px; /* space for badge */
 	}
 
 	.zoombutton:hover {
+	    transform: matrix(1.05, 0, 0, 1.05, 0, 0); 
+	}
+
+	.jumpbutton
+	{
+	  transition: transform .1s ease-in-out 0s; 
+	}
+
+	.jumpbutton:hover {
+	    transform: matrix(1.05, 0, 0, 1.05, 0, 0); 
+	}
+
+	.qerewindbutton
+	{
+	  transition: transform .1s ease-in-out 0s; 
+	}
+
+	.qerewindbutton:hover {
+	    transform: matrix(1.05, 0, 0, 1.05, 0, 0); 
+	}
+
+	.qetempobutton
+	{
+	  transition: transform .1s ease-in-out 0s; 
+	}
+
+	.qetempobutton:hover {
 	    transform: matrix(1.05, 0, 0, 1.05, 0, 0); 
 	}
 

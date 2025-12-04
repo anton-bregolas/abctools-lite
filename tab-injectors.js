@@ -32,6 +32,9 @@ var angloFingeringsGenerator = function (theABC, callback){
 
     var abcOutput = "";
 
+    // *** CHANGE: collect tunes that needed `x` substitutions
+    var tunesWithX = [];
+    var currentTuneHadX = false;
 
     // Button constructor
     var Button = function(name, notes, cost, finger) {
@@ -89,14 +92,6 @@ var angloFingeringsGenerator = function (theABC, callback){
     //
     // Cross-row map for Wheatstone
     //
-    // Original values commented out
-    //
-    // Prefers:
-    // Press d' on the left G row
-    // Draw e' on the left G row
-    //
-    //
-
     var baseMapCrossRowWheatstone = {
 
         // Top row, LH
@@ -122,7 +117,7 @@ var angloFingeringsGenerator = function (theABC, callback){
 
         // Middle row, RH
         "R1": new Button("R1", ["c", "B"], 1, "r1"),
-         "R2": new Button("R2", ["e", "d"], 2, "r2"),
+        "R2": new Button("R2", ["e", "d"], 2, "r2"),
         "R3": new Button("R3", ["g", "f"], 2, "r3"),
         "R4": new Button("R4", ["c'", "a"], 2, "r4"),
         "R5": new Button("R5", ["e'", "b"], 2, "r4"),
@@ -139,13 +134,6 @@ var angloFingeringsGenerator = function (theABC, callback){
     //
     // My preferred fingering map for Cross-Row playing
     //
-    // Prefers:
-    // Draw B on right C row
-    // Draw c' on the left G row
-    // Press d' on the left G row
-    // Draw e' on the left G row
-    //
-
     var baseMapCrossRow = {
 
         // Top row, LH
@@ -212,9 +200,8 @@ var angloFingeringsGenerator = function (theABC, callback){
         "R2a": new Button("R2a", ["a", "g"], 10, "r2"),
         "R3a": new Button("R3a", ["^g", "_b"], 10, "r3"),
         "R4a": new Button("R4a", ["^c'", "_e'"], 10, "r4"),
-        "R5a": new Button("R5a", ["a", "f'"], 10, "r4"),
+        "R5a": new Button("R5a", ["a'", "f'"], 10, "r4"),
     };
-    
 
     var gAngloButtonNames_GaryCoover = [
 
@@ -457,9 +444,6 @@ var angloFingeringsGenerator = function (theABC, callback){
 
 
     // Path constructor.
-    //
-    // buttons: list of States
-    // cost: integer cost of total set of buttons, lower is better
     var Path = function(states, cost) {
         this.states = states;
         this.cost = cost;
@@ -468,12 +452,7 @@ var angloFingeringsGenerator = function (theABC, callback){
     // Note constructor
     var Note = function(index, unNormalizedValue, normalizedValue) {
         this.index = index; // Index of this note in the original ABC input string
-
-        // These values an ABC string like "G" or "^A'"
-        // Unnormalized means it's the literal note string from the ABC source.
         this.unNormalizedValue = unNormalizedValue;
-
-        // Normalized means it's adjusted by the key signature and extra decorations are removed.
         this.normalizedValue = normalizedValue;
     };
 
@@ -485,16 +464,9 @@ var angloFingeringsGenerator = function (theABC, callback){
         this.nextStates = [];
         this.id = stateCount++;
 
-        // This toString() function is needed to make sure this object is unique
-        // in a hash map. JS can only use strings as keys in hashes (objects).
         this.toString = function() {
             var s = "[" + this.id + "] Note:";
-            if (this.note) {
-                s += this.note.normalizedValue;
-            } else {
-                s += "none";
-            }
-
+            if (this.note) { s += this.note.normalizedValue; } else { s += "none"; }
             s += " Button:" + this.button.name;
             return s;
         };
@@ -502,8 +474,6 @@ var angloFingeringsGenerator = function (theABC, callback){
 
 
     // Determines the key signature
-    // abcInput: ABC input string
-    // returns: key signature map to use, or null on error.
     function findKeySignature(abcInput) {
 
         var myMap = null;
@@ -645,13 +615,33 @@ var angloFingeringsGenerator = function (theABC, callback){
 
         var location = parseInt(gInjectTab_TabLocation);
 
-        // Button name is in path.states[i].button.finger first character
-
         for (var i = 0; i < path.states.length; ++i) {
 
             var index = notes[i].index + insertedTotal;
 
             var fingering = path.states[i].button.name;
+
+            // *** CHANGE: mark tune if we render an x or if direction is invalid
+            const dir = path.states[i].direction;
+            const hasValidDir = (dir === PUSH_NAME || dir === DRAW_NAME);
+
+            if (fingering === "x" || !hasValidDir) {
+                currentTuneHadX = true;
+                let simpleX;
+                switch (location) {
+                    case 0: // Above
+                        simpleX = "\"^x\"";
+                        break;
+                    case 1: // Below
+                        simpleX = "\"_x\"";
+                        break;
+                    default:
+                        simpleX = "\"^x\"";
+                }
+                result = result.substr(0, index) + simpleX + result.substr(index);
+                insertedTotal += simpleX.length;
+                continue;
+            }
 
             if (gInjectTab_GaryCoover){
 
@@ -797,9 +787,7 @@ var angloFingeringsGenerator = function (theABC, callback){
                 }
             }
 
-
             var fingLen = fingering.length;
-            //angloLog("Merge["+i+"] index="+index+" fingLen="+fingLen+" insertedTotal="+insertedTotal);
 
             result = result.substr(0, index) + fingering + result.substr(index);
 
@@ -842,22 +830,13 @@ var angloFingeringsGenerator = function (theABC, callback){
     }
 
 
-    // Determines if these two buttons would be a hop if 
-    // played back-to-back
+    // Determines if these two buttons would be a hop if played back-to-back
     function isHop(button1, button2) {
-
-        // Check for finger hops (i.e. same finger, different button)
-        return (button1.finger == button2.finger &&
-            button1.name != button2.name);
+        return (button1.finger == button2.finger && button1.name != button2.name);
     }
 
 
     // Generate a state tree from the notes.
-    // Each note will generate several possible states, each representing
-    // a possible button.  All states corresponding to a note will be
-    // cross-connected to all states in the next note.
-    // Returns an initial (dummy) State, with next states corresponding to
-    // the first note of the tune.
     function generateStateTree(notes, noteToButtonMap) {
 
         var firstNoteStates = null;
@@ -875,26 +854,25 @@ var angloFingeringsGenerator = function (theABC, callback){
                 var otherName = respell(normalizedValue);
                 angloLog("Respelled as " + otherName);
                 buttons = noteToButtonMap[otherName];
+
+                // *** CHANGE: if still not found, inject a fallback 'x' button and mark tune
                 if (buttons == null || buttons.length < 1) {
-                    angloLog("Respelling as " + otherName + " failed to find a button.");
-                    abcOutput = "ERROR:Failed to find button for note '" + normalizedValue + "'";
-                    return null;
+                    angloLog("Respelling as " + otherName + " failed to find a button. Inserting fallback 'x'.");
+                    const fallbackButton = new Button("x", [normalizedValue, normalizedValue], 0, "na");
+                    buttons = [fallbackButton];
+                    currentTuneHadX = true; // mark for this tune
                 }
             }
 
             var states = [];
             // Create a state per button
             buttons.forEach(function(button) {
-
                 states.push(new State(note, button, findBellowsDirection(note, button)));
-
             });
 
-            // Remember the start of the tree - that's what we will return
             if (firstNoteStates == null) {
                 firstNoteStates = states;
             }
-            // Cross-connect the last set of states to these new states 
             if (lastNoteStates != null) {
                 lastNoteStates.forEach(function(lastState) {
                     lastState.nextStates = states;
@@ -912,30 +890,17 @@ var angloFingeringsGenerator = function (theABC, callback){
 
 
 
-    // Chooses fingerings.
-    // returns: a Path object with the best button choices
-    // 
-    // This is the guts of this program.  Uses various
-    // heuristics to choose semi-optimal fingerings
-    // for the given note sequence. 
-    //
-    // Recursively chooses the best fingering from
-    // all possible fingerings.
+    // Chooses fingerings (wrapper)
     function chooseFingerings(stateTree) {
-
         bestCost = 100000000;
-
         bestPathFromState = {};
-
         return chooseFingeringsRecursive(stateTree);
     }
 
     // Choose best fingerings for current state.
-    // Returns a Path
     function chooseFingeringsRecursive(state) {
 
         if (state.nextStates.length == 0) {
-            // Done with notes. Bubble back up.
             angloLog("Last state, note=" + state.note.normalizedValue + " button=" + state.button.name + ". Popping up the stack");
             return new Path([state], state.button.cost);
         }
@@ -976,22 +941,16 @@ var angloFingeringsGenerator = function (theABC, callback){
 
             if (path.states.length != 0) {
                 var nextButton = path.states[0].button;
-                var nextFinger = path.states[0].button.finger;
 
-                // Check for finger hops (i.e. same finger, different button)
                 if (isHop(state.button, nextButton)) {
-                    // Penalize finger hops (i.e. same finger, different button)
                     angloLog("Penalizing finger hop for note " + normalizedValue);
                     myCost += HOP_COST;
                 }
             }
 
-
             angloLog("path had cost of " + path.cost + " my cost=" + myCost);
             if (path.cost + myCost < bestPath.cost) {
-                // Best choice so far.
-                // Prepend this State to the list
-                var newStateList = path.states.slice(0); // clone array
+                var newStateList = path.states.slice(0);
                 newStateList.unshift(state);
                 bestPath = new Path(newStateList, path.cost + myCost);
                 angloLog("New best path for note[" + normalizedValue + "], cost=" + bestPath.cost);
@@ -999,37 +958,23 @@ var angloFingeringsGenerator = function (theABC, callback){
 
         } // end for nextState
 
-        // Memoize
         bestPathFromState[state] = bestPath;
 
         angloLog("Done choosing: current note=" + normalizedValue + " button=" + state.button.name + " best cost=" + bestPath.cost);
-
 
         return bestPath;
 
     } // end chooseFingeringsRecursive
 
     // Replaces parts of the given string with '*'
-    // input: string to replace
-    // start: index to start sanitizing
-    // len: length to sanitize
-    // Returns a new string
     function sanitizeString(input, start, len) {
         var s = "";
-        for (var i = 0; i < len; ++i) {
-            s += "*";
-        }
-
+        for (var i = 0; i < len; ++i) { s += "*"; }
         return input.substr(0, start) + s + input.substr(start + len);
-
     }
 
     // Returns an array of Notes from the ABC string input
     function getAbcNotes(input) {
-
-        // Sanitize the input, removing header and footer, but keeping
-        // the same offsets for the notes. We'll just replace header
-        // and footer sections with '*'.
 
         var sanitizedInput = input;
         var headerRegex = /^\w:.*$/mg;
@@ -1040,105 +985,58 @@ var angloFingeringsGenerator = function (theABC, callback){
 
         // Sanitize chord markings
         var searchRegExp = /"[^"]*"/gm
-
         while (m = searchRegExp.exec(sanitizedInput)) {
-
-
             var start = m.index;
             var end = start + m[0].length;
-
-            //console.log(m[0],start,end);
-
             for (var index=start;index<end;++index){
-
                 sanitizedInput = sanitizedInput.substring(0, index) + '*' + sanitizedInput.substring(index + 1);
-
             }
-
         }
 
         // Sanitize in-abc chords in brackets
         searchRegExp = /\[[^\]|]*\]/g
-
         while (m = searchRegExp.exec(sanitizedInput)) {
-
-
             var start = m.index;
             var end = start + m[0].length;
-
-            //console.log(m[0],start,end);
-
             for (var index=start;index<end;++index){
-
                 sanitizedInput = sanitizedInput.substring(0, index) + '*' + sanitizedInput.substring(index + 1);
-
             }
-
         }  
 
         // Sanitize !*! style annotations
         searchRegExp = /![^!\n]*!/gm 
-
         while (m = searchRegExp.exec(sanitizedInput)) {
-
             var start = m.index;
             var end = start + m[0].length;
-
-            //console.log(m[0],start,end);
-
             for (var index=start;index<end;++index){
-
                 sanitizedInput = sanitizedInput.substring(0, index) + '*' + sanitizedInput.substring(index + 1);
-
             }
-
         }
 
         // Sanitize multi-line comments
         searchRegExp = /^%%begintext((.|\n)*)%%endtext/gm
-
         while (m = searchRegExp.exec(sanitizedInput)) {
-
-            //debugger;
-
             var start = m.index;
             var end = start + m[0].length;
-
-            //console.log(m[0],start,end);
-
             for (var index=start;index<end;++index){
-
                 sanitizedInput = sanitizedInput.substring(0, index) + '*' + sanitizedInput.substring(index + 1);
-
             }
-
         }  
 
         // Sanitize comments
         searchRegExp = /^%.*$/gm
-
         while (m = searchRegExp.exec(sanitizedInput)) {
-
-            //debugger;
-
             var start = m.index;
             var end = start + m[0].length;
-
-            //console.log(m[0],start,end);
-
             for (var index=start;index<end;++index){
-
                 sanitizedInput = sanitizedInput.substring(0, index) + '*' + sanitizedInput.substring(index + 1);
-
             }
-
         }    
 
-        // Sanitize ! 
+        // Sanitize !
         sanitizedInput = sanitizedInput.replaceAll("!","*");
 
         angloLog("orginal input:\n" + input);
-
         angloLog("sanitized input:\n" + sanitizedInput);
 
         // Find all the notes
@@ -1162,82 +1060,60 @@ var angloFingeringsGenerator = function (theABC, callback){
     }
 
     function respell(note) {
-
-        var ret = note;
-
-        // enharmonic respellings
-
         var respellings = {
-            //    "_A": "^G",
-            //"^A": "_B",
-            "_B": "^A",
-            //    "B": "_C",
-            "^B": "C",
-            "_C": "B",
-            //    "C": "^B",
-            //    "^C": "_D",
+            "_A": "^G",
+            "^A": "_B",
             "_D": "^C",
             "^D": "_E",
             "_E": "^D",
-            //    "E": "_F",
-            "^E": "F",
-            "_F": "E",
-            //    "F": "^E",
-            //    "^F": "_G",
             "_G": "^F",
-            "^G": "_A"
+            "_F": "E",
+            "^E": "F"
         };
 
         for (var x in respellings) {
-            ret = ret.replace(x, respellings[x]);
-            ret = ret.replace(x.toLowerCase(), respellings[x].toLowerCase());
+            if (note.includes(x)) {
+                return note.replace(x, respellings[x]);
+            }
+            if (note.includes(x.toLowerCase())) {
+                return note.replace(x.toLowerCase(), respellings[x].toLowerCase());
+            }
         }
 
-        return ret;
+        // no replacement performed
+        return note;
     }
 
     function respellNormalized(note) {
-
         var ret = note;
 
-        // enharmonic respellings
-
         var respellings = {
-            //    "_A": "^G",
+            "_A": "^G",
             "^A": "_B",
-            //"_B": "^A",
-            //    "B": "_C",
-            //"^B": "C",
-            //"_C": "B",
-            //    "C": "^B",
-            //    "^C": "_D",
-            //"_D": "^C",
+            "_D": "^C",
             "^D": "_E",
-            //"_E": "^D", 
-            //    "E": "_F",
-            //"^E": "F",
-            //"_F": "E",
-            //    "F": "^E",
-            //    "^F": "_G",
-            //"_G": "^F",
-            "^G": "_A"
+            "_E": "^D", 
+            "_G": "^F",
+            "_F": "E",
+            "^E": "F"
         };
 
         for (var x in respellings) {
-            ret = ret.replace(x, respellings[x]);
-            ret = ret.replace(x.toLowerCase(), respellings[x].toLowerCase());
+            if (ret.includes(x)) {
+                return ret.replace(x, respellings[x]);
+            }
+            if (ret.includes(x.toLowerCase())) {
+                return ret.replace(x.toLowerCase(), respellings[x].toLowerCase());
+            }
         }
 
+        // No replacements performed
         return ret;
     }
 
     // Normalizes the given note string, given the key signature.
-    // This means making sharps or flats explicit, and removing
-    // extraneous natural signs.
-    // Returns the normalized note string.
     function normalize(value) {
 
-        // Find note base name
         var i = value.search(/[A-G]/i);
         if (i == -1) {
             angloLog("Failed to find basename for value!");
@@ -1269,7 +1145,6 @@ var angloFingeringsGenerator = function (theABC, callback){
         }
 
         // Transform to key signature
-
         if (keySignature.accidentalNaturals.search(baseName) != -1) {
             return value;
         }
@@ -1287,26 +1162,15 @@ var angloFingeringsGenerator = function (theABC, callback){
         return value;
     }
 
-    // Sorts the button entries in the given note->button map, with
-    // the lowest cost buttons first
+    // Sorts the button entries in the given note->button map, with lowest cost first
     function sortButtonMap(noteToButtonMap) {
-
         for (var note in noteToButtonMap) {
             var buttons = noteToButtonMap[note];
-
-            buttons.sort(function(a, b) {
-                return a.cost - b.cost;
-            });
+            buttons.sort(function(a, b) { return a.cost - b.cost; });
         }
-
     }
 
-
-    // Given a button->note map, generates
-    // the corresponding note->button map.
-    // Keys of this map are filtered through "respell".
-    // The values of this map are buttons.
-    // Returns the note->button map
+    // Given a button->note map, generate the corresponding note->button map.
     function generateNoteToButtonMap(buttonToNoteMap) {
 
         var noteMap = {};
@@ -1320,37 +1184,23 @@ var angloFingeringsGenerator = function (theABC, callback){
                 continue;
             }
 
-            notes.forEach(
+            notes.forEach(function(v) {
 
-                function(v) {
+                if (noteMap[v] == null) {
+                    noteMap[v] = [buttonToNoteMap[buttonName]];
+                } else {
+                    noteMap[v].push(buttonToNoteMap[buttonName]);
+                }
 
-                    if (noteMap[v] == null) {
+                v = respell(v);
 
-                        // Create a new button list for this note.
-                        noteMap[v] = [buttonToNoteMap[buttonName]];
+                if (noteMap[v] == null) {
+                    noteMap[v] = [buttonToNoteMap[buttonName]];
+                } else {
+                    noteMap[v].push(buttonToNoteMap[buttonName]);
+                }
 
-                    } else {
-
-                        // Insert this button into an existing button list for this note.
-                        noteMap[v].push(buttonToNoteMap[buttonName]);
-
-                    }
-
-                    v = respell(v);
-
-                    if (noteMap[v] == null) {
-
-                        // Create a new button list for this note.
-                        noteMap[v] = [buttonToNoteMap[buttonName]];
-
-                    } else {
-
-                        // Insert this button into an existing button list for this note.
-                        noteMap[v].push(buttonToNoteMap[buttonName]);
-
-                    }
-
-                });
+            });
 
         }
 
@@ -1361,16 +1211,10 @@ var angloFingeringsGenerator = function (theABC, callback){
     // Count the tunes in the text area
     //
     function angloCountTunes(theABC) {
-
-        // Count the tunes in the ABC
         var theNotes = theABC;
-
         var theTunes = theNotes.split(/^X:.*$/gm);
-
         var nTunes = theTunes.length - 1;
-
         return nTunes;
-
     }
 
     // Glyphs for bellows push and draw indications
@@ -1410,8 +1254,10 @@ var angloFingeringsGenerator = function (theABC, callback){
         for (var i = 0; i < nTunes; ++i) {
 
             var thisTune = getTuneByIndex(i);
-
             var originalTune = thisTune;
+
+            // *** CHANGE: reset per-tune flag
+            currentTuneHadX = false;
 
             // Don't inject section header tune fragments or multi-voice tunes
             if (isSectionHeader(thisTune) || isMultiVoiceTune(thisTune)){
@@ -1424,31 +1270,27 @@ var angloFingeringsGenerator = function (theABC, callback){
             // Strip any existing tab
             thisTune = StripTabOne(thisTune);
 
-            // Strip chords? 
-            // Above always strips
-            // Below only strips if specified in the settings
+            // Strip chords?
             if (gInjectTab_GaryCoover || (tabLocation == 0) || ((tabLocation == 1) && (stripChords))){
-
                 thisTune = StripChordsOne(thisTune);
             }
  
             try{
-
                 thisTune = generateAngloFingerings(thisTune);
-
             }
             catch(err){
-
                 result += originalTune;
-
                 var thisTitle = getTuneTitle(originalTune);
-
                 badTunes.push(thisTitle);
-
                 gotError = true;
-
                 continue;
+            }
 
+            // *** CHANGE: if we used any 'x' in this tune, record its title
+            if (currentTuneHadX) {
+                var thisTitleX = getTuneTitle(originalTune);
+                if (thisTitleX) tunesWithX.push(thisTitleX);
+                gotError = true;
             }
 
             thisTune = InjectStringBelowTuneHeaderConditional(thisTune, "%%staffsep " + staffSep);
@@ -1461,27 +1303,37 @@ var angloFingeringsGenerator = function (theABC, callback){
             thisTune = thisTune.replaceAll("\n\n","\n");
 
             result += thisTune;
-            
             result += "\n\n";
-
         }
         
         result = normalizeBlankLines(result);
 
         if (gotError){
 
-            var thePrompt = '<p style="text-align:center;font-size:18px;margin-bottom:18px">No Anglo Concertina tablature generated for one or more tunes:</p>';
+            var thePrompt = "";
 
-            for (var j=0;j<badTunes.length;++j){
-                thePrompt += '<p style="text-align:center;font-size:18px;">'+badTunes[j]+'</p>';
+            if (badTunes.length > 0){
+
+                thePrompt += '<p style="text-align:center;font-size:18px;margin-bottom:18px">No Anglo Concertina tablature was generated for one or more tunes:</p>';
+
+                for (var j=0;j<badTunes.length;++j){
+                    thePrompt += '<p style="text-align:center;font-size:18px;">'+badTunes[j]+'</p>';
+                }
             }
 
-            thePrompt += '<p style="text-align:center;font-size:18px;line-height:24px;margin-top:18px">Some notes may be outside the range or not available on the selected style of Anglo concertina.</p>';
+            if (tunesWithX.length > 0){
+
+                thePrompt += '<p style="text-align:center;font-size:18px;line-height:24px;margin-top:18px">Some notes may be outside the range or not available on the selected style of Anglo Concertina (indicated by x in the tablature):</p>';
+
+                for (var j=0;j<tunesWithX.length;++j){
+                    thePrompt += '<p style="text-align:center;font-size:18px;">'+tunesWithX[j]+'</p>';
+                }
+
+            }
 
             callback(result,true,thePrompt);
-            
 
-         }
+        }
         else{
 
             callback(result,false,"");
@@ -4407,25 +4259,34 @@ var fiddleFingeringsGenerator = function (theABC,stringNameStyle){
 
             var glyphLen = glyph.length;
 
-            switch (location){
+            // If not inline !1! style, wrap in a text annotation
+            if (glyph.indexOf("!") == -1){
 
-                // Above
-                case 0:
-                    // Add double quotes to tab, to be rendered above the note
-                    var theTab = "\"^" + glyph + "\"";
+                switch (location){
 
-                    break;
+                    // Above
+                    case 0:
+                        // Add double quotes to tab, to be rendered above the note
+                        var theTab = "\"^" + glyph + "\"";
 
-                // Below
-                case 1:
+                        break;
 
-                    // Add double quotes to tab, to be rendered above the note
-                    var theTab = "\"_" + glyph + "\"";
+                    // Below
+                    case 1:
 
-                    break;
+                        // Add double quotes to tab, to be rendered above the note
+                        var theTab = "\"_" + glyph + "\"";
+
+                        break;
+
+                }
+            }
+            else{
+
+                theTab = glyph;
 
             }
-               
+                   
             var tabLen = theTab.length;
 
             //log("Merge["+i+"] index="+index+" tabLen="+tabLen+" insertedTotal="+insertedTotal);
@@ -4451,6 +4312,19 @@ var fiddleFingeringsGenerator = function (theABC,stringNameStyle){
 
         return input.substr(0, start) + s + input.substr(start + len);
 
+    }
+    //
+    // From a note name, gets the fingering
+    //
+    function getNoteGlyphConcise(note){
+
+        var thisGlyph = getNoteGlyph(note);
+
+        if (thisGlyph.indexOf("x")==-1){
+            thisGlyph = "!"+thisGlyph+"!";
+        }
+
+        return thisGlyph;    
     }
 
     //
@@ -4838,15 +4712,18 @@ var fiddleFingeringsGenerator = function (theABC,stringNameStyle){
 
                 switch (stringNameStyle){
                     case 0:
-                        theGlyph = getNoteGlyph(normalizedValue);
+                        theGlyph = getNoteGlyphConcise(normalizedValue);
                         break
                     case 1:
-                        theGlyph = getNoteGlyphWithStringName(normalizedValue);
+                        theGlyph = getNoteGlyph(normalizedValue);
                         break
                     case 2:
-                        theGlyph = getNoteGlyphWithStringName2(normalizedValue);
+                        theGlyph = getNoteGlyphWithStringName(normalizedValue);
                         break
                     case 3:
+                        theGlyph = getNoteGlyphWithStringName2(normalizedValue);
+                        break
+                    case 4:
                         theGlyph = getNoteGlyphWithStringName3(normalizedValue);
                         break
                     default:
@@ -4953,6 +4830,24 @@ var fiddleFingeringsGenerator = function (theABC,stringNameStyle){
         var result = FindPreTuneHeader(theABC);
         
         var location = parseInt(gInjectTab_TabLocation);
+        
+        // Strip any custom CSS injected
+        result = result.replace("%%begincss\n\/* Offset fingerings below notes, shift chords down *\/\n.abcjs-annotation {transform: translate(0px,75px);}\n.abcjs-chord {transform: translate(0px,15px);}\n%%endcss\n\n","");
+
+        result = result.replace("%%begincss\n\/* Offset fingerings up *\/\n.abcjs-annotation {transform: translate(0px,-2px);}\n%%endcss\n\n","");
+
+        // !1! style tab custom CSS handler
+        if (stringNameStyle == 0){
+
+            // If using !1! style, and below the notation, inject custom CSS to offset the annotations and chords
+            if (location == 1){
+                result = "%%begincss\n\/* Offset fingerings below notes, shift chords down *\/\n.abcjs-annotation {transform: translate(0px,75px);}\n.abcjs-chord {transform: translate(0px,15px);}\n%%endcss\n\n" + result;
+            }
+            // If using !1! style, and above the notation, inject custom CSS to offset the annotations
+            else{
+                result = "%%begincss\n\/* Offset fingerings up *\/\n.abcjs-annotation {transform: translate(0px,-2px);}\n%%endcss\n\n" + result;
+            }
+        }
 
         clearGetTuneByIndexCache();
 
@@ -4970,12 +4865,19 @@ var fiddleFingeringsGenerator = function (theABC,stringNameStyle){
 
             // Strip any existing tab
             thisTune = StripTabOne(thisTune);
-
+            
             // Strip chords? 
             // Above always strips
             // Below only strips if specified in the settings
-            if ((tabLocation == 0) || ((tabLocation == 1) && (stripChords))){
-                thisTune = StripChordsOne(thisTune);
+            if (stringNameStyle != 0){
+                if ((tabLocation == 0) || ((tabLocation == 1) && (stripChords))){
+                    thisTune = StripChordsOne(thisTune);
+                }
+            }
+            else{
+                if (stripChords){
+                    thisTune = StripChordsOne(thisTune); 
+                }
             }
 
             thisTune = generate_tab(thisTune);
@@ -5370,15 +5272,16 @@ var MDTablatureGenerator = function (theABC){
 
                 var thisGlyph = glyph_map_cross_string_dad[note];
 
-                if (gMDulcimerUseDashForOpenString){
-                    thisGlyph = thisGlyph.replaceAll(" ","-");
-                }
-
                 if (!thisGlyph){
                     return "x;x;x";
                 }
-             
+
+                if (gMDulcimerUseDashForOpenString){
+                    thisGlyph = thisGlyph.replaceAll(" ","-");
+                }
+            
                 return thisGlyph;
+                
                 break;
 
             case 2:
@@ -5492,6 +5395,7 @@ var MDTablatureGenerator = function (theABC){
                 }
              
                 return thisGlyph;
+
                 break; 
 
             case 4:
@@ -8295,8 +8199,146 @@ var HarmonicaTabGenerator = function (theABC){
  
                 break;
 
+            // Chromatic 12-hole
+            case "6":
+                theTabMap[0]  = "x";    // C
+                theTabMap[1]  = "x";    // C# / Db
+                theTabMap[2]  = "x";    // D
+                theTabMap[3]  = "x";    // D# / Eb
+                theTabMap[4]  = "x";    // E
+                theTabMap[5]  = "x";    // F
+                theTabMap[6]  = "x";    // F# / Gb
+                theTabMap[7]  = "x";    // G
+                theTabMap[8]  = "x";    // G# / Ab
+                theTabMap[9]  = "x";    // A
+                theTabMap[10] = "x";    // A# / Bb
+                theTabMap[11] = "x";    // B
+
+                theTabMap[12] = "1";    // C
+                theTabMap[13] = "1s";   // C# / Db
+                theTabMap[14] = "-1";   // D
+                theTabMap[15] = "-1s";  // D# / Eb
+                theTabMap[16] = "2";    // E
+                theTabMap[17] = "-2";   // F
+                theTabMap[18] = "-2s";  // F# / Gb
+                theTabMap[19] = "3";    // G
+                theTabMap[20] = "3s";   // G# / Ab
+                theTabMap[21] = "-3";   // A
+                theTabMap[22] = "-3s";  // A# / Bb
+                theTabMap[23] = "-4";   // B
+
+                theTabMap[24] = "5";    // C
+                theTabMap[25] = "5s";   // C# / Db
+                theTabMap[26] = "-5";   // D
+                theTabMap[27] = "-5s";  // D# / Eb
+                theTabMap[28] = "6";    // E
+                theTabMap[29] = "-6";   // F
+                theTabMap[30] = "-6s";  // F# / Gb
+                theTabMap[31] = "7";    // G
+                theTabMap[32] = "7s";   // G# / Ab
+                theTabMap[33] = "-7";   // A
+                theTabMap[34] = "-7s";  // A# / Bb
+                theTabMap[35] = "-8";   // B
+
+                theTabMap[36] = "9";    // C
+                theTabMap[37] = "9s";   // C# / Db
+                theTabMap[38] = "-9";   // D
+                theTabMap[39] = "-9s";  // D# / Eb
+                theTabMap[40] = "10";   // E
+                theTabMap[41] = "-10";  // F
+                theTabMap[42] = "-10s"; // F# / Gb
+                theTabMap[43] = "11";   // G
+                theTabMap[44] = "11s";  // G# / Ab
+                theTabMap[45] = "-11";  // A
+                theTabMap[46] = "-11s"; // A# / Bb
+                theTabMap[47] = "-12";  // B
+
+                theTabMap[48] = "12";   // C
+                theTabMap[49] = "12s";  // C# / Db
+                theTabMap[50] = "-12s"; // D
+                theTabMap[51] = "x";    // D# / Eb
+                theTabMap[52] = "x";    // E
+                theTabMap[53] = "x";    // F
+                theTabMap[54] = "x";    // F# / Gb
+                theTabMap[55] = "x";    // G
+                theTabMap[56] = "x";    // G# / Ab
+                theTabMap[57] = "x";    // A
+                theTabMap[58] = "x";    // A# / Bb
+                theTabMap[59] = "x";    // B
+                break;
+
+
+            // Chromatic 16-hole
+            case "7":
+                theTabMap[0]  = "1";    // C
+                theTabMap[1]  = "1s";   // C# / Db
+                theTabMap[2]  = "-1";   // D
+                theTabMap[3]  = "-1s";  // D# / Eb
+                theTabMap[4]  = "2";    // E
+                theTabMap[5]  = "-2";   // F
+                theTabMap[6]  = "-2s";  // F# / Gb
+                theTabMap[7]  = "3";    // G
+                theTabMap[8]  = "3s";   // G# / Ab
+                theTabMap[9]  = "-3";   // A
+                theTabMap[10] = "-3s";  // A# / Bb
+                theTabMap[11] = "-4";   // B
+
+                theTabMap[12] = "5";    // C
+                theTabMap[13] = "5s";   // C# / Db
+                theTabMap[14] = "-5";   // D
+                theTabMap[15] = "-5s";  // D# / Eb
+                theTabMap[16] = "6";    // E
+                theTabMap[17] = "-6";   // F
+                theTabMap[18] = "-6s";  // F# / Gb
+                theTabMap[19] = "7";    // G
+                theTabMap[20] = "7s";   // G# / Ab
+                theTabMap[21] = "-7";   // A
+                theTabMap[22] = "-7s";  // A# / Bb
+                theTabMap[23] = "-8";   // B
+
+                theTabMap[24] = "9";    // C
+                theTabMap[25] = "9s";   // C# / Db
+                theTabMap[26] = "-9";   // D
+                theTabMap[27] = "-9s";  // D# / Eb
+                theTabMap[28] = "10";   // E
+                theTabMap[29] = "-10";  // F
+                theTabMap[30] = "-10s"; // F# / Gb
+                theTabMap[31] = "11";   // G
+                theTabMap[32] = "11s";  // G# / Ab
+                theTabMap[33] = "-11";  // A
+                theTabMap[34] = "-11s"; // A# / Bb
+                theTabMap[35] = "-12";  // B
+
+                theTabMap[36] = "13";   // C
+                theTabMap[37] = "13s";  // C# / Db
+                theTabMap[38] = "-13";  // D
+                theTabMap[39] = "-13s"; // D# / Eb
+                theTabMap[40] = "14";   // E
+                theTabMap[41] = "-14";  // F
+                theTabMap[42] = "-14s"; // F# / Gb
+                theTabMap[43] = "15";   // G
+                theTabMap[44] = "15s";  // G# / Ab
+                theTabMap[45] = "-15";  // A
+                theTabMap[46] = "-15s"; // A# / Bb
+                theTabMap[47] = "-16";  // B
+
+                theTabMap[48] = "16";   // C
+                theTabMap[49] = "16s";  // C# / Db
+                theTabMap[50] = "-16s"; // D
+                theTabMap[51] = "x";    // D# / Eb
+                theTabMap[52] = "x";    // E
+                theTabMap[53] = "x";    // F
+                theTabMap[54] = "x";    // F# / Gb
+                theTabMap[55] = "x";    // G
+                theTabMap[56] = "x";    // G# / Ab
+                theTabMap[57] = "x";    // A
+                theTabMap[58] = "x";    // A# / Bb
+                theTabMap[59] = "x";    // B
+                break;
+
+
             // Custom
-            case "6": 
+            case "8": 
                 theTabMap = gHarmonicaCustom.noteMap;
                 break; 
 
@@ -8870,8 +8912,8 @@ var HarmonicaTabGenerator = function (theABC){
                 return "x";
             }
             else{
-                // Stacked hole directions?
-                if (gHarmonicaStacking){
+                // Stacked hole directions or adding tab colors
+                if (gHarmonicaStacking || gHarmonicaTabColors){
                     if (retVal.indexOf("-") != -1){
                         retVal = retVal.replace("-","");
                         retVal += ";-";
@@ -9125,6 +9167,11 @@ var HarmonicaTabGenerator = function (theABC){
         var staffSep = gInjectTab_StaffSep;
         var tabLocation = parseInt(gInjectTab_TabLocation);
         var stripChords = gInjectTab_StripChords;
+        var doPlusSign = gHarmonicaPlusSign;
+
+        if (gHarmonicaTabColors){
+            doPlusSign = true;
+        }
  
         var nTunes = countTunes(theABC);
 
@@ -9162,7 +9209,7 @@ var HarmonicaTabGenerator = function (theABC){
             // console.log("After");
             // console.log(thisTune);
 
-            thisTune = generate_harmonica_tab(thisTune,gHarmonicaKey,gHarmonicaOctave,gHarmonicaPlusSign)
+            thisTune = generate_harmonica_tab(thisTune,gHarmonicaKey,gHarmonicaOctave,doPlusSign)
             
             thisTune = InjectStringBelowTuneHeaderConditional(thisTune, "%%staffsep " + staffSep);
  
@@ -9218,6 +9265,12 @@ var HarmonicaTabGenerator = function (theABC){
                     harpInfo += " (Natural Minor)\n"
                     break;
                 case "6":
+                    harpInfo += " (Chromatic 12-Hole)\n"
+                    break;
+                case "7":
+                    harpInfo += " (Chromatic 16-Hole)\n"
+                    break;
+                case "8":
                     harpInfo += " ("+gHarmonicaCustom.name+")\n"
                     break;
                 default:

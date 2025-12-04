@@ -46,7 +46,7 @@ function SDGenerateFullTextIncipits(){
 		var theOriginalTune = theTune;
 
 		// Strip out annotations
-		theTune = StripAnnotationsOne(theTune);
+		theTune = StripAnnotationsOneForIncipits(theTune);
 
 		// Strip out atextnnotations
 		theTune = StripTextAnnotationsOne(theTune);
@@ -218,7 +218,7 @@ function SDGenerateIncipits(){
 		var theOriginalTune = theTune;
 
 		// Strip out annotations
-		theTune = StripAnnotationsOne(theTune);
+		theTune = StripAnnotationsOneForIncipits(theTune);
 
 		// Strip out atextnnotations
 		theTune = StripTextAnnotationsOne(theTune);
@@ -1015,7 +1015,7 @@ function ExportSmartDrawSetList(){
 					//debugger;
 
 					// Generate the injected hyperlink tune array
-					SDTuneArray = SDGenerateTuneArray(gTheABC.value);
+					SDTuneArray = SDGenerateTuneArray(getABCEditorText());
 
 					switch (SDExportFormat){
 						case "0":

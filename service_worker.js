@@ -7,7 +7,17 @@
 //
 //
 //
-// Updated 7 May 2025 at 1400
+//
+//
+//
+//
+//
+// Updated 30 Nov 2025 at 0800
+//
+//
+//
+//
+//
 //
 //
 //
@@ -16,7 +26,7 @@
 //
 //
 
-const cacheName = 'abctoolscache-2486';
+const cacheName = 'abctoolscache-3038';
 
 const contentToCache = [
     'abctools.html',
@@ -26,10 +36,11 @@ const contentToCache = [
     'tunesources.css',
     'credits.html',
     'tipjars.html',
-    'general_midi_extended_v7.pdf',
+    'general_midi_extended_v10.pdf',
     'abc_standard_v2.1.pdf',
     'ABCquickRefv0_6.pdf',
     'app.css',
+    'codemirror.css',
     'app-min.js',
     'jquery-1.11.1.min.js',
 	'jszip.min.js',
@@ -58,12 +69,22 @@ const contentToCache = [
     'pdf-website-import.js',
     'context-menu.js',
 	'api-keys.js',
+    'notoserif-regular.js',
+    'notosans-regular.js',
+    'codemirror.js',
+    'simple.min.js',
+    'placeholder.min.js',
     'img/zoomin.png',
     'img/zoomout.png',
     'img/helpbutton.png',
     'img/playbutton.png',
     'img/pdfbutton.png',
+    'img/jumpbutton.png',
+    'img/qerewindbutton.png',
+    'img/qetempobutton.png',
     'img/michael.jpg',
+    'img/michael2.jpg',
+    'img/michael240.jpg',
     'img/settings.png',
     'img/abc-android-icon-144x144.png',
     'img/abc-android-icon-192x192.png',

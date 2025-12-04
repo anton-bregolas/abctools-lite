@@ -409,6 +409,20 @@ function WebsiteInjectInstruments(theTune){
 }
 
 //
+// Inject the Add All Playback Links annotaiton into this tune
+//
+function WebsiteInjectAddAllPlaybackLinks(theTune){
+
+    // Inject play link request for tune PDF export
+    theTune = InjectStringBelowTuneHeader(theTune, "%add_all_playback_links");
+    
+    // Seeing extra linefeeds after the inject
+    theTune = theTune.replace("\n\n","");
+
+    return(theTune);
+
+}
+//
 // Return the .WAV or .MP3 filename
 //
 function GetWebsiteTuneName(tuneABC){
@@ -455,6 +469,8 @@ function BatchJSONExportForWebGenerator(theABC){
 
     clearGetTuneByIndexCache();
 
+    var format = GetRadioValue("notenodertab");
+
     for (var i=0;i<nTunes;++i){
 
         var thisTune = getTuneByIndex(i);
@@ -462,6 +478,12 @@ function BatchJSONExportForWebGenerator(theABC){
         if (gWebsiteInjectInstruments){
 
             thisTune = WebsiteInjectInstruments(thisTune);
+
+        }
+        else{
+
+            thisTune = WebsiteInjectAddAllPlaybackLinks(thisTune);
+
         }
 
         var title = GetWebsiteTuneName(thisTune);
@@ -473,7 +495,7 @@ function BatchJSONExportForWebGenerator(theABC){
 
         thisTune = GetABCFileHeader() + thisTune;
 
-        var theURL = FillUrlBoxWithAbcInLZW(thisTune,false);
+        var theURL = FillUrlBoxWithAbcInLZW(thisTune,false,format);
 
         var titleURL = title.replaceAll("&","");
         titleURL = titleURL.replaceAll(" ","_");
@@ -518,6 +540,8 @@ function BatchJSONExportForWebGalleryGenerator(theABC){
 
     clearGetTuneByIndexCache();
 
+    var format = GetRadioValue("notenodertab");
+
     for (var i=0;i<nTunes;++i){
 
         var thisTune = getTuneByIndex(i);
@@ -525,6 +549,12 @@ function BatchJSONExportForWebGalleryGenerator(theABC){
         if (gWebsiteInjectInstruments){
 
             thisTune = WebsiteInjectInstruments(thisTune);
+            
+        }
+        else{
+
+            thisTune = WebsiteInjectAddAllPlaybackLinks(thisTune);
+            
         }
 
         var title = GetWebsiteTuneName(thisTune);
@@ -538,7 +568,7 @@ function BatchJSONExportForWebGalleryGenerator(theABC){
 
         thisTune = GetABCFileHeader() + thisTune;
 
-        var theURL = FillUrlBoxWithAbcInLZW(thisTune,false);
+        var theURL = FillUrlBoxWithAbcInLZW(thisTune,false,format);
 
         var titleURL = title.replaceAll("&","");
         titleURL = titleURL.replaceAll(" ","_");
@@ -651,7 +681,7 @@ function generateAndSaveWebsiteFull() {
 
     var theOutput = "";
 
-    var theABC = gTheABC.value;
+    var theABC = getABCEditorText();
 
     // For local storage naming
     var postFix = generatePostfix();
@@ -660,6 +690,8 @@ function generateAndSaveWebsiteFull() {
 
     // Any tunes to reformat?
     if (CountTunes() == 0){
+
+        hideTheSpinner();
 
         clearGetTuneByIndexCache();
 
@@ -676,6 +708,8 @@ function generateAndSaveWebsiteFull() {
     }
 
     var theJSON = BatchJSONExportForWebGenerator(theABC);
+
+    hideTheSpinner();
 
     if (!theJSON){
 
@@ -963,7 +997,7 @@ function generateAndSaveWebsiteFull() {
         else{
             theOutput +='        <select id="displayOptions" style="width:250px;margin-top:18px;">\n';
         }
-        theOutput +='           <option value="-1">Choose an Instrument</option>\n';
+        theOutput +='           <option value="-1">Select an Instrument</option>\n';
 
         var instrumentName = getInstrumentNameForWebSelector(gWebsiteMelodyInstrumentInject);
 
@@ -1569,7 +1603,7 @@ function generateAndSaveWebsiteSimple() {
 
     var theOutput = "";
 
-    var theABC = gTheABC.value;
+    var theABC = getABCEditorText();
 
     // For local storage naming
     var postFix = generatePostfix();
@@ -1578,6 +1612,8 @@ function generateAndSaveWebsiteSimple() {
 
     // Any tunes to reformat?
     if (CountTunes() == 0){
+
+        hideTheSpinner();
 
         clearGetTuneByIndexCache();
 
@@ -1594,6 +1630,8 @@ function generateAndSaveWebsiteSimple() {
     }
 
     var theJSON = BatchJSONExportForWebGenerator(theABC);
+
+    hideTheSpinner();
 
     if (!theJSON){
 
@@ -1960,7 +1998,7 @@ function generateAndSaveWebsiteImageGallery() {
 
     var theOutput = "";
 
-    var theABC = gTheABC.value;
+    var theABC = getABCEditorText();
 
     // For local storage naming
     var postFix = generatePostfix();
@@ -1971,6 +2009,8 @@ function generateAndSaveWebsiteImageGallery() {
 
     // Any tunes to reformat?
     if (number_of_tunes == 0){
+
+        hideTheSpinner();
 
         clearGetTuneByIndexCache();
 
@@ -1988,6 +2028,8 @@ function generateAndSaveWebsiteImageGallery() {
 
     var theJSON = BatchJSONExportForWebGalleryGenerator(theABC);
 
+    hideTheSpinner();
+
     if (!theJSON){
 
         clearGetTuneByIndexCache();
@@ -2000,7 +2042,7 @@ function generateAndSaveWebsiteImageGallery() {
             theme: "modal_flat",
             top: 200
         });
-
+        
         return;
     }
 
@@ -2438,6 +2480,7 @@ function generateAndSaveWebsiteImageGallery() {
 
         // If the user pressed Cancel, exit
         if (fname == null) {
+
             return null;
         }
 
@@ -2449,6 +2492,7 @@ function generateAndSaveWebsiteImageGallery() {
 
                 // If the user pressed Cancel, exit
                 if (fname == null) {
+
                     return null;
                 }
 
@@ -2456,6 +2500,7 @@ function generateAndSaveWebsiteImageGallery() {
                 fname = fname.replace(/[^a-zA-Z0-9_\-. ]+/ig, '');
 
                 if (fname.length == 0) {
+
                     return null;
                 }
 
@@ -2495,6 +2540,7 @@ function generateAndSaveWebsiteImageGallery() {
                 setTimeout(function() {
                     window.URL.revokeObjectURL(url);
                 }, 1000);
+
             }
 
         });
@@ -2510,7 +2556,7 @@ function generateAndSaveWebsiteLightbox() {
 
     var theOutput = "";
 
-    var theABC = gTheABC.value;
+    var theABC = getABCEditorText();
 
     // For local storage naming
     var postFix = generatePostfix();
@@ -2522,6 +2568,8 @@ function generateAndSaveWebsiteLightbox() {
     // Any tunes to reformat?
     if (number_of_tunes == 0){
 
+        hideTheSpinner();
+
         clearGetTuneByIndexCache();
 
         var thePrompt = "No ABC tunes to export.";
@@ -2532,11 +2580,13 @@ function generateAndSaveWebsiteLightbox() {
             theme: "modal_flat",
             top: 200
         });
-
+        
         return;
     }
 
     var theJSON = BatchJSONExportForWebGalleryGenerator(theABC);
+
+    hideTheSpinner();
 
     if (!theJSON){
 
@@ -3710,8 +3760,12 @@ function generateWebsiteFull(){
             // Restore saved settings
             SaveWebsiteSettings();
 
-            generateAndSaveWebsiteFull();
-
+            showTheSpinner("Building Your Website...");
+            
+            setTimeout(function(){
+                generateAndSaveWebsiteFull();
+            },gSpinnerDelay);
+            
         }
 
     });
@@ -3910,7 +3964,11 @@ function generateWebsiteSimple(){
             // Restore saved settings
             SaveWebsiteSettings();
 
-            generateAndSaveWebsiteSimple();
+            showTheSpinner("Building Your Website...");
+
+            setTimeout(function(){
+                generateAndSaveWebsiteSimple();
+            },gSpinnerDelay);
 
         }
 
@@ -4129,7 +4187,11 @@ function generateWebsiteImageGallery(){
             // Restore saved settings
             SaveWebsiteSettings();
 
-            generateAndSaveWebsiteImageGallery();
+            showTheSpinner("Building Your Website...");
+
+            setTimeout(function(){
+                generateAndSaveWebsiteImageGallery();
+            },gSpinnerDelay);
 
         }
 
@@ -4332,13 +4394,19 @@ function generateWebsiteLightbox(){
                 }
 
             }
- 
-            generateAndSaveWebsiteLightbox();
 
-            // Restore saved settings
-            gWebsiteImageWidth = oldImageWidth;
+            showTheSpinner("Building Your Website...");
+            
+            setTimeout(function(){
 
-            SaveWebsiteSettings();
+                generateAndSaveWebsiteLightbox();
+
+                // Restore saved settings
+                gWebsiteImageWidth = oldImageWidth;
+
+                SaveWebsiteSettings();
+
+            },gSpinnerDelay);
 
         }
 
@@ -4360,7 +4428,7 @@ function generateWebsite(){
     modal_msg  += '<p style="font-size:18px;line-height:28px;">For all websites, clicking a tune will open the tune in a new browser tab.</p>';
     modal_msg  += '<p style="font-size:18px;line-height:28px;">Click <strong>Export Basic Tune List Website</strong> to export a technically simple website with a list of all tunes in the ABC vertically down the center of the page. Playback instruments may be optionally specified.</p>';
 
-    if (((format != "whistle") && (format != "recorder")) && (isPureDesktopBrowser())){
+    if (isPureDesktopBrowser()){
         modal_msg  += '<p style="font-size:18px;line-height:28px;">Click <strong>Export Tune Image Gallery Website</strong> to export a website with tune notation images of all the tunes in the ABC vertically down the center of the page. Playback instruments may be optionally specified. Print the website to get a PDF tunebook.</p>';
 
         modal_msg  += '<p style="font-size:18px;line-height:28px;">Click <strong>Export Tune Image Lightbox Website</strong> to export a website with tune notation images of all the tunes in the ABC in a lightbox with navigation controls. Playback instruments may be optionally specified. Print the website to get a PDF tunebook.</p>';
@@ -4370,9 +4438,9 @@ function generateWebsite(){
 
     modal_msg  += '<p style="text-align:center;"><input id="websitesimple" class="advancedcontrols btn btn-websiteexport" onclick="generateWebsiteSimple()" type="button" value="Export Basic Tune List Website" title="Generates a website that has a list of tunes that open in a new browser tab when clicked."></p>';
     
-    if (((format != "whistle") && (format != "recorder")) && (isPureDesktopBrowser())){
+    if (isPureDesktopBrowser()){
 
-        modal_msg  += '<p style="text-align:center; margin-top:24px;"><input id="websiteimages" class="advancedcontrols btn btn-websiteexport" onclick="generateWebsiteImageGallery()" type="button" value="Export Tune Image Gallery Website" title="Generates a website that has the images of the tunes that open for playback in a new browser tab when clicked">';
+       modal_msg  += '<p style="text-align:center; margin-top:24px;"><input id="websiteimages" class="advancedcontrols btn btn-websiteexport" onclick="generateWebsiteImageGallery()" type="button" value="Export Tune Image Gallery Website" title="Generates a website that has the images of the tunes that open for playback in a new browser tab when clicked">';
 
        modal_msg  += '<input id="websitelightbox" class="advancedcontrols btn btn-websiteexport" onclick="generateWebsiteLightbox()" type="button" value="Export Tune Image Lightbox Website" title="Generates a image lightbox website that has the images of the tunes that open for playback in a new browser tab when clicked"></p>';
     }

@@ -66,6 +66,9 @@ var gRoll3Volume3 = 1.0;
 var gOrnamentDivider = 32;
 var gOrnamentOffset = 2;
 
+// Tremolo timing divider
+var gTremoloDivider = 0;
+
 // Flag to left justify titles on one tune
 var gLeftJustifyTitlesOneTune = false;
 
@@ -227,6 +230,12 @@ var gHideInformationLabels = false;
 // Flag to hide the R: tag display
 var gHideRhythmTag = false;
 
+// Flag to hide the C: tag display
+var gHideComposerTag = false;
+
+// Flag to hide the P: tag display
+var gHidePartsTag = false;
+
 // Flag to hide the dynamics annotations
 var gHideDynamics = false;
 
@@ -253,6 +262,51 @@ var gHideCautionaryKS = false;
 
 // Do title reverse
 var gDoTitleReverser = true;
+
+// Force all power chords
+var gForcePowerChords = false;
+
+// Allow loop state caching
+var gAllowLoopStateCaching = true;
+
+// Custom instrument samples
+var gCustomInstrumentSamples = [[],[],[],[],[],[],[],[],[]];
+var gCustomInstrumentVolumeScaleOriginal = [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0];
+var gCustomInstrumentVolumeScale = [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0];
+var gCustomInstrumentFadeOriginal = [100,100,100,100,100,100,100,100];
+var gCustomInstrumentFade = [100,100,100,100,100,100,100,100];
+
+//
+// Aggregate CSS to the document
+//
+function aggregateCSSRules(cssText) {
+
+  //console.log("aggregateCSSRules");
+
+  // Remove all previously added <style> blocks created by this function
+  document.querySelectorAll('style[data-aggregate-css="true"]').forEach(el => el.remove());
+
+  // Extract individual rules using regex: selector { declarations }
+  const ruleRegex = /([^{]+)\{([^}]+)\}/g;
+  const rulesToAdd = [];
+  let match;
+
+  while ((match = ruleRegex.exec(cssText)) !== null) {
+    
+    const selector = match[1].trim();
+    const declaration = match[2].trim();
+
+    rulesToAdd.push(`${selector} { ${declaration} }`);
+
+  }
+
+  if (rulesToAdd.length > 0) {
+    const style = document.createElement("style");
+    style.setAttribute("data-aggregate-css", "true");
+    style.textContent = rulesToAdd.join("\n");
+    document.head.appendChild(style);
+  }
+}
 
 //
 // Find any hyperlinks in the tune and replace them with SVG links
@@ -413,6 +467,55 @@ function ScanTuneForHideRhythmTag(theTune){
   return false;
 }
 
+// Scan tune for composer tag draw suppression
+function ScanTuneForHideComposerTag(theTune){
+
+  //console.log("ScanTuneForHideComposerTag");
+
+  var searchRegExp = /^%hide_composer_tag.*$/gm
+
+  var isHideComposer = searchRegExp.test(theTune);
+
+  if (isHideComposer){
+    //console.log("Found %hide_composer_tag")
+    return true;
+  }
+
+  //console.log("No %hide_composer_tag")
+
+  return false;
+}
+
+// Scan tune for parts tag draw suppression
+function ScanTuneForHidePartsTag(theTune){
+
+  //console.log("ScanTuneForHidePartsTag");
+
+  var searchRegExp = /^%hide_parts_tag.*$/gm
+
+  var isHideParts = searchRegExp.test(theTune);
+
+  if (isHideParts){
+    //console.log("Found %hide_parts_tag")
+    return true;
+  }
+
+  //console.log("No %hide_part_tag")
+
+  searchRegExp = /^%hide_part_tags.*$/gm
+
+  isHideParts = searchRegExp.test(theTune);
+
+  if (isHideParts){
+    //console.log("Found %hide_part_tags")
+    return true;
+  }
+
+
+  return false;
+}
+
+
 // Scan tune for dynamics draw suppression
 function ScanTuneForHideDynamics(theTune){
 
@@ -431,7 +534,6 @@ function ScanTuneForHideDynamics(theTune){
 
   return false;
 }
-
 
 // Scan tune for whistle tab shift octave
 function ScanTuneForWhistleTabShiftOctave(theTune){
@@ -792,6 +894,115 @@ function ScanTuneForNoTitleReverser(theTune){
   return true;
 
 }
+
+// Scan tune for forcing power chords
+function ScanTuneForForcePowerChords(theTune){
+
+  //console.log("ScanTuneForForcePowerChords");
+
+  var searchRegExp = /^%force_power_chords.*$/gm
+
+  var forcePowerChords = searchRegExp.test(theTune);
+
+  if (forcePowerChords){
+    //console.log("Found %force_power_chords")
+    return true;
+  }
+
+  //console.log("No %force_power_chords")
+
+  return false;
+
+}
+
+// Scan tune for custom instrument volume
+function ScanTuneForCustomVolumeMultiplier(theTune, index){
+
+  //.log("ScanTuneForCustomVolumeMultiplier index="+index);
+
+  function makeSearchRegExp(index) {
+    // If index is null/undefined, omit it
+    const suffix = index ? `_${index}` : "";
+    return new RegExp(`^%custom_instrument${suffix}_volume_scale.*$`, "gm");
+  }
+
+  // Next search for an custom_instrument_volume_scale
+  searchRegExp = makeSearchRegExp(index);
+
+  // Detect custom_instrument_volume_scale annotation
+  var foundExp  = theTune.match(searchRegExp);
+
+  if ((foundExp) && (foundExp.length > 0)){
+
+    var theParamString = foundExp[0].replace("%custom_instrument_"+index+"_volume_scale","");
+
+    theParamString = theParamString.trim();
+
+    var theParams = theParamString.split(" ");
+
+    if (theParams.length >= 1){
+
+      var theScalerFound = theParams[0];
+
+      var theScalerFoundFloat = parseFloat(theScalerFound);
+
+      if (!isNaN(theScalerFoundFloat)){
+
+        //console.log("Got custom instrument "+index+" volume scaler: "+theScalerFoundFloat);
+
+        return theScalerFoundFloat;
+      }
+    }
+  }
+
+  return -1;
+
+}
+
+// Scan tune for custom instrument fade
+function ScanTuneForCustomFade(theTune,index){
+
+  //console.log("ScanTuneForCustomFade index="+index);
+
+  function makeSearchRegExp(index) {
+    // If index is null/undefined, omit it
+    const suffix = index ? `_${index}` : "";
+    return new RegExp(`^%custom_instrument${suffix}_fade.*$`, "gm");
+  }
+
+  // Next search for an custom_instrument_fade
+  searchRegExp = makeSearchRegExp(index);
+
+  // Detect custom_instrument_volume_fade annotation
+  var foundExp  = theTune.match(searchRegExp);
+
+  if ((foundExp) && (foundExp.length > 0)){
+
+    var theParamString = foundExp[0].replace("%custom_instrument_"+index+"_fade","");
+
+    theParamString = theParamString.trim();
+
+    var theParams = theParamString.split(" ");
+
+    if (theParams.length >= 1){
+
+      var theFadeFound = theParams[0];
+
+      var theFadeFoundInt = parseInt(theFadeFound);
+
+      if (!isNaN(theFadeFoundInt)){
+        
+        //console.log("Got custom instrument "+index+" fade: "+theFadeFoundInt);
+
+        return theFadeFoundInt;
+      }
+    }
+  }
+
+  return -1;
+
+}
+
 
 (function webpackUniversalModuleDefinition(root, factory) {
   if(typeof exports === 'object' && typeof module === 'object')
@@ -1555,9 +1766,11 @@ var tunebook = {};
 
           var workingParams = params;
 
+          var theCurrentTuneABC = book.tunes[currentTune].abc
+
           // Merge any params overrides
           gABCJSRenderingParams = null;
-          gABCJSRenderingParams = ScanTuneForABCJSRenderingParams(book.tunes[currentTune].abc);
+          gABCJSRenderingParams = ScanTuneForABCJSRenderingParams(theCurrentTuneABC);
 
           if (gABCJSRenderingParams){
 
@@ -1570,62 +1783,99 @@ var tunebook = {};
           }
 
           gLeftJustifyTitlesOneTune = false;
-          gLeftJustifyTitlesOneTune = ScanTuneForLeftAlignTitles(book.tunes[currentTune].abc);
+          gLeftJustifyTitlesOneTune = ScanTuneForLeftAlignTitles(theCurrentTuneABC);
 
           gHideInformationLabels = false;
-          gHideInformationLabels = ScanTuneForHideInformationLabels(book.tunes[currentTune].abc);
+          gHideInformationLabels = ScanTuneForHideInformationLabels(theCurrentTuneABC);
 
           gHideRhythmTag = false;
-          gHideRhythmTag = ScanTuneForHideRhythmTag(book.tunes[currentTune].abc);
+          gHideRhythmTag = ScanTuneForHideRhythmTag(theCurrentTuneABC);
+
+          gHideComposerTag = false;
+          gHideComposerTag = ScanTuneForHideComposerTag(theCurrentTuneABC);
+
+          gHidePartsTag = false;
+          gHidePartsTag = ScanTuneForHidePartsTag(theCurrentTuneABC);
 
           gHideDynamics = false;
-          gHideDynamics = ScanTuneForHideDynamics(book.tunes[currentTune].abc);
+          gHideDynamics = ScanTuneForHideDynamics(theCurrentTuneABC);
           
           // If showing whistle tab, allow checking for transpose params
           if (gAllowWhistleTabTranspose){
 
             gWhistleTabShiftOctave = 0;
-            gWhistleTabShiftOctave = ScanTuneForWhistleTabShiftOctave(book.tunes[currentTune].abc);
+            gWhistleTabShiftOctave = ScanTuneForWhistleTabShiftOctave(theCurrentTuneABC);
             
             gWhistleTabShiftSemitone = 0;
-            gWhistleTabShiftSemitone = ScanTuneForWhistleTabShiftSemitone(book.tunes[currentTune].abc);
+            gWhistleTabShiftSemitone = ScanTuneForWhistleTabShiftSemitone(theCurrentTuneABC);
           }
           // If showing recorder tab, allow checking for transpose params
           if (gAllowRecorderTabTranspose){
 
             gRecorderTabShiftOctave = 0;
-            gRecorderTabShiftOctave = ScanTuneForRecorderTabShiftOctave(book.tunes[currentTune].abc);
+            gRecorderTabShiftOctave = ScanTuneForRecorderTabShiftOctave(theCurrentTuneABC);
             
             gRecorderTabShiftSemitone = 0;
-            gRecorderTabShiftSemitone = ScanTuneForRecorderTabShiftSemitone(book.tunes[currentTune].abc);
+            gRecorderTabShiftSemitone = ScanTuneForRecorderTabShiftSemitone(theCurrentTuneABC);
           }
 
           // Allow hyperlink parsing?
           gAddSVGHyperLinks = false;
-          gAddSVGHyperLinks = ScanTuneForSVGHyperlinks(book.tunes[currentTune].abc);
+          gAddSVGHyperLinks = ScanTuneForSVGHyperlinks(theCurrentTuneABC);
           
           // Disable hyperlink parsing?
           gDisableSVGHyperLinks = false;
 
           // Only scan for disable if enable detected (optimization)
           if (gAddSVGHyperLinks){
-            gDisableSVGHyperLinks = ScanTuneForSVGDisableHyperlinks(book.tunes[currentTune].abc);
+            gDisableSVGHyperLinks = ScanTuneForSVGDisableHyperlinks(theCurrentTuneABC);
           }
 
           // Ignore parenthesized alternate chords during playback?
           gPlayAlternateChords = false;
-          gPlayAlternateChords = ScanTuneForPlayAlternateChords(book.tunes[currentTune].abc);
+          gPlayAlternateChords = ScanTuneForPlayAlternateChords(theCurrentTuneABC);
 
           // Suppress cautionary key signatures?
           gHideCautionaryKS = false;
-          gHideCautionaryKS = ScanTuneForHideCautionaryKS(book.tunes[currentTune].abc);
+          gHideCautionaryKS = ScanTuneForHideCautionaryKS(theCurrentTuneABC);
 
           // Do title reverser
           gDoTitleReverser = true;
-          gDoTitleReverser = ScanTuneForNoTitleReverser(book.tunes[currentTune].abc);
+          gDoTitleReverser = ScanTuneForNoTitleReverser(theCurrentTuneABC);
+
+          // Force power chords
+          gForcePowerChords = false;
+          gForcePowerChords = ScanTuneForForcePowerChords(theCurrentTuneABC);
+
+          // Custom instrument volume scale
+          // Start with instrument file default
+          gCustomInstrumentVolumeScale = gCustomInstrumentVolumeScaleOriginal.slice();
+
+          for (var j=1;j<=8;j++){
+            var val = ScanTuneForCustomVolumeMultiplier(theCurrentTuneABC,j);
+            if (val != -1){
+              //console.log("Setting volume for instrument "+j+" to "+val);
+              gCustomInstrumentVolumeScale[j-1] = val;
+            }
+          }
+
+          // Custom instrument volume scale
+          // Start with instrument file default
+          gCustomInstrumentFade = gCustomInstrumentFadeOriginal.slice();
+
+          for (var j=1;j<=8;j++){
+            var val = ScanTuneForCustomFade(theCurrentTuneABC,j);
+            if (val != -1){
+              //console.log("Setting fade for instrument "+j+" to "+val);
+              gCustomInstrumentFade[j-1] = val;
+            }
+          }
+
+          //debugger;
 
           abcParser.parse(book.tunes[currentTune].abc, workingParams, book.tunes[currentTune].startPos - book.header.length);
           var tune = abcParser.getTune();
+
           //
           // Init tablatures plugins
           //
@@ -1633,8 +1883,14 @@ var tunebook = {};
             tablatures.init();
             tune.tablatures = tablatures.preparePlugins(tune, currentTune, workingParams);
           }
+
           var warnings = abcParser.getWarnings();
-          if (warnings) tune.warnings = warnings;
+          if (warnings){
+            for (var j = 0; j < warnings.length; j++) {
+              warnings[j] = '"'+book.tunes[currentTune].title+'" - '+ warnings[j];
+            }
+            tune.warnings = warnings;
+          }
           var override = callback(div, tune, i, book.tunes[currentTune].abc);
           ret.push(override ? override : tune);
         } else {
@@ -2083,64 +2339,64 @@ module.exports = keyAccidentals;
 // All these keys have the same number of accidentals
 var keys = {
   'C': {
-    modes: ['CMaj', 'Amin', 'Am', 'GMix', 'DDor', 'EPhr', 'FLyd', 'BLoc'],
+    modes: ['CMaj', 'CIon', 'Amin', 'Am', 'AAeo', 'GMix', 'DDor', 'EPhr', 'FLyd', 'BLoc'],
     stepsFromC: 0
   },
   'Db': {
-    modes: ['DbMaj', 'Bbmin', 'Bbm', 'AbMix', 'EbDor', 'FPhr', 'GbLyd', 'CLoc'],
+    modes: ['DbMaj', 'DbIon', 'Bbmin', 'Bbm', 'BbAeo', 'AbMix', 'EbDor', 'FPhr', 'GbLyd', 'CLoc'],
     stepsFromC: 1
   },
   'D': {
-    modes: ['DMaj', 'Bmin', 'Bm', 'AMix', 'EDor', 'F#Phr', 'GLyd', 'C#Loc'],
+    modes: ['DMaj', 'DIon', 'Bmin', 'Bm', 'BAeo', 'AMix', 'EDor', 'F#Phr', 'GLyd', 'C#Loc'],
     stepsFromC: 2
   },
   'Eb': {
-    modes: ['EbMaj', 'Cmin', 'Cm', 'BbMix', 'FDor', 'GPhr', 'AbLyd', 'DLoc'],
+    modes: ['EbMaj', 'EbIon', 'Cmin', 'Cm', 'CAeo', 'BbMix', 'FDor', 'GPhr', 'AbLyd', 'DLoc'],
     stepsFromC: 3
   },
   'E': {
-    modes: ['EMaj', 'C#min', 'C#m', 'BMix', 'F#Dor', 'G#Phr', 'ALyd', 'D#Loc'],
+    modes: ['EMaj', 'EIon', 'C#min', 'C#m', 'C#Aeo', 'BMix', 'F#Dor', 'G#Phr', 'ALyd', 'D#Loc'],
     stepsFromC: 4
   },
   'F': {
-    modes: ['FMaj', 'Dmin', 'Dm', 'CMix', 'GDor', 'APhr', 'BbLyd', 'ELoc'],
+    modes: ['FMaj', 'FIon', 'Dmin', 'Dm', 'DAeo', 'CMix', 'GDor', 'APhr', 'BbLyd', 'ELoc'],
     stepsFromC: 5
   },
   'Gb': {
-    modes: ['GbMaj', 'Ebmin', 'Ebm', 'DbMix', 'AbDor', 'BbPhr', 'CbLyd', 'FLoc'],
+    modes: ['GbMaj', 'GbIon', 'Ebmin', 'Ebm', 'EbAeo', 'DbMix', 'AbDor', 'BbPhr', 'CbLyd', 'FLoc'],
     stepsFromC: 6
   },
   'G': {
-    modes: ['GMaj', 'Emin', 'Em', 'DMix', 'ADor', 'BPhr', 'CLyd', 'F#Loc'],
+    modes: ['GMaj', 'GIon', 'Emin', 'Em', 'EAeo', 'DMix', 'ADor', 'BPhr', 'CLyd', 'F#Loc'],
     stepsFromC: 7
   },
   'Ab': {
-    modes: ['AbMaj', 'Fmin', 'Fm', 'EbMix', 'BbDor', 'CPhr', 'DbLyd', 'GLoc'],
+    modes: ['AbMaj', 'AbIon', 'Fmin', 'Fm', 'FAeo', 'EbMix', 'BbDor', 'CPhr', 'DbLyd', 'GLoc'],
     stepsFromC: 8
   },
   'A': {
-    modes: ['AMaj', 'F#min', 'F#m', 'EMix', 'BDor', 'C#Phr', 'DLyd', 'G#Loc'],
+    modes: ['AMaj', 'AIon', 'F#min', 'F#m', 'F#Aeo', 'EMix', 'BDor', 'C#Phr', 'DLyd', 'G#Loc'],
     stepsFromC: 9
   },
   'Bb': {
-    modes: ['BbMaj', 'Gmin', 'Gm', 'FMix', 'CDor', 'DPhr', 'EbLyd', 'ALoc'],
+    modes: ['BbMaj', 'BbIon', 'Gmin', 'Gm', 'GAeo', 'FMix', 'CDor', 'DPhr', 'EbLyd', 'ALoc'],
     stepsFromC: 10
   },
   'B': {
-    modes: ['BMaj', 'G#min', 'G#m', 'F#Mix', 'C#Dor', 'D#Phr', 'ELyd', 'A#Loc'],
+    modes: ['BMaj', 'BIon', 'G#min', 'G#m', 'G#Aeo', 'F#Mix', 'C#Dor', 'D#Phr', 'ELyd', 'A#Loc'],
     stepsFromC: 11
   },
   // Enharmonic keys
   'C#': {
-    modes: ['C#Maj', 'A#min', 'A#m', 'G#Mix', 'D#Dor', 'E#Phr', 'F#Lyd', 'B#Loc'],
+    modes: ['C#Maj', 'C#Ion', 'A#min', 'A#m', 'A#Aeo', 'G#Mix', 'D#Dor', 'E#Phr', 'F#Lyd', 'B#Loc'],
     stepsFromC: 1
   },
   'F#': {
-    modes: ['F#Maj', 'D#min', 'D#m', 'C#Mix', 'G#Dor', 'A#Phr', 'BLyd', 'E#Loc'],
+    modes: ['F#Maj', 'F#Ion', 'D#min', 'D#m', 'D#Aeo', 'C#Mix', 'G#Dor', 'A#Phr', 'BLyd', 'E#Loc'],
     stepsFromC: 6
   },
   'Cb': {
-    modes: ['CbMaj', 'Abmin', 'Abm', 'GbMix', 'DbDor', 'EbPhr', 'FbLyd', 'BbLoc'],
+    modes: ['CbMaj', 'CbIon', 'Abmin', 'Abm', 'AbAeo', 'GbMix', 'DbDor', 'EbPhr', 'FbLyd', 'BbLoc'],
     stepsFromC: 11
   }
 };
@@ -2166,7 +2422,7 @@ function relativeMajor(key) {
     createKeyReverse();
   }
   // get the key portion itself - there might be other stuff, like extra sharps and flats, or the mode written out.
-  var mode = key.toLowerCase().match(/([a-g][b#]?)(maj|min|mix|dor|phr|lyd|loc|m)?/);
+  var mode = key.toLowerCase().match(/([a-g][b#]?)(maj|ion|min|aeo|mix|dor|phr|lyd|loc|m)?/);
   if (!mode || !mode[2]) return key;
   mode = mode[1] + mode[2];
   var maj = keyReverse[mode];
@@ -2179,7 +2435,7 @@ function relativeMode(majorKey, mode) {
   var group = keys[majorKey];
   if (!group) return majorKey;
   if (mode === '') return majorKey;
-  var match = mode.toLowerCase().match(/^(maj|min|mix|dor|phr|lyd|loc|m)/);
+  var match = mode.toLowerCase().match(/^(maj|ion|min|aeo|mix|dor|phr|lyd|loc|m)/);
   if (!match) return majorKey;
   var regMode = match[1];
   for (var i = 0; i < group.modes.length; i++) {
@@ -3522,8 +3778,14 @@ var create;
               midi.setInstrument(0);
             } 
             else
-            // MAE 1 Jan 2024 - Custom MIDI instrument processing
-            if (event.instrument == 148){
+            // MAE 1 Jan 2024 - Map mute to Grand Piano
+            if (event.instrument == 158){
+              midi.setChannelMute(event.channel, pan);
+              midi.setInstrument(0);              
+            }
+            else
+            // MAE 28 Aug 2025 - Map custom instruments to Grand Piano
+            if ((event.instrument >= 150) && (event.instrument <= 157)){
               midi.setChannelMute(event.channel, pan);
               midi.setInstrument(0);              
             }
@@ -3584,6 +3846,11 @@ var create;
                 case 146: // Tenor recorder
                 case 147: // Bass recorder
                   theInstrument = 74; // Recorder
+                  break;
+
+                case 148: // Mountain dulcimer solo
+                case 149: // Mountain dulcimer
+                  theInstrument = 15; // Dulcimer
                   break;
 
                 default:
@@ -3906,7 +4173,7 @@ var Parse = function Parse() {
     var bad_char = line[col_num];
     if (bad_char === ' ' || !bad_char) bad_char = "SPACE";
     var clean_line = encode(line.substring(col_num - 64, col_num)) + '<span style="text-decoration:underline;font-size:1.3em;font-weight:bold;">' + bad_char + '</span>' + encode(line.substring(col_num + 1).substring(0, 64));
-    addWarning("Music Line:" + tokenizer.lineIndex + ":" + (col_num + 1) + ': ' + str + ":  " + clean_line);
+    addWarning(tokenizer.lineIndex + ":" + (col_num + 1) + ' - ' + str + " " + clean_line);
     addWarningObject({
       message: str,
       line: line,
@@ -4213,6 +4480,43 @@ var Parse = function Parse() {
     }
   }
 
+  // Find and merge any continuation lines after a tag, but keep the character count the same
+  function mergeContinuationLines(text) {
+    const lines = text.split(/\r?\n/);
+    const out = [];
+    let i = 0;
+
+    const baseRe = /^[A-Za-z]:/;   // F: ...   (no capture needed)
+    const plusRe = /^\+:(.*)$/;    // +: ...  (capture EVERYTHING after +:)
+
+    while (i < lines.length) {
+      const line = lines[i];
+
+      if (baseRe.test(line)) {
+        let merged = line;
+        let j = i + 1;
+
+        // Collect all +: lines (preserve exact spacing)
+        while (j < lines.length) {
+          const m = lines[j].match(plusRe);
+          if (!m) break;
+
+          const raw = m[1]; // exact text INCLUDING leading spaces
+          merged += "   " + raw;  // always prepend 3 spaces
+          j++;
+        }
+
+        out.push(merged);
+        i = j;
+      } else {
+        out.push(line);
+        i++;
+      }
+    }
+
+    return out.join("\n");
+  }
+
   this.parse = function (strTune, switches, startPos) {
     // the switches are optional and cause a difference in the way the tune is parsed.
     // switches.header_only : stop parsing when the header is finished
@@ -4229,6 +4533,12 @@ var Parse = function Parse() {
     // Take care of whatever line endings come our way
     // Tack on newline temporarily to make the last line continuation work
     strTune = strTune.replace(/\r\n?/g, '\n') + '\n';
+
+    // MAE 8 Nov 2025 - Allow for escaped %
+    strTune = strTune.replaceAll("\\%","％ ");
+
+    // MAE 28 Nov 2025 - For continuation +: fields
+    strTune = mergeContinuationLines(strTune);
 
     // get rid of latex commands. If a line starts with a backslash, then it is replaced by spaces to keep the character count the same.
     var arr = strTune.split("\n\\");
@@ -4373,8 +4683,12 @@ var bookParser = function bookParser(book) {
     const patterns = [
       /^%%\S+font.*$/,
       /^%%\S+margin.*$/,
+      /^%%staffsep.*$/,      
       /^%%staffwidth.*$/,
       /^%%stretchlast.*$/,
+      /^%%leftmargin.*$/,
+      /^%%rightmargin.*$/,
+      /^%%scale.*$/,
       /^%%barnumbers.*$/,
       /^%%barsperstaff.*$/,
       /^%%\S+space.*$/,
@@ -4384,10 +4698,18 @@ var bookParser = function bookParser(book) {
       /^%%titleleft.*$/,
       /^%%keywarn.*$/,
       /^%%titlecaps.*$/,      
+      /^%%visualtranspose.*$/,      
+      /^%%maxstaves.*$/, 
+      /^%hide_first_title_on_play.*$/,  
+      /^%hide_vskip_on_play.*$/,  
       /^%left_justify_titles.*$/,
       /^%abcjs_render_params.*$/,
       /^%hide_information_labels.*$/,
       /^%hide_rhythm_tag.*$/,
+      /^%hide_composer_tag.*$/,
+      /^%hide_parts_tag.*$/,
+      /^%hide_part_tags.*$/,
+      /^%hide_player_part_tags.*$/,
       /^%hide_dynamics.*$/,
       /^%whistle_tab_key.*$/,
       /^%whistle_tab_octave.*$/,
@@ -4398,18 +4720,55 @@ var bookParser = function bookParser(book) {
       /^%play_alternate_chords.*$/,
       /^%hide_cautionary_ks.*$/,
       /^%no_title_reverser.*$/,
+      /^%force_power_chords.*$/,
+      /^%custom_instrument_volume_scale.*$/,
+      /^%custom_instrument_1_volume_scale.*$/,
+      /^%custom_instrument_2_volume_scale.*$/,
+      /^%custom_instrument_3_volume_scale.*$/,
+      /^%custom_instrument_4_volume_scale.*$/,
+      /^%custom_instrument_5_volume_scale.*$/,
+      /^%custom_instrument_6_volume_scale.*$/,
+      /^%custom_instrument_7_volume_scale.*$/,
+      /^%custom_instrument_8_volume_scale.*$/,
+      /^%custom_instrument_fade.*$/,
+      /^%custom_instrument_1_fade.*$/,
+      /^%custom_instrument_2_fade.*$/,
+      /^%custom_instrument_3_fade.*$/,
+      /^%custom_instrument_4_fade.*$/,
+      /^%custom_instrument_5_fade.*$/,
+      /^%custom_instrument_6_fade.*$/,
+      /^%custom_instrument_7_fade.*$/,
+      /^%custom_instrument_8_fade.*$/,
+      /^%roll_2_params.*$/,
+      /^%roll_3_params.*$/,
       /^[ABCDFGHILMmNORrSUZ]:/,
     ];
 
+    let inCSSBlock = false;
+
     arrDir.forEach(function (line) {
-      for (const pattern of patterns) {
-        if (pattern.test(line)) {
-          //console.log("Adding directive line: " + line);
-          directives += line + '\n';
-          break; // No need to check further patterns once matched
+
+        if (line.trim() === "%%begincss") {
+            inCSSBlock = true;
         }
-      }
+
+        if (inCSSBlock) {
+            directives += line + '\n';
+            if (line.trim() === "%%endcss") {
+                inCSSBlock = false;
+            }
+            return; // Skip further processing while in CSS block
+        }
+
+        for (const pattern of patterns) {
+            if (pattern.test(line)) {
+                //console.log("Adding directive line: " + line);
+                directives += line + '\n';
+                break; // No need to check further patterns once matched
+            }
+        }
     });
+    
   }
   
   var header = directives;
@@ -5072,14 +5431,86 @@ var parseDirective = {};
     tune.formatting[cmd] = getFontParameter(tokens, tune.formatting[cmd], str, 0, cmd);
     return null;
   };
+   // MAE 6 Oct 2025 - Scale simulation using left and right margins
   var setScale = function setScale(cmd, tokens) {
+
+    //console.log("setScale");
+
+    /**
+     * Maps x in (approximately) 1..0.125 to y with:
+     * 1 → 0
+     * 0.75 → 130
+     * 0.5 → 400
+     * 0.25 → 1200
+     * 0.125 → 3000
+     * Clamp x >= 1 to 0, x <= 0.125 to 3000.
+     */
+    function customLogMap(x) {
+      // clamps
+      if (x >= 1) return 0;
+      if (x <= 0.125) return 3000;
+
+      // keypoints
+      const P = [
+        { x: 1.0,   y: 0    },
+        { x: 0.75,  y: 130  },
+        { x: 0.5,   y: 400  },
+        { x: 0.25,  y: 1200 },
+        { x: 0.125, y: 3000 },
+      ];
+
+      // Segment 1: [0.75, 1] — linear (since y=0 at x=1 breaks log/power fits)
+      if (x > 0.75 && x < 1.0) {
+        const x1 = P[0].x, y1 = P[0].y;       // (1.0, 0)
+        const x2 = P[1].x, y2 = P[1].y;       // (0.75, 130)
+        const t = (x1 - x) / (x1 - x2);       // t in [0,1] as x descends 1→0.75
+        return y1 + t * (y2 - y1);
+      }
+
+      // Helper: power-law fit on a segment [xa, xb] passing through (xa, ya), (xb, yb)
+      function powerInterp(xa, ya, xb, yb, xq) {
+        // y = C * x^a -> solve a, C from endpoints
+        const a = Math.log(yb / ya) / Math.log(xb / xa);
+        const C = ya / Math.pow(xa, a);
+        return C * Math.pow(xq, a);
+      }
+
+      // Segment 2: [0.5, 0.75]
+      if (x > 0.5 && x <= 0.75) {
+        return powerInterp(0.75, 130, 0.5, 400, x);
+      }
+
+      // Segment 3: [0.25, 0.5]
+      if (x > 0.25 && x <= 0.5) {
+        return powerInterp(0.5, 400, 0.25, 1200, x);
+      }
+
+      // Segment 4: [0.125, 0.25]
+      // (x > 0.125 guaranteed by earlier clamp)
+      return powerInterp(0.25, 1200, 0.125, 3000, x);
+    }
+
     var scratch = "";
+
     tokens.forEach(function (tok) {
       scratch += tok.token;
     });
+
     var num = parseFloat(scratch);
+
     if (isNaN(num) || num === 0) return "Directive \"" + cmd + "\" requires a number as a parameter.";
-    tune.formatting.scale = num;
+
+    var logVal = customLogMap(num);
+
+    //console.log("input: "+num+" output: "+logVal);
+
+    tune.formatting.leftmargin = logVal;
+    tune.formatting.rightmargin = logVal;
+
+    //tune.formatting.scale = num;
+
+    return null;
+
   };
   // starts at 35
   var drumNames = ["acoustic-bass-drum", "bass-drum-1", "side-stick", "acoustic-snare", "hand-clap", "electric-snare", "low-floor-tom", "closed-hi-hat", "high-floor-tom", "pedal-hi-hat", "low-tom", "open-hi-hat", "low-mid-tom", "hi-mid-tom", "crash-cymbal-1", "high-tom", "ride-cymbal-1", "chinese-cymbal", "ride-bell", "tambourine", "splash-cymbal", "cowbell", "crash-cymbal-2", "vibraslap", "ride-cymbal-2", "hi-bongo", "low-bongo", "mute-hi-conga", "open-hi-conga", "low-conga", "high-timbale", "low-timbale", "high-agogo", "low-agogo", "cabasa", "maracas", "short-whistle", "long-whistle", "short-guiro", "long-guiro", "claves", "hi-wood-block", "low-wood-block", "mute-cuica", "open-cuica", "mute-triangle", "open-triangle"];
@@ -5210,18 +5641,47 @@ var parseDirective = {};
     } else if (midiCmdParam1Integer1OptionalInteger.indexOf(midi_cmd) >= 0) {
       
       //
-      // MAE 1 Jan 2024 - Stuff in silence patch 148 if mute selected as the program
+      // MAE 1 Jan 2024 - Stuff in silence patch 158 if mute selected as the program
       //
       //debugger;
       if ((midi_cmd == "program") && (midi.length == 1) && (midi[0].type == 'alpha') && (midi[0].token.toLowerCase() == "mute")){
         //console.log("Got mute program request for "+midi_cmd);
         midi[0].type = 'number';
-        midi[0].token = "148";
-        midi[0].intt = 148;
-        midi[0].floatt = 148;
+        midi[0].token = "158";
+        midi[0].intt = 158;
+        midi[0].floatt = 158;
         midi[0].continueId = false;
         midi[0].start = 8;
         midi[0].end = 11;
+      }
+
+      if ((midi_cmd == "program") && (midi.length == 1) && (midi[0].type == 'alpha')) {
+        const token = midi[0].token.toLowerCase();
+
+        // Match "custom" or "custom1" through "custom8"
+        const match = token.match(/^custom([1-8])$/);
+
+        if (match) {
+
+          // Default program for plain "custom"
+          let program = 150;
+
+          if (match[1]) {
+            // If there's a number, offset from 150
+            const idx = parseInt(match[1], 10) - 1; // 0-based
+            program = 150 + idx;
+          }
+
+          //console.log(`Got program request for ${token}, mapped to ${program}`);
+
+          midi[0].type = 'number';
+          midi[0].token = String(program);
+          midi[0].intt = program;
+          midi[0].floatt = program;
+          midi[0].continueId = false;
+          midi[0].start = 8;
+          midi[0].end = 14;            
+        }
       }
 
       // ONE INT PARAMETER, ONE OPTIONAL PARAMETER
@@ -5344,14 +5804,14 @@ var parseDirective = {};
     }
     else if (midiCmdParam1Integer1OptionalString.indexOf(midi_cmd) >= 0){
 
-      // MAE 1 January 2023 - Stuff in silence patch 148 if mute selected as the chordprog or bassprog
+      // MAE 1 Jan 2023 - Stuff in silence patch 158 if mute selected as the chordprog or bassprog
       //
       if ((midi_cmd == "chordprog") && (midi.length == 1) && (midi[0].type == 'alpha') && (midi[0].token.toLowerCase() == "mute")){
         //console.log("Got mute program request for "+midi_cmd);
         midi[0].type = 'number';
-        midi[0].token = "148";
-        midi[0].intt = 148;
-        midi[0].floatt = 148;
+        midi[0].token = "158";
+        midi[0].intt = 158;
+        midi[0].floatt = 158;
         midi[0].continueId = false;
         midi[0].start = 10;
         midi[0].end = 13;
@@ -5360,12 +5820,73 @@ var parseDirective = {};
       if ((midi_cmd == "bassprog") && (midi.length == 1) && (midi[0].type == 'alpha') && (midi[0].token.toLowerCase() == "mute")){
         //console.log("Got mute program request for "+midi_cmd);
         midi[0].type = 'number';
-        midi[0].token = "148";
-        midi[0].intt = 148;
-        midi[0].floatt = 148;
+        midi[0].token = "158";
+        midi[0].intt = 158;
+        midi[0].floatt = 158;
         midi[0].continueId = false;
         midi[0].start = 9;
         midi[0].end = 12;
+      }
+
+      // MAE 28 Aug 2025 - For custom instruments
+      if ((midi_cmd == "chordprog") && (midi.length == 1) && (midi[0].type == 'alpha')){
+        
+        const token = midi[0].token.toLowerCase();
+
+        // Match "custom1" through "custom8"
+        const match = token.match(/^custom([1-8])$/);
+
+        if (match) {
+          
+          // Default program
+          let program = 150;
+
+          if (match[1]) {
+            // If there's a number, offset from 150
+            const idx = parseInt(match[1], 10) - 1; // 0-based
+            program = 150 + idx;
+          }
+
+          //console.log(`Got chordprog program request for ${token}, mapped to ${program}`);
+
+          midi[0].type = 'number';
+          midi[0].token = String(program);
+          midi[0].intt = program;
+          midi[0].floatt = program;
+          midi[0].continueId = false;
+          midi[0].start = 10;
+          midi[0].end = 16;            
+        }      
+      }
+
+      if ((midi_cmd == "bassprog") && (midi.length == 1) && (midi[0].type == 'alpha')){
+
+        const token = midi[0].token.toLowerCase();
+
+        // Match "custom1" through "custom8"
+        const match = token.match(/^custom([1-8])$/);
+
+        if (match) {
+          
+          // Default program for plain "custom"
+          let program = 150;
+
+          if (match[1]) {
+            // If there's a number, offset from 150
+            const idx = parseInt(match[1], 10) - 1; // 0-based
+            program = 150 + idx;
+          }
+
+          //console.log(`Got bassprog program request for ${token}, mapped to ${program}`);
+
+          midi[0].type = 'number';
+          midi[0].token = String(program);
+          midi[0].intt = program;
+          midi[0].floatt = program;
+          midi[0].continueId = false;
+          midi[0].start = 9;
+          midi[0].end = 15;            
+        }      
       }
 
       // ONE INT PARAMETER, ONE OPTIONAL string
@@ -5588,7 +6109,7 @@ var parseDirective = {};
         tuneBuilder.addSpacing(vskip);
         return null;
       case "scale":
-        setScale(cmd, tokens);
+        return setScale(cmd, tokens);
         break;
       case "sep":
         if (tokens.length === 0) tuneBuilder.addSeparator(14, 14, 85, {
@@ -5654,14 +6175,47 @@ var parseDirective = {};
         var textBlock = '';
         line = tokenizer.nextLine();
         while (line && line.indexOf('%%endtext') !== 0) {
-          if (parseCommon.startsWith(line, "%%")) textBlock += line.substring(2) + "\n";else textBlock += line + "\n";
+
+          // MAE 9 May 2025 - for text blocks with just white space
+          if (parseCommon.startsWith(line, "%%")){
+
+            var theLine = line.substring(2);
+            theLine = theLine.trim() + "\n";
+            textBlock += theLine;
+
+          }
+          else{
+            textBlock += line.trim() + "\n";
+          }
+
           line = tokenizer.nextLine();
         }
+
         tuneBuilder.addText(textBlock, {
           startChar: multilineVars.iChar,
           endChar: multilineVars.iChar + textBlock.length + 7
         });
         break;
+
+      // MAE 1 Aug 2025 - For CSS aggregation
+      case "begincss":
+        //console.log("begincss");
+        var cssBlock = '';
+        line = tokenizer.nextLine();
+        while (line && line.indexOf('%%endcss') !== 0) {
+          
+          cssBlock += line.trim() + "\n";
+
+          line = tokenizer.nextLine();
+        }
+
+        tuneBuilder.addMetaText("css",cssBlock, {
+          startChar: multilineVars.iChar,
+          endChar: multilineVars.iChar + cssBlock.length + 6
+        });
+
+        break;
+
       case "continueall":
         multilineVars.continueall = true;
         break;
@@ -5914,6 +6468,30 @@ var parseDirective = {};
           tune.formatting.percmap[percmap.key] = percmap.value;
         }
         break;
+      // MAE 24 May 2025
+      case "visualtranspose":
+        var halfSteps = tokenizer.getInt(restOfString)
+        if (halfSteps.digits === 0)
+          warn("Expected number of half steps in visualTranspose")
+        else
+          multilineVars.globalTranspose = halfSteps.value
+        break;
+
+      // MAE 24 May 2025
+      case "maxstaves":
+        var nStaves = tokenizer.getInt(restOfString)
+        if (nStaves.digits === 0)
+          warn("Expected number of staves in maxstaves");
+        else{
+          if (nStaves.value > 0){
+            tune.formatting.maxStaves = nStaves.value;
+          }
+          else{
+            warn("Expected value greater than 0 in maxstaves");
+          }
+        }
+        break;
+
       case "map":
       case "playtempo":
       case "auquality":
@@ -5959,7 +6537,9 @@ var parseDirective = {};
             getChangingFont(cmd, tokens, value);
             break;
           case "scale":
-            setScale(cmd, tokens);
+            // MAE 6 October 2025 - For scale simulation using margins
+            scratch = setScale(cmd, tokens);
+            if (scratch !== null) warn(scratch);            
             break;
           case "partsbox":
             scratch = addMultilineVarBool('partsBox', cmd, tokens);
@@ -6376,7 +6956,9 @@ var ParseHeader = function ParseHeader(tokenizer, warn, multilineVars, tune, tun
         }
         if (tokens.length !== 0) throw "Unexpected string at end of Q: field";
       }
-      if (multilineVars.printTempo === false) tempo.suppress = true;
+      if (multilineVars.printTempo === false){
+        tempo.suppress = true;
+      }
       return {
         type: delaySet ? 'delaySet' : 'immediate',
         tempo: tempo
@@ -6410,6 +6992,10 @@ var ParseHeader = function ParseHeader(tokenizer, warn, multilineVars, tune, tun
           if (result.foundKey && tuneBuilder.hasBeginMusic()) tuneBuilder.appendStartingElement('key', startChar, endChar, parseKeyVoice.fixKey(multilineVars.clef, multilineVars.key));
           return [e - i + 1 + ws];
         case "[P:":
+          // MAE 2 Jun 2025 - For hiding P tags
+          if (gHidePartsTag){
+            return [e - i + 1 + ws];
+          }
           if (startLine || tune.lines.length <= tune.lineNum) multilineVars.partForNextLine = {
             title: line.substring(i + 3, e),
             startChar: startChar,
@@ -6465,6 +7051,10 @@ var ParseHeader = function ParseHeader(tokenizer, warn, multilineVars, tune, tun
           if (result.foundKey && tuneBuilder.hasBeginMusic()) tuneBuilder.appendStartingElement('key', multilineVars.iChar + i, multilineVars.iChar + line.length, parseKeyVoice.fixKey(multilineVars.clef, multilineVars.key));
           return [line.length];
         case "P:":
+          // MAE 2 Jun 2025 - For hiding P tags
+          if (gHidePartsTag){
+            return [line.length];
+          }
           if (tuneBuilder.hasBeginMusic()) tuneBuilder.appendElement('part', multilineVars.iChar + i, multilineVars.iChar + line.length, {
             title: line.substring(i + 2)
           });
@@ -6509,6 +7099,16 @@ var ParseHeader = function ParseHeader(tokenizer, warn, multilineVars, tune, tun
     if (field !== undefined) {
       if (field == 'rhythm'){
         if (!gHideRhythmTag){
+          tuneBuilder.addMetaText(field, tokenizer.translateString(tokenizer.stripComment(line.substring(2))), {
+            startChar: multilineVars.iChar,
+            endChar: multilineVars.iChar + line.length
+          });
+        }
+      }
+      else
+      // MAE 26 May 2026
+      if (field == 'composer'){
+        if (!gHideComposerTag){
           tuneBuilder.addMetaText(field, tokenizer.translateString(tokenizer.stripComment(line.substring(2))), {
             startChar: multilineVars.iChar,
             endChar: multilineVars.iChar + line.length
@@ -6563,15 +7163,18 @@ var ParseHeader = function ParseHeader(tokenizer, warn, multilineVars, tune, tun
           multilineVars.origMeter = multilineVars.meter = this.setMeter(line.substring(2));
           break;
         case 'P':
-          // TODO-PER: There is more to do with parts, but the writer doesn't care.
-          if (multilineVars.is_in_header) tuneBuilder.addMetaText("partOrder", tokenizer.translateString(tokenizer.stripComment(line.substring(2))), {
-            startChar: multilineVars.iChar,
-            endChar: multilineVars.iChar + line.length
-          });else multilineVars.partForNextLine = {
-            title: tokenizer.translateString(tokenizer.stripComment(line.substring(2))),
-            startChar: startChar,
-            endChar: endChar
-          };
+          // MAE 2 Jun 2025 - For hiding P: tags
+          if (!gHidePartsTag){
+            // TODO-PER: There is more to do with parts, but the writer doesn't care.
+            if (multilineVars.is_in_header) tuneBuilder.addMetaText("partOrder", tokenizer.translateString(tokenizer.stripComment(line.substring(2))), {
+              startChar: multilineVars.iChar,
+              endChar: multilineVars.iChar + line.length
+            });else multilineVars.partForNextLine = {
+              title: tokenizer.translateString(tokenizer.stripComment(line.substring(2))),
+              startChar: startChar,
+              endChar: endChar
+            };
+          }
           break;
         case 'Q':
           var tempo = this.setTempo(line, 2, line.length, multilineVars.iChar);
@@ -7502,6 +8105,45 @@ var parseKeyVoice = {};
           case 'tenor,,':
           case 'alto,,':
           case 'none,,':
+          // MAE 26 May 2025 Start of additional clefs
+          case 'treble+8':
+          case 'treble-8':
+          case 'treble^8':
+          case 'treble_8':
+          case 'treble1':
+          case 'treble2':
+          case 'treble3':
+          case 'treble4':
+          case 'treble5':
+          case 'bass+8':
+          case 'bass-8':
+          case 'bass^8':
+          case 'bass_8':
+          case 'bass+16':
+          case 'bass-16':
+          case 'bass^16':
+          case 'bass_16':
+          case 'bass1':
+          case 'bass2':
+          case 'bass3':
+          case 'bass4':
+          case 'bass5':
+          case 'tenor1':
+          case 'tenor2':
+          case 'tenor3':
+          case 'tenor4':
+          case 'tenor5':
+          case 'alto1':
+          case 'alto2':
+          case 'alto3':
+          case 'alto4':
+          case 'alto5':
+          case 'alto+8':
+          case 'alto-8':
+          case 'alto^8':
+          case 'alto_8':
+          // MAE 26 May 2025 End of additional clefs
+
             // TODO-PER: handle the octave indicators on the clef by changing the middle property
             var oct2 = 0;
             //              for (var iii = 0; iii < token.token.length; iii++) {
@@ -8109,7 +8751,15 @@ MusicParser.prototype.parseMusic = function (line) {
               if (core.startTie !== undefined) el.pitches[0].startTie = core.startTie;
               if (el.startTie !== undefined) el.pitches[0].startTie = el.startTie;
             } else {
+
               el.rest = core.rest;
+
+              // MAE 22 May 2025 - For multi-bar rests
+              // The minus one is because the measure with the rest is already counted once normally.
+              if ((core.rest.type === 'multimeasure') && (multilineVars.currentVoice === undefined || (multilineVars.currentVoice.staffNum ===  0 && multilineVars.currentVoice.index ===  0))){
+                multilineVars.currBarNumber += core.rest.text - 1;
+              }
+
               if (core.endSlur !== undefined) el.endSlur = core.endSlur;
               if (core.endTie !== undefined) el.rest.endTie = core.endTie;
               if (core.startSlur !== undefined) el.startSlur = core.startSlur;
@@ -8892,6 +9542,7 @@ var getBrokenRhythm = function getBrokenRhythm(line, index) {
   }
   return null;
 };
+
 module.exports = MusicParser;
 
 /***/ }),
@@ -8904,7 +9555,7 @@ module.exports = MusicParser;
 
 // MAE 23 Dec 2023 - Added Shaped Note Singing glyphs
 // MAE 7 December 2024 - Added half-step trill
-module.exports.legalAccents = ['trill', 'trillh', 'lowermordent', 'uppermordent', 'mordent', 'pralltriller', 'accent', 'fermata', 'invertedfermata', 'tenuto', '0', '1', '2', '3', '4', '5', '+', 'wedge', 'open', 'thumb', 'snap', 'turn', 'roll', 'breath', 'shortphrase', 'mediumphrase', 'longphrase', 'segno', 'coda', 'D.S.', 'D.C.', 'fine', 'beambr1', 'beambr2', 'slide', 'slideup', 'slidedown', 'marcato', 'upbow', 'downbow', '/', '//', '///', '////', 'trem1', 'trem2', 'trem3', 'trem4', 'turnx', 'invertedturn', 'invertedturnx', 'trill(', 'trill)', 'arpeggio', 'xstem', 'mark', 'umarcato', 'style=normal', 'style=harmonic', 'style=rhythm', 'style=x', 'style=triangle', 'style=sn_do','style=sn_re','style=sn_mi','style=sn_fa','style=sn_fa_l','style=sn_fa_r','style=sn_so','style=sn_la','style=sn_ti','D.C.alcoda', 'D.C.alfine', 'D.S.alcoda', 'D.S.alfine', 'editorial', 'courtesy'];
+module.exports.legalAccents = ['trill', 'trillh', 'lowermordent', 'uppermordent', 'mordent', 'pralltriller', 'accent', 'fermata', 'invertedfermata', 'tenuto', '0', '1', '2', '3', '4', '5', '+', 'wedge', 'open', 'thumb', 'snap', 'turn', 'roll', 'breath', 'shortphrase', 'mediumphrase', 'longphrase', 'segno', 'coda', 'D.S.', 'D.C.', 'fine', 'beambr1', 'beambr2', 'slide', 'slideup', 'slidedown', 'marcato', 'upbow', 'downbow', '/', '//', '///', '////', 'trem1', 'trem2', 'trem3', 'trem4', 'turnx', 'invertedturn', 'invertedturnx', 'trill(', 'trill)', 'arpeggio', 'xstem', 'mark', 'mark1', 'mark2', 'mark3', 'mark4', 'mark5', 'mark6', 'mark7', 'mark8', 'mark9', 'mark10', 'push', 'draw', 'umarcato', 'style=normal', 'style=harmonic', 'style=rhythm', 'style=x', 'style=triangle', 'style=sn_do','style=sn_re','style=sn_mi','style=sn_fa','style=sn_fa_l','style=sn_fa_r','style=sn_so','style=sn_la','style=sn_ti','D.C.alcoda', 'D.C.alfine', 'D.S.alcoda', 'D.S.alfine', 'editorial', 'courtesy'];
 // MAE 15 April 2024 - Added ppppp
 module.exports.volumeDecorations = ['p', 'pp', 'f', 'ff', 'mf', 'mp', 'ppp', 'pppp', 'fff', 'ffff', 'sfz', 'ppppp'];
 module.exports.dynamicDecorations = ['crescendo(', 'crescendo)', 'diminuendo(', 'diminuendo)', 'glissando(', 'glissando)', '~(', '~)'];
@@ -10115,7 +10766,12 @@ var Tokenizer = function Tokenizer(lines, multilineVars) {
       ", Les": "Les",
       ", Ye": "Ye",
       ", An": "An",
-      ", an": "an"
+      ", an": "an",
+      ", Der": "Der",
+      ", Die": "Die",
+      ", Das": "Das",
+      ", Ein": "Ein",
+      ", Eine": "Eine"
     };
 
     for (const [suffix, prefix] of Object.entries(suffixMap)) {
@@ -10576,8 +11232,10 @@ var parseKeyVoice = __webpack_require__(/*! ../parse/abc_parse_key_voice */ "./s
 var parseCommon = __webpack_require__(/*! ../parse/abc_common */ "./src/parse/abc_common.js");
 var TuneBuilder = function TuneBuilder(tune) {
   var self = this;
+  // MAE 24 May 2025
   this.setVisualTranspose = function (visualTranspose) {
-    if (visualTranspose) tune.visualTranspose = visualTranspose;
+    if (visualTranspose!==undefined)
+      tune.visualTranspose = visualTranspose;
   };
   this.resolveOverlays = function () {
     var madeChanges = false;
@@ -11258,6 +11916,7 @@ var TuneBuilder = function TuneBuilder(tune) {
       }
     });
   };
+
   // MAE Added 29 April 2025 for right justified text
   this.addRight = function (str, info) {
     this.pushLine({
@@ -11456,6 +12115,10 @@ var TuneBuilder = function TuneBuilder(tune) {
   this.getCurrentVoice = function () {
     var currLine = tune.lines[tune.lineNum];
     if (!currLine) return null;
+    // MAE 26 Aug 2025 - Prevents crash on w: with no notes
+    if (!currLine.staff){
+      return null;
+    }
     var currStaff = currLine.staff[tune.staffNum];
     if (!currStaff) return null;
     if (currStaff.voices[tune.voiceNum] !== undefined) return currStaff.voices[tune.voiceNum];else return null;
@@ -12033,32 +12696,25 @@ var strTranspose;
     }
     return changes;
   }
+  // MAE 24 May 2025
   function changeAllKeySigs(abc, steps) {
     var changes = [];
-    var arr = abc.split("K:");
+    var arr = abc.split("K:")
     // now each line except the first one will start with whatever is right after "K:"
-    var count = arr[0].length;
+    var count = arr[0].length
     for (var i = 1; i < arr.length; i++) {
-      var segment = arr[i];
-      var match = segment.match(/^( *)([A-G])([#b]?)(\w*)/);
+      var segment = arr[i]
+      var match = segment.match(/^( *)([A-G])([#b]?)( ?)(\w*)/)
       if (match) {
-        var start = count + 2 + match[1].length; // move past the 'K:' and optional white space
-        var key = match[2] + match[3] + match[4]; // key name, accidental, and mode
-        var destinationKey = newKey({
-          root: match[2],
-          acc: match[3],
-          mode: match[4]
-        }, steps);
-        var dest = destinationKey.root + destinationKey.acc + destinationKey.mode;
-        changes.push({
-          start: start,
-          end: start + key.length,
-          note: dest
-        });
+        var start = count + 2 + match[1].length // move past the 'K:' and optional white space
+        var key = match[2] + match[3] + match[4] + match[5] // key name, accidental, optional space, and mode
+        var destinationKey = newKey({ root: match[2], acc: match[3], mode: match[5] }, steps)
+        var dest = destinationKey.root + destinationKey.acc + match[4] + destinationKey.mode
+        changes.push({ start: start, end: start + key.length, note: dest })
       }
-      count += segment.length + 2;
+      count += segment.length + 2
     }
-    return changes;
+    return changes
   }
   function transposeVoices(abc, voices, key, steps) {
     var changes = [];
@@ -12299,48 +12955,120 @@ var strTranspose;
       courtesy: reg[1] === currentAcc
     };
   }
+  // ChatGPT generated version
+  // 20 Aug 2025
   function replaceNote(abc, start, end, newPitch, index) {
-    // There may be more than just the note between the start and end - there could be spaces, there could be a chord symbol, there could be a decoration.
-    // This could also be a part of a chord. If so, then the particular note needs to be teased out.
-    var note = abc.substring(start, end);
-    var match = note.match(new RegExp(regNote.source + regSpace.source), '');
-    if (match) {
-      // This will match a single note
-      var noteLen = match[1].length;
-      var trailingLen = match[2].length + match[3].length + match[4].length;
-      var leadingLen = end - start - noteLen - trailingLen;
-      start += leadingLen;
-      end -= trailingLen;
-    } else {
-      // I don't know how to capture more than one note, so I'm separating them. There is a limit of the number of notes in a chord depending on the repeats I have here, but it is unlikely to happen in real music.
-      var regPreBracket = /([^\[]*)/;
-      var regOpenBracket = /\[/;
-      var regCloseBracket = /\-?](\d*\/*\d*)?([\>\<\-\)]*)/;
-      match = note.match(new RegExp(regPreBracket.source + regOpenBracket.source + regOptionalNote.source + regOptionalNote.source + regOptionalNote.source + regOptionalNote.source + regOptionalNote.source + regOptionalNote.source + regOptionalNote.source + regOptionalNote.source + regCloseBracket.source + regSpace.source));
-      if (match) {
-        // This will match a chord
-        // Get the number of chars used by the previous notes in this chord
-        var count = 1 + match[1].length; // one character for the open bracket
-        for (var i = 0; i < index; i++) {
-          // index is the iteration through the chord. This function gets called for each one.
-          if (match[i * 3 + 2]) count += match[i * 3 + 2].length;
-          if (match[i * 3 + 3]) count += match[i * 3 + 3].length;
-          if (match[i * 3 + 4]) count += match[i * 3 + 4].length;
-        }
-        start += count;
-        var endLen = match[index * 3 + 2] ? match[index * 3 + 2].length : 0;
-        // endLen += match[index * 3 + 3] ? match[index * 3 + 3].length : 0
-        // endLen += match[index * 3 + 4] ? match[index * 3 + 4].length : 0
+      var note = abc.substring(start, end);
 
-        end = start + endLen;
+      // Try single note first
+      var match = note.match(new RegExp(regNote.source + regSpace.source));
+      if (match) {
+          var noteLen = match[1].length;
+          var trailingLen = match[2].length + match[3].length + match[4].length;
+          var leadingLen = end - start - noteLen - trailingLen;
+          start += leadingLen;
+          end -= trailingLen;
+      } else {
+          // Match chord
+          var regPreBracket = /([^\[]*)/;
+          var regOpenBracket = /\[/;
+          var regCloseBracket = /\-?](\d*\/*\d*)?([\>\<\-\)]*)/;
+
+          var regChord = new RegExp(
+              regPreBracket.source +
+              regOpenBracket.source +
+              "(?:" + regOptionalNote.source + "\\s*){1,8}" +
+              regCloseBracket.source +
+              regSpace.source
+          );
+
+          match = note.match(regChord);
+
+          if (match) {
+              var beforeChordLen = match[1].length + 1; // text before + '['
+              var chordBody = note.slice(match[1].length + 1, note.lastIndexOf("]"));
+
+              // Collect notes inside chord
+              var chordNotes = [];
+              var regNoteWithSpace = new RegExp(regOptionalNote.source + "\\s*", "g");
+              for (const m of chordBody.matchAll(regNoteWithSpace)) {
+                  let noteText = m[0].trim();
+                  if (noteText !== "") {
+                      chordNotes.push({ text: noteText, index: m.index });
+                  }
+              }
+
+              if (index >= chordNotes.length) {
+                  throw new Error("Chord index out of range for chord: " + note);
+              }
+
+              var chosen = chordNotes[index];
+
+              // Preserve duration and tie
+              let mDurTie = chosen.text.match(/^(.+?)(\d+\/?\d*)?(-)?$/);
+              let pitchPart = mDurTie ? mDurTie[1] : chosen.text;
+              let durationPart = mDurTie && mDurTie[2] ? mDurTie[2] : "";
+              let tiePart = mDurTie && mDurTie[3] ? mDurTie[3] : "";
+
+              // Replace note keeping duration and tie
+              newPitch = newPitch + durationPart + tiePart;
+
+              start += beforeChordLen + chosen.index;
+              end = start + chosen.text.length;
+          }
       }
-    }
-    return {
-      start: start,
-      end: end,
-      note: newPitch
-    };
+
+      return {
+          start: start,
+          end: end,
+          note: newPitch
+      };
   }
+
+  // Original abcjs verson
+  // function replaceNote(abc, start, end, newPitch, index) {
+  //   // There may be more than just the note between the start and end - there could be spaces, there could be a chord symbol, there could be a decoration.
+  //   // This could also be a part of a chord. If so, then the particular note needs to be teased out.
+  //   var note = abc.substring(start, end);
+  //   var match = note.match(new RegExp(regNote.source + regSpace.source), '');
+  //   if (match) {
+  //     // This will match a single note
+  //     var noteLen = match[1].length;
+  //     var trailingLen = match[2].length + match[3].length + match[4].length;
+  //     var leadingLen = end - start - noteLen - trailingLen;
+  //     start += leadingLen;
+  //     end -= trailingLen;
+  //   } else {
+  //     // I don't know how to capture more than one note, so I'm separating them. There is a limit of the number of notes in a chord depending on the repeats I have here, but it is unlikely to happen in real music.
+  //     var regPreBracket = /([^\[]*)/;
+  //     var regOpenBracket = /\[/;
+  //     var regCloseBracket = /\-?](\d*\/*\d*)?([\>\<\-\)]*)/;
+  //     match = note.match(new RegExp(regPreBracket.source + regOpenBracket.source + regOptionalNote.source + regOptionalNote.source + regOptionalNote.source + regOptionalNote.source + regOptionalNote.source + regOptionalNote.source + regOptionalNote.source + regOptionalNote.source + regCloseBracket.source + regSpace.source));
+  //     if (match) {
+  //       // This will match a chord
+  //       // Get the number of chars used by the previous notes in this chord
+  //       var count = 1 + match[1].length; // one character for the open bracket
+  //       for (var i = 0; i < index; i++) {
+  //         // index is the iteration through the chord. This function gets called for each one.
+  //         if (match[i * 3 + 2]) count += match[i * 3 + 2].length;
+  //         if (match[i * 3 + 3]) count += match[i * 3 + 3].length;
+  //         if (match[i * 3 + 4]) count += match[i * 3 + 4].length;
+  //       }
+  //       start += count;
+  //       var endLen = match[index * 3 + 2] ? match[index * 3 + 2].length : 0;
+  //       // endLen += match[index * 3 + 3] ? match[index * 3 + 3].length : 0
+  //       // endLen += match[index * 3 + 4] ? match[index * 3 + 4].length : 0
+
+  //       end = start + endLen;
+  //     }
+  //   }
+  //   return {
+  //     start: start,
+  //     end: end,
+  //     note: newPitch
+  //   };
+  // }
+  
   function replaceGrace(abc, start, end, newGrace, index) {
     var note = abc.substring(start, end);
     // I don't know how to capture more than one note, so I'm separating them. There is a limit of the number of notes in a chord depending on the repeats I have here, but it is unlikely to happen in real music.
@@ -13383,7 +14111,7 @@ var pitchesToPerc = __webpack_require__(/*! ./pitches-to-perc */ "./src/synth/pi
     var ret = {};
     if (elem.decoration) {
       for (var d = 0; d < elem.decoration.length; d++) {
-        if (elem.decoration[d] === 'staccato') ret.thisBreakBetweenNotes = 'staccato';else if (elem.decoration[d] === 'tenuto') ret.thisBreakBetweenNotes = 'tenuto';else if (elem.decoration[d] === 'accent') ret.velocity = Math.min(127, velocity * 1.5);else if (elem.decoration[d] === 'trill') ret.noteModification = "trill";else if (elem.decoration[d] === 'trillh') ret.noteModification = "trillh";else if (elem.decoration[d] === 'lowermordent') ret.noteModification = "lowermordent";else if (elem.decoration[d] === 'uppermordent') ret.noteModification = "pralltriller";else if (elem.decoration[d] === 'mordent') ret.noteModification = "mordent";else if (elem.decoration[d] === 'turn') ret.noteModification = "turn";else if (elem.decoration[d] === 'roll') ret.noteModification = "roll";else if (elem.decoration[d] === 'pralltriller') ret.noteModification = "pralltriller";
+        if (elem.decoration[d] === 'staccato') ret.thisBreakBetweenNotes = 'staccato';else if (elem.decoration[d] === 'tenuto') ret.thisBreakBetweenNotes = 'tenuto';else if (elem.decoration[d] === 'accent') ret.velocity = Math.min(127, velocity * 1.5);else if (elem.decoration[d] === 'trill') ret.noteModification = "trill";else if (elem.decoration[d] === 'trillh') ret.noteModification = "trillh";else if (elem.decoration[d] === 'lowermordent') ret.noteModification = "lowermordent";else if (elem.decoration[d] === 'uppermordent') ret.noteModification = "pralltriller";else if (elem.decoration[d] === 'mordent') ret.noteModification = "mordent";else if (elem.decoration[d] === 'turn') ret.noteModification = "turn";else if (elem.decoration[d] === 'roll') ret.noteModification = "roll";else if (elem.decoration[d] === 'pralltriller') ret.noteModification = "pralltriller";else if (elem.decoration[d] === '/') ret.noteModification = "trem1";else if (elem.decoration[d] === '//') ret.noteModification = "trem2";else if (elem.decoration[d] === '///') ret.noteModification = "trem3";else if (elem.decoration[d] === '////') ret.noteModification = "trem4";else if (elem.decoration[d] === 'trem1') ret.noteModification = "trem1";else if (elem.decoration[d] === 'trem2') ret.noteModification = "trem2";else if (elem.decoration[d] === 'trem3') ret.noteModification = "trem3";else if (elem.decoration[d] === 'trem4') ret.noteModification = "trem4";
       }
     }
     return ret;
@@ -13396,6 +14124,31 @@ var pitchesToPerc = __webpack_require__(/*! ./pitches-to-perc */ "./src/synth/pi
     var runningDuration = p.duration;
     var shortestNote = durationRounded(1.0 / gOrnamentDivider);
     switch (noteModification) {
+      case "trem1":
+      case "trem2":
+      case "trem3":
+      case "trem4":
+        var divider = 32;
+        if (gTremoloDivider != 0){
+          divider = gTremoloDivider;
+        }
+        shortestNote = durationRounded(1.0 / divider);
+        while (runningDuration > 0) {
+          currentTrack.push({
+            cmd: 'note',
+            pitch: p.pitch,
+            volume: p.volume,
+            start: start,
+            duration: shortestNote,
+            gap: 0,
+            instrument: currentInstrument,
+            style: 'decoration'
+          });
+          runningDuration -= shortestNote;
+          start += shortestNote;
+        }
+        break;
+      break;
       case "trill":
         var note = gOrnamentOffset;
         while (runningDuration > 0) {
@@ -14370,6 +15123,11 @@ var pitchesToPerc = __webpack_require__(/*! ./pitches-to-perc */ "./src/synth/pi
   function chordNotes(bass, modifier, inversion) {
 
     var originalInversion = inversion;
+
+    // MAE 25 Jun 2025 - Forcing power chords
+    if (gForcePowerChords){
+      modifier = "5"
+    }
 
     // MAE 16 Aug 2023 - The chord intervals array was getting trashed by the minifier, moved it outside    
     var intervals = gChordIntervals[modifier]; 
@@ -15359,6 +16117,7 @@ var parseCommon = __webpack_require__(/*! ../parse/abc_common */ "./src/parse/ab
 
     // visit each voice completely in turn
     var voices = [];
+    var clefTransposeActive = []
     var inCrescendo = [];
     var inDiminuendo = [];
     var durationCounter = [0];
@@ -15477,15 +16236,24 @@ var parseCommon = __webpack_require__(/*! ../parse/abc_common */ "./src/parse/ab
                 el_type: 'transpose',
                 transpose: staff.clef.transpose
               });
+              clefTransposeActive[voiceNumber] = false
             }
             if (staff.clef && staff.clef.type) {
-              if (staff.clef.type.indexOf("-8") >= 0) voices[voiceNumber].push({
-                el_type: 'transpose',
-                transpose: -12
-              });else if (staff.clef.type.indexOf("+8") >= 0) voices[voiceNumber].push({
-                el_type: 'transpose',
-                transpose: 12
-              });
+              if (staff.clef.type.indexOf("-8") >= 0) {
+                voices[voiceNumber].push({el_type: 'transpose', transpose: -12});
+                clefTransposeActive[voiceNumber] = true
+              }
+              else if (staff.clef.type.indexOf("+8") >= 0) {
+                voices[voiceNumber].push({el_type: 'transpose', transpose: 12});
+                clefTransposeActive[voiceNumber] = true
+              }
+              else {
+                // if we had a previous treble+8 and now have a regular clef, then cancel the transposition
+                if (clefTransposeActive[voiceNumber]) {
+                  voices[voiceNumber].push({ el_type: 'transpose', transpose: 0 });
+                  clefTransposeActive[voiceNumber] = false
+                }
+              }
             }
             if (abctune.formatting.midi && abctune.formatting.midi.drumoff) {
               // If there is a drum off command right at the beginning it is put in the metaText instead of the stream,
@@ -16605,6 +17373,11 @@ ChordTrack.prototype.chordNotes = function (bass, modifier,inversion) {
 
   var originalInversion = inversion;
 
+  // MAE 25 Jun 2025 - Forcing power chords
+  if (gForcePowerChords){
+    modifier = "5"
+  }
+
   var intervals = gChordIntervals[modifier];
   if (!intervals) {
     if (modifier.slice(0, 2).toLowerCase() === 'ma' || modifier[0] === 'M') intervals =gChordIntervals.M;else if (modifier[0] === 'm' || modifier[0] === '-') intervals = gChordIntervals.m;else intervals = gChordIntervals.M;
@@ -17540,6 +18313,7 @@ function CreateSynthControl(parent, options) {
   if (self.options.ac) registerAudioContext(self.options.ac);
   buildDom(self.parent, self.options);
   attachListeners(self);
+
   self.disable = function (isDisabled) {
     var el = self.parent.querySelector(".abcjs-inline-audio");
     if (isDisabled) el.classList.add("abcjs-disabled");else el.classList.remove("abcjs-disabled");
@@ -17595,6 +18369,7 @@ function CreateSynthControl(parent, options) {
     }
     if (isResumed) self.options.afterResume();
   }
+
 }
 function buildDom(parent, options) {
   var hasLoop = !!options.loopHandler;
@@ -17633,7 +18408,7 @@ function buildDom(parent, options) {
     var bpm = options.bpm ? options.bpm : "BPM";
 
     // MAE 10 Nov 2023 - For touch control of tempo
-    html += '<span class="abcjs-tempo-wrapper"><label><input class="abcjs-midi-tempo" value="100" title="' + warpTitle + '" aria-label="' + warpAria + '">%</label><span class="abcjs-midi-current-tempo-wrapper">&nbsp;(<span class="abcjs-midi-current-tempo"></span> ' + bpm + ')</span></span>\n';
+    html += '<span class="abcjs-tempo-wrapper"><label><input class="abcjs-midi-tempo" value="'+gLastWarp+'" title="' + warpTitle + '" aria-label="' + warpAria + '">%</label><span class="abcjs-midi-current-tempo-wrapper">&nbsp;(<span class="abcjs-midi-current-tempo"></span> ' + bpm + ')</span></span>\n';
     // MAE END CHANGE
   }
   html += '<div class="abcjs-css-warning" style="font-size: 12px;color:red;border: 1px solid red;text-align: center;width: 300px;margin-top: 4px;font-weight: bold;border-radius: 4px;">CSS required: load abcjs-audio.css</div>';
@@ -17892,6 +18667,8 @@ function CreateSynth(theABC) {
         "alto_recorder": 3.5, // 145
         "tenor_recorder": 5.8, // 146
         "bass_recorder": 3.1, // 147
+        "mountain_dulcimer_s": 1.5, // 148        
+        "mountain_dulcimer": 2.6, // 149        
      }
 
      // Custom fade values for our custom instruments and overrides
@@ -17923,7 +18700,9 @@ function CreateSynth(theABC) {
         "alto_recorder": 100, // 145
         "tenor_recorder": 100, // 146
         "bass_recorder": 120, // 147
-        "silence":100, // 148         
+        "mountain_dulcimer_s": 250, // 148        
+        "mountain_dulcimer": 250, // 149        
+        "silence":100, // 158  
      }
     }
     else{
@@ -17948,6 +18727,8 @@ function CreateSynth(theABC) {
         "alto_recorder": 3.5, // 145
         "tenor_recorder": 5.8, // 146
         "bass_recorder": 3.1, // 147        
+        "mountain_dulcimer_s": 1.5, // 148        
+        "mountain_dulcimer": 2.6, // 149       
       }
 
       // Custom fade values for only our custom instruments
@@ -17971,7 +18752,9 @@ function CreateSynth(theABC) {
         "alto_recorder": 100, // 145
         "tenor_recorder": 100, // 146
         "bass_recorder": 120, // 147
-        "silence":100, // 148     
+        "mountain_dulcimer_s": 250, // 148        
+        "mountain_dulcimer": 250, // 149        
+        "silence":100, // 158    
      }
     } 
 
@@ -18062,7 +18845,17 @@ function CreateSynth(theABC) {
               "alto_recorder": 0, // 145
               "tenor_recorder": 0, // 146
               "bass_recorder": 0, // 147
-              "silence": 50      // 148
+              "mountain_dulcimer_s": 0, // 148        
+              "mountain_dulcimer": 0, // 149        
+              "custom1":0, // 150       
+              "custom2":0, // 151       
+              "custom3":0, // 152       
+              "custom4":0, // 153       
+              "custom5":0, // 154       
+              "custom6":0, // 155       
+              "custom7":0, // 156       
+              "custom8":0,  // 157      
+              "silence": 50      // 158
             }
           }
           else{
@@ -18086,7 +18879,17 @@ function CreateSynth(theABC) {
               "alto_recorder": 0, // 145
               "tenor_recorder": 0, // 146
               "bass_recorder": 0, // 147
-              "silence": 50      // 148
+              "mountain_dulcimer_s": 0, // 148        
+              "mountain_dulcimer": 0, // 149        
+              "custom1":0, // 150       
+              "custom2":0, // 151       
+              "custom3":0, // 152       
+              "custom4":0, // 153       
+              "custom5":0, // 154       
+              "custom6":0, // 155       
+              "custom7":0, // 156       
+              "custom8":0,  // 157      
+              "silence": 50      // 158
             }
           }
       }
@@ -18276,8 +19079,16 @@ function CreateSynth(theABC) {
       var error = [];
       for (var i = 0; i < response.length; i++) {
         var oneResponse = response[i];
-        var which = oneResponse.instrument + ":" + oneResponse.name;
-        if (oneResponse.status === "loaded") loaded.push(which);else if (oneResponse.status === "pending") pending.push(which);else if (oneResponse.status === "cached") cached.push(which);else error.push(which + ' ' + oneResponse.message);
+
+        // MAE 10 Sep 2025 - Odd thing that only seems to happen on Firefox
+        if (!oneResponse){
+          //console.log("oneResponse undefined!");
+          error.push("response index "+i+" was undefined");
+        }
+        else{
+          var which = oneResponse.instrument + ":" + oneResponse.name;
+          if (oneResponse.status === "loaded") loaded.push(which);else if (oneResponse.status === "pending") pending.push(which);else if (oneResponse.status === "cached") cached.push(which);else error.push(which + ' ' + oneResponse.message);
+        }
       }
       if (pending.length > 0) {
         if (self.debugCallback) self.debugCallback("pending " + JSON.stringify(pending));
@@ -18529,27 +19340,48 @@ function CreateSynth(theABC) {
             //console.log("Got volume multiplier override: "+thisVolumeMultiplier);
         }
 
+        // For custom instruments
+        if (thisInstrument.startsWith("custom")) {
+          // Match "custom1" to "custom8"
+          const match = thisInstrument.match(/^custom([1-8])$/);
+
+          if (match) {
+            const idx = parseInt(match[1], 10) - 1; // convert to 0-based index
+            theVolumeMultiplier = gCustomInstrumentVolumeScale[idx];
+            //console.log(`Setting custom volume scale for ${thisInstrument} at index ${idx} to ${theVolumeMultiplier}`);
+          }
+        }
+
+        var gotCustomInstrumentFade = false;
+
         // Using a custom fade time for this instrument?
         var thisCustomFade = self.customFade[thisInstrument];
+
+        // For custom instruments
+        if (thisInstrument.startsWith("custom")) {
+          // Match "custom1" to "custom8"
+          const match = thisInstrument.match(/^custom([1-8])$/);
+
+          if (match) {
+            const idx = parseInt(match[1], 10) - 1; // convert to 0-based index
+            thisCustomFade = gCustomInstrumentFade[idx];
+            //console.log(`Setting custom fade for ${thisInstrument} at index ${idx} to ${thisCustomFade}`);
+            gotCustomInstrumentFade = true;
+          }
+        }
         
         var theFade = fadeTimeSec;
 
         // Only check for custom fades if not overriden by the application
-        if (theFade == 0.2){
+        if ((theFade == 0.2) || gotCustomInstrumentFade){
 
           if (thisCustomFade){
               theFade = thisCustomFade / 1000;
-              //console.log("Got custom fade for "+thisInstrument+": "+theFade);
-
+              // console.log("Got custom fade for "+thisInstrument+": "+theFade);
           }
-          // else{
-          //     console.log("Got standard fade for "+thisInstrument+": "+theFade);
-          // }
-
         }
-        // else{
-        //   console.log("Got fade override from the application: ",theFade);
-        // }
+
+        //console.log("Volume/fade for "+thisInstrument+": "+theVolumeMultiplier+" "+theFade);
         
         allPromises.push(placeNote(audioBuffer, activeAudioContext().sampleRate, parts, uniqueSounds[k], theVolumeMultiplier, self.programOffsets[parts.instrument], theFade, self.noteEnd / 1000, self.debugCallback));
       }
@@ -19384,7 +20216,7 @@ module.exports = svg;
 /***/ (function(module) {
 
 // MAE Start of Change to add custom instruments
-var instrumentIndexToName = ["acoustic_grand_piano", "bright_acoustic_piano", "electric_grand_piano", "honkytonk_piano", "electric_piano_1", "electric_piano_2", "harpsichord", "clavinet", "celesta", "glockenspiel", "music_box", "vibraphone", "marimba", "xylophone", "tubular_bells", "dulcimer", "drawbar_organ", "percussive_organ", "rock_organ", "church_organ", "reed_organ", "accordion", "harmonica", "tango_accordion", "acoustic_guitar_nylon", "acoustic_guitar_steel", "electric_guitar_jazz", "electric_guitar_clean", "electric_guitar_muted", "overdriven_guitar", "distortion_guitar", "guitar_harmonics", "acoustic_bass", "electric_bass_finger", "electric_bass_pick", "fretless_bass", "slap_bass_1", "slap_bass_2", "synth_bass_1", "synth_bass_2", "violin", "viola", "cello", "contrabass", "tremolo_strings", "pizzicato_strings", "orchestral_harp", "timpani", "string_ensemble_1", "string_ensemble_2", "synth_strings_1", "synth_strings_2", "choir_aahs", "voice_oohs", "synth_choir", "orchestra_hit", "trumpet", "trombone", "tuba", "muted_trumpet", "french_horn", "brass_section", "synth_brass_1", "synth_brass_2", "soprano_sax", "alto_sax", "tenor_sax", "baritone_sax", "oboe", "english_horn", "bassoon", "clarinet", "piccolo", "flute", "recorder", "pan_flute", "blown_bottle", "shakuhachi", "whistle", "ocarina", "lead_1_square", "lead_2_sawtooth", "lead_3_calliope", "lead_4_chiff", "lead_5_charang", "lead_6_voice", "lead_7_fifths", "lead_8_bass_lead", "pad_1_new_age", "pad_2_warm", "pad_3_polysynth", "pad_4_choir", "pad_5_bowed", "pad_6_metallic", "pad_7_halo", "pad_8_sweep", "fx_1_rain", "fx_2_soundtrack", "fx_3_crystal", "fx_4_atmosphere", "fx_5_brightness", "fx_6_goblins", "fx_7_echoes", "fx_8_scifi", "sitar", "banjo", "shamisen", "koto", "kalimba", "bagpipe", "fiddle", "shanai", "tinkle_bell", "agogo", "steel_drums", "woodblock", "taiko_drum", "melodic_tom", "synth_drum", "reverse_cymbal", "guitar_fret_noise", "breath_noise", "seashore", "bird_tweet", "telephone_ring", "helicopter", "applause", "gunshot", "percussion", "uilleann", "smallpipesd", "smallpipesa", "sackpipa", "concertina", "melodica", "cajun", "solfege", "chorus_guitar_nylon","chorus_guitar_steel","bouzouki","bouzouki2","mandolin","marchingdrums","borderpipes","soprano_recorder","alto_recorder","tenor_recorder","bass_recorder","silence"];
+var instrumentIndexToName = ["acoustic_grand_piano", "bright_acoustic_piano", "electric_grand_piano", "honkytonk_piano", "electric_piano_1", "electric_piano_2", "harpsichord", "clavinet", "celesta", "glockenspiel", "music_box", "vibraphone", "marimba", "xylophone", "tubular_bells", "dulcimer", "drawbar_organ", "percussive_organ", "rock_organ", "church_organ", "reed_organ", "accordion", "harmonica", "tango_accordion", "acoustic_guitar_nylon", "acoustic_guitar_steel", "electric_guitar_jazz", "electric_guitar_clean", "electric_guitar_muted", "overdriven_guitar", "distortion_guitar", "guitar_harmonics", "acoustic_bass", "electric_bass_finger", "electric_bass_pick", "fretless_bass", "slap_bass_1", "slap_bass_2", "synth_bass_1", "synth_bass_2", "violin", "viola", "cello", "contrabass", "tremolo_strings", "pizzicato_strings", "orchestral_harp", "timpani", "string_ensemble_1", "string_ensemble_2", "synth_strings_1", "synth_strings_2", "choir_aahs", "voice_oohs", "synth_choir", "orchestra_hit", "trumpet", "trombone", "tuba", "muted_trumpet", "french_horn", "brass_section", "synth_brass_1", "synth_brass_2", "soprano_sax", "alto_sax", "tenor_sax", "baritone_sax", "oboe", "english_horn", "bassoon", "clarinet", "piccolo", "flute", "recorder", "pan_flute", "blown_bottle", "shakuhachi", "whistle", "ocarina", "lead_1_square", "lead_2_sawtooth", "lead_3_calliope", "lead_4_chiff", "lead_5_charang", "lead_6_voice", "lead_7_fifths", "lead_8_bass_lead", "pad_1_new_age", "pad_2_warm", "pad_3_polysynth", "pad_4_choir", "pad_5_bowed", "pad_6_metallic", "pad_7_halo", "pad_8_sweep", "fx_1_rain", "fx_2_soundtrack", "fx_3_crystal", "fx_4_atmosphere", "fx_5_brightness", "fx_6_goblins", "fx_7_echoes", "fx_8_scifi", "sitar", "banjo", "shamisen", "koto", "kalimba", "bagpipe", "fiddle", "shanai", "tinkle_bell", "agogo", "steel_drums", "woodblock", "taiko_drum", "melodic_tom", "synth_drum", "reverse_cymbal", "guitar_fret_noise", "breath_noise", "seashore", "bird_tweet", "telephone_ring", "helicopter", "applause", "gunshot", "percussion", "uilleann", "smallpipesd", "smallpipesa", "sackpipa", "concertina", "melodica", "cajun", "solfege", "chorus_guitar_nylon","chorus_guitar_steel","bouzouki","bouzouki2","mandolin","marchingdrums","borderpipes","soprano_recorder","alto_recorder","tenor_recorder","bass_recorder","mountain_dulcimer_s","mountain_dulcimer","custom1","custom2","custom3","custom4","custom5","custom6","custom7","custom8","silence"];
 // MAE End of Change
 module.exports = instrumentIndexToName;
 
@@ -19405,6 +20237,7 @@ module.exports = instrumentIndexToName;
 var getNote = function getNote(url, instrument, name, audioContext) {
 
   if (!gSoundsCacheABCJS[instrument]) gSoundsCacheABCJS[instrument] = {};
+
   var instrumentCache = gSoundsCacheABCJS[instrument];
 
   // Can't use .ogg files on Safari, falls back to .mp3
@@ -19417,6 +20250,64 @@ var getNote = function getNote(url, instrument, name, audioContext) {
   if (gIsIOS){
     isSafari = true;
   }
+
+  //debugger;
+
+  // Instrument handling for custom instruments
+  if (/^custom([1-8])?$/.test(instrument)) {
+
+      //debugger;
+      //console.log("Handling note "+name+" for instrument "+instrument);
+
+      if (!instrumentCache[name]) instrumentCache[name] = new Promise(function (resolve, reject) {
+
+        //debugger;
+
+        var theNoteDataBuffer = null;
+
+        var index = parseInt(instrument.replace("custom",""));
+
+        if (isNaN(index)){
+          index = 0;
+        }
+
+        let entry = gCustomInstrumentSamples[index].find(f => f.name === name);
+
+        if (entry) {
+          theNoteDataBuffer = entry.samples.slice(0);
+        }
+
+        if (theNoteDataBuffer){
+
+          //console.log("Got buffer for "+name);
+
+          var noteDecodedLocal = function noteDecodedLocal(audioBuffer) {
+            
+            //console.log("Decoded buffer for "+name);
+            
+            resolve({
+              instrument: instrument,
+              name: name,
+              status: "loaded",
+              audioBuffer: audioBuffer
+            });
+          };
+
+          var maybePromise = audioContext.decodeAudioData(theNoteDataBuffer, noteDecodedLocal, function () {
+             reject(Error("Can't decode custom instrument at " + name));
+          });
+
+        }
+        else{
+          reject(Error("Custom sound note " + name + " missing!"));
+        }
+
+      });
+
+      return instrumentCache[name];
+  }
+
+  //debugger;
 
   // Track custom instrument use for redirect detect on fetch
   var isCustomInstrument = false;
@@ -19438,7 +20329,7 @@ var getNote = function getNote(url, instrument, name, audioContext) {
 
       // MAE 28 June 2023 - Override specific instruments with my own
       switch (instrument){
-        case "silence":     // 148
+        case "silence":     // 158
           url = "https://michaeleskin.com/abctools/soundfonts/";
           isOgg = true;
           isCustomInstrument = true;
@@ -19684,6 +20575,18 @@ var getNote = function getNote(url, instrument, name, audioContext) {
           isCustomInstrument = true;
           break;
 
+        case "mountain_dulcimer_s":     // 148
+          url = "https://michaeleskin.com/abctools/soundfonts/mds_1/";
+          isOgg = false;
+          isCustomInstrument = true;
+          break;
+
+        case "mountain_dulcimer":     // 149
+          url = "https://michaeleskin.com/abctools/soundfonts/md_1/";
+          isOgg = false;
+          isCustomInstrument = true;
+          break;
+
         case "percussion":  // 128
           // The percussion on the alternate sound fonts is too loud, use the default in all cases
           //url = "https://paulrosen.github.io/midi-js-soundfonts/FluidR3_GM/";
@@ -19697,8 +20600,9 @@ var getNote = function getNote(url, instrument, name, audioContext) {
     else{
 
       // MAE 28 June 29023 - Override Celtic Sound instruments with my own
-      switch (instrument){        
-        case "silence":     // 148
+      switch (instrument){
+
+        case "silence":     // 158
           url = "https://michaeleskin.com/abctools/soundfonts/";
           isOgg = true;
           isCustomInstrument = true;
@@ -19821,6 +20725,18 @@ var getNote = function getNote(url, instrument, name, audioContext) {
 
         case "bass_recorder":     // 147
           url = "https://michaeleskin.com/abctools/soundfonts/bass_recorder_2/";
+          isOgg = false;
+          isCustomInstrument = true;
+          break;
+
+        case "mountain_dulcimer_s":     // 148
+          url = "https://michaeleskin.com/abctools/soundfonts/mds_1/";
+          isOgg = false;
+          isCustomInstrument = true;
+          break;
+
+        case "mountain_dulcimer":     // 149
+          url = "https://michaeleskin.com/abctools/soundfonts/md_1/";
           isOgg = false;
           isCustomInstrument = true;
           break;
@@ -20902,7 +21818,10 @@ function SynthController(theABC) {
     self.theABC = theABC;
   }
 
-  self.warp = 100;
+  // MAE 7 Jul 2025
+  //self.warp = 100;
+  self.warp = gLastWarp;
+
   self.cursorControl = null;
   self.visualObj = null;
   self.timer = null;
@@ -20910,7 +21829,7 @@ function SynthController(theABC) {
   self.options = null;
   self.currentTempo = null;
   self.control = null;
-  self.isLooping = false;
+  self.isLooping = false; 
   self.isStarted = false;
   self.isLoaded = false;
   self.isLoading = false;
@@ -20940,8 +21859,24 @@ function SynthController(theABC) {
       self.control.resetAll();
       self.restart();
       self.isStarted = false;
+
+      // MAE 8 Jul 2025 - Handle restoration of loop state
+      if (gAllowLoopStateCaching){
+        if (gLastPlayerRepeat){
+          self.control.pushLoop(true); 
+        }
+      }
+
     }
-    self.isLooping = false;
+
+    // MAE 8 Jul 2025 - Handle restoration of loop state
+    if (gAllowLoopStateCaching){
+      self.isLooping = gLastPlayerRepeat;
+    }
+    else{
+      self.isLooping = false;
+    }
+
     if (userAction) return self.go();else {
       return Promise.resolve({
         status: "no-audio-context"
@@ -21075,7 +22010,17 @@ function SynthController(theABC) {
     }
   };
   self.toggleLoop = function () {
+
     self.isLooping = !self.isLooping;
+
+    // MAE 8 Jul 2025 Persist looping state
+    if (gAllowLoopStateCaching){
+      gLastPlayerRepeat = self.isLooping;
+      if (gLocalStorageAvailable){
+        localStorage.LastPlayerRepeat = gLastPlayerRepeat;
+      }
+    }
+
     if (self.control) self.control.pushLoop(self.isLooping);
   };
   self.restart = function () {
@@ -23375,8 +24320,11 @@ AbstractEngraver.prototype.createABCElement = function (isFirstStaff, isSingleLi
       elemset[0] = abselem;
       break;
     case "tempo":
+      // MAE 20 Nov 2025 For %%printtempo after initial header
       var abselem3 = new AbsoluteElement(elem, 0, 0, 'tempo', this.tuneNumber);
-      abselem3.addFixedX(new TempoElement(elem, this.tuneNumber, createNoteHead));
+      if (!elem.suppress){
+        abselem3.addFixedX(new TempoElement(elem, this.tuneNumber, createNoteHead));
+      }
       elemset[0] = abselem3;
       break;
     case "style":
@@ -24200,11 +25148,16 @@ AbstractEngraver.prototype.createBarLine = function (voice, elem, isFirstStaff) 
   } // 2 is hardcoded
 
   if (elem.startEnding && isFirstStaff) {
-    // only put the first & second ending marks on the first staff
-    var textWidth = this.getTextSize.calc(elem.startEnding, "repeatfont", '').width;
-    abselem.minspacing += textWidth + 10; // Give plenty of room for the ending number.
-    this.partstartelem = new EndingElem(elem.startEnding, anchor, null);
-    voice.addOther(this.partstartelem);
+    // MAE 17 May 2025 - Fixes drawing issue
+    //console.log("voicenumber:"+voice.voicenumber);
+    if (voice.voicenumber == 0){
+      //debugger;
+      // only put the first & second ending marks on the first staff
+      var textWidth = this.getTextSize.calc(elem.startEnding, "repeatfont", '').width;
+      abselem.minspacing += textWidth + 10; // Give plenty of room for the ending number.
+      this.partstartelem = new EndingElem(elem.startEnding, anchor, null);
+      voice.addOther(this.partstartelem);
+    }
   }
 
   // Add a little space to the left of the bar line so that nothing can crowd it.
@@ -24968,15 +25921,19 @@ var compoundDecoration = function compoundDecoration(decoration, pitch, width, a
   for (var i = 0; i < decoration.length; i++) {
     switch (decoration[i]) {
       case "/":
+      case "trem1":
         compoundDecoration("flags.ugrace", 1);
         break;
       case "//":
+      case "trem2":
         compoundDecoration("flags.ugrace", 2);
         break;
       case "///":
+      case "trem3":
         compoundDecoration("flags.ugrace", 3);
         break;
       case "////":
+      case "trem4":
         compoundDecoration("flags.ugrace", 4);
         break;
     }
@@ -25145,6 +26102,42 @@ var stackedDecoration = function stackedDecoration(decoration, width, abselem, y
         break;
       case "mark":
         abselem.klass = "mark";
+        break;
+      case "mark1":
+        abselem.klass = "mark1";
+        break;
+      case "mark2":
+        abselem.klass = "mark2";
+        break;
+      case "mark3":
+        abselem.klass = "mark3";
+        break;
+      case "mark4":
+        abselem.klass = "mark4";
+        break;
+      case "mark5":
+        abselem.klass = "mark5";
+        break;
+      case "mark6":
+        abselem.klass = "mark6";
+        break;
+      case "mark7":
+        abselem.klass = "mark7";
+        break;
+      case "mark8":
+        abselem.klass = "mark8";
+        break;
+      case "mark9":
+        abselem.klass = "mark9";
+        break;
+      case "mark10":
+        abselem.klass = "mark10";
+        break;
+      case "push":
+        abselem.klass = "push";
+        break;
+      case "draw":
+        abselem.klass = "draw";
         break;
     }
   }
@@ -25857,6 +26850,7 @@ module.exports = EndingElem;
 /***/ (function(module) {
 
 function FreeText(info, vskip, getFontAndAttr, paddingLeft, width, getTextSize) {
+  //debugger;
   var text = info.text;
   this.rows = [];
   var size;
@@ -25864,7 +26858,7 @@ function FreeText(info, vskip, getFontAndAttr, paddingLeft, width, getTextSize) 
     move: vskip
   });
   var hash = getFontAndAttr.calc('textfont', 'defined-text');
-  if (text === "") {
+  if (text === ""){
     // we do want to print out blank lines if they have been specified.
     this.rows.push({
       move: hash.attr['font-size'] * 2
@@ -25900,10 +26894,28 @@ function FreeText(info, vskip, getFontAndAttr, paddingLeft, width, getTextSize) 
         name: "free-text"
       });      
     }
-    size = getTextSize.calc(text, 'textfont', 'defined-text');
+
+    // MAE 9 May 2025 - Force blank text lines in a text block to have height
+    function replaceStandaloneNewlinesForTextBlocks(input) {
+
+      return input.replace(/^[ \t]*\n/gm, 'X\n');;
+
+    }
+
+    //debugger;
+
+    var textForSize = replaceStandaloneNewlinesForTextBlocks(text);
+
+
+    size = getTextSize.calc(textForSize, 'textfont', 'defined-text'); // was text
+
+    // console.log(textForSize);
+    // console.log("size:"+size.height);
+
     this.rows.push({
       move: size.height
     });
+
   } else if (text) {
     var maxHeight = 0;
     var leftSide = paddingLeft;
@@ -26203,7 +27215,7 @@ module.exports = StaffGroupElement;
 /***/ (function(module) {
 
 function Subtitle(spaceAbove, formatting, info, center, paddingLeft, getTextSize) {
-
+  
   this.rows = [];
   if (spaceAbove) this.rows.push({
     move: spaceAbove
@@ -27544,7 +28556,10 @@ function drawAbsolute(renderer, params, bartop, selectables, staffPos) {
   } else if (params.elemset.length > 0) selectables.add(params, params.elemset[0], params.type === 'note', staffPos);
   // If there was no output, then don't add to the selectables. This happens when using the "y" spacer, for instance.
 
-  if (params.klass) setClass(params.elemset, "mark", "", "#00ff00");
+  // MAE 31 July 2025 - For additional markclasses
+  if (params.klass){ 
+    setClass(params.elemset, params.klass, "", "#00f000");
+  }
   if (params.hint) setClass(params.elemset, "abcjs-hint", "", null);
   params.abcelem.abselem = params;
   if (params.heads && params.heads.length > 0) {
@@ -27817,10 +28832,20 @@ function draw(renderer, classes, abcTune, width, maxWidth, responsive, scale, se
   renderer.paper.closeGroup();
   renderer.moveY(renderer.spacing.music);
   var staffgroups = [];
+  var nStaves = 0;
   for (var line = 0; line < abcTune.lines.length; line++) {
     classes.incrLine();
     var abcLine = abcTune.lines[line];
     if (abcLine.staff) {
+
+      // MAE 26 May 2025 - for incipits staff count limiting
+      nStaves++;
+      if (abcTune.formatting.maxStaves){
+        if (nStaves > abcTune.formatting.maxStaves){
+          break;
+        }
+      }
+
       renderer.paper.openGroup();
       if (abcLine.vskip) {
         renderer.moveY(abcLine.vskip);
@@ -27924,6 +28949,8 @@ function drawEnding(renderer, params, linestartx, lineendx, selectables) {
   pathString += sprintf("M %f %f L %f %f ", linestartx, y, lineendx, y);
   renderer.paper.openGroup({
     klass: renderer.controller.classes.generate("ending"),
+    // MAE 17 May 2025 - Ending numbers not being drawn in correct color
+    fill: renderer.foregroundColor, 
     "data-name": "ending"
   });
   printPath(renderer, {
@@ -28181,7 +29208,7 @@ function printLine(renderer, x1, x2, y, klass, name, dy) {
   var y1 = roundNumber(y - dy);
   var y2 = roundNumber(y + dy);
   // TODO-PER: This fixes a firefox bug where it isn't displayed
-  if (renderer.firefox112) {
+  if (renderer.isFirefox) {
     y += dy / 2; // Because the y coordinate is the edge of where the line goes but the width widens from the middle.
     var attr = {
       x1: x1,
@@ -28245,7 +29272,7 @@ function printStem(renderer, x, dx, y1, y2, klass, name) {
   x = roundNumber(x);
   var x2 = roundNumber(x + dx);
   // TODO-PER: This fixes a firefox bug where it isn't displayed
-  if (renderer.firefox112) {
+  if (renderer.isFirefox) {
     x += dx / 2; // Because the x coordinate is the edge of where the line goes but the width widens from the middle.
     var attr = {
       x1: x,
@@ -29200,8 +30227,23 @@ function renderText(renderer, params, alreadyInGroup) {
   if (params.cursor) {
     hash.attr.cursor = params.cursor;
   }
-  var text = params.text.replace(/\n\n/g, "\n \n");
+
+  // MAE 9 May 2025 for free text blocks
+  var text;
+
+  if (params.name == "free-text"){
+    
+    text = params.text.replace(/^[ \t]*\n/gm, ' \n');
+
+  }
+  else{
+
+    text = params.text.replace(/\n\n/g, "\n \n");
+
+  }
+
   text = text.replace(/^\n/, "\xA0\n");
+
   if (hash.font.box) {
     if (!alreadyInGroup) renderer.paper.openGroup({
       klass: hash.attr['class'],
@@ -29871,6 +30913,23 @@ EngraverController.prototype.engraveTune = function (abcTune, tuneNumber, lineOf
     }
   }
 
+  // MAE 1 Aug 2025 - For CSS aggregation
+  if (abcTune.metaText.css){
+
+      if (!this.classes){
+        //console.log("shouldAddClasses case 1")
+        this.classes = new Classes({
+        shouldAddClasses: true
+        });
+      }
+      else{
+        //console.log("shouldAddClasses case 2")
+        this.classes.shouldAddClasses = true;
+      }
+    
+      aggregateCSSRules(abcTune.metaText.css);
+
+  } 
   // MAE End of Change
 
   // Deal with tablature for staff
@@ -29936,7 +30995,7 @@ function splitSvgIntoLines(renderer, output, title, responsive) {
     if (responsive !== 'resize') svg.setAttribute("height", height);
     if (responsive === 'resize') svg.style.position = '';
     // TODO-PER: Hack! Not sure why this is needed.
-    var viewBoxHeight = renderer.firefox112 ? height + 1 : height;
+    var viewBoxHeight = renderer.isFirefox ? height + 1 : height;
     svg.setAttribute("viewBox", "0 " + nextTop + " " + width + " " + viewBoxHeight);
     //
     // MAE 20 Feb 2025 - Made this conditional
@@ -31835,17 +32894,31 @@ var Svg = __webpack_require__(/*! ./svg */ "./src/write/svg.js");
  * Implements the API for rendering ABCJS Abstract Rendering Structure to a canvas/paper (e.g. SVG, Raphael, etc)
  * @param {Object} paper
  */
+
+function isFirefoxVersionGTE(inputString, minVersion = 140.0) {
+  const match = inputString.match(/Firefox\/(\d+(?:\.\d+)?)/);
+  if (!match) return false;
+
+  const version = parseFloat(match[1]);
+
+  if (isNaN(version)){
+    return false;
+  }
+  
+  return version >= minVersion;
+}
+
 var Renderer = function Renderer(paper) {
   this.paper = new Svg(paper);
   this.controller = null;
   this.space = 3 * spacing.SPACE;
   this.padding = {}; // renderer's padding is managed by the controller
   this.reset();
-  // MAE START OF CHANGE
-  this.firefox112 = false;
-  //this.firefox112 = navigator.userAgent.indexOf('Firefox/112.0') >= 0;
+  // MAE 25 Jun 2025 - START OF CHANGE
+  this.isFirefox = isFirefoxVersionGTE(navigator.userAgent,140.0);
   // MAE END OF CHANGE
 };
+
 Renderer.prototype.reset = function () {
   this.paper.clear();
   this.y = 0;
@@ -32154,18 +33227,33 @@ Svg.prototype.rectBeneath = function (attr) {
   this.svg.insertBefore(el, this.svg.firstChild);
 };
 Svg.prototype.text = function (text, attr, target) {
+
   var el = document.createElementNS(svgNS, 'text');
+
   el.setAttribute("stroke", "none");
   for (var key in attr) {
     if (attr.hasOwnProperty(key)) {
       el.setAttribute(key, attr[key]);
     }
   }
+
+  var isFreeText = (attr["data-name"] == "free-text");
+
   var lines = ("" + text).split("\n");
+
   for (var i = 0; i < lines.length; i++) {
+
+    if (isFreeText && (lines[i] == "")){
+      // Don't draw empty lines
+      continue;
+    }
+
     var line = document.createElementNS(svgNS, 'tspan');
+
     line.setAttribute("x", attr.x ? attr.x : 0);
+    
     if (i !== 0) line.setAttribute("dy", "1.2em");
+    
     if (lines[i].indexOf("\x03") !== -1) {
       var parts = lines[i].split('\x03');
       line.textContent = parts[0];
@@ -32184,10 +33272,35 @@ Svg.prototype.text = function (text, attr, target) {
         ts3.textContent = parts[2];
         line.appendChild(ts3);
       }
-    } else line.textContent = lines[i];
+    } 
+    else 
+    {
+      // MAE 9 May 2025 - For improved block text
+      if (isFreeText){
+
+        // Fixes issue where blank lines in text blocks didn't take up any vertical
+        if (lines[i].trim() == ""){
+          line.innerHTML = "&nbsp;";
+        }
+        else{
+          line.textContent = lines[i];
+        }
+
+      }
+      else{
+
+        line.textContent = lines[i];
+
+      }
+    }
+
+
     el.appendChild(line);
+
   }
+
   if (target) target.appendChild(el);else this.append(el);
+
   return el;
 };
 Svg.prototype.guessWidth = function (text, attr) {
