@@ -1,3 +1,24 @@
+@font-face {
+  font-family: 'Fira Sans';
+  font-weight: 400;
+  font-style: normal;
+  src: url('/fonts/FiraSans-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Fira Sans';
+  font-weight: 700;
+  font-style: normal;
+  src: url('/fonts/FiraSans-SemiBold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Fira Sans Semibold';
+  font-weight: 400;
+  font-style: normal;
+  src: url('/fonts/FiraSans-SemiBold.ttf') format('truetype');
+}
+
 html {
   -webkit-text-size-adjust: 100%; /* 2 */
 	scrollbar-gutter: stable;
@@ -1960,6 +1981,13 @@ margin-bottom:-16px;
 
 #notenlinks{
 padding-top:12px;
+}
+
+#toolpagetitle {
+	font-family: 'Fira Sans';
+	font-weight: 700;
+	font-size: x-large;
+	margin: 0;
 }
 
 .zoombutton{

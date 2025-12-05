@@ -255,23 +255,42 @@ var gFullScreenScaling = 50;
 var gAngloButtonNames = [];
 
 // Fonts used for rendering
+// var gRenderingFonts = {
+//   titlefont: "Palatino 18",
+//   subtitlefont: "Palatino 13",
+//   infofont: "Palatino 13",
+//   partsfont: "Palatino 13",
+//   tempofont: "Palatino 13",
+//   textfont: "Palatino 13",
+//   composerfont: "Palatino 13",
+//   annotationfont: "Palatino 13",
+//   gchordfont: "Verdana 12",
+//   vocalfont: "Palatino 13",
+//   wordsfont: "Palatino 13",
+//   tablabelfont: "Trebuchet MS 14",
+//   tabnumberfont: "Arial 12",
+//   tabgracefont: "Arial 8",
+//   historyfont: "Times New Roman 14",
+//   voicefont: "Times New Roman 13"
+// }
+
 var gRenderingFonts = {
-  titlefont: "Palatino 18",
-  subtitlefont: "Palatino 13",
-  infofont: "Palatino 13",
-  partsfont: "Palatino 13",
-  tempofont: "Palatino 13",
-  textfont: "Palatino 13",
-  composerfont: "Palatino 13",
-  annotationfont: "Palatino 13",
-  gchordfont: "Verdana 12",
-  vocalfont: "Palatino 13",
-  wordsfont: "Palatino 13",
-  tablabelfont: "Trebuchet MS 14",
-  tabnumberfont: "Arial 12",
-  tabgracefont: "Arial 8",
-  historyfont: "Times New Roman 14",
-  voicefont: "Times New Roman 13"
+  titlefont: "Fira Sans Semibold 18",
+  subtitlefont: "Fira Sans 14",
+  infofont: "Fira Sans 12",
+  partsfont: "Fira Sans 12",
+  tempofont: "Fira Sans 13",
+  textfont: "Fira Sans 12",
+  composerfont: "Fira Sans 12",
+  annotationfont: "Fira Sans 12",
+  gchordfont: "Fira Sans Semibold 12",
+  vocalfont: "Fira Sans 12",
+  wordsfont: "Fira Sans 12",
+  tablabelfont: "Fira Sans 14",
+  tabnumberfont: "Fira Sans 12",
+  tabgracefont: "Fira Sans 8",
+  historyfont: "Fira Sans 11",
+  voicefont: "Fira Sans 12"
 }
 
 // Mp3 bitrate
@@ -47513,24 +47532,42 @@ function idleFontsDialog() {
 function resetABCRenderingFonts() {
 
   // Default fonts used for rendering
+  // gDialogRenderingFonts = {
+  //   titlefont: "Palatino 18",
+  //   subtitlefont: "Palatino 13",
+  //   infofont: "Palatino 13",
+  //   partsfont: "Palatino 13",
+  //   tempofont: "Palatino 13",
+  //   textfont: "Palatino 13",
+  //   composerfont: "Palatino 13",
+  //   annotationfont: "Palatino 13",
+  //   gchordfont: "Verdana 12",
+  //   vocalfont: "Palatino 13",
+  //   wordsfont: "Palatino 13",
+  //   tablabelfont: "Trebuchet MS 14",
+  //   tabnumberfont: "Arial 12",
+  //   tabgracefont: "Arial 8",
+  //   historyfont: "Times New Roman 14",
+  //   voicefont: "Times New Roman 13"
+  // }
+  
   gDialogRenderingFonts = {
-    titlefont: "Palatino 18",
-    subtitlefont: "Palatino 13",
-    infofont: "Palatino 13",
-    partsfont: "Palatino 13",
-    tempofont: "Palatino 13",
-    textfont: "Palatino 13",
-    composerfont: "Palatino 13",
-    annotationfont: "Palatino 13",
-    gchordfont: "Verdana 12",
-    vocalfont: "Palatino 13",
-    wordsfont: "Palatino 13",
-    tablabelfont: "Trebuchet MS 14",
-    tabnumberfont: "Arial 12",
-    tabgracefont: "Arial 8",
-    historyfont: "Times New Roman 14",
-    voicefont: "Times New Roman 13"
-
+    titlefont: "Fira Sans Semibold 18",
+    subtitlefont: "Fira Sans 14",
+    infofont: "Fira Sans 12",
+    partsfont: "Fira Sans 12",
+    tempofont: "Fira Sans 13",
+    textfont: "Fira Sans 12",
+    composerfont: "Fira Sans 12",
+    annotationfont: "Fira Sans 12",
+    gchordfont: "Fira Sans Semibold 12",
+    vocalfont: "Fira Sans 12",
+    wordsfont: "Fira Sans 12",
+    tablabelfont: "Fira Sans 14",
+    tabnumberfont: "Fira Sans 12",
+    tabgracefont: "Fira Sans 8",
+    historyfont: "Fira Sans 11",
+    voicefont: "Fira Sans 12"
   }
 }
 
@@ -47606,82 +47643,82 @@ function ConfigureFonts() {
   const form = [{
     html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;font-family:helvetica;margin-left:15px;">Configure ABC Rendering Fonts&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#configure_fonts" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
   }, {
-    name: "Title font (Default: Palatino 18):",
+    name: "Title font (Default: Fira Sans Semibold 18):",
     id: "configure_titlefont",
     type: "text",
     cssClass: "configure_font_settings_form_text_wide"
   }, {
-    name: "Subtitle font (Default: Palatino 13):",
+    name: "Subtitle font (Default: Fira Sans 14):",
     id: "configure_subtitlefont",
     type: "text",
     cssClass: "configure_font_settings_form_text_wide"
   }, {
-    name: "Info font (Default: Palatino 13):",
+    name: "Info font (Default: Fira Sans 12):",
     id: "configure_infofont",
     type: "text",
     cssClass: "configure_font_settings_form_text_wide"
   }, {
-    name: "Composer font (Default: Palatino 13):",
+    name: "Composer font (Default: Fira Sans 12):",
     id: "configure_composerfont",
     type: "text",
     cssClass: "configure_font_settings_form_text_wide"
   }, {
-    name: "Tempo font (Default: Palatino 13):",
+    name: "Tempo font (Default: Fira Sans 13):",
     id: "configure_tempofont",
     type: "text",
     cssClass: "configure_font_settings_form_text_wide"
   }, {
-    name: "Guitar chord font (Default: Verdana 12):",
+    name: "Guitar chord font (Default: Fira Sans Semibold 12):",
     id: "configure_gchordfont",
     type: "text",
     cssClass: "configure_font_settings_form_text_wide"
   }, {
-    name: "Tab label font (Default: Trebuchet MS 14):",
+    name: "Tab label font (Default: Fira Sans 14):",
     id: "configure_tablabelfont",
     type: "text",
     cssClass: "configure_font_settings_form_text_wide"
   }, {
-    name: "Tab number font (Default: Arial 12):",
+    name: "Tab number font (Default: Fira Sans 12):",
     id: "configure_tabnumberfont",
     type: "text",
     cssClass: "configure_font_settings_form_text_wide"
   }, {
-    name: "Tab grace font (Default: Arial 8):",
+    name: "Tab grace font (Default: Fira Sans 8):",
     id: "configure_tabgracefont",
     type: "text",
     cssClass: "configure_font_settings_form_text_wide"
   }, {
-    name: "History font (Default: Times New Roman 14):",
+    name: "History font (Default: Fira Sans 11):",
     id: "configure_historyfont",
     type: "text",
     cssClass: "configure_font_settings_form_text_wide"
   }, {
-    name: "Text font (Default: Palatino 13):",
+    name: "Text font (Default: Fira Sans 12):",
     id: "configure_textfont",
     type: "text",
     cssClass: "configure_font_settings_form_text_wide"
   }, {
-    name: "Annotation font (Default: Palatino 13):",
+    name: "Annotation font (Default: Fira Sans 12):",
     id: "configure_annotationfont",
     type: "text",
     cssClass: "configure_font_settings_form_text_wide"
   }, {
-    name: "Voice font (Default: Times New Roman 13):",
+    name: "Voice font (Default: Fira Sans 12):",
     id: "configure_voicefont",
     type: "text",
     cssClass: "configure_font_settings_form_text_wide"
   }, {
-    name: "Parts font (Default: Palatino 13):",
+    name: "Parts font (Default: Fira Sans 12):",
     id: "configure_partsfont",
     type: "text",
     cssClass: "configure_font_settings_form_text_wide"
   }, {
-    name: "Vocal font (Default: Palatino 13):",
+    name: "Vocal font (Default: Fira Sans 12):",
     id: "configure_vocalfont",
     type: "text",
     cssClass: "configure_font_settings_form_text_wide"
   }, {
-    name: "Words font (Default: Palatino 13):",
+    name: "Words font (Default: Fira Sans 12):",
     id: "configure_wordsfont",
     type: "text",
     cssClass: "configure_font_settings_form_text_wide"
