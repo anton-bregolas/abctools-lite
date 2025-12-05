@@ -475,6 +475,12 @@ var gDisableAndroid = false;
 var gNotoSansLoaded = false;
 var gNotoSerifLoaded = false;
 
+// Are Fira Sans font styles loaded?
+var gFiraSansLoaded = false;
+var gFiraSansSemiBoldLoaded = false;
+var gFiraSansItalicLoaded = false;
+var gFiraSansBoldItalicLoaded = false;
+
 // Are we in Presentation mode?
 var gInPresentationMode = false;
 
@@ -9923,7 +9929,8 @@ function ParseCommentCommands(theNotes) {
 
     switch (lcfont) {
       case "times":
-        // Translate Times style description
+      case "fira-sans":
+        // Translate Times & Fira Sans style description
         if (gPDFFontStyle.toLowerCase() == "oblique") {
           gPDFFontStyle = "Italic";
         } else
@@ -11295,9 +11302,9 @@ function ExportTextIncipitsPDF(title, bDoFullTunes, bDoCCETransform, bDoQRCodes)
   // Set the global PDF rendering flag
   gRenderingPDF = true;
 
-  // Dynamic loading of fonts with Chinese characters
+  // Dynamic loading of fonts with Chinese characters + Fira Sans fonts
   // They are huge files, so don't want to burden the normal use of the tool with them
-  if ((gPDFFont == "Noto-Sans") || (gPDFFont == "Noto-Serif")) {
+  if ((gPDFFont == "Noto-Sans") || (gPDFFont == "Noto-Serif") || (gPDFFont == "Fira-Sans")) {
 
     document.getElementById("statustunecount").innerHTML = "";
 
@@ -11309,7 +11316,7 @@ function ExportTextIncipitsPDF(title, bDoFullTunes, bDoCCETransform, bDoQRCodes)
 
         document.getElementById("statuspdfname").innerHTML = "Loading Noto-Sans Font";
 
-        loadScript("./notosans-regular.js",
+        loadScript("https://michaeleskin.com/abctools/notosans-regular.js",
 
           function() {
 
@@ -11336,7 +11343,7 @@ function ExportTextIncipitsPDF(title, bDoFullTunes, bDoCCETransform, bDoQRCodes)
 
         document.getElementById("statuspdfname").innerHTML = "Loading Noto-Serif Font";
 
-        loadScript("./notoserif-regular.js",
+        loadScript("https://michaeleskin.com/abctools/notoserif-regular.js",
 
           function() {
 
@@ -11356,7 +11363,111 @@ function ExportTextIncipitsPDF(title, bDoFullTunes, bDoCCETransform, bDoQRCodes)
         doPDFStepTwo();
 
       }
-    }
+    } else
+      if (gPDFFont == "Fira-Sans" && (gPDFFontStyle == "Italic" || gPDFFontStyle == "Oblique")) {
+
+        if (!gFiraSansItalicLoaded) {
+
+          document.getElementById("statuspdfname").innerHTML = "Loading Fira Sans Italic Font";
+
+          loadScript("./fonts/firasans-italic.js",
+
+            function() {
+
+              //console.log("Fira Sans font loaded");
+
+              gFiraSansItalicLoaded = true;
+
+              gPDFFontStyle = "Italic";
+
+              doPDFStepTwo();
+
+            });
+        } else {
+
+          gPDFFontStyle = "Italic";
+
+          doPDFStepTwo();
+        }
+    } else
+      if (gPDFFont == "Fira-Sans" && gPDFFontStyle == "BoldItalic") {
+
+        if (!gFiraSansBoldItalicLoaded) {
+
+          document.getElementById("statuspdfname").innerHTML = "Loading Fira Sans Bold Italic Font";
+
+          loadScript("./fonts/firasans-bolditalic.js",
+
+            function() {
+
+              //console.log("Fira Sans font loaded");
+
+              gFiraSansBoldItalicLoaded = true;
+
+              gPDFFontStyle = "BoldItalic";
+
+              doPDFStepTwo();
+
+            });
+        } else {
+
+          gPDFFontStyle = "BoldItalic";
+
+          doPDFStepTwo();
+        }
+    } else
+      if (gPDFFont == "Fira-Sans" && gPDFFontStyle == "Bold") {
+
+        if (!gFiraSansSemiBoldLoaded) {
+
+          document.getElementById("statuspdfname").innerHTML = "Loading Fira Sans Semibold Font";
+
+          loadScript("./fonts/firasans-semibold.js",
+
+            function() {
+
+              //console.log("Fira Sans font loaded");
+
+              gFiraSansSemiBoldLoaded = true;
+
+              gPDFFontStyle = "Bold";
+
+              doPDFStepTwo();
+
+            });
+        } else {
+
+          gPDFFontStyle = "Bold";
+
+          doPDFStepTwo();
+        }
+    } else
+      if (gPDFFont == "Fira-Sans") {
+
+        if (!gFiraSansLoaded) {
+
+          document.getElementById("statuspdfname").innerHTML = "Loading Fira Sans Regular Font";
+
+          loadScript("./fonts/firasans-regular.js",
+
+            function() {
+
+              //console.log("Fira Sans font loaded");
+
+              gFiraSansLoaded = true;
+
+              gPDFFontStyle = "Normal";
+
+              doPDFStepTwo();
+
+            });
+        } else {
+
+          gPDFFontStyle = "Normal";
+
+          doPDFStepTwo();
+        }
+      }
   } else {
 
     doPDFStepTwo();
@@ -12007,7 +12118,7 @@ function ExportNotationPDF(title) {
 
   function doPDFStepTwo() {
 
-    if ((gPDFFont == "Noto-Sans") || (gPDFFont == "Noto-Serif")) {
+    if ((gPDFFont == "Noto-Sans") || (gPDFFont == "Noto-Serif") || (gPDFFont == "Fira-Sans")) {
 
       document.getElementById("statustunecount").innerHTML = "";
 
@@ -12019,7 +12130,7 @@ function ExportNotationPDF(title) {
 
           document.getElementById("statuspdfname").innerHTML = "Loading Noto-Sans Font";
 
-          loadScript("./notosans-regular.js",
+          loadScript("https://michaeleskin.com/abctools/notosans-regular.js",
 
             function() {
 
@@ -12046,7 +12157,7 @@ function ExportNotationPDF(title) {
 
           document.getElementById("statuspdfname").innerHTML = "Loading Noto-Serif Font";
 
-          loadScript("./notoserif-regular.js",
+          loadScript("https://michaeleskin.com/abctools/notoserif-regular.js",
 
             function() {
 
@@ -12066,8 +12177,112 @@ function ExportNotationPDF(title) {
           doPDFStepThree();
 
         }
+    } else
+      if (gPDFFont == "Fira-Sans" && gPDFFontStyle == "Italic") {
+
+        if (!gFiraSansItalicLoaded) {
+
+          document.getElementById("statuspdfname").innerHTML = "Loading Fira Sans Italic Font";
+
+          loadScript("./fonts/firasans-italic.js",
+
+            function() {
+
+              //console.log("Fira Sans font loaded");
+
+              gFiraSansItalicLoaded = true;
+
+              gPDFFontStyle = "Italic";
+
+              doPDFStepThree();
+
+            });
+        } else {
+
+          gPDFFontStyle = "Italic";
+
+          doPDFStepThree();
+        }
+    } else
+      if (gPDFFont == "Fira-Sans" && gPDFFontStyle == "BoldItalic") {
+
+        if (!gFiraSansBoldItalicLoaded) {
+
+          document.getElementById("statuspdfname").innerHTML = "Loading Fira Sans Bold Italic Font";
+
+          loadScript("./fonts/firasans-bolditalic.js",
+
+            function() {
+
+              //console.log("Fira Sans font loaded");
+
+              gFiraSansBoldItalicLoaded = true;
+
+              gPDFFontStyle = "BoldItalic";
+
+              doPDFStepThree();
+
+            });
+        } else {
+
+          gPDFFontStyle = "BoldItalic";
+
+          doPDFStepThree();
+        }
+    } else
+      if (gPDFFont == "Fira-Sans" && gPDFFontStyle == "Bold") {
+
+        if (!gFiraSansSemiBoldLoaded) {
+
+          document.getElementById("statuspdfname").innerHTML = "Loading Fira Sans Semibold Font";
+
+          loadScript("./fonts/firasans-semibold.js",
+
+            function() {
+
+              //console.log("Fira Sans font loaded");
+
+              gFiraSansSemiBoldLoaded = true;
+
+              gPDFFontStyle = "Bold";
+
+              doPDFStepThree();
+
+            });
+        } else {
+
+          gPDFFontStyle = "Bold";
+
+          doPDFStepThree();
+        }
+    } else
+      if (gPDFFont == "Fira-Sans") {
+
+        if (!gFiraSansLoaded) {
+
+          document.getElementById("statuspdfname").innerHTML = "Loading Fira Sans Regular Font";
+
+          loadScript("./fonts/firasans-regular.js",
+
+            function() {
+
+              //console.log("Fira Sans font loaded");
+
+              gFiraSansLoaded = true;
+
+              gPDFFontStyle = "Normal";
+
+              doPDFStepThree();
+
+            });
+        } else {
+
+          gPDFFontStyle = "Normal";
+
+          doPDFStepThree();
+        }
       }
-    } else {
+  } else {
 
       doPDFStepThree();
 
@@ -48131,19 +48346,22 @@ function PDFExportDialog() {
   }, ];
 
   const fontname_list = [{
-    name: "  Times",
+    name: "  Times (serif)",
     id: "Times"
   }, {
-    name: "  Helvetica",
+    name: "  Helvetica (sans-serif)",
     id: "Helvetica"
   }, {
-    name: "  Courier",
+    name: "  Courier (monospace)",
     id: "Courier"
   }, {
-    name: "  Noto-Serif",
+    name: "  Fira Sans (⤓ 0.5MB × 4)",
+    id: "Fira-Sans"
+  }, {
+    name: "  Noto Serif (⤓ 9MB)",
     id: "Noto-Serif"
   }, {
-    name: "  Noto-Sans",
+    name: "  Noto Sans (⤓ 12MB)",
     id: "Noto-Sans"
   }, ];
 
@@ -48180,7 +48398,7 @@ function PDFExportDialog() {
   var dialog_PDFFont = gPDFFont;
   var pdffontlc = dialog_PDFFont.toLowerCase();
 
-  if ((pdffontlc != "times") && (pdffontlc != "helvetica") && (pdffontlc != "courier") && (pdffontlc != "noto-serif") && (pdffontlc != "noto-sans")) {
+  if ((pdffontlc != "times") && (pdffontlc != "helvetica") && (pdffontlc != "courier") && (pdffontlc != "noto-serif") && (pdffontlc != "noto-sans") && (pdffontlc != "fira-sans")) {
     dialog_PDFFont = "Times";
   }
 
@@ -48196,8 +48414,8 @@ function PDFExportDialog() {
 
     var pdffontstylelc = dialog_PDFFontStyle.toLowerCase();
 
-    // Times italic to oblique mapping
-    if (dialog_PDFFont == "Times") {
+    // Times & Fira Sans italic to oblique mapping
+    if (dialog_PDFFont == "Times" || dialog_PDFFont == "Fira-Sans") {
 
       if (pdffontstylelc == "italic") {
         dialog_PDFFontStyle = "Oblique";
@@ -48580,7 +48798,7 @@ function PDFExportDialog() {
         theFontStyle = "Normal";
 
       } else
-        // Remap Normal style to empty for Helvetica and Courier
+        // Remap Normal style to empty for Helvetica, Courier and Fira Sans
         if (theFontStyle == "Normal") {
 
           theFontStyle = "";
@@ -48592,6 +48810,7 @@ function PDFExportDialog() {
         switch (theFontName) {
 
           case "Times":
+          case "Fira-Sans":
             // Translate Times style description
             if (theFontStyle.toLowerCase() == "oblique") {
               theFontStyle = "Italic";

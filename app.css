@@ -7,16 +7,79 @@
 
 @font-face {
   font-family: 'Fira Sans';
-  font-weight: 700;
+  font-weight: 400;
+  font-style: italic;
+  src: url('/fonts/FiraSans-Italic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Fira Sans';
+  font-weight: 600;
+  font-style: normal;
+  src: url('/fonts/FiraSans-SemiBold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Fira Sans';
+  font-weight: 600;
+  font-style: italic;
+  src: url('/fonts/FiraSans-BoldItalic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Fira Sans Bold';
+  font-weight: 600;
+  font-style: normal;
+  src: url('/fonts/FiraSans-SemiBold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Fira Sans Bold';
+  font-weight: 600;
+  font-style: italic;
+  src: url('/fonts/FiraSans-BoldItalic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Fira Sans Semibold';
+  font-weight: 600;
   font-style: normal;
   src: url('/fonts/FiraSans-SemiBold.ttf') format('truetype');
 }
 
 @font-face {
   font-family: 'Fira Sans Semibold';
+  font-weight: 600;
+  font-style: italic;
+  src: url('/fonts/FiraSans-BoldItalic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Fira Sans Semibold Italic';
+  font-weight: 600;
+  font-style: normal;
+  src: url('/fonts/FiraSans-BoldItalic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Fira Sans Bold Italic';
+  font-weight: 600;
+  font-style: normal;
+  src: url('/fonts/FiraSans-BoldItalic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Fira Sans Italic';
   font-weight: 400;
   font-style: normal;
-  src: url('/fonts/FiraSans-SemiBold.ttf') format('truetype');
+  src: url('/fonts/FiraSans-Italic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Fira Sans Italic';
+  font-weight: 600;
+  font-style: normal;
+  src: url('/fonts/FiraSans-BoldItalic.ttf') format('truetype');
 }
 
 html {
@@ -4462,7 +4525,7 @@ color:black;
 font-size:11pt;
 font-family:"Helvetica";
 height:32px;
-width:145px;
+width:185px;
 margin-left:10px;
 padding-left:10px;
 margin-top:-7px;
