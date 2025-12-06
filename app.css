@@ -16,119 +16,119 @@ body {																											/* vanilla abc tools settings */
   font-family: 'Fira Sans';
   font-weight: 400;
   font-style: normal;
-  src: url('/fonts/FiraSans-Regular.woff2') format('woff2');
+  src: url('./fonts/FiraSans-Regular.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Fira Sans';
   font-weight: 400;
   font-style: italic;
-  src: url('/fonts/FiraSans-Italic.woff2') format('woff2');
+  src: url('./fonts/FiraSans-Italic.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Fira Sans';
   font-weight: 600;
   font-style: normal;
-  src: url('/fonts/FiraSans-SemiBold.woff2') format('woff2');
+  src: url('./fonts/FiraSans-SemiBold.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Fira Sans';
   font-weight: 600;
   font-style: italic;
-  src: url('/fonts/FiraSans-SemiBoldItalic.woff2') format('woff2');
+  src: url('./fonts/FiraSans-SemiBoldItalic.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Fira Sans Bold';
   font-weight: 600;
   font-style: normal;
-  src: url('/fonts/FiraSans-SemiBold.woff2') format('woff2');
+  src: url('./fonts/FiraSans-SemiBold.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Fira Sans Bold';
   font-weight: 600;
   font-style: italic;
-  src: url('/fonts/FiraSans-SemiBoldItalic.woff2') format('woff2');
+  src: url('./fonts/FiraSans-SemiBoldItalic.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Fira Sans Semibold';
   font-weight: 600;
   font-style: normal;
-  src: url('/fonts/FiraSans-SemiBold.woff2') format('woff2');
+  src: url('./fonts/FiraSans-SemiBold.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Fira Sans Semibold';
   font-weight: 600;
   font-style: italic;
-  src: url('/fonts/FiraSans-SemiBoldItalic.woff2') format('woff2');
+  src: url('./fonts/FiraSans-SemiBoldItalic.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Fira Sans Semibold Italic';
   font-weight: 600;
   font-style: normal;
-  src: url('/fonts/FiraSans-SemiBoldItalic.woff2') format('woff2');
+  src: url('./fonts/FiraSans-SemiBoldItalic.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Fira Sans Bold Italic';
   font-weight: 600;
   font-style: normal;
-  src: url('/fonts/FiraSans-SemiBoldItalic.woff2') format('woff2');
+  src: url('./fonts/FiraSans-SemiBoldItalic.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Fira Sans Italic';
   font-weight: 400;
   font-style: normal;
-  src: url('/fonts/FiraSans-Italic.woff2') format('woff2');
+  src: url('./fonts/FiraSans-Italic.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Fira Sans Italic';
   font-weight: 600;
   font-style: normal;
-  src: url('/fonts/FiraSans-SemiBoldItalic.woff2') format('woff2');
+  src: url('./fonts/FiraSans-SemiBoldItalic.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Fira Mono';
   font-weight: 400;
   font-style: normal;
-  src: url('/fonts/FiraMono-Regular.woff2') format('woff2');
+  src: url('./fonts/FiraMono-Regular.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Fira Mono';
   font-weight: 500;
   font-style: normal;
-  src: url('/fonts/FiraMono-Medium.woff2') format('woff2');
+  src: url('./fonts/FiraMono-Medium.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Fira Mono';
   font-weight: 700;
   font-style: normal;
-  src: url('/fonts/FiraMono-Bold.woff2') format('woff2');
+  src: url('./fonts/FiraMono-Bold.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Fira Mono Medium';
   font-weight: 500;
   font-style: normal;
-  src: url('/fonts/FiraMono-Medium.woff2') format('woff2');
+  src: url('./fonts/FiraMono-Medium.woff2') format('woff2');
 }
 
 @font-face {
   font-family: 'Fira Mono Bold';
   font-weight: 700;
   font-style: normal;
-  src: url('/fonts/FiraMono-Bold.woff2') format('woff2');
+  src: url('./fonts/FiraMono-Bold.woff2') format('woff2');
 }
 
 html {
