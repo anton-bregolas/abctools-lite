@@ -151,6 +151,9 @@ var gLastClickedTune = -1;
 // Top bar showing?
 var gTopBarShowing = true;
 
+// Bottom bar showing?
+var gBottomBarShowing = true;
+
 // Current tune being rendered
 var gCurrentTune = 0;
 
@@ -414,7 +417,7 @@ var gFeaturesShowExamples = true;
 var gFeaturesShowTemplates = true;
 var gFeaturesShowTablatures = true;
 var gFeaturesShowExplorers = true;
-var gFeaturesShowTabButtons = true;
+var gFeaturesShowTabButtons = false;
 var gFeaturesShowBagpipeDrones = true;
 
 // Force an update of local storage for the tab
@@ -13514,6 +13517,13 @@ function UpdateLocalStorage() {
       localStorage.abcHideTopBar = "false";
     }
 
+    var bottombar = gBottomBarShowing;
+    if (!bottombar) {
+      localStorage.abcHideBottomBar = "true";
+    } else {
+      localStorage.abcHideBottomBar = "false";
+    }
+
     var showtabnames = gShowTabNames;
     if (showtabnames) {
       localStorage.abcShowTabNames = "true";
@@ -14857,7 +14867,9 @@ function Render(renderAll, tuneNumber) {
     // MAE 20 July 2024 - Avoid showing bottom bar if top bar hidden
     if (gShowAllControls && gTopBarShowing) {
 
-      document.getElementById("notenrechts").style.display = "inline-block";
+      if (gBottomBarShowing) {
+        ShowBottomBar();
+      }
 
       // Recalculate the notation top position first time the notation is rendered
       if (gIsFirstRender) {
@@ -14866,7 +14878,7 @@ function Render(renderAll, tuneNumber) {
       }
 
     } else {
-      document.getElementById("notenrechts").style.display = "none";
+      HideBottomBar();
     }
 
     // Enable the save button
@@ -26417,7 +26429,7 @@ function SetAbcText(txt) {
 
 function ShowAllControls() {
 
-  document.getElementById("notenrechts").style.display = "inline-block";
+  ShowBottomBar();
 
   gShowAllControls = true;
 
@@ -26435,7 +26447,7 @@ function ShowAllControls() {
 
 function HideAllControls() {
 
-  document.getElementById("notenrechts").style.display = "none";
+  HideBottomBar();
 
   gShowAllControls = false;
 
@@ -46021,7 +46033,7 @@ function GetInitialConfigurationSettings() {
     gFeaturesShowBagpipeDrones = (val == "true");
   }
 
-  gFeaturesShowTabButtons = true;
+  gFeaturesShowTabButtons = false;
   val = localStorage.FeaturesShowTabButtons;
   if (val) {
     gFeaturesShowTabButtons = (val == "true");
@@ -51542,12 +51554,12 @@ function ConfigureToolSettings() {
   if (gUpdateAvailable) {
 
     form.push({
-      html: '<p style="text-align:center;"><input id="configure_fonts" class="btn btn-subdialog configure_fonts" onclick="ConfigureFonts()" type="button" value="Font Settings" title="Configure the fonts used for rendering the ABC"><input id="configure_box" class="btn btn-subdialog configure_box" onclick="ConfigureTablatureSettings()" type="button" value="Tablature Injection Settings" title="Configure the tablature injection settings"><input id="configure_musicxml_import" class="btn btn-subdialog configure_musicxml_import" onclick="ConfigureMusicXMLImport()" type="button" value="MusicXML/MIDI Settings" title="Configure MusicXML/MIDI import settings"><input id="configure_developer_settings" class="btn btn-subdialog configure_developer_settings" onclick="AdvancedSettings()" type="button" value="Advanced Settings" title="Configure low level tool settings"></p><p style="font-size:10pt;font-family:var(--abctools-ui-font-fallbacks);line-height:14pt;color:red;position:absolute;left:20px;bottom:20px;margin:0px;cursor:pointer;" title="Click to update to the latest version of the tool" onclick="UpdateToLatestVersion();">Click here to update to the latest version<br/>Latest version: ' + gUpdateVersion + '<br/>Installed version: ' + gVersionNumber + '</p>'
+      html: '<p style="text-align:center;"><input id="configure_fonts" class="btn btn-subdialog configure_fonts" onclick="ConfigureFonts()" type="button" value="Font Settings" title="Configure the fonts used for rendering the ABC"><input id="configure_box" class="btn btn-subdialog configure_box" onclick="ConfigureTablatureSettings()" type="button" value="Tablature Injection Settings" title="Configure the tablature injection settings"><input id="configure_musicxml_import" class="btn btn-subdialog configure_musicxml_import" onclick="ConfigureMusicXMLImport()" type="button" value="MusicXML/MIDI Settings" title="Configure MusicXML/MIDI import settings"><input id="configure_developer_settings" class="btn btn-subdialog configure_developer_settings" onclick="AdvancedSettings()" type="button" value="Advanced Settings" title="Configure low level tool settings"></p><p style="font-size:10pt;font-family:var(--abctools-ui-font-fallbacks);line-height:14pt;color:red;position:absolute;left:20px;bottom:20px;margin:0px;cursor:pointer;" title="Check if ABC Tools is up-to-date with the main repository" onclick="alert(`ABC Tools Lite does not receive automatic updates but all the latest improvements will periodically be added to the app by the maintainer. To check out the latest, cutting-edge features visit Michael Eskin’s website: https://michaeleskin.com/abc`);">Latest version: ' + gUpdateVersion + '<br/>Installed version: ' + gVersionNumber + '</p>'
     });
   } else {
 
     form.push({
-      html: '<p style="text-align:center;"><input id="configure_fonts" class="btn btn-subdialog configure_fonts" onclick="ConfigureFonts()" type="button" value="Font Settings" title="Configure the fonts used for rendering the ABC"><input id="configure_box" class="btn btn-subdialog configure_box" onclick="ConfigureTablatureSettings()" type="button" value="Tablature Injection Settings" title="Configure the tablature injection settings"><input id="configure_musicxml_import" class="btn btn-subdialog configure_musicxml_import" onclick="ConfigureMusicXMLImport()" type="button" value="MusicXML/MIDI Settings" title="Configure MusicXML/MIDI import settings"><input id="configure_developer_settings" class="btn btn-subdialog configure_developer_settings" onclick="AdvancedSettings()" type="button" value="Advanced Settings" title="Configure low level tool settings"></p><p style="font-size:10pt;font-family:var(--abctools-ui-font-fallbacks);line-height:14pt;color:grey;position:absolute;left:20px;bottom:20px;margin:0px;cursor:pointer;" title="Click to update to the latest version" onclick="UpdateToLatestVersion();">You have the latest version<br/>Version: ' + gVersionNumber + '<br>Click here to force an update</p>'
+      html: '<p style="text-align:center;"><input id="configure_fonts" class="btn btn-subdialog configure_fonts" onclick="ConfigureFonts()" type="button" value="Font Settings" title="Configure the fonts used for rendering the ABC"><input id="configure_box" class="btn btn-subdialog configure_box" onclick="ConfigureTablatureSettings()" type="button" value="Tablature Injection Settings" title="Configure the tablature injection settings"><input id="configure_musicxml_import" class="btn btn-subdialog configure_musicxml_import" onclick="ConfigureMusicXMLImport()" type="button" value="MusicXML/MIDI Settings" title="Configure MusicXML/MIDI import settings"><input id="configure_developer_settings" class="btn btn-subdialog configure_developer_settings" onclick="AdvancedSettings()" type="button" value="Advanced Settings" title="Configure low level tool settings"></p><p style="font-size:10pt;font-family:var(--abctools-ui-font-fallbacks);line-height:14pt;color:grey;position:absolute;left:20px;bottom:20px;margin:0px;cursor:pointer;" title="Check if ABC Tools is up-to-date with the main repository" onclick="alert(`ABC Tools Lite does not receive automatic updates but all the latest improvements will periodically be added to the app by the maintainer. To check out the latest, cutting-edge features visit Michael Eskin’s website: https://michaeleskin.com/abc`);">You have the latest version<br/>Version: ' + gVersionNumber + '</p>'
     });
   }
 
@@ -52959,10 +52971,19 @@ function ShowTopBar() {
 
   gTopBarShowing = true;
 
+  // Also show ABC status & restore upper margin
+
+  const abcStatusBar = document.getElementById("abc-selected");
+  
+  abcStatusBar.style.removeProperty('display');
+  
+  const topButtonsBar = document.getElementById("fileoperations");
+
+  topButtonsBar.style.removeProperty('margin-top');
+
   // Move the title down a bit
-  var elem = document.getElementById("abc-selected");
-  elem.style.marginTop = "15px";
-  elem.style.marginBottom = "1px";
+  // abcStatusBar.style.marginTop = "15px";
+  // abcStatusBar.style.marginBottom = "1px";
 
   // Also shows the controls if allowed
   if (gAllowControlToggle) {
@@ -52980,15 +53001,26 @@ function HideTopBar() {
 
   gTopBarShowing = false;
 
-  // Move the title up a bit
-  var elem = document.getElementById("abc-selected");
+  // Also remove ABC status & shrink upper margin
 
-  if (gIsIPhone || gIsAndroid) {
-    elem.style.marginTop = "18px";
-    elem.style.marginBottom = "38px";
-  } else {
-    elem.style.marginTop = "4px";
-  }
+  const abcStatusBar = document.getElementById("abc-selected");
+  
+  abcStatusBar.style.display = "none";
+  
+  const topButtonsBar = document.getElementById("fileoperations");
+
+  topButtonsBar.style.marginTop = "0px";
+
+  // Move the title up a bit
+
+  // var elem = document.getElementById("abc-selected");
+
+  // if (gIsIPhone || gIsAndroid) {
+  //   abcStatusBar.style.marginTop = "18px";
+  //   abcStatusBar.style.marginBottom = "38px";
+  // } else {
+  //   abcStatusBar.style.marginTop = "4px";
+  // }
 
   // Also hides the controls
   if (gAllowControlToggle) {
@@ -53025,6 +53057,56 @@ function ToggleTopBar() {
 
 }
 
+//
+// Toggle the bottom bar
+//
+//
+
+function ShowBottomBar() {
+
+  var elem = document.getElementById("notenrechts");
+
+  elem.style.display = "inline-block";
+
+  gBottomBarShowing = true;
+
+}
+
+function HideBottomBar() {
+
+  var elem = document.getElementById("notenrechts");
+
+  elem.style.display = "none";
+
+  gBottomBarShowing = false;
+
+}
+
+function ToggleBottomBar() {
+
+  if (!gAllowControlToggle) return;
+
+  if (gBottomBarShowing) {
+
+    HideBottomBar();
+
+  } else {
+
+    ShowBottomBar();
+  }
+
+  // Resize the notation spacer
+  UpdateNotationTopPosition();
+
+  // Force a rescroll for one column view
+  if (gIsOneColumn) {
+
+    MakeTuneVisible(true);
+  }
+
+  // If available, save all the app settings to local storage
+  UpdateLocalStorage();
+}
 
 //
 // Is this the first run?
@@ -58431,10 +58513,11 @@ function NormalizeVoiceKeySignatures(){
 
 }
 
-// Open the standard editor in a new tab
+// Open the standard editor in the same window
 function LaunchStandardEditor() {
-  var url = "https://michaeleskin.com/abctools/abctools.html";
-  window.open(url, '_blank');
+  var url = "abctools.html";
+  // window.open(url, '_blank');
+  window.location = url;
 }
 
 // Open the User Guide in a new tab
@@ -58443,10 +58526,11 @@ function LaunchEditorHelp() {
   window.open(url, '_blank');
 }
 
-// Open the quick editor in a new tab
+// Open the quick editor in the same window
 function LaunchQuickEditor() {
-  var url = "https://michaeleskin.com/abctools/abctools-quick-editor.html";
-  window.open(url, '_blank');
+  var url = "abctools-quick-editor.html";
+  // window.open(url, '_blank');
+  window.location = url;
 }
 
 // Open the Quick Editor section of the User Guide in a new tab
@@ -58475,7 +58559,7 @@ function DoVersionCheck() {
         if (json && json.version && (json.version != gVersionNumber)) {
 
           // Yes, show update option
-          SetupContextMenu(true);
+          SetupContextMenu(false); // Set to false: Auto-updates impossible in forks
 
           gUpdateAvailable = true;
 
@@ -58598,6 +58682,11 @@ function SetupContextMenu(showUpdateItem) {
               ToggleTopBar();
             }
           }, {
+            name: 'Toggle Bottom Toolbar',
+            fn: function(target) {
+              ToggleBottomBar();
+            }
+          }, {
             name: 'Maximize Editor',
             fn: function(target) {
               MaximizeEditor();
@@ -58624,25 +58713,25 @@ function SetupContextMenu(showUpdateItem) {
             }
           }, ]);
 
-        if (showUpdateItem) {
-          items = items.concat(
-            [{}, {
-              name: '*A new version is available!',
-              fn: function(target) {
-                UpdateToLatestVersion();
-              }
-            }, {
-              name: '*Click here to update the tool',
-              fn: function(target) {
-                UpdateToLatestVersion();
-              }
-            }, ]);
+        // if (showUpdateItem) {
+        //   items = items.concat(
+        //     [{}, {
+        //       name: '*A new version is available!',
+        //       fn: function(target) {
+        //         UpdateToLatestVersion();
+        //       }
+        //     }, {
+        //       name: '*Click here to update the tool',
+        //       fn: function(target) {
+        //         UpdateToLatestVersion();
+        //       }
+        //     }, ]);
 
-          // Turn the button red
-          var elem = document.getElementById("morecommands");
-          elem.classList.add("attention");
-          elem.title = "An update to the tool is available!"
-        }
+        //   // Turn the button red
+        //   var elem = document.getElementById("morecommands");
+        //   elem.classList.add("attention");
+        //   elem.title = "An update to the tool is available!"
+        // }
 
         var theTuneSetItem = {
           name: 'Create Tune Set (Ctrl+/)',
@@ -58789,6 +58878,11 @@ function SetupContextMenu(showUpdateItem) {
             ToggleTopBar();
           }
         }, {
+          name: 'Toggle Bottom Toolbar',
+          fn: function(target) {
+            ToggleBottomBar();
+          }
+        }, {
           name: 'Maximize Editor',
           fn: function(target) {
             MaximizeEditor();
@@ -58815,25 +58909,25 @@ function SetupContextMenu(showUpdateItem) {
           }
         }, ];
 
-        if (showUpdateItem) {
-          items = items.concat(
-            [{}, {
-              name: '*A new version is available!',
-              fn: function(target) {
-                UpdateToLatestVersion();
-              }
-            }, {
-              name: '*Click here to update the tool',
-              fn: function(target) {
-                UpdateToLatestVersion();
-              }
-            }, ]);
+        // if (showUpdateItem) {
+        //   items = items.concat(
+        //     [{}, {
+        //       name: '*A new version is available!',
+        //       fn: function(target) {
+        //         UpdateToLatestVersion();
+        //       }
+        //     }, {
+        //       name: '*Click here to update the tool',
+        //       fn: function(target) {
+        //         UpdateToLatestVersion();
+        //       }
+        //     }, ]);
 
-          // Turn the button red
-          var elem = document.getElementById("morecommands");
-          elem.classList.add("attention");
-          elem.title = "An update to the tool is available!"
-        }
+        //   // Turn the button red
+        //   var elem = document.getElementById("morecommands");
+        //   elem.classList.add("attention");
+        //   elem.title = "An update to the tool is available!"
+        // }
       }
     } else {
 
@@ -58924,6 +59018,11 @@ function SetupContextMenu(showUpdateItem) {
               ToggleTopBar();
             }
           }, {
+            name: 'Toggle Bottom Toolbar',
+            fn: function(target) {
+              ToggleBottomBar();
+            }
+          }, {
             name: 'Maximize Editor',
             fn: function(target) {
               MaximizeEditor();
@@ -58948,25 +59047,25 @@ function SetupContextMenu(showUpdateItem) {
         // For forcing display for User Guide screen shots
         //showUpdateItem = true;// UPDATEFOOFOO
 
-        if (showUpdateItem) {
-          items = items.concat(
-            [{}, {
-              name: '*A new version is available!',
-              fn: function(target) {
-                UpdateToLatestVersion();
-              }
-            }, {
-              name: '*Click here to update the tool',
-              fn: function(target) {
-                UpdateToLatestVersion();
-              }
-            }, ]);
+        // if (showUpdateItem) {
+        //   items = items.concat(
+        //     [{}, {
+        //       name: '*A new version is available!',
+        //       fn: function(target) {
+        //         UpdateToLatestVersion();
+        //       }
+        //     }, {
+        //       name: '*Click here to update the tool',
+        //       fn: function(target) {
+        //         UpdateToLatestVersion();
+        //       }
+        //     }, ]);
 
-          // Turn the button red
-          var elem = document.getElementById("morecommands");
-          elem.classList.add("attention");
-          elem.title = "An update to the tool is available!"
-        }
+        //   // Turn the button red
+        //   var elem = document.getElementById("morecommands");
+        //   elem.classList.add("attention");
+        //   elem.title = "An update to the tool is available!"
+        // }
 
         var theTuneSetItem = {
           name: 'Create Tune Set (Ctrl+/)',
@@ -59113,6 +59212,11 @@ function SetupContextMenu(showUpdateItem) {
             ToggleTopBar();
           }
         }, {
+          name: 'Toggle Bottom Toolbar',
+          fn: function(target) {
+            ToggleBottomBar();
+          }
+        }, {
           name: 'Maximize Editor',
           fn: function(target) {
             MaximizeEditor();
@@ -59134,25 +59238,25 @@ function SetupContextMenu(showUpdateItem) {
           }
         }, ];
 
-        if (showUpdateItem) {
-          items = items.concat(
-            [{}, {
-              name: '*A new version is available!',
-              fn: function(target) {
-                UpdateToLatestVersion();
-              }
-            }, {
-              name: '*Click here to update the tool',
-              fn: function(target) {
-                UpdateToLatestVersion();
-              }
-            }, ]);
+        // if (showUpdateItem) {
+        //   items = items.concat(
+        //     [{}, {
+        //       name: '*A new version is available!',
+        //       fn: function(target) {
+        //         UpdateToLatestVersion();
+        //       }
+        //     }, {
+        //       name: '*Click here to update the tool',
+        //       fn: function(target) {
+        //         UpdateToLatestVersion();
+        //       }
+        //     }, ]);
 
-          // Turn the button red
-          var elem = document.getElementById("morecommands");
-          elem.classList.add("attention");
-          elem.title = "An update to the tool is available!"
-        }
+        //   // Turn the button red
+        //   var elem = document.getElementById("morecommands");
+        //   elem.classList.add("attention");
+        //   elem.title = "An update to the tool is available!"
+        // }
       }
     }
   } else {
@@ -59239,6 +59343,11 @@ function SetupContextMenu(showUpdateItem) {
         fn: function(target) {
           ToggleTopBar();
         }
+      }, {
+        name: 'Toggle Bottom Toolbar',
+        fn: function(target) {
+          ToggleBottomBar();
+        }
       }, {}, {
         name: 'Settings',
         fn: function(target) {
@@ -59261,25 +59370,25 @@ function SetupContextMenu(showUpdateItem) {
         }
       }, ];
 
-      if (showUpdateItem) {
-        items = items.concat(
-          [{}, {
-            name: '*A new version is available!',
-            fn: function(target) {
-              UpdateToLatestVersion();
-            }
-          }, {
-            name: '*Click here to update the tool',
-            fn: function(target) {
-              UpdateToLatestVersion();
-            }
-          }, ]);
+      // if (showUpdateItem) {
+      //   items = items.concat(
+      //     [{}, {
+      //       name: '*A new version is available!',
+      //       fn: function(target) {
+      //         UpdateToLatestVersion();
+      //       }
+      //     }, {
+      //       name: '*Click here to update the tool',
+      //       fn: function(target) {
+      //         UpdateToLatestVersion();
+      //       }
+      //     }, ]);
 
-        // Turn the button red
-        var elem = document.getElementById("morecommands");
-        elem.classList.add("attention");
-        elem.title = "An update to the tool is available!"
-      }
+      //   // Turn the button red
+      //   var elem = document.getElementById("morecommands");
+      //   elem.classList.add("attention");
+      //   elem.title = "An update to the tool is available!"
+      // }
     } else {
 
       items = [
@@ -59364,6 +59473,11 @@ function SetupContextMenu(showUpdateItem) {
         fn: function(target) {
           ToggleTopBar();
         }
+      }, {
+        name: 'Toggle Bottom Toolbar',
+        fn: function(target) {
+          ToggleBottomBar();
+        }
       }, {}, {
         name: 'Settings',
         fn: function(target) {
@@ -59381,25 +59495,25 @@ function SetupContextMenu(showUpdateItem) {
         }
       }, ];
 
-      if (showUpdateItem) {
-        items = items.concat(
-          [{}, {
-            name: '*A new version is available!',
-            fn: function(target) {
-              UpdateToLatestVersion();
-            }
-          }, {
-            name: '*Click here to update the tool',
-            fn: function(target) {
-              UpdateToLatestVersion();
-            }
-          }, ]);
+      // if (showUpdateItem) {
+      //   items = items.concat(
+      //     [{}, {
+      //       name: '*A new version is available!',
+      //       fn: function(target) {
+      //         UpdateToLatestVersion();
+      //       }
+      //     }, {
+      //       name: '*Click here to update the tool',
+      //       fn: function(target) {
+      //         UpdateToLatestVersion();
+      //       }
+      //     }, ]);
 
-        // Turn the button red
-        var elem = document.getElementById("morecommands");
-        elem.classList.add("attention");
-        elem.title = "An update to the tool is available!"
-      }
+      //   // Turn the button red
+      //   var elem = document.getElementById("morecommands");
+      //   elem.classList.add("attention");
+      //   elem.title = "An update to the tool is available!"
+      // }
     }
   }
 
@@ -59509,6 +59623,7 @@ function DoStartup() {
   gLastAutoScrolledTune = -1;
   gLastClickedTune = -1;
   gTopBarShowing = true;
+  gBottomBarShowing = true;
   gCurrentTune = 0;
   gTotalTunes = 0;
   gCurrentTab = "noten";
