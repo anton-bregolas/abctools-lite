@@ -9,7 +9,11 @@ body {																											/* vanilla abc tools settings */
   --abctools-ui-btn-bordercolor: gray; 	 								 /* darken(#d8d8d8, 7.5%) */
 	--abctools-ui-btn-boxshadow: none; 												/* 0 0.1rem 0.1rem rgba(0, 0, 0, 0.25), 0 -0.1rem 0.5rem rgba(0, 0, 0, 0.1) inset */
   --abctools-ui-btn-flarecolor: transparent;								/* #ffffff */
+  --abctools-ui-btn-hovercolor: #a5fb98;									 /* palegreen */
 	--abctools-ui-btn-textcolor: #000000;									 /* #000000 */
+	--abctools-ui-float-btn-height: 3rem;											/* 48px */
+	--abctools-ui-float-btn-padding: 0.25rem;									/* 4px */
+	--abctools-ui-float-btn-filter: drop-shadow(1px 1px 7px white);
 }
 
 @font-face {
@@ -225,7 +229,7 @@ user-select: none;
 @media (hover: hover) {
 	input:hover + label,
 	input:focus + label {
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	user-select: none;
 	}
 }
@@ -266,7 +270,7 @@ margin-left:0px;
 
 @media (hover: hover) {
 	.transposeup:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -277,7 +281,7 @@ margin-left:0px;
 
 @media (hover: hover) {
 	.transposedown:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -292,7 +296,7 @@ opacity: 0.4;
 
 @media (hover: hover) {
 	.saveaspdf:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -307,7 +311,7 @@ opacity: 0.4;
 
 @media (hover: hover) {
 	.saveaswebsite:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -318,7 +322,7 @@ margin-right:22px;
 
 @media (hover: hover) {
 	.toggleadvancedcontrols:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -329,7 +333,7 @@ margin-right:21px;
 
 @media (hover: hover) {
 	.togglesharecontrols:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -342,7 +346,7 @@ opacity:0.4;
 
 @media (hover: hover) {
 	.advancedcontrols:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -352,7 +356,7 @@ margin-right:12px;
 
 @media (hover: hover) {
 	.configuresettings:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -372,7 +376,7 @@ padding:12px !important;
 
 @media (hover: hover) {
 	.urlcontrols:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -391,7 +395,7 @@ padding:12px;}
 
 @media (hover: hover) {
 	.sortbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -403,7 +407,7 @@ padding:12px;}
 
 @media (hover: hover) {
 	.transposetokey:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -415,7 +419,7 @@ padding:12px;}
 
 @media (hover: hover) {
 	.incipitsbuilder:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -426,7 +430,7 @@ margin-right: 22px;
 
 @media (hover: hover) {
 	.snapshotbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -437,7 +441,7 @@ margin-right: 22px;
 
 @media (hover: hover) {
 	.restorebutton:hover{
-	background: palegreen;
+	background: #ffab9e;
 	}
 }
 
@@ -449,7 +453,7 @@ margin-right: 22px;
 
 @media (hover: hover) {
 	.dialogrestorebutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -461,7 +465,7 @@ margin-right: 22px;
 
 @media (hover: hover) {
 	.dialogrestoreautobutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -895,7 +899,7 @@ margin-right:30px;
 
 @media (hover: hover) {
 	.abcplayer_previousbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -907,7 +911,7 @@ margin-left:30px;
 
 @media (hover: hover) {
 	.abcplayer_nextbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -919,7 +923,7 @@ margin-left:20px;
 
 @media (hover: hover) {
 	.abcplayer_exportbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -931,7 +935,7 @@ margin-left:20px;
 
 @media (hover: hover) {
 	.abcplayer_settingsbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -944,7 +948,7 @@ margin-left:20px;
 
 @media (hover: hover) {
 	.abcplayer_trainer:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -957,7 +961,7 @@ margin-left:20px;
 
 @media (hover: hover) {
 	.abcplayer_zoom_in:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -970,7 +974,7 @@ margin-right:20px;
 
 @media (hover: hover) {
 	.abcplayer_zoom_out:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -983,7 +987,7 @@ margin-right:30px;
 
 @media (hover: hover) {
 	.abcplayer_wavbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -995,7 +999,7 @@ margin-right:30px;
 
 @media (hover: hover) {
 	.abcplayer_wavreverbbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1007,7 +1011,7 @@ margin-right:0px;
 
 @media (hover: hover) {
 	.abcplayer_mp3reverbbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1019,7 +1023,7 @@ margin-right:30px;
 
 @media (hover: hover) {
 	.abcplayer_mp3button:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1030,7 +1034,7 @@ padding:12px;
 
 @media (hover: hover) {
 	.abcplayer_midibutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1042,7 +1046,7 @@ margin-right:30px;
 
 @media (hover: hover) {
 	.abcplayer_jpgbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1068,7 +1072,7 @@ margin-right:30px;
 
 @media (hover: hover) {
 	.exportall_mp3button:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1079,7 +1083,7 @@ padding:12px;
 
 @media (hover: hover) {
 	.exportall_midibutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1091,7 +1095,7 @@ margin-right:30px;
 
 @media (hover: hover) {
 	.exportall_jpegbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1103,7 +1107,7 @@ margin-right:30px;
 
 @media (hover: hover) {
 	.exportall_pngbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1114,7 +1118,7 @@ padding:12px;
 
 @media (hover: hover) {
 	.exportall_svgbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1126,7 +1130,7 @@ margin-right:30px;
 
 @media (hover: hover) {
 	.exportall_jsonbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1137,7 +1141,7 @@ padding:12px;
 
 @media (hover: hover) {
 	.exportall_csvbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1148,7 +1152,7 @@ padding:12px;
 
 @media (hover: hover) {
 	.exportall_musicxmlbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1160,7 +1164,7 @@ margin-right:30px;
 
 @media (hover: hover) {
 	.exportall_abcbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1171,7 +1175,7 @@ padding:12px;
 
 @media (hover: hover) {
 	.export_tunetitlesbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1182,7 +1186,7 @@ padding:12px;
 
 @media (hover: hover) {
 	.export_smartdrawbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1193,7 +1197,7 @@ padding:12px;
 
 @media (hover: hover) {
 	.launchcsvextractor:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1205,7 +1209,7 @@ padding:12px;
 
 @media (hover: hover) {
 	.export_websitebutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1249,7 +1253,7 @@ margin-right:30px;
 
 @media (hover: hover) {
 	.abcplayer_pngbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1260,7 +1264,7 @@ padding:12px;
 
 @media (hover: hover) {
 	.abcplayer_svgbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1271,7 +1275,7 @@ padding:12px;
 
 @media (hover: hover) {
 	.abcplayer_pdfbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1296,7 +1300,7 @@ padding:12px;
 
 @media (hover: hover) {
 	.abcplayer_metronomebutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1308,7 +1312,7 @@ margin-left:24px;
 
 @media (hover: hover) {
 	.abcplayer_wideplayerbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1322,7 +1326,7 @@ width:auto !important;
 
 @media (hover: hover) {
 	.abcplayer_widetrainerbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1333,7 +1337,7 @@ padding:12px;
 
 @media (hover: hover) {
 	.abcplayer_export:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1354,7 +1358,7 @@ margin-left:0px;
 
 @media (hover: hover) {
 	.swingexplorerinject:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1367,7 +1371,7 @@ margin-left:0px;
 
 @media (hover: hover) {
 	.notationspacingexplorerinject:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1380,7 +1384,7 @@ margin-left:0px;
 
 @media (hover: hover) {
 	.notationspacingexplorertest:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1401,7 +1405,7 @@ margin-right:36px;
 
 @media (hover: hover) {
 	.swingexplorertest:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1421,7 +1425,7 @@ margin-left:0px;
 
 @media (hover: hover) {
 	.graceexplorerinject:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1434,7 +1438,7 @@ margin-right:36px;
 
 @media (hover: hover) {
 	.graceexplorertest:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1456,7 +1460,7 @@ margin-right:20px;
 
 @media (hover: hover) {
 	.rollexplorerinject:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1470,7 +1474,7 @@ margin-right:20px;
 
 @media (hover: hover) {
 	.rollexplorertransform:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1483,7 +1487,7 @@ margin-left:0px;
 
 @media (hover: hover) {
 	.rollexplorertransform2:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1497,7 +1501,7 @@ margin-right:20px;
 
 @media (hover: hover) {
 	.rollexplorertest:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1517,7 +1521,7 @@ margin-right:18px;
 
 @media (hover: hover) {
 	.looperreset:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1565,7 +1569,7 @@ width: auto;
 
 @media (hover: hover) {
 	.looper_metronomebutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1603,7 +1607,7 @@ margin-right:18px;
 
 @media (hover: hover) {
 	.configure_instrument_explorer:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1616,7 +1620,7 @@ margin-right:36px;
 
 @media (hover: hover) {
 	.instrumentexplorertest:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1629,7 +1633,7 @@ width:auto;
 
 @media (hover: hover) {
 	.instrumentexplorerinject:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1648,7 +1652,7 @@ margin-right:20px;
 }
 
 .reset_roll_parameters:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 }
 
 
@@ -1664,7 +1668,7 @@ margin-right:20px;
 }
 
 .loadimpulsebutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 }
 
 .loadimpulsebutton {
@@ -1679,7 +1683,7 @@ margin-right:0px;
 }
 
 .loadimpulsebutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 }
 
 .resetsettings {
@@ -1695,7 +1699,7 @@ margin-left:20px;
 }
 
 .resetsettings:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 }
 
 #loadinstrumentbutton{
@@ -1705,7 +1709,7 @@ width:auto;
 }
 
 .loadinstrumentbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 }
 
 label.btn.loadinstrumentbutton {
@@ -1739,7 +1743,7 @@ margin-left:12px;
 }
 
 .managedatabases:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 }
 
 .managedownloadall {
@@ -1754,7 +1758,7 @@ margin-right:0px;
 }
 
 .managedownloadall:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 }
 
 
@@ -1770,7 +1774,7 @@ margin-right:20px;
 }
 
 .managesamples:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 }
 
 .managenotes {
@@ -1786,7 +1790,7 @@ margin-right:20px;
 }
 
 .managenotes:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 }
 
 
@@ -1802,7 +1806,7 @@ margin-right:20px;
 }
 
 .managereverb:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 }
 
 .managesearch {
@@ -1817,7 +1821,7 @@ margin-right:0px;
 }
 
 .managesearch:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 }
 
 #reset_roll_explorer_2{
@@ -1830,7 +1834,7 @@ margin-right:0px;
 
 @media (hover: hover) {
 	.reset_roll_explorer_2:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1844,7 +1848,7 @@ margin-right:0px;
 
 @media (hover: hover) {
 	.reset_roll_explorer_3:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1858,7 +1862,7 @@ margin-right:0px;
 
 @media (hover: hover) {
 	.default_roll_explorer_2:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1872,7 +1876,7 @@ margin-right:0px;
 
 @media (hover: hover) {
 	.default_roll_explorer_3:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1904,7 +1908,7 @@ opacity:0.4;
 
 @media (hover: hover) {
 	.toggleallcontrols:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1920,7 +1924,7 @@ opacity:0.4;
 
 @media (hover: hover) {
 	.copybutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1938,7 +1942,7 @@ opacity:0.4;
 
 @media (hover: hover) {
 	.trainerbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1954,7 +1958,7 @@ opacity:0.4;
 
 @media (hover: hover) {
 	.rawmodebutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1970,7 +1974,7 @@ opacity:0.4;
 
 @media (hover: hover) {
 	.playbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1981,7 +1985,7 @@ opacity:1.0;
 
 @media (hover: hover) {
 	.newabcfile:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -1993,7 +1997,7 @@ opacity:1.0;
 
 @media (hover: hover) {
 	.toggletopbar:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -2004,7 +2008,7 @@ margin-top:12px;
 
 @media (hover: hover) {
 	.saveabcfile:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -2025,49 +2029,49 @@ opacity:.25;
 
 @media (hover: hover) {
 	.start-search:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
 @media (hover: hover) {
 	.add-search-results:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
 @media (hover: hover) {
 	.search-previous:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
 @media (hover: hover) {
 	.search-next:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
 @media (hover: hover) {
 	.search-replace:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
 @media (hover: hover) {
 	.search-replace-all:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
 @media (hover: hover) {
 	.search-load:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
 @media (hover: hover) {
 	.search-save:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -2102,79 +2106,71 @@ padding-top:12px;
 	margin: 0;
 }
 
+.zoombutton,
+.helpbutton,
+.jumpbutton,
+.pdfbuttonicon,
+.playbuttonicon,
+.qerewindbutton,
+.qetempobutton {
+	width: var(--abctools-ui-float-btn-height);
+	height: var(--abctools-ui-float-btn-height);
+	padding: var(--abctools-ui-float-btn-padding);
+	filter: var(--abctools-ui-float-btn-filter);
+}
+
 .zoombutton{
 position:fixed;
-width:48px;
-height:48px;
 right:24px;
 top:16px;
-padding:4px;
 z-index:101;
 display:none;
 }
 
 .jumpbutton{
 position:fixed;
-width:48px;
-height:48px;
 right:112px;
 top:16px;
-padding:4px;
 z-index:101;
 display:none;
 }
 
 .helpbutton{
 position:fixed;
-width:48px;
-height:48px;
 left:24px;
 top:16px;
-padding:4px;
 z-index:101;
 display:none;
 }
 
 .playbuttonicon{
 position:fixed;
-width:48px;
-height:48px;
 right:24px;
 bottom:16px;
-padding:4px;
 z-index:101;
 display:none;
 }
 
 .qerewindbutton{
 position:fixed;
-width:48px;
-height:48px;
 right:112px;
 bottom:16px;
-padding:4px;
 z-index:101;
 display:none;
 }
 
 .qetempobutton{
 position:fixed;
-width:48px;
-height:48px;
 right:200px;
 bottom:16px;
-padding:4px;
 z-index:101;
 display:none;
 }
 
 .pdfbuttonicon{
 position:fixed;
-width:48px;
-height:48px;
 left:24px;
 bottom:16px;
-padding:4px;
 z-index:101;
 display:none;
 }
@@ -2340,62 +2336,62 @@ left:-5000px;
 
 @media (hover: hover) {
 	.cancelpdf:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
 
 @media (hover: hover) {
 	.toggletabnames:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
 @media (hover: hover) {
 	.zoombutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	opacity: 1.0 !important;
 	}
 }
 
 @media (hover: hover) {
 	.jumpbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	opacity: 1.0 !important;
 	}
 }
 
 @media (hover: hover) {
 	.qerewindbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	opacity: 1.0 !important;
 	}
 }
 
 @media (hover: hover) {
 	.qetempobutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	opacity: 1.0 !important;
 	}
 }
 
 @media (hover: hover) {
 	.playbuttonicon:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	opacity: 1.0 !important;
 	}
 }
 
 @media (hover: hover) {
 	.helpbutton:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	opacity: 1.0 !important;
 	}
 }
 
 @media (hover: hover) {
 	.pdfbuttonicon:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	opacity: 1.0 !important;
 	}
 }
@@ -3601,7 +3597,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.configure_box:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -3771,7 +3767,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.configure_musicxml_import:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -3784,7 +3780,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.configure_developer_settings:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -3796,7 +3792,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.configure_fonts:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -3832,7 +3828,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.configure_box_advanced:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -3843,7 +3839,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.injectcustomtab:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -3855,7 +3851,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.configure_batch_mp3_export:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -3867,7 +3863,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.configure_swing_explorer:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -3879,7 +3875,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.configure_grace_explorer:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -3890,7 +3886,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.configure_roll_explorer:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -3902,7 +3898,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.configure_reverb_explorer:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -3914,7 +3910,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.configure_anglo_fingerings:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -3926,7 +3922,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.configure_anglo_fonts:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -3938,7 +3934,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.default_anglo_fingerings:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -3950,7 +3946,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.inject_tablature_colors:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -3962,7 +3958,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.load_custom_harmonica_tuning:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -3975,7 +3971,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.save_custom_harmonica_tuning:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -3987,7 +3983,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.load_custom_anglo_names:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -4000,7 +3996,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.save_custom_anglo_names:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -4012,7 +4008,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.configure_harmonica_custom:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -4024,7 +4020,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.load_custom_tab:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -4037,7 +4033,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.save_custom_tab:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -4049,7 +4045,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.configure_custom_tab:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -4062,7 +4058,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.import_website_local:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -4074,13 +4070,13 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.import_website_remote:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
 @media (hover: hover) {
 	.import_website:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -4092,7 +4088,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.import_pdf:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -4104,7 +4100,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.import_csv:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -4116,7 +4112,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.default_musicxml_settings:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -4129,7 +4125,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.load_rendering_fonts:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -4142,7 +4138,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.save_rendering_fonts:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -4154,7 +4150,7 @@ margin-top:-7px;
 
 @media (hover: hover) {
 	.default_rendering_fonts:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -4887,7 +4883,7 @@ padding-left:10px;
 
 @media (hover: hover) {
 	.abcupload:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -4897,7 +4893,7 @@ padding-left:10px;
 
 @media (hover: hover) {
 	.abcuploaddialog:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -5161,7 +5157,7 @@ margin-right:24px;
 
 @media (hover: hover) {
 	.reverbexplorertest:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -5174,7 +5170,7 @@ margin-left:0px;
 
 @media (hover: hover) {
 	.reverbexplorerinject:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -5193,7 +5189,7 @@ top:20px;
 
 @media (hover: hover) {
 	.configuresettingsfromhelp:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
@@ -6261,12 +6257,14 @@ body{
 
 .btn-snapshotbutton{
   --color: black;
-  --background-color: #F0E6F0;
+  /* --background-color: #F0E6F0; */
+  --background-color: #cde69a;
 }
 
 .btn-restorebutton{
   --color: black;
-  --background-color: #F0E6F0;
+  /* --background-color: #F0E6F0; */
+  --background-color: #f0dff5;
 }
 
 .btn-togglesharecontrols{
@@ -6281,7 +6279,7 @@ body{
 
 .btn-toggleadvancedcontrols{
   --color: black;
-  --background-color: #DCFFFF;
+  --background-color: #c5f0f0;
 }
 
 .btn-advancedcontrols{
@@ -6868,7 +6866,7 @@ body{
 	}
 
 	.moresettingsbutton:hover{
-		background: palegreen;
+		background: var(--abctools-ui-btn-hovercolor);
 	}
 
 	.moresettingsbutton:hover {
