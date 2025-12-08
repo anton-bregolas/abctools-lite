@@ -17,7 +17,7 @@
 //
 
 
-const cacheName = 'abctoolscache-3039';
+const cacheName = 'abclitecache-3039-3';
 
 const contentToCache = [
     'abctools.html',
@@ -60,6 +60,8 @@ const contentToCache = [
     'codemirror.js',
     'simple.min.js',
     'placeholder.min.js',
+    'favicon.ico',
+    'favicon.svg',
     'fonts/FiraSans-Regular.woff2',
     'fonts/FiraSans-Italic.woff2',
     'fonts/FiraSans-SemiBold.woff2',
@@ -75,37 +77,14 @@ const contentToCache = [
     'img/jumpbutton.png',
     'img/qerewindbutton.png',
     'img/qetempobutton.png',
-    'img/michael.jpg',
     'img/michael2.jpg',
     'img/michael240.jpg',
     'img/settings.png',
-    'img/abc-android-icon-144x144.png',
-    'img/abc-android-icon-192x192.png',
-    'img/abc-android-icon-36x36.png',
-    'img/abc-android-icon-48x48.png',
-    'img/abc-android-icon-72x72.png',
-    'img/abc-android-icon-96x96.png',
-    'img/abc-apple-icon-114x114.png',
-    'img/abc-apple-icon-120x120.png',
-    'img/abc-apple-icon-144x144.png',
-    'img/abc-apple-icon-152x152.png',
-    'img/abc-apple-icon-180x180.png',
-    'img/abc-apple-icon-57x57.png',
-    'img/abc-apple-icon-60x60.png',
-    'img/abc-apple-icon-72x72.png',
-    'img/abc-apple-icon-76x76.png',
-    'img/abc-apple-icon-precomposed.png',
-    'img/abc-apple-icon.png',
-    'img/abc-favicon-16x16.png',
-    'img/abc-favicon-32x32.png',
-    'img/abc-favicon-96x96.png',
-    'img/abc-favicon.ico',
-    'img/abc-icon-user-guide-basic.png',
-    'img/abc-icon.png',
-    'img/abc-ms-icon-144x144.png',
-    'img/abc-ms-icon-150x150.png',
-    'img/abc-ms-icon-310x310.png',
-    'img/abc-ms-icon-70x70.png',
+    'img/abclite-icon-192x192.png',
+    'img/abclite-icon-512x512.png',
+    'img/abclite-icon-maskable-192x192.png',
+    'img/abclite-icon-maskable-512x512.png',
+    'img/apple-touch-icon.png',
     'img/abc-manifest.json',
     'img/abc-manifest-qe.json'
 ];
@@ -113,16 +92,16 @@ const contentToCache = [
 // Installing Service Worker
 self.addEventListener('install', (e) => {
 
-    console.log('[Service Worker] Install');
+    console.log('[ABC Tools Lite Service Worker] Install');
 
     // Make this the current service worker
     self.skipWaiting();
     
     e.waitUntil((async () => {
       const cache = await caches.open(cacheName);
-      console.log('[Service Worker] Caching all: app shell and content');
+      console.log('[ABC Tools Lite Service Worker] Caching ABC Tools Lite shell and content');
       await cache.addAll(contentToCache);
-      console.log('[Service Worker] Cache addAll complete!');
+      console.log(`[ABC Tools Lite Service Worker] Cache addAll complete version ${cacheName.replace('abclitecache-', '')} `);
     })());
 
 
@@ -130,19 +109,19 @@ self.addEventListener('install', (e) => {
 
 self.addEventListener('activate', event => {
 
-    console.log("[Service Worker] Activate event");
+    console.log("[ABC Tools Lite Service Worker] Activate event");
 
     clients.claim().then(() => {
         //claim means that the html file will use this new service worker.
         console.log(
-          '[Service Worker] - The service worker has now claimed all pages so they use the new service worker.'
+          '[ABC Tools Lite Service Worker] Service worker has now claimed all pages so they use the new service worker'
         );
     });
 
     event.waitUntil(
         caches.keys().then((keys) => {
           return Promise.all(
-            keys.filter((key) => key != cacheName).map((key) => {if ((key.indexOf("abctoolscache") != -1) || (key.indexOf("cache-20") != -1)){caches.delete(key)}})
+            keys.filter((key) => key != cacheName).map((key) => {if ((key.indexOf("abclitecache") != -1) || (key.indexOf("cache-20") != -1)){caches.delete(key)}})
           );
         })
     );
@@ -152,7 +131,7 @@ self.addEventListener('activate', event => {
 // Fetching content using Service Worker
 self.addEventListener('fetch', (e) => {
 
-    //console.log(`[Service Worker] fetching: ${e.request.url}`);
+    //console.log(`[ABC Tools Lite Service Worker] fetching: ${e.request.url}`);
 
     // Cache http and https only, skip unsupported chrome-extension:// and file://...
     if (!(
@@ -167,14 +146,14 @@ self.addEventListener('fetch', (e) => {
 
         if (r){
 
-            //console.log(`[Service Worker] Returning cached resource: ${e.request.url}`);
+            //console.log(`[ABC Tools Lite Service Worker] Returning cached resource: ${e.request.url}`);
 
             return r;
         }
 
         try{
 
-            //console.log(`[Service Worker] Fetching resource: ${e.request.url}`);
+            //console.log(`[ABC Tools Lite Service Worker] Fetching resource: ${e.request.url}`);
 
             const response = await fetch(e.request);
 
@@ -184,7 +163,7 @@ self.addEventListener('fetch', (e) => {
             
             //     const cache = await caches.open(cacheName);
 
-            //     console.log(`[Service Worker] Caching new resource: ${e.request.url}`);
+            //     console.log(`[ABC Tools Lite Service Worker] Caching new resource: ${e.request.url}`);
 
             //     cache.put(e.request, response.clone());
 
@@ -195,7 +174,7 @@ self.addEventListener('fetch', (e) => {
         }
         catch (error){
 
-            //console.log("[Service Worker] fetch error: "+error);
+            //console.log("[ABC Tools Lite Service Worker] fetch error: "+error);
     
         }
     })());

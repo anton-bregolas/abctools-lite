@@ -1,45 +1,40 @@
 {
- "name": "Quick Editor",
- "icons": [
-  {
-   "src": "img/abc-android-icon-36x36.png",
-   "sizes": "36x36",
-   "type": "image/png",
-   "density": "0.75"
-  },
-  {
-   "src": "img/abc-android-icon-48x48.png",
-   "sizes": "48x48",
-   "type": "image/png",
-   "density": "1.0"
-  },
-  {
-   "src": "img/abc-android-icon-72x72.png",
-   "sizes": "72x72",
-   "type": "image/png",
-   "density": "1.5"
-  },
-  {
-   "src": "img/abc-android-icon-96x96.png",
-   "sizes": "96x96",
-   "type": "image/png",
-   "density": "2.0"
-  },
-  {
-   "src": "img/abc-android-icon-144x144.png",
-   "sizes": "144x144",
-   "type": "image/png",
-   "density": "3.0"
-  },
-  {
-   "src": "img/abc-android-icon-192x192.png",
-   "sizes": "192x192",
-   "type": "image/png",
-   "density": "4.0"
-  }
- ],
- "display": "minimal-ui",
- "theme_color": "#055581",
- "background_color": "#055581",
- "start_url": "/abctools/abctools-quick-editor.html"
+  "name": "ABC Quick Editor Lite",
+  "short_name": "ABC QE Lite",
+  "description": "ABC Tools Quick Editor Lite: A Fork of Michael Eskin's ABC Transcription Tools",
+  "icons": [
+    {
+      "src": "abclite-icon-maskable-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "abclite-icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "abclite-icon-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "abclite-icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "theme_color": "#383838",
+  "background_color": "#383838",
+  "display": "minimal-ui",
+  "start_url": "../abctools-quick-editor.html",
+  "id": "../abctools-quick-editor.html",
+  "lang": "en",
+  "dir": "auto",
+  "categories": ["music"],
+  "orientation": "any"
 }
