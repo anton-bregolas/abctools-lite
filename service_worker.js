@@ -6,18 +6,21 @@
 //
 //
 //
-//
+// ABC Tools Upstream:
 // Updated 4 Dec 2025 at 1200
 //
-//
-//
+// ABC Tools Lite:
+// Last updated on 2025-12-09
 //
 //
 //
 //
 
+const cacheName = 'abctoolscache-3039';
 
-const cacheName = 'abclitecache-3039-3';
+const CACHE_PREFIX = 'abctools';
+const CACHE_VERSION = 'lite-3039-5';
+const CACHE_NAME_LITE = `${CACHE_PREFIX}${CACHE_VERSION}`;
 
 const contentToCache = [
     'abctools.html',
@@ -98,10 +101,10 @@ self.addEventListener('install', (e) => {
     self.skipWaiting();
     
     e.waitUntil((async () => {
-      const cache = await caches.open(cacheName);
+      const cache = await caches.open(CACHE_NAME_LITE);
       console.log('[ABC Tools Lite Service Worker] Caching ABC Tools Lite shell and content');
       await cache.addAll(contentToCache);
-      console.log(`[ABC Tools Lite Service Worker] Cache addAll complete version ${cacheName.replace('abclitecache-', '')} `);
+      console.log(`[ABC Tools Lite Service Worker] Cache addAll complete version ${CACHE_VERSION}`);
     })());
 
 
@@ -120,9 +123,12 @@ self.addEventListener('activate', event => {
 
     event.waitUntil(
         caches.keys().then((keys) => {
-          return Promise.all(
-            keys.filter((key) => key != cacheName).map((key) => {if ((key.indexOf("abclitecache") != -1) || (key.indexOf("cache-20") != -1)){caches.delete(key)}})
-          );
+            return Promise.all(keys
+                .filter((key) => key.startsWith(`${CACHE_PREFIX}lite`) && key !== CACHE_NAME_LITE)
+                .map((key) => {
+                    return caches.delete(key);
+                })
+            );
         })
     );
 
@@ -161,7 +167,7 @@ self.addEventListener('fetch', (e) => {
 
             // if ((e.request.url.indexOf("service_worker") == -1) && (e.request.url.indexOf("soundfonts") == -1)){
             
-            //     const cache = await caches.open(cacheName);
+            //     const cache = await caches.open(CACHE_NAME_LITE);
 
             //     console.log(`[ABC Tools Lite Service Worker] Caching new resource: ${e.request.url}`);
 
@@ -174,7 +180,7 @@ self.addEventListener('fetch', (e) => {
         }
         catch (error){
 
-            //console.log("[ABC Tools Lite Service Worker] fetch error: "+error);
+            //console.log("[ABC Tools Lite Service Worker] Fetch error: " + error);
     
         }
     })());
