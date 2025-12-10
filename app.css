@@ -822,7 +822,7 @@ opacity: 0.4;
 padding:12px;
 }
 
-#ceoltasdialog,#injectheaderstring,#injectallmidiparams,#injectharmonicatab,#injectboxtab,#injectfiddlefingerings,#injectmd,#injectmelody,#injectstaffwidth,#injectmetronome,#injectshapenotes,#injectsectionheader,#injecttunenumbers,#addtunetitlenumbers,#compliancedialog,#ceoltastransform,#injectbcbox,#normalizediacriticals,#customcssgenerator{
+#ceoltasdialog,#injectheaderstring,#injectallmidiparams,#injectharmonicatab,#injectboxtab,#injectfiddlefingerings,#injectmd,#injectmelody,#injectstaffwidth,#injectmetronome,#injectshapenotes,#injectsectionheader,#injecttunenumbers,#addtunetitlenumbers,#compliancedialog,#ceoltastransform,#injectbcbox,#normalizediacriticals,#customcssgenerator,#phrasebuilder{
 height:42px;
 padding:12px;
 margin-right:24px;
@@ -3111,6 +3111,22 @@ margin-top:-7px;
 }
 
 .configure_repeats_form_text>input{
+	font-size:12pt;
+	font-family: var(--abctools-ui-font-fallbacks);
+	margin-left: 12px;
+	width: 60px;
+	margin-top:-4px;
+}
+
+.configure_phrase_length{
+	font-size:12pt;
+	line-height:24px;
+	font-family: var(--abctools-ui-font-fallbacks);
+	margin-top:18px;
+	display:flex;
+}
+
+.configure_phrase_length>input{
 	font-size:12pt;
 	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 12px;
@@ -6241,6 +6257,11 @@ body{
 }
 
 .btn-transposetokey{
+  --color: black;
+  --background-color: #f0fff0;
+}
+
+.btn-phrasebuilder{
   --color: black;
   --background-color: #f0fff0;
 }

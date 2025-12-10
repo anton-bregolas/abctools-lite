@@ -6,20 +6,26 @@
 //
 //
 //
-// ABC Tools Upstream:
-// Updated 4 Dec 2025 at 1200
+//
+//
+//
+//
+// Updated 7 Dec 2025 at 1800
+//
+//
+//
 //
 // ABC Tools Lite:
-// Last updated on 2025-12-09
+// Last updated on 2025-12-10
 //
 //
 //
 //
 
-const cacheName = 'abctoolscache-3039';
+const cacheName = 'abctoolscache-3047';
 
 const CACHE_PREFIX = 'abctools';
-const CACHE_VERSION = 'lite-3039-5';
+const CACHE_VERSION = 'lite-3047-1';
 const CACHE_NAME_LITE = `${CACHE_PREFIX}${CACHE_VERSION}`;
 
 const contentToCache = [
