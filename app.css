@@ -5305,7 +5305,8 @@ top:20px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: #CC0000;
+  /* color: #CC0000; */
+  color: forestgreen;
 }
 
 .ContextMenu-divider {
