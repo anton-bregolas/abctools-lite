@@ -6043,9 +6043,9 @@ padding-right: 30px; /* space for badge */
 
 /* Attention style */
 .attention {
-  color: red !important;
-  background-color:#FFC0C0 !important;
-  animation: pulse 1.25s infinite;
+	color: #202e06 !important;
+	background-color: #8ac716 !important;
+	/* animation: pulse 1.25s 1; */
 }
 
 /* Pulsing animation */
