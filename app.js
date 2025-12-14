@@ -33,10 +33,10 @@
 // Version number for the settings dialog
 var gVersionNumber = "3047_120725_1800";
 
-var gLiteVersionNumber = 'lite-3047-3';
+var gLiteVersionNumber = 'lite-3047-4';
 
 const ABC_TOOLS_BASE_URL =
-  "https://anton-bregolas.github.io/abctools-lite/";
+  window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
 
 const ABC_TOOLS_EDITOR_URL =
   `${ABC_TOOLS_BASE_URL}abctools.html`;
@@ -21392,11 +21392,11 @@ function GenerateRenderingDivs(nTunes) {
 
 //
 // Share URL related code provided by Philip McGarvey
+// Update base editor URL for ABC Tools Lite
 //
 function getUrlWithoutParams() {
 
   return ABC_TOOLS_EDITOR_URL;
-
 }
 
 //
@@ -58552,15 +58552,16 @@ function DoVersionCheck() {
 
   gUpdateAvailable = false;
 
-  try {
-
-    // Get the latest version JSON file 
-    fetch(ABC_TOOLS_VERSION_FILE_URL)
-      .then((response) => response.json())
-      .then((json) => {
-
-        // Check if version changed
-        if (json && json.version && (json.version != gLiteVersionNumber)) {
+  fetch(ABC_TOOLS_VERSION_FILE_URL)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Failed to fetch version JSON: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((json) => {
+      // Check if version changed
+      if (json && json.version && (json.version != gLiteVersionNumber)) {
 
           // Yes, show update option
           SetupContextMenu(true);
@@ -58569,22 +58570,16 @@ function DoVersionCheck() {
 
           gUpdateVersion = json.version;
 
-        } else {
+      } else {
 
-          SetupContextMenu(false);
+        SetupContextMenu(false);
+      }
+    })
+    .catch((err) => {
 
-        }
-      })
-  } catch (err) {
-
-    SetupContextMenu(false);
-
-  }
-
-  // For testing
-  //gUpdateAvailable = true;
-
-
+      console.warn('[ABC Tools Lite] DoVersionCheck() failed\n\n', err);
+      SetupContextMenu(false);
+    });
 }
 
 //

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="refresh" content="0; url=./abctools.html">
+  <link rel="canonical" href="./abctools.html" />
+  <title>Redirecting to ABC Tools Lite Editor...</title>
+</head>
+<body>
+  <div class="container">
+    <h1>ABC Tools Lite</h1>
+    <p>If you haven't been redirected to the editor, please press here:<br><br><a href="./abctools.html" title="ABC Tools Lite">ABC Tools Lite Editor</a></p>
+  </div>
+</body>
+<style>
+
+  body {
+    background-color: white;
+    font-family: 'Fira Sans', Helvetica, 'Droid Sans', sans-serif;
+    font-weight: 500;
+    font-size: 1.45rem;
+    color: #000;
+    margin: 0 auto;
+  }
+
+  body[data-theme="dark"] {
+    background-color: #181818;
+    color: #fafafa;
+    & a { color: coral; }
+    & a:hover { color: limegreen; }
+  }
+
+  .container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-flow: column wrap;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  a {
+    color: darkgreen;
+  }
+
+  a:hover {
+    color: darkblue;
+  }
+
+  p {
+    padding: 0.5rem;
+  }
+
+  h1 {
+    margin: 1rem;
+  }
+
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!storageAvailable('localStorage')) {
+      return;
+    }
+    if (localStorage.abcLitePrefersColorTheme === "dark" ||
+      (!localStorage.abcLitePrefersColorTheme && window.matchMedia &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.body.dataset.theme = "dark";
+    }
+  });
+  function storageAvailable(type) {
+    try {
+      var storage = window[type],
+        x = '__storage_test__';
+      storage.setItem(x, x);
+      storage.removeItem(x);
+      return true;
+    }
+    catch(e) {
+      return false;
+    }
+  }
+</script>
+</html>
