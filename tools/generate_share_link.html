@@ -729,7 +729,7 @@ function saveOutput() {
             fname = fname + ".txt";
 
         }
-
+        
         var a = document.createElement("a");
 
         document.body.appendChild(a);
@@ -738,9 +738,9 @@ function saveOutput() {
 
         var blob = new Blob([theData], {
                 type: "text/plain"
-            }),
+            });
 
-        url = window.URL.createObjectURL(blob);
+        var url = window.URL.createObjectURL(blob);
         a.href = url;
         a.download = fname;
         a.click();

@@ -31,9 +31,9 @@
  **/
 
 // Version number for the settings dialog
-var gVersionNumber = "3047_120725_1800";
+var gVersionNumber = "3066_121325_1500";
 
-var gLiteVersionNumber = 'lite-3047-4';
+var gLiteVersionNumber = 'lite-3066-1';
 
 const ABC_TOOLS_BASE_URL =
   window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
@@ -87,6 +87,8 @@ var gPlayerTouchStartTime = 0;
 const gPlayerSwipeThreshold = 50; // px
 
 var gPlayerScaling = 50;
+
+var gPlayerShowExternalToolsIcon = true;
 
 var gRenderingPDF = false;
 
@@ -6741,17 +6743,17 @@ function GetAllTuneHyperlinks(theLinks) {
       // Don't add hyperlinks to section headers
       if (theTitles[i].indexOf("*") == 0) {
 
-        output += thisTune;
+        output += thisTune+"\n\n";
 
       } else {
 
         thisTune = processSingleTunePlaybackInjects(thisTune);
-        output += thisTune;
+        output += thisTune+"\n\n";
 
       }
 
     }
-
+    
     return output;
 
   }
@@ -11774,7 +11776,7 @@ function ExportTextIncipitsPDF(title, bDoFullTunes, bDoCCETransform, bDoQRCodes)
 
                 a.style = "display: none";
 
-                url = window.URL.createObjectURL(newBlob);
+                var url = window.URL.createObjectURL(newBlob);
                 a.href = url;
                 a.download = (title);
                 a.click();
@@ -12667,7 +12669,7 @@ function ExportNotationPDF(title) {
 
                       a.style = "display: none";
 
-                      url = window.URL.createObjectURL(newBlob);
+                      var url = window.URL.createObjectURL(newBlob);
                       a.href = url;
                       a.download = (title);
                       a.click();
@@ -21953,9 +21955,9 @@ function SaveABCAsMusicXML(theTune, fname) {
 
       var blob = new Blob([data], {
           type: "text/plain"
-        }),
+        });
 
-        url = window.URL.createObjectURL(blob);
+      var url = window.URL.createObjectURL(blob);
       a.href = url;
       a.download = fname;
       a.click();
@@ -22048,9 +22050,9 @@ function doSaveABCFile(fname, theData) {
 
   var blob = new Blob([theData], {
       type: "text/plain"
-    }),
+    });
 
-    url = window.URL.createObjectURL(blob);
+  var url = window.URL.createObjectURL(blob);
   a.href = url;
   a.download = fname;
   a.click();
@@ -22155,9 +22157,9 @@ function saveTextFile(thePrompt, thePlaceholder, theData) {
 
     var blob = new Blob([theData], {
         type: "text/plain"
-      }),
+      });
 
-      url = window.URL.createObjectURL(blob);
+    var url = window.URL.createObjectURL(blob);
     a.href = url;
     a.download = fname;
     a.click();
@@ -22215,9 +22217,9 @@ function saveTextFileDeveloper(thePrompt, thePlaceholder, theData) {
 
     var blob = new Blob([theData], {
         type: "text/plain"
-      }),
+      });
 
-      url = window.URL.createObjectURL(blob);
+    var url = window.URL.createObjectURL(blob);
     a.href = url;
     a.download = fname;
     a.click();
@@ -22270,9 +22272,9 @@ function saveCSVFile(thePrompt, thePlaceholder, theData) {
 
     var blob = new Blob([theData], {
         type: "text/csv"
-      }),
+      });
 
-      url = window.URL.createObjectURL(blob);
+    var url = window.URL.createObjectURL(blob);
     a.href = url;
     a.download = fname;
     a.click();
@@ -27213,6 +27215,8 @@ function processShareLink() {
   theSearchURL = theSearchURL.replaceAll("&amp;", "&");
 
   const urlParams = new URLSearchParams(theSearchURL);
+
+  // ------------------------------------------------------------------
 
   // Process URL params
 
@@ -34121,9 +34125,9 @@ function ExportOneABCTune(theABC, fname, callback, errorCallback) {
 
   var blob = new Blob([theABC], {
       type: "text/plain"
-    }),
+    });
 
-    url = window.URL.createObjectURL(blob);
+  var url = window.URL.createObjectURL(blob);
   a.href = url;
   a.download = fname;
   a.click();
@@ -34301,9 +34305,9 @@ function ExportMusicXML(theABC, fname, callback, errorCallback) {
 
       var blob = new Blob([data], {
           type: "text/plain"
-        }),
+        });
 
-        url = window.URL.createObjectURL(blob);
+      var url = window.URL.createObjectURL(blob);
       a.href = url;
       a.download = fname;
       a.click();
@@ -37222,6 +37226,7 @@ function VoiceTuningCallback(notes, context) {
   }
 }
 
+
 // Keep track where you are in the tune collection
 var gPlayABCTuneIndex = 0;
 var gPlayABCTuneCount = 0;
@@ -37434,7 +37439,7 @@ function PlayABCDialog(theABC, callback, val, metronome_state) {
       modal_msg += '<input id="abcplayer_exportbutton" class="abcplayer_exportbutton btn btn-exportaudiomidi" onclick="ExportAudioOrImage();" type="button" value="Export Media" title="Brings up a dialog where you can export the tune in various audio and image formats">';
     }
 
-    modal_msg += '<input id="abcplayer_settingsbutton" class="abcplayer_settingsbutton btn btn-configuresettingsfromhelp" onclick="ShowPlayerSettings();" type="button" value="Settings" title="Brings up the Player Instrument Settings dialog where you can select the default MIDI soundfont, MIDI instruments, and MIDI volumes to use when playing tunes.&nbsp;&nbsp;From the dialog you can also set the Player screen width percentage, load and manage custom instruments.">';
+    modal_msg += '<input id="abcplayer_settingsbutton" class="abcplayer_settingsbutton btn btn-configuresettingsfromhelp" onclick="ShowPlayerSettings();" type="button" value="Settings" title="Brings up the Player Settings dialog where you can select the default MIDI soundfont, MIDI instruments, and MIDI volumes to use when playing tunes.&nbsp;&nbsp;From the dialog you can also set the Player screen width percentage, load and manage custom instruments.">';
 
     if (isDesktopBrowser()) {
       modal_msg += '<input id="abcplayer_zoom_in" class="btn btn-player_zoom abcplayer_zoom_in" onclick="ZoomPlayer(true)" type="button" value="←&nbsp;→" title="Increases the player width 10% of the window screen size">';
@@ -37446,6 +37451,11 @@ function PlayABCDialog(theABC, callback, val, metronome_state) {
     modal_msg += '<p style="text-align:center;font-size:0pt;font-family:var(--abctools-ui-font-fallbacks)">&nbsp;</p>';
 
     modal_msg += '<a id="abcplayer_help" href="https://michaeleskin.com/abctools/userguide.html#playing_your_tunes" target="_blank" style="text-decoration:none;" title="Learn more about the Player" class="dialogcornerbutton">?</a>';
+
+    // Add the share controls
+    if (gPlayerShowExternalToolsIcon){
+      modal_msg += '<img id="external_tools_share" class="external_tools_share" src="img/external_share.png" title="Open the tune in an external ABC tool.&nbsp;&nbsp;This control can be shown/hidden in the Player by a setting in the Player Settings dialog."/>';
+    }
 
     if (gPlayABCTuneCount > 1) {
 
@@ -37509,6 +37519,20 @@ function PlayABCDialog(theABC, callback, val, metronome_state) {
       okText: "Close",
       scrollWithPage: (isMobileBrowser())
     });
+
+    // Add external tools icon?
+    if (gPlayerShowExternalToolsIcon){
+
+      var elem = document.getElementById("external_tools_share");
+      elem.onclick = function(){
+
+        sendGoogleAnalytics("dialog", "ExternalToolsPlayer");
+
+        openInExternalTool(theABC);
+      
+      };
+
+    }
 
     // Style previous and next tune buttons depending on tune count state
     if (gPlayABCTuneCount > 1) {
@@ -37929,7 +37953,7 @@ function generateCustomInstrumentAlertMessage(missingIdxs) {
 
       <p style="margin:.6em 0;font-size:1.05rem;">To resolve this, please load the required custom instrument${plural ? "s" : ""} by either:</p>
       <ol style="margin:.5em 0 1em 1.4em; padding:0; font-size:1.05rem;">
-        <li>Load ${plural ? "them" : "it"} from the <strong>Player Instrument Settings</strong> dialog, or</li>
+        <li>Load ${plural ? "them" : "it"} from the <strong>Player Settings</strong> dialog, or</li>
         <li>Close the Player, then drag-and-drop the custom instrument${plural ? "s" : ""} onto the work area.</li>
       </ol>
 
@@ -46452,6 +46476,12 @@ function GetInitialConfigurationSettings() {
     gLooperAddMeasureCount = 1;
   }
 
+  gPlayerShowExternalToolsIcon = true;
+  val = localStorage.PlayerShowExternalToolsIcon
+  if (val) {
+    gPlayerShowExternalToolsIcon = (val == "true");
+  }
+
   // Apply custom theme
   ensureInitialAbcThemeApplied();
 
@@ -46771,6 +46801,9 @@ function SaveConfigurationSettings() {
 
     // Number of measures to add
     localStorage.LooperAddMeasureCount = gLooperAddMeasureCount;
+
+    // Show external tools icon on Player
+    localStorage.PlayerShowExternalToolsIcon = gPlayerShowExternalToolsIcon;
 
   }
 }
@@ -48209,6 +48242,7 @@ function SharingControlsDialog() {
   modal_msg += '<textarea id="urltextbox" rows="10" cols="80" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="URL for sharing will appear here" >';
   modal_msg += '</textarea>';
   modal_msg += '</p>';
+  modal_msg += '<img id="external_tools_share" class="external_tools_share" src="img/external_share.png" title="Open the ABC in an external ABC tool"/>';
   modal_msg += '<p id="shareurlcaption">Share URL</p>';
   modal_msg += '<p style="text-align:center;margin-top:36px;"><input id="addautoplay" class="urlcontrols btn btn-urlcontrols" onclick="AddAutoPlay()" type="button" value="Add Auto-Play" title="Adds &play=1 to the ShareURL.&nbsp;&nbsp;Tune will open in the player."><input id="addopenineditor" class="urlcontrols btn btn-urlcontrols" onclick="AddOpenInEditor()" type="button" value="Add Open in Editor" title="Adds &editor=1 to the ShareURL.&nbsp;&nbsp;Share links will load in the editor.&nbsp;&nbsp;This setting overrides Add Auto-Play."><input id="adddisableediting" class="urlcontrols btn btn-urlcontrols" onclick="AddDisableEditing()" type="button" value="Add Disable Editing" title="Adds &dx=1 to the ShareURL.&nbsp;&nbsp;Entering the editor from the full screen tune view will be disabled.&nbsp;&nbsp;Also overrides Add Open in Editor."><input id="addnoui" class="urlcontrolslast btn btn-urlcontrols" onclick="AddNoUI()" type="button" value="Add Hide UI" title="Adds &noui to the ShareURL for responsive iframe embedding.&nbsp;&nbsp;When the link is opened, hides the UI.&nbsp;&nbsp;Overrides Add Open in Editor and Add Auto-Play.">&nbsp;&nbsp;&nbsp;&nbsp;<input id="urlallowdef" type="checkbox" style="margin-top:-5px;margin-bottom:0px;" title="When checked uses Deflate instead of LZW for compressing the ABC in the Share URL resulting in a shorter link"/>&nbsp;Use Deflate</p>';
 
@@ -48226,6 +48260,17 @@ function SharingControlsDialog() {
         CreateURLfromHTML();
       };
     }
+
+    var elem = document.getElementById("external_tools_share");
+    
+    elem.onclick = function(){
+
+      sendGoogleAnalytics("dialog", "ExternalToolsShareDialog");
+
+      var theABC = getABCEditorText();
+      openInExternalTool(theABC);
+
+    };
 
   }, 200);
 
@@ -50232,7 +50277,7 @@ function idleAdvancedSettings() {
 
         DayPilot.Modal.alert(thePrompt, {
           theme: "modal_flat",
-          top: 300,
+          top: 200,
           scrollWithPage: (AllowDialogsToScroll())
         });
 
@@ -50844,6 +50889,7 @@ function ConfigurePlayerSettings(player_callback) {
     configure_metronome_low_volume: gMetronomeLowVolume,
     configure_wide_playback_cursor: gUseWidePlayCursor,
     configure_always_flatten_parts: gAlwaysFlattenParts,
+    configure_show_external_tools: gPlayerShowExternalToolsIcon,
   };
 
   const sound_font_options = [{
@@ -51013,7 +51059,7 @@ function ConfigurePlayerSettings(player_callback) {
   }]
 
   var form = [{
-    html: '<p style="text-align:center;font-size:16pt;font-family:var(--abctools-ui-font-fallbacks);margin-left:15px;">Player Instrument Settings&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#default_player_settings" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html: '<p style="text-align:center;font-size:16pt;font-family:var(--abctools-ui-font-fallbacks);margin-left:15px;">Player Settings&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#default_player_settings" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
   }, {
     html: '<p class="configure_settings_form_text_fs">The following values are used as the instrument and volume defaults if not already specified in a tune:</p>'
   }, {
@@ -51105,6 +51151,11 @@ function ConfigurePlayerSettings(player_callback) {
     id: "configure_always_flatten_parts",
     type: "checkbox",
     cssClass: "configure_settings_form_text_checkbox_fs"
+  },{
+    name: "            Show open ABC in external tool icon at top right of the Player",
+    id: "configure_show_external_tools",
+    type: "checkbox",
+    cssClass: "configure_settings_form_text_checkbox_fs"
   }]);
 
   form = form.concat([{html: '<p style="text-align:center;margin-top:24px"><label class="btn btn-subdialog loadinstrumentbutton" for="loadinstrumentbutton" title="Load one or more Custom Instruments">Load Custom Instruments <input type="file" id="loadinstrumentbutton" accept=".zip" multiple hidden/></label><input id="configurecustominstruments" class="advancedcontrols btn btn-subdialog" onclick="manageCustomInstrumentSlots()" type="button" value="Configure Custom Instruments" title="Brings up the Assign Files to Custom Instruments dialog"><input id="launchcustominstrumentbuilder" class="advancedcontrols btn btn-subdialog" onclick="launchCustomInstrumentBuilder()" type="button" value="Launch Custom Instrument Builder" title="Launches the Custom Instrument Builder utility in a new browser tab"></p>'}]);
@@ -51154,6 +51205,9 @@ function ConfigurePlayerSettings(player_callback) {
           gPlayerScaling = 100;
         }
       }
+
+      // Show external tools icon
+      gPlayerShowExternalToolsIcon = args.result.configure_show_external_tools
 
       // Always flatten parts?
       gAlwaysFlattenParts = args.result.configure_always_flatten_parts;
@@ -51507,7 +51561,7 @@ function ConfigureToolSettings() {
     type: "checkbox",
     cssClass: "configure_settings_form_text_checkbox"
   }, {
-    html: '<p style="text-align:center;"><input id="abcplayer_settingsbutton" style="margin-left:0px" class="abcplayer_settingsbutton btn btn-configuresettingsfromhelp" onclick="ConfigurePlayerSettings(null);" type="button" value="Select Default Player Instruments and Volumes" title="Brings up the Player Instrument Settings dialog where you can select the default MIDI soundfont, MIDI instruments, and MIDI volumes to use when playing tunes.&nbsp;&nbsp;You can also load and manage custom instruments from this dialog."><input id="managedatabases" class="btn btn-managedatabases managedatabases" onclick="ManageDatabasesDialog()" type="button" value="Manage Notes, Reverb, and Tune Search Databases" title="Opens a dialog where you can manage the instrument notes, reverb settings, and tune search engine collection databases"></p>'
+    html: '<p style="text-align:center;"><input id="abcplayer_settingsbutton" style="margin-left:0px" class="abcplayer_settingsbutton btn btn-configuresettingsfromhelp" onclick="ConfigurePlayerSettings(null);" type="button" value="Select Default Player Instruments and Volumes" title="Brings up the Player Settings dialog where you can select the default MIDI soundfont, MIDI instruments, and MIDI volumes to use when playing tunes.&nbsp;&nbsp;You can also load and manage custom instruments from this dialog."><input id="managedatabases" class="btn btn-managedatabases managedatabases" onclick="ManageDatabasesDialog()" type="button" value="Manage Notes, Reverb, and Tune Search Databases" title="Opens a dialog where you can manage the instrument notes, reverb settings, and tune search engine collection databases"></p>'
   }, {
     name: "    Allow instrument notes and reverb settings database to be used offline",
     id: "configure_allow_offline_instruments",
@@ -51556,12 +51610,12 @@ function ConfigureToolSettings() {
   };
 
   if (gUpdateAvailable) {
-
+    // ABC Lite: Customized
     form.push({
       html: '<p style="text-align:center;"><input id="configure_fonts" class="btn btn-subdialog configure_fonts" onclick="ConfigureFonts()" type="button" value="Font Settings" title="Configure the fonts used for rendering the ABC"><input id="configure_box" class="btn btn-subdialog configure_box" onclick="ConfigureTablatureSettings()" type="button" value="Tablature Injection Settings" title="Configure the tablature injection settings"><input id="configure_musicxml_import" class="btn btn-subdialog configure_musicxml_import" onclick="ConfigureMusicXMLImport()" type="button" value="MusicXML/MIDI Settings" title="Configure MusicXML/MIDI import settings"><input id="configure_developer_settings" class="btn btn-subdialog configure_developer_settings" onclick="AdvancedSettings()" type="button" value="Advanced Settings" title="Configure low level tool settings"></p><p style="font-size:10pt;font-family:var(--abctools-ui-font-fallbacks);line-height:14pt;color:forestgreen;position:absolute;left:20px;bottom:20px;margin:0px;cursor:pointer;" title="Click to update to the latest version of the tool" onclick="UpdateToLatestVersion();">Click here to update to the latest version<br/>Latest fork version: ' + gUpdateVersion + '<br/>Installed version: ' + gLiteVersionNumber + '</p>'
     });
   } else {
-
+    // ABC Lite: Customized
     form.push({
       html: '<p style="text-align:center;"><input id="configure_fonts" class="btn btn-subdialog configure_fonts" onclick="ConfigureFonts()" type="button" value="Font Settings" title="Configure the fonts used for rendering the ABC"><input id="configure_box" class="btn btn-subdialog configure_box" onclick="ConfigureTablatureSettings()" type="button" value="Tablature Injection Settings" title="Configure the tablature injection settings"><input id="configure_musicxml_import" class="btn btn-subdialog configure_musicxml_import" onclick="ConfigureMusicXMLImport()" type="button" value="MusicXML/MIDI Settings" title="Configure MusicXML/MIDI import settings"><input id="configure_developer_settings" class="btn btn-subdialog configure_developer_settings" onclick="AdvancedSettings()" type="button" value="Advanced Settings" title="Configure low level tool settings"></p><p style="font-size:10pt;font-family:var(--abctools-ui-font-fallbacks);line-height:14pt;color:grey;position:absolute;left:20px;bottom:20px;margin:0px;cursor:pointer;" title="Click to update to the latest version" onclick="UpdateToLatestVersion();">You have the latest version<br/>Installed version: ' + gLiteVersionNumber + '<br>Click here to force an update</p>'
     });
@@ -51943,12 +51997,7 @@ function ConfigureToolSettings() {
 
           sendGoogleAnalytics("action", "EnableSyntax");
 
-          if (isPureDesktopBrowser() || gIsAndroid){
-            thePrompt = "<br/>The tool will now restart with ABC syntax highlighting enabled.<br/><br/><strong>Note for Android users:</strong><br/><br/>While the tool is usable, there may be<br/>issues with text selection context menus.<br/>";
-          }
-          else{
-            thePrompt = "<br/>The tool will now restart with ABC syntax highlighting enabled.<br/><br/><strong>Note for iOS users:</strong><br/><br/>While the tool is usable, there may be <br/>issues with text selection highlighting.<br/>";
-          }
+          thePrompt = "<br/>The tool will now restart with ABC syntax highlighting enabled.<br/>";
         }
         else{
           sendGoogleAnalytics("action", "DisableSyntax");
@@ -52814,7 +52863,7 @@ function DoFileRead(file, callback) {
 
           DayPilot.Modal.alert(thePrompt, {
             theme: "modal_flat",
-            top: 100,
+            top: 200,
             scrollWithPage: (AllowDialogsToScroll())
           }).then(function() {
 
@@ -52894,7 +52943,7 @@ function DoFileRead(file, callback) {
 
               DayPilot.Modal.alert(thePrompt, {
                 theme: "modal_flat",
-                top: 100,
+                top: 200,
                 scrollWithPage: (AllowDialogsToScroll())
               }).then(function() {
 
@@ -60071,6 +60120,12 @@ function DoStartup() {
     gTheCM.on(
       "changes",
       debounce(() => {
+
+        // MAE 11 Dec 2025 For MIDI import messaging issue
+        if (gImportRunning){
+          return;
+        }
+
         // Set dirty
         gIsDirty = true;
 
@@ -60256,7 +60311,6 @@ function DoStartup() {
     }
 
     setABCEditorText("");
-
     Render(true, null);
 
     // Mark as clean
@@ -61132,20 +61186,24 @@ function DoStartup() {
 
 }
 
-/**
- * Process one or more ABC tunes.
- *
- * - abcText: full ABC text, possibly containing multiple tunes.
- *   Each tune must start with an X: line.
- * - phraseBars: integer phrase length in bars.
- *
- * Returns all processed tunes, joined with a blank line between them.
- */
-function processAbcPhrases(abcText, phraseBars) {
+//
+// Flatten repeats and break tune into phrases for the Tune Trainer
+//
+function processAbcPhrases(abcText, phraseBars, phrasePadding) {
 
   if (!Number.isInteger(phraseBars) || phraseBars <= 0) {
     return abcText;
   }
+
+  if (!Number.isInteger(phrasePadding) || phrasePadding < 0) {
+    return abcText;
+  }
+
+  // Strip all ! at the end of lines
+  abcText = abcText.replace(/!+$/gm, "");
+
+  // Strip all \ at the end of lines
+  abcText = abcText.replace(/\\$/gm, "");
 
   // Normalize line endings
   let norm = abcText.replace(/\r\n/g, "\n");
@@ -61179,12 +61237,14 @@ function processAbcPhrases(abcText, phraseBars) {
   const outputs = tunes
     .map(t => t.trim())
     .filter(t => t.length > 0)
-    .map(t => processSingleTune(t, phraseBars));
+    .map(t => processSingleTune(t, phraseBars, phrasePadding));
 
   return outputs.join("\n\n");
 
-
-  function processSingleTune(abcText, phraseBars) {
+  // ------------------------------------------------------------
+  // Process a single tune
+  // ------------------------------------------------------------
+  function processSingleTune(abcText, phraseBars, phrasePadding) {
     const lines = abcText.replace(/\r\n/g, "\n").split("\n");
 
     // Reject multiple voices
@@ -61201,7 +61261,7 @@ function processAbcPhrases(abcText, phraseBars) {
     let sawK = false;
 
     for (const ln of lines) {
-      
+
       const trimmed = ln.trim();
 
       if (!inBody) {
@@ -61243,6 +61303,20 @@ function processAbcPhrases(abcText, phraseBars) {
 
     if (!sawK) {
       return abcText;
+    }
+
+    // Only offer barsperstaff if no padding
+    if (phrasePadding == 0){
+      headerLines.push("%");
+      headerLines.push("% Remove the x from the start of the next line to display");
+      headerLines.push("% the ABC with alternating staves of notation and rests:");
+      headerLines.push("%");
+      headerLines.push("%%xbarsperstaff "+phraseBars);
+      headerLines.push("%%stretchlast 1");
+      headerLines.push("%");
+      headerLines.push("% If there is a partial measure pickup before the tune, to use");
+      headerLines.push("% barsperstaff you will need to manually delete the pickup from the ABC.");
+      headerLines.push("%");
     }
 
     const header = headerLines.join("\n");
@@ -61295,21 +61369,6 @@ function processAbcPhrases(abcText, phraseBars) {
     // ---- One-bar rest string ----
     const oneBarRest = computeOneBarRest(meterNum, meterDen, lNum, lDen);
 
-    // ---- Pickup detection (first bar only) ----
-    let hasPickup = detectPickupInFirstBar(body, meterNum, meterDen, lNum, lDen);
-
-    // If there is a partial pickup *before* the first barline,
-    // strip those notes completely so the tune starts at the first full bar.
-    if (hasPickup) {
-      const firstBarIdx = body.indexOf("|");
-      if (firstBarIdx !== -1) {
-        // Keep the barline itself; drop everything before it
-        body = body.slice(firstBarIdx);
-        // Pickup is gone now
-        hasPickup = false;
-      }
-    }
-
     // ---- Normalize [1/[2 endings to |1/|2 ----
     body = normalizeEndings(body);
 
@@ -61317,18 +61376,24 @@ function processAbcPhrases(abcText, phraseBars) {
     const measures = parseMeasures(body);
 
     // ---- Expand repeats & first/second endings ----
-    const flatMeasures = expandRepeatsAndEndings(measures);
+    let flatMeasures = expandRepeatsAndEndings(measures);
+
+    // ---- Regroup into full-length bars (only a single initial pickup may remain partial)
+    let fullBarMeasures = resegmentIntoFullBars(flatMeasures, meterNum, meterDen, lNum, lDen);
+
+    // ---- Detect if the very first note measure is a partial pickup ----
+    const hasPickup = detectInitialPickupMeasure(fullBarMeasures, meterNum, meterDen, lNum, lDen);
 
     // ---- Insert phrase-length rest measures after each phrase ----
-    let phrasedMeasures = injectPhraseRests(flatMeasures, phraseBars, oneBarRest, hasPickup);
+    let phrasedMeasures = injectPhraseRests(fullBarMeasures, phraseBars, phrasePadding, oneBarRest, hasPickup);
 
     // ---- Clear any internal |]; final |] will be added in rebuild ----
     phrasedMeasures = phrasedMeasures.map(m =>
       m.bar === "|]" ? { ...m, bar: "|" } : m
     );
 
-    // ---- Rebuild body (wrap to 8 bars/line & final bar = |]) ----
-    const newBody = rebuildBodyFromMeasures(phrasedMeasures);
+    // ---- Rebuild body ----
+    const newBody = rebuildBodyFromMeasures(phrasedMeasures, phraseBars, phrasePadding, hasPickup);
 
     return header + "\n" + newBody;
   }
@@ -61339,15 +61404,13 @@ function processAbcPhrases(abcText, phraseBars) {
     const unitsPerBar = (mNum * lDen) / (mDen * lNum);
 
     if (!Number.isFinite(unitsPerBar) || unitsPerBar <= 0) {
-      //throw new Error("Invalid meter or default length for computing bar rest.");
+      // Fallback
+      return "z4";
     }
 
     const rounded = Math.round(unitsPerBar);
     if (Math.abs(unitsPerBar - rounded) > 1e-6) {
-      //throw new Error(
-      //  "This function only supports bar lengths that are integer multiples of L:; " +
-      //  `got ${unitsPerBar} units per bar.`
-      //);
+      // Non-integer bar length in L: units – fallback
       return "z4";
     }
 
@@ -61355,55 +61418,7 @@ function processAbcPhrases(abcText, phraseBars) {
     return "z" + rounded; // e.g. z4 for 2/4 with L:1/8
   }
 
-  /* ----------------- Helper: pickup detection ------------------ */
-
-  function detectPickupInFirstBar(body, mNum, mDen, lNum, lDen) {
-    const idx = body.indexOf("|");
-    if (idx === -1) return false; // only one bar, assume no pickup
-
-    let firstBarText = body.slice(0, idx);
-
-    // Remove grace notes { ... }
-    firstBarText = firstBarText.replace(/\{[^}]*\}/g, "");
-
-    const unitsPerBar = (mNum * lDen) / (mDen * lNum);
-
-    let pos = 0;
-    let totalUnits = 0;
-
-    while (pos < firstBarText.length) {
-      const ch = firstBarText[pos];
-
-      if (
-        /\s/.test(ch) ||
-        ch === "!" || ch === "\"" ||
-        ch === "(" || ch === ")" ||
-        ch === "[" || ch === "]"
-      ) {
-        pos++;
-        continue;
-      }
-
-      if (ch === "^" || ch === "_" || ch === "=") {
-        pos++;
-        continue;
-      }
-
-      if (/[A-Ga-gzZxY]/.test(ch)) {
-        pos++;
-        while (pos < firstBarText.length && /[,'’]/.test(firstBarText[pos])) pos++;
-
-        const { value: lengthUnits, newPos } = parseAbcLength(firstBarText, pos);
-        pos = newPos;
-        totalUnits += lengthUnits;
-        continue;
-      }
-
-      pos++; // unknown char, skip
-    }
-
-    return totalUnits > 0 && totalUnits < unitsPerBar - 1e-6;
-  }
+  /* ----------------- Helper: note length parsing ------------------ */
 
   function parseAbcLength(s, pos) {
     let numStr = "";
@@ -61428,14 +61443,122 @@ function processAbcPhrases(abcText, phraseBars) {
     return { value, newPos: pos };
   }
 
-  /* ----------------- Helper: normalize [1/[2 endings ------------------ */
+  /**
+   * Compute the length (in L: units) of a measure's notes.
+   * Ignores decorations, chords, grace notes, etc.
+   * Simple support for triplets: (3ABC = 3 notes in the time of 2.
+   */
+  function computeMeasureUnits(text) {
+    let s = text || "";
+
+    // Remove grace notes { ... }
+    s = s.replace(/\{[^}]*\}/g, "");
+
+    let pos = 0;
+    let totalUnits = 0;
+
+    let tupletNotesLeft = 0;
+    let tupletFactor = 1; // multiply note length by this inside tuplet
+
+    while (pos < s.length) {
+      const ch = s[pos];
+
+      // Whitespace or simple decorations
+      if (
+        /\s/.test(ch) ||
+        ch === "!" || ch === "\"" ||
+        ch === "[" || ch === "]"
+      ) {
+        pos++;
+        continue;
+      }
+
+      // Tuplet start: (3 -> next 3 notes in the time of 2
+      if (ch === "(") {
+        const next = s[pos + 1];
+        if (next && /[2-9]/.test(next)) {
+          const n = parseInt(next, 10);
+          if (n === 3) {
+            tupletNotesLeft = 3;
+            tupletFactor = 2 / 3; // 3 notes in time of 2
+          } else {
+            tupletNotesLeft = 0;
+            tupletFactor = 1;
+          }
+          pos += 2;
+          continue;
+        } else {
+          pos++;
+          continue;
+        }
+      }
+
+      // Accidentals
+      if (ch === "^" || ch === "_" || ch === "=") {
+        pos++;
+        continue;
+      }
+
+      if (/[A-Ga-gzZxY]/.test(ch)) {
+        pos++;
+        // Skip octave marks , ' ’
+        while (pos < s.length && /[,'’]/.test(s[pos])) pos++;
+
+        const { value: baseUnits, newPos } = parseAbcLength(s, pos);
+        pos = newPos;
+
+        let lengthUnits = baseUnits;
+        if (tupletNotesLeft > 0) {
+          lengthUnits *= tupletFactor;
+          tupletNotesLeft--;
+          if (tupletNotesLeft === 0) {
+            tupletFactor = 1;
+          }
+        }
+
+        totalUnits += lengthUnits;
+        continue;
+      }
+
+      // Anything else: skip
+      pos++;
+    }
+
+    return totalUnits;
+  }
+
+  /* ----------------- Helper: detect initial pickup measure ------------------ */
+
+  function detectInitialPickupMeasure(measures, mNum, mDen, lNum, lDen) {
+    const unitsPerBar = (mNum * lDen) / (mDen * lNum);
+    const EPS = 1e-6;
+
+    const firstNoteIdx = measures.findIndex(
+      (m) => m.notes && m.notes.trim().length > 0
+    );
+    if (firstNoteIdx === -1) return false;
+
+    const firstLen = computeMeasureUnits(measures[firstNoteIdx].notes || "");
+    if (firstLen > EPS && firstLen < unitsPerBar - EPS) {
+      // true => there is a pickup at the very start of the tune
+      return true;
+    }
+    return false;
+  }
+
+  /* ----------------- Helper: normalize [1/[2 and spaced endings ------ */
 
   function normalizeEndings(body) {
     let out = body;
-    // |[1 → |1, :[1 → :1
+
+    // Collapse spaces between barlines and 1/2 so parseMeasures sees |1, |2, :|1, :|2
+    out = out.replace(/(\|\s+)([12])/g, "|$2");
+    out = out.replace(/(:\|\s+)([12])/g, ":|$2");
+
+    // Convert [1 / [2 forms to |1 / |2 so they’re also recognized
     out = out.replace(/(\||:)\[([12])/g, "$1$2");
-    // Standalone [1 at line start or after space → |1
     out = out.replace(/(^|\s)\[([12])/g, "$1|$2");
+
     return out;
   }
 
@@ -61469,7 +61592,6 @@ function processAbcPhrases(abcText, phraseBars) {
 
       if (ch === "|") {
         const next = body[i + 1] || "";
-        const next2 = body[i + 2] || "";
 
         if (next === ":") {
           pushMeasure("|:");
@@ -61517,6 +61639,25 @@ function processAbcPhrases(abcText, phraseBars) {
     return measures;
   }
 
+  /* ----------------- Helper: normalize bars for playback --------------- */
+
+  function normalizeBarPlayback(bar) {
+    if (!bar) return bar;
+    if (bar === "||") return "|";
+    if (
+      bar === "|1" || bar === "|2" ||
+      bar === ":|1" || bar === ":|2" ||
+      bar === ":|"
+    ) {
+      return "|";
+    }
+    if (bar.indexOf(":|") !== -1) {
+      // handles combined tokens like ":|2"
+      return "|";
+    }
+    return bar;
+  }
+
   /* ----------------- Helper: expand repeats & endings ------------------ */
 
   function expandRepeatsAndEndings(measures) {
@@ -61538,71 +61679,158 @@ function processAbcPhrases(abcText, phraseBars) {
     return expandedPrefix.concat(expandedSuffix);
   }
 
-  /**
-   * Handle tunes (or prefixes) that have :| end repeats with no |: in that region.
-   * Each section from the last section start (0, or after previous :|)
-   * up to a :| is repeated twice.
-   */
+  // ----- Smarter handling of :| with 1st/2nd endings and no |: -----
+
   function expandUnmatchedEndRepeats(measures) {
-    const sections = [];
-    let startIdx = 0;
-
-    for (let i = 0; i < measures.length; i++) {
-      const bar = measures[i].bar || "";
-      if (bar.indexOf(":|") !== -1) {
-        // section [startIdx..i] ends here and is repeated
-        sections.push({
-          measures: measures.slice(startIdx, i + 1),
-          repeat: true
-        });
-        startIdx = i + 1;
-      }
-    }
-
-    // Remainder (if any) with no :| → no repeat
-    if (startIdx < measures.length) {
-      sections.push({
-        measures: measures.slice(startIdx),
-        repeat: false
-      });
-    }
-
     const out = [];
+    const n = measures.length;
+    let i = 0;
+    let sectionStart = 0;
 
-    function copyOnce(seg) {
-      for (const m of seg) {
-        let bar = m.bar;
-        // Normalize :| variants to simple |
-        if (bar && bar.indexOf(":|") !== -1) {
-          bar = bar.replace(":|", "|");
-        }
-        if (bar === "||") bar = "|";
+    function copySimple(start, end) {
+      for (let j = start; j <= end; j++) {
+        const m = measures[j];
         out.push({
           notes: m.notes,
-          bar
+          bar: normalizeBarPlayback(m.bar)
         });
       }
     }
 
-    for (const sec of sections) {
-      if (sec.repeat) {
-        copyOnce(sec.measures);
-        copyOnce(sec.measures);
+    while (i < n) {
+      const bar = measures[i].bar || "";
+      if (bar.indexOf(":|") !== -1) {
+        // We reached the end (i) of a repeating block [sectionStart..i].
+        const start = sectionStart;
+        const end = i;
+
+        // Look for |1 and |2 within this block
+        let marker1 = -1;
+        let marker2 = -1;
+        for (let j = start; j <= end; j++) {
+          const b = measures[j].bar || "";
+          if (marker1 === -1 && b.indexOf("1") !== -1) {
+            marker1 = j;
+          }
+          if (marker2 === -1 && b.indexOf("2") !== -1) {
+            marker2 = j;
+          }
+          if (marker1 !== -1 && marker2 !== -1) break;
+        }
+
+        // Try to find second-ending notes AFTER the :|2 bar if marker2 == end
+        let secondStart = -1;
+        let secondEnd = -1;
+
+        if (marker2 !== -1) {
+          if (marker2 === end && end + 1 < n) {
+            // Typical Cooley's-style: |1 ... :|2 <2nd-ending-notes>...
+            secondStart = end + 1;
+
+            // Extend second ending until strong boundary
+            let j = secondStart;
+            while (j < n) {
+              const b = measures[j].bar || "";
+              if (
+                j > secondStart &&
+                (b.indexOf(":|") !== -1 || measures[j].bar === "|:" || b === "||" || b === "|]")
+              ) {
+                break;
+              }
+              secondEnd = j;
+              if (b === "||" || b === "|]") {
+                j++;
+                break;
+              }
+              j++;
+            }
+            if (secondEnd === -1) {
+              secondEnd = secondStart;
+            }
+          } else if (marker2 + 1 <= end) {
+            // Weird but possible: |2 is inside the section and second-ending notes follow it
+            secondStart = marker2 + 1;
+            secondEnd = end;
+          }
+        }
+
+        // If we can't sensibly identify a 1st+2nd ending, fall back to simple double repeat
+        if (marker1 === -1 || marker2 === -1 || secondStart === -1) {
+          copySimple(start, end);
+          copySimple(start, end);
+          i = end + 1;
+          sectionStart = i;
+          continue;
+        }
+
+        // ABC semantics: "1" attaches to the following bar, so the measure
+        // that carries "|1" belongs to the body; first-ending notes begin at marker1+1.
+        const bodyStart = start;
+        const bodyEnd = marker1;
+        const firstStart = marker1 + 1;
+        const firstEnd = end;
+
+        if (firstStart > firstEnd || firstStart >= n) {
+          // Degrade to simple repeat
+          copySimple(start, end);
+          copySimple(start, end);
+          i = end + 1;
+          sectionStart = i;
+          continue;
+        }
+
+        // --- First pass: body + first ending
+        for (let j = bodyStart; j <= bodyEnd; j++) {
+          out.push({
+            notes: measures[j].notes,
+            bar: normalizeBarPlayback(measures[j].bar)
+          });
+        }
+        for (let j = firstStart; j <= firstEnd; j++) {
+          out.push({
+            notes: measures[j].notes,
+            bar: normalizeBarPlayback(measures[j].bar)
+          });
+        }
+
+        // --- Second pass: body + second ending
+        for (let j = bodyStart; j <= bodyEnd; j++) {
+          out.push({
+            notes: measures[j].notes,
+            bar: normalizeBarPlayback(measures[j].bar)
+          });
+        }
+        for (let j = secondStart; j <= secondEnd; j++) {
+          out.push({
+            notes: measures[j].notes,
+            bar: normalizeBarPlayback(measures[j].bar)
+          });
+        }
+
+        // Advance past the second-ending measures
+        i = secondEnd + 1;
+        sectionStart = i;
       } else {
-        copyOnce(sec.measures);
+        i++;
+      }
+    }
+
+    // Any leftover measures after the last :|
+    if (sectionStart < n) {
+      for (let j = sectionStart; j < n; j++) {
+        const m = measures[j];
+        out.push({
+          notes: m.notes,
+          bar: normalizeBarPlayback(m.bar)
+        });
       }
     }
 
     return out;
   }
 
-  /**
-   * Handle repeats when we know there is at least one explicit |: start.
-   * Supports:
-   *   |: ... :|
-   *   |: ... |1 firstEnding :|2 secondEnding ...
-   *   plus [1 / [2 forms normalized to |1 / |2 by normalizeEndings().
-   */
+  // ----- EXPLICIT |: HANDLING + buffering of unmatched segments -----
+
   function expandWithExplicitStarts(measures) {
     const out = [];
     const n = measures.length;
@@ -61611,17 +61839,33 @@ function processAbcPhrases(abcText, phraseBars) {
       return !!bar && (bar.indexOf(":|") !== -1 || bar === "||" || bar === "|]");
     }
 
-    function normalizeBarPlayback(bar) {
-      if (!bar) return bar;
-      if (bar === "||") return "|";
-      if (
-        bar === "|1" || bar === "|2" ||
-        bar === ":|1" || bar === ":|2" ||
-        bar === ":|"
-      ) {
-        return "|";
+    // Buffer for regions *without* explicit |:
+    let buffer = [];
+
+    function flushBuffer() {
+      if (!buffer.length) return;
+      const expanded = expandUnmatchedEndRepeats(buffer);
+      for (const m of expanded) {
+        out.push(m);
       }
-      return bar;
+      buffer = [];
+    }
+
+    function simpleRepeat(startIdx, repeatStart, repeatEndIdx) {
+      // |: becomes |
+      out.push({ notes: measures[startIdx].notes, bar: "|" });
+      for (let j = repeatStart; j <= repeatEndIdx; j++) {
+        out.push({
+          notes: measures[j].notes,
+          bar: normalizeBarPlayback(measures[j].bar)
+        });
+      }
+      for (let j = repeatStart; j <= repeatEndIdx; j++) {
+        out.push({
+          notes: measures[j].notes,
+          bar: normalizeBarPlayback(measures[j].bar)
+        });
+      }
     }
 
     let i = 0;
@@ -61630,147 +61874,105 @@ function processAbcPhrases(abcText, phraseBars) {
       const m = measures[i];
 
       if (m.bar !== "|:") {
-        // Not a start repeat, just copy through
-        out.push({ notes: m.notes, bar: m.bar });
+        // Part of a non-explicit segment; buffer it.
+        buffer.push({ notes: m.notes, bar: m.bar });
         i++;
         continue;
       }
 
+      // We hit an explicit |:; first flush any buffered unmatched segment.
+      flushBuffer();
+
+      const startIdx = i;
       const repeatStart = i + 1;
 
-      // Find first bar containing "1" (first ending marker) and "2" (second ending marker)
-      let firstMarkerIdx = -1;
-      let secondMarkerIdx = -1;
+      // 1) Find the local end of this repeat block (first strong end after |:)
+      let repeatEndIdx = -1;
       for (let j = repeatStart; j < n; j++) {
-        const b = measures[j].bar || "";
-        if (firstMarkerIdx === -1 && b.indexOf("1") !== -1) {
-          firstMarkerIdx = j;
-        }
-        if (secondMarkerIdx === -1 && b.indexOf("2") !== -1) {
-          secondMarkerIdx = j;
-        }
-        if (firstMarkerIdx !== -1 && secondMarkerIdx !== -1) break;
-      }
-
-      // Helper: simple |: ... :| repeat (no endings)
-      function simpleRepeat(endIdx) {
-        out.push({ notes: m.notes, bar: "|" });
-        for (let j = repeatStart; j <= endIdx; j++) {
-          out.push({
-            notes: measures[j].notes,
-            bar: normalizeBarPlayback(measures[j].bar)
-          });
-        }
-        for (let j = repeatStart; j <= endIdx; j++) {
-          out.push({
-            notes: measures[j].notes,
-            bar: normalizeBarPlayback(measures[j].bar)
-          });
-        }
-      }
-
-      // No first ending marker → just repeat until first strong end
-      if (firstMarkerIdx === -1) {
-        let endIdx = -1;
-        for (let j = repeatStart; j < n; j++) {
-          if (isStrongEnd(measures[j].bar)) {
-            endIdx = j;
-            break;
-          }
-        }
-        if (endIdx === -1) {
-          // Malformed; treat |: as a normal bar
-          out.push({ notes: m.notes, bar: "|" });
-          i++;
-          continue;
-        }
-        simpleRepeat(endIdx);
-        i = endIdx + 1;
-        continue;
-      }
-
-      // ---- We have first/second endings ----
-      // First ending starts *after* the bar that carries "1"
-      const firstEndingStart = firstMarkerIdx + 1;
-
-      // End of first ending: first strong end at/after firstEndingStart
-      let firstEndingEnd = -1;
-      for (let j = firstEndingStart; j < n; j++) {
         if (isStrongEnd(measures[j].bar)) {
-          firstEndingEnd = j;
+          repeatEndIdx = j;
           break;
         }
       }
-      if (firstEndingEnd === -1) {
-        // Fallback: behave like a simple repeat
-        let endIdx = -1;
-        for (let j = repeatStart; j < n; j++) {
-          if (isStrongEnd(measures[j].bar)) {
-            endIdx = j;
+
+      if (repeatEndIdx === -1) {
+        // Malformed: treat |: as normal bar and continue
+        out.push({ notes: m.notes, bar: "|" });
+        i++;
+        continue;
+      }
+
+      // 2) Search for |1 and |2 markers
+      let marker1 = -1;
+      let marker2 = -1;
+
+      for (let j = repeatStart; j <= repeatEndIdx; j++) {
+        const b = measures[j].bar || "";
+        if (marker1 === -1 && b.indexOf("1") !== -1) {
+          marker1 = j;
+        }
+        if (marker2 === -1 && b.indexOf("2") !== -1) {
+          marker2 = j;
+        }
+        if (marker1 !== -1 && marker2 !== -1) break;
+      }
+
+      // If we didn't find a 2 in the block, look just after it
+      if (marker2 === -1) {
+        for (let j = repeatEndIdx + 1; j < n; j++) {
+          const b = measures[j].bar || "";
+          if (measures[j].bar === "|:") break;    // next repeat start
+          if (isStrongEnd(b)) break;              // next strong break
+          if (b.indexOf("2") !== -1) {
+            marker2 = j;
             break;
           }
         }
-        if (endIdx === -1) {
-          out.push({ notes: m.notes, bar: "|" });
-          i++;
-          continue;
-        }
-        simpleRepeat(endIdx);
-        i = endIdx + 1;
+      }
+
+      // 3) No |1 marker -> simple |: ... :| repeat
+      if (marker1 === -1) {
+        simpleRepeat(startIdx, repeatStart, repeatEndIdx);
+        i = repeatEndIdx + 1;
         continue;
       }
 
-      // Body is from repeatStart up to (and including) the bar that had "1"
-      // so that its NOTES stay with the body (e.g. EF A/B/c/A/ in Mícheál's)
+      // NOTE: In ABC, the "1" attaches to the *following* bar.
+      // The measure that carries "|1" belongs to the BODY, and
+      // the first-ending notes start in the next measure.
       const bodyStart = repeatStart;
-      const bodyEnd = Math.max(bodyStart, firstMarkerIdx);
+      const bodyEnd = Math.max(bodyStart, marker1); // body includes the marker1 measure
 
-      // If no second ending marker, just treat body+first ending as simple repeat
-      if (secondMarkerIdx === -1) {
-        const endIdx = firstEndingEnd;
-        out.push({ notes: m.notes, bar: "|" });
-        for (let j = bodyStart; j <= endIdx; j++) {
-          out.push({
-            notes: measures[j].notes,
-            bar: normalizeBarPlayback(measures[j].bar)
-          });
-        }
-        for (let j = bodyStart; j <= endIdx; j++) {
-          out.push({
-            notes: measures[j].notes,
-            bar: normalizeBarPlayback(measures[j].bar)
-          });
-        }
-        i = endIdx + 1;
+      const firstEndingStart = marker1 + 1;
+      const firstEndingEnd = repeatEndIdx; // up to the :| (or ||, etc.)
+
+      if (firstEndingStart > firstEndingEnd || firstEndingStart >= n) {
+        // No usable first ending; degrade to a simple repeat
+        simpleRepeat(startIdx, repeatStart, repeatEndIdx);
+        i = repeatEndIdx + 1;
         continue;
       }
 
-      // Second ending starts after the bar that carries "2"
-      let secondEndingStart = secondMarkerIdx + 1;
+      // Still no |2 marker -> treat as simple repeat of everything
+      if (marker2 === -1) {
+        simpleRepeat(startIdx, repeatStart, repeatEndIdx);
+        i = repeatEndIdx + 1;
+        continue;
+      }
+
+      // In ABC, the "2" also attaches to the following bar, so the
+      // second-ending notes begin at marker2 + 1.
+      let secondEndingStart = marker2 + 1;
       if (secondEndingStart >= n) {
-        // No notes in second ending; fallback to simple repeat
-        const endIdx = firstEndingEnd;
-        out.push({ notes: m.notes, bar: "|" });
-        for (let j = bodyStart; j <= endIdx; j++) {
-          out.push({
-            notes: measures[j].notes,
-            bar: normalizeBarPlayback(measures[j].bar)
-          });
-        }
-        for (let j = bodyStart; j <= endIdx; j++) {
-          out.push({
-            notes: measures[j].notes,
-            bar: normalizeBarPlayback(measures[j].bar)
-          });
-        }
-        i = endIdx + 1;
+        simpleRepeat(startIdx, repeatStart, repeatEndIdx);
+        i = repeatEndIdx + 1;
         continue;
       }
 
-      // End of second ending: first strong end after secondEndingStart
       let secondEndingEnd = -1;
       for (let j = secondEndingStart; j < n; j++) {
-        if (isStrongEnd(measures[j].bar)) {
+        const b = measures[j].bar || "";
+        if (isStrongEnd(b) || (j > secondEndingStart && measures[j].bar === "|:")) {
           secondEndingEnd = j;
           break;
         }
@@ -61779,15 +61981,17 @@ function processAbcPhrases(abcText, phraseBars) {
         secondEndingEnd = n - 1;
       }
 
-      // ---- First pass: body + first ending ----
-      out.push({ notes: m.notes, bar: "|" });
+      // 4) Expand: body + firstEnding, body + secondEnding
+      out.push({ notes: measures[startIdx].notes, bar: "|" }); // |: becomes |
 
+      // body
       for (let j = bodyStart; j <= bodyEnd; j++) {
         out.push({
           notes: measures[j].notes,
           bar: normalizeBarPlayback(measures[j].bar)
         });
       }
+      // first ending
       for (let j = firstEndingStart; j <= firstEndingEnd; j++) {
         out.push({
           notes: measures[j].notes,
@@ -61795,13 +61999,14 @@ function processAbcPhrases(abcText, phraseBars) {
         });
       }
 
-      // ---- Second pass: body + second ending ----
+      // body again
       for (let j = bodyStart; j <= bodyEnd; j++) {
         out.push({
           notes: measures[j].notes,
           bar: normalizeBarPlayback(measures[j].bar)
         });
       }
+      // second ending
       for (let j = secondEndingStart; j <= secondEndingEnd; j++) {
         out.push({
           notes: measures[j].notes,
@@ -61812,15 +62017,134 @@ function processAbcPhrases(abcText, phraseBars) {
       i = secondEndingEnd + 1;
     }
 
+    // Flush any leftover unmatched segment after the last |:
+    flushBuffer();
+
+    return out;
+  }
+
+  /* ----------------- Helper: resegment into full bars ------------------ */
+  // After repeats are flattened:
+  // - Turn the entire tune into a single sequence of note "events" (in order).
+  // - Re-bucket that sequence into bars of length unitsPerBar.
+  // - Allow at most one partial: an initial pickup at the very start of the tune.
+  // - Avoid ever exceeding unitsPerBar; do NOT glue a short bar to a full bar.
+  function resegmentIntoFullBars(measures, mNum, mDen, lNum, lDen) {
+    const unitsPerBar = (mNum * lDen) / (mDen * lNum);
+    const EPS = 1e-6;
+
+    // 1) Flatten all note-bearing measures into a linear sequence of events.
+    //    Ignore original bar tokens here; they were only needed for repeats.
+    const events = [];
+    for (const m of measures) {
+      const notes = (m.notes || "").trim();
+      if (!notes) continue;
+
+      const len = computeMeasureUnits(notes);
+      if (!Number.isFinite(len) || len <= 0) continue;
+
+      events.push({ notes, len });
+    }
+
+    const out = [];
+    let pickupHandled = false;
+    let curNotes = "";
+    let curLen = 0;
+
+    function flushCur() {
+      if (curNotes.trim()) {
+        out.push({
+          notes: curNotes.trim(),
+          bar: "|"
+        });
+      }
+      curNotes = "";
+      curLen = 0;
+    }
+
+    for (let idx = 0; idx < events.length; idx++) {
+      const ev = events[idx];
+      const notes = ev.notes;
+      const len = ev.len;
+
+      const isFull = Math.abs(len - unitsPerBar) <= EPS;
+      const isPartial = len < unitsPerBar - EPS;
+
+      // Tune-level pickup: only allowed as the very first short event
+      if (
+        !pickupHandled &&
+        out.length === 0 &&
+        curLen === 0 &&
+        isPartial
+      ) {
+        out.push({
+          notes,
+          bar: "|"
+        });
+        pickupHandled = true;
+        continue;
+      }
+
+      if (curLen === 0) {
+        // No partial in progress
+        if (isFull || len > unitsPerBar + EPS) {
+          // Treat as a full bar on its own
+          out.push({
+            notes,
+            bar: "|"
+          });
+        } else {
+          // Start a new partial bar
+          curNotes = notes;
+          curLen = len;
+        }
+      } else {
+        // We have a partial bar in progress
+        if (isPartial) {
+          const sum = curLen + len;
+          if (sum <= unitsPerBar + EPS) {
+            // Combine partial+partial if they fit into one bar
+            curNotes = curNotes + " " + notes;
+            curLen = sum;
+            if (Math.abs(curLen - unitsPerBar) <= EPS) {
+              flushCur();
+            }
+          } else {
+            // Would overshoot -> flush current partial, start anew
+            flushCur();
+            if (isFull || len > unitsPerBar + EPS) {
+              out.push({
+                notes,
+                bar: "|"
+              });
+            } else {
+              curNotes = notes;
+              curLen = len;
+            }
+          }
+        } else {
+          // Current event is a full bar while a partial is open:
+          // close the partial as its own (short) bar, then add this full bar.
+          flushCur();
+          out.push({
+            notes,
+            bar: "|"
+          });
+        }
+      }
+    }
+
+    // Any leftover (normally zero or a single short bar at the end)
+    flushCur();
+
     return out;
   }
 
   /* ----------------- Helper: phrase rest injection ------------------ */
 
-  function injectPhraseRests(measures, phraseBars, oneBarRest, hasPickup) {
+  function injectPhraseRests(measures, phraseBars, phrasePadding, oneBarRest, hasPickup) {
     const result = [];
 
-    // First measure with real notes
     let firstNoteIdx = measures.findIndex(
       (m) => m.notes && m.notes.trim().length > 0
     );
@@ -61828,6 +62152,7 @@ function processAbcPhrases(abcText, phraseBars) {
       return measures.slice();
     }
 
+    // If hasPickup, skip counting this first partial bar.
     let phraseStartIndex = firstNoteIdx + (hasPickup ? 1 : 0);
     if (phraseStartIndex >= measures.length) {
       phraseStartIndex = measures.length;
@@ -61851,8 +62176,7 @@ function processAbcPhrases(abcText, phraseBars) {
         barCounter++;
 
         if (barCounter === phraseBars) {
-          // Insert phrase-length rest (phraseBars bars of rest)
-          for (let k = 0; k < phraseBars; k++) {
+          for (let k = 0; k < (phraseBars + phrasePadding); k++) {
             result.push({
               notes: oneBarRest,
               bar: "|"
@@ -61868,14 +62192,14 @@ function processAbcPhrases(abcText, phraseBars) {
 
   /* ----------------- Helper: rebuild body with wrapping & final |] ---- */
 
-  function rebuildBodyFromMeasures(measures) {
-    // Drop any measures that are only a barline (no notes),
-    // and any completely empty trailing measures.
+  function rebuildBodyFromMeasures(measures, phraseBars, phrasePadding, hasPickup) {
+
+    // Drop measures that have no notes
     measures = measures.filter((m) => {
       const hasNotes = m.notes && m.notes.trim().length > 0;
       const hasBar = !!m.bar;
-      if (!hasNotes && hasBar) return false;  // bar-only measure
-      if (!hasNotes && !hasBar) return false; // totally empty
+      if (!hasNotes && hasBar) return false;
+      if (!hasNotes && !hasBar) return false;
       return true;
     });
 
@@ -61883,342 +62207,69 @@ function processAbcPhrases(abcText, phraseBars) {
       return "\n";
     }
 
-    // Force the final barline to |] (double bar at end of tune)
+    // Force final bar to |]
     const lastIdx = measures.length - 1;
     measures[lastIdx].bar = "|]";
 
-    // Rebuild text, wrapping to at most 8 bars per line
     let out = "";
     let barCount = 0;
+
+    let firstLine = true;
+
+    // If we have a pickup, allow an extra bar on the first line
+
+    let maxBarsThisLine = (phraseBars * 2) + phrasePadding;
+
+    if (hasPickup){
+      maxBarsThisLine += 1;
+    }
 
     measures.forEach((m, idx) => {
       const notes = m.notes.trim() || "";
       let bar = m.bar || "";
 
-      // Never output ||; normalize to single |
       if (bar === "||") bar = "|";
 
-      out += notes;
+      if (notes) {
+        if (out && !/\s|\|$/.test(out[out.length - 1])) {
+          out += " ";
+        }
+        out += notes;
+      }
 
       if (bar) {
         out += bar;
         barCount++;
 
-        // Wrap line after 8 bars, if more measures follow.
-        if (barCount === 8 && idx < measures.length - 1) {
+        if (barCount === maxBarsThisLine && idx < measures.length - 1) {
           out += "\n";
           barCount = 0;
+
+          if (firstLine) {
+            firstLine = false;
+            maxBarsThisLine = (phraseBars * 2) + phrasePadding;
+          }
         }
       }
     });
 
-    out = out.replace(/\s{2,}/g, ' ');
+    out = out.replace(/\s{2,}/g, " ");
 
     return out.trim() + "\n";
   }
 
 }
 
-/**
- * Detects whether an ABC tune contains any partial measures
- * *other than* an initial pickup that can be stripped.
- *
- * Returns true if a non-pickup partial bar is found, false otherwise.
- */
-function hasNonPickupPartialMeasures(abcText) {
-  // Normalize line endings
-  const text = abcText.replace(/\r\n/g, "\n");
-  const lines = text.split("\n");
-
-  // ---- Separate header and body (same logic as processSingleTune) ----
-  let headerLines = [];
-  let bodyLines = [];
-  let inBody = false;
-  let sawK = false;
-
-  for (const ln of lines) {
-    const trimmed = ln.trim();
-
-    if (!inBody) {
-      if (/^\s*K\s*:/i.test(trimmed)) {
-        sawK = true;
-        headerLines.push(trimmed);
-        continue;
-      }
-
-      if (!sawK) {
-        headerLines.push(trimmed);
-      } else {
-        if (
-          /^\s*[%]/.test(trimmed) ||          // % or %%
-          /^\s*[A-Za-z]\s*:/.test(trimmed) || // another field line
-          /^\s*$/.test(trimmed)               // blank
-        ) {
-          headerLines.push(trimmed);
-        } else {
-          inBody = true;
-          bodyLines.push(trimmed);
-        }
-      }
-    } else {
-      // In body: skip % lines
-      if (/^\s*%/.test(trimmed)) {
-        continue;
-      }
-      bodyLines.push(trimmed);
-    }
-  }
-
-  if (!sawK) {
-    // No key, treat as not analyzable
-    return false;
-  }
-
-  let body = bodyLines.join("\n").trim();
-  if (!body) {
-    return false;
-  }
-
-  // ---- Extract M: and L: (support M:C and M:C|) ----
-  const mLineMatch = text.match(/^\s*M\s*:\s*([^\r\n]+)/im);
-  if (!mLineMatch) {
-    return false;
-  }
-
-  const mValueRaw = mLineMatch[1].trim();
-  let meterNum, meterDen;
-
-  if (/^C\|$/i.test(mValueRaw)) {
-    // Cut time: M:C|  -> 2/2
-    meterNum = 2;
-    meterDen = 2;
-  } else if (/^C$/i.test(mValueRaw)) {
-    // Common time: M:C  -> 4/4
-    meterNum = 4;
-    meterDen = 4;
-  } else {
-    const mMatch = mValueRaw.match(/^(\d+)\s*\/\s*(\d+)$/);
-    if (!mMatch) {
-      return false;
-    }
-    meterNum = parseInt(mMatch[1], 10);
-    meterDen = parseInt(mMatch[2], 10);
-  }
-
-  const lMatch = text.match(/^\s*L\s*:\s*([\d]+)\/([\d]+)/im);
-  let lNum, lDen;
-  if (lMatch) {
-    lNum = parseInt(lMatch[1], 10);
-    lDen = parseInt(lMatch[2], 10);
-  } else {
-    // ABC default
-    lNum = 1;
-    lDen = 8;
-  }
-
-  const unitsPerBar = (meterNum * lDen) / (meterDen * lNum);
-  if (!Number.isFinite(unitsPerBar) || unitsPerBar <= 0) {
-    return false;
-  }
-
-  // ---- Detect initial pickup (same logic as detectPickupInFirstBar) ----
-  const firstBarIdx = body.indexOf("|");
-  let hasPickup = false;
-
-  if (firstBarIdx !== -1) {
-    let firstBarText = body.slice(0, firstBarIdx);
-    firstBarText = firstBarText.replace(/\{[^}]*\}/g, ""); // remove grace
-
-    const firstLen = measureLengthUnits(firstBarText);
-
-    if (firstLen > 0 && firstLen < unitsPerBar - 1e-6) {
-      hasPickup = true;
-    }
-  }
-
-  // ---- Normalize endings and parse measures exactly like main code ----
-  body = normalizeEndingsForScan(body);
-  const measures = parseMeasuresForScan(body);
-
-  if (!measures.length) return false;
-
-  // ---- Now scan each measure for partials ----
-  // Treat measure[0] as ignorable pickup if hasPickup is true.
-  for (let i = 0; i < measures.length; i++) {
-    const notes = (measures[i].notes || "").trim();
-    if (!notes) continue; // empty / bar-only measure
-
-    const len = measureLengthUnits(notes);
-
-    // Ignore the initial pickup bar if applicable
-    if (i === 0 && hasPickup) {
-      continue;
-    }
-
-    // Partial bar: some notes, but less than a full bar
-    if (len > 0 && len < unitsPerBar - 1e-6) {
-      return true;
-    }
-  }
-
-  return false;
-
-  // ---- Helpers used only by this function ----
-
-  function measureLengthUnits(txt) {
-    // Remove grace notes again (for safety)
-    let s = txt.replace(/\{[^}]*\}/g, "");
-
-    let pos = 0;
-    let totalUnits = 0;
-
-    while (pos < s.length) {
-      const ch = s[pos];
-
-      if (
-        /\s/.test(ch) ||
-        ch === "!" || ch === "\"" ||
-        ch === "(" || ch === ")" ||
-        ch === "[" || ch === "]"
-      ) {
-        pos++;
-        continue;
-      }
-
-      // Accidentals
-      if (ch === "^" || ch === "_" || ch === "=") {
-        pos++;
-        continue;
-      }
-
-      if (/[A-Ga-gzZxY]/.test(ch)) {
-        pos++;
-        // Skip octave marks
-        while (pos < s.length && /[,'’]/.test(s[pos])) pos++;
-
-        const parsed = parseAbcLengthForScan(s, pos);
-        totalUnits += parsed.value;
-        pos = parsed.newPos;
-        continue;
-      }
-
-      pos++;
-    }
-
-    return totalUnits;
-  }
-
-  function parseAbcLengthForScan(s, pos) {
-    let numStr = "";
-    while (pos < s.length && /\d/.test(s[pos])) {
-      numStr += s[pos++];
-    }
-
-    let num = numStr ? parseInt(numStr, 10) : 1;
-    let denom = 1;
-
-    let slashCount = 0;
-    while (pos < s.length && s[pos] === "/") {
-      slashCount++;
-      pos++;
-    }
-
-    if (slashCount > 0) {
-      denom = Math.pow(2, slashCount);
-    }
-
-    const value = num / denom; // in "L units"
-    return { value, newPos: pos };
-  }
-
-  // Light-weight versions of your normalize/parse just for scanning
-  function normalizeEndingsForScan(bodyText) {
-    let out = bodyText;
-    out = out.replace(/(\||:)\[([12])/g, "$1$2");
-    out = out.replace(/(^|\s)\[([12])/g, "$1|$2");
-    return out;
-  }
-
-  function parseMeasuresForScan(bodyText) {
-    const measures = [];
-    let cur = "";
-
-    function pushMeasure(barToken) {
-      const notes = cur.replace(/\s+$/g, "");
-      measures.push({ notes, bar: barToken });
-      cur = "";
-    }
-
-    let i = 0;
-    while (i < bodyText.length) {
-      const ch = bodyText[i];
-
-      if (ch === "\n" || ch === "\r") {
-        if (cur && !/\s$/.test(cur)) cur += " ";
-        i++;
-        continue;
-      }
-
-      if (ch === "|") {
-        const next = bodyText[i + 1] || "";
-        const next2 = bodyText[i + 2] || "";
-
-        if (next === ":") {
-          pushMeasure("|:");
-          i += 2;
-        } else if (next === "|") {
-          pushMeasure("||");
-          i += 2;
-        } else if (next === "1" || next === "2") {
-          pushMeasure("|" + next);
-          i += 2;
-        } else if (next === "]") {
-          pushMeasure("|]");
-          i += 2;
-        } else {
-          pushMeasure("|");
-          i += 1;
-        }
-      } else if (ch === ":") {
-        const next = bodyText[i + 1] || "";
-        const next2 = bodyText[i + 2] || "";
-
-        if (next === "|") {
-          if (next2 === "1" || next2 === "2") {
-            pushMeasure(":|" + next2);
-            i += 3;
-          } else {
-            pushMeasure(":|");
-            i += 2;
-          }
-        } else {
-          cur += ch;
-          i++;
-        }
-      } else {
-        cur += ch;
-        i++;
-      }
-    }
-
-    if (cur.trim().length > 0) {
-      const notes = cur.replace(/\s+$/g, "");
-      measures.push({ notes, bar: "" });
-    }
-
-    return measures;
-  }
-}
-
 var gPhraseBuilderLength = 2;
+var gPhraseBuilderPadding = 0;
 
 //
 // Phrase builder dialog
 //
 function PhraseBuilder(){
-
-  function foundVTag(abcText){
     
+  function hasProblemTags(abcText) {
+
     // Split the text into lines
     const theLines = abcText.split('\n');
 
@@ -62233,12 +62284,21 @@ function PhraseBuilder(){
       }
     }
 
-    return false;
+    // Now test just the notes for problem tags
+    var justTheNotes = JustTheNotes(abcText);
+
+    // Matches start of any line (after optional spaces)
+    // followed by a single letter OR '+' and then a colon.
+    // It does NOT care what comes after the colon (space or not).
+    const re = /^[ \t]*[A-Za-z+]:/m;
+
+    return re.test(justTheNotes);
 
   }
 
   const theData = {
     phraseLength: gPhraseBuilderLength,
+    phrasePadding: gPhraseBuilderPadding,
     buildPhraseAll: false
   };
 
@@ -62246,19 +62306,25 @@ function PhraseBuilder(){
      html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;font-family:var(--abctools-ui-font-fallbacks);margin-left:15px;">Phrase-by-Phrase Tune Trainer Builder&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#advanced_phrasebuilder" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
   },{
       html: '<p style="margin-top:24px;margin-bottom:24px;font-size:12pt;line-height:18pt;font-family:var(--abctools-ui-font-fallbacks)">This will break the tune(s) into groups of measures of the phrase length specified below followed by the same number of measures of rests.</p>'
+  },{
+      html: '<p style="margin-top:24px;margin-bottom:24px;font-size:12pt;line-height:18pt;font-family:var(--abctools-ui-font-fallbacks)">If you want additional full-measure rest time between the phrases, set the rest padding value as desired.</p>'
   },{ 
       html: '<p style="margin-top:24px;margin-bottom:24px;font-size:12pt;line-height:18pt;font-family:var(--abctools-ui-font-fallbacks)">The resulting ABC can be brought into the Tune Trainer for "Call and Response" style phrase-by-phrase tune training.</p>'
-  },{
-      html: '<p style="margin-top:24px;margin-bottom:24px;font-size:12pt;line-height:18pt;font-family:var(--abctools-ui-font-fallbacks)">This feature works best for tunes with complete measures inside of repeats.</p>'
   }, {
-      html: '<p style="margin-top:24px;margin-bottom:24px;font-size:12pt;line-height:18pt;font-family:var(--abctools-ui-font-fallbacks)">Additionally, all chords are stripped as well as all pickups before the first full measure of the tune(s).</p>'
+      html: '<p style="margin-top:24px;margin-bottom:24px;font-size:12pt;line-height:18pt;font-family:var(--abctools-ui-font-fallbacks)">All chords in the tune(s) will be stripped.</p>'
   },
   {
-      html: '<p style="margin-top:24px;margin-bottom:24px;font-size:12pt;line-height:18pt;font-family:var(--abctools-ui-font-fallbacks)">Tunes with partial measures or one or more V: tags will be skipped.</p>'
+      html: '<p style="margin-top:24px;margin-bottom:24px;font-size:12pt;line-height:18pt;font-family:var(--abctools-ui-font-fallbacks)">Tunes with V: tags or other ABC tags at the start of lines outside the header will be skipped.</p>'
   }, 
   {
     name: "Phrase length:",
     id: "phraseLength",
+    type: "number",
+    cssClass: "configure_phrase_length"
+  },
+ {
+    name: "Additional full-measure rest padding between phrases:",
+    id: "phrasePadding",
     type: "number",
     cssClass: "configure_phrase_length"
   },
@@ -62282,6 +62348,7 @@ function PhraseBuilder(){
 
     if (!args.canceled) {
 
+      // Get the phrase length
       var phraseLengthStr = args.result.phraseLength;
 
       if (phraseLengthStr == null) {
@@ -62293,10 +62360,31 @@ function PhraseBuilder(){
       var phraseLength = parseInt(phraseLengthStr);
 
       if ((isNaN(phraseLength)) || (phraseLength == undefined) || (phraseLength < 1) || (phraseLength > 32)) {
+
         return;
+
       }
 
       gPhraseBuilderLength = phraseLength;
+
+      // Get the phrase rest padding
+      var phrasePaddingStr = args.result.phrasePadding;
+
+      if (phrasePaddingStr == null) {
+
+        return;
+      
+      }
+
+      var phrasePadding = parseInt(phrasePaddingStr);
+
+      if ((isNaN(phrasePadding)) || (phrasePadding == undefined) || (phrasePadding < 0) || (phrasePadding > 32)) {
+
+        return;
+
+      }
+
+      gPhraseBuilderPadding = phrasePadding;
 
       var doAllTunes = args.result.buildPhraseAll;
 
@@ -62311,40 +62399,29 @@ function PhraseBuilder(){
 
         var output = FindPreTuneHeader(theNotes);
 
-        var gotVTag = false;
-
-        var gotPartialMeasures = false;
+        var gotProblemTags = false;
 
         for (var i = 1; i <= nTunes; ++i) {
 
           var theTune = "X:" + theTunes[i];
 
-          if (hasNonPickupPartialMeasures(theTune)){
-              
-              gotPartialMeasures = true;
-              
-              output += theTune;
+          if (!hasProblemTags(theTune)){
+
+            theTune = StripChordsOne(theTune);
+
+            theTune = processAbcPhrases(theTune,gPhraseBuilderLength,gPhraseBuilderPadding)
+
+            output += theTune + "\n";
 
           }
           else{
 
-            if (!foundVTag(theTune)){
+            gotProblemTags = true;
+            
+            output += theTune;
 
-              theTune = StripChordsOne(theTune);
-
-              theTune = processAbcPhrases(theTune,gPhraseBuilderLength)
-
-              output += theTune + "\n";
-
-            }
-            else{
-
-              gotVTag = true;
-              
-              output += theTune;
-
-            }
           }
+
         }
 
         setABCEditorText(output);
@@ -62353,18 +62430,8 @@ function PhraseBuilder(){
 
         var thePrompt = "Phrase-by-phrase versions of all tunes created!";
 
-        if (gotVTag){
-          if (!gotPartialMeasures){
-            thePrompt = "All tunes processed, but some tunes had V: tags and were skipped during phrase-by-phrase processing.";
-          }
-          else{
-            thePrompt = "All tunes processed, but some tunes had V: tags and/or partial measures other than initial pickup notes and were skipped during phrase-by-phrase processing.";         
-          }
-        }
-        else{
-          if (gotPartialMeasures){
-            thePrompt = "All tunes processed, but some tunes had partial measures other than initial pickup notes and were skipped during phrase-by-phrase processing.";  
-          }
+        if (gotProblemTags){
+            thePrompt = "All tunes processed, but some tunes contain a V: tag or have other tags after the header and were skipped during phrase-by-phrase processing.";
         }
 
         // Center the string in the prompt
@@ -62412,35 +62479,22 @@ function PhraseBuilder(){
 
         var doPhrasesRender = true;
 
-        var gotVTag = foundVTag(theSelectedABC);
-
-        var gotPartialMeasures = hasNonPickupPartialMeasures(theSelectedABC);
+        var gotProblemTags = hasProblemTags(theSelectedABC);
 
         var theTitle = getTuneTitle(theSelectedABC)
 
         var thePrompt = "Phrase-by-phrase version of " + '"' + theTitle + '"' +" created!";
 
-        if (gotVTag){
-          if (!gotPartialMeasures){
-            thePrompt = '"' + theTitle + '"' + " has one or more V: tags and cannot have phrases expanded.";
-          }
-          else{
-            thePrompt = '"' + theTitle + '"' + " has one or more V: tags and partial measures other than initial pickup notes and cannot have phrases expanded.";            
-          }
-          doPhrasesRender = false;
-        }
-        else{
-          if (gotPartialMeasures){
-            thePrompt = '"' + theTitle + '"' + " has partial measures other than initial pickup notes and cannot have phrases expanded.";  
+        if (gotProblemTags){
+            thePrompt = '"' + theTitle + '"' + " contains a V: tag or tags after the header and cannot have phrases expanded.";
             doPhrasesRender = false;
-          }
         }
-
+  
         if (doPhrasesRender){
 
           var thePhrases = StripChordsOne(theSelectedABC);
 
-          thePhrases = processAbcPhrases(thePhrases,gPhraseBuilderLength);
+          thePhrases = processAbcPhrases(thePhrases,gPhraseBuilderLength,gPhraseBuilderPadding);
 
           thePhrases = thePhrases.trim();
 
@@ -62510,6 +62564,90 @@ function PhraseBuilder(){
     }
 
   });
+
+}
+
+//
+// Share tunes with third party tools
+//
+
+//
+// Open in Pure Ocarinas tune trainer
+//
+function OpenInPureOcarinas(abcText){
+
+    sendGoogleAnalytics("action", "OpenInPureOcarinas");
+
+    var encoder = new TextEncoder();
+    var utf8Bytes = encoder.encode(abcText);
+    var deflated = pako.deflate(utf8Bytes, { level: 6 });
+    var theDef = def_bytesToBase64URL(deflated);
+
+    var theURL = "https://pureocarinas.com/phrase-by-phrase-abc-tune-tool?def="+theDef;
+
+    if (theURL.length < 8100)
+    {
+      var w = window.open(theURL);
+    }
+    else{
+
+      DayPilot.Modal.alert('<p style="text-align:center;font-family:var(--abctools-ui-font-fallbacks);font-size:12pt;">Share URL is too long to open in the Pure Ocarinas tool.</p>', {
+        theme: "modal_flat",
+        top: 230,
+        scrollWithPage: (AllowDialogsToScroll())
+      });
+
+    }
+}
+
+//
+// Open in abcjs Quick Editor
+//
+function OpenInABCJSQuickEditor(abcText){
+
+    sendGoogleAnalytics("action", "OpenInABCJSQuickEditor");
+
+    var theURL = "https://editor.drawthedots.com/?t=" + encodeURIComponent(abcText);
+
+    if (theURL.length < 8100)
+    {
+      var w = window.open(theURL);
+    }
+    else{
+
+      DayPilot.Modal.alert('<p style="text-align:center;font-family:var(--abctools-ui-font-fallbacks);font-size:12pt;">Share URL is too long to open in the abcjs Quick Editor.</p>', {
+        theme: "modal_flat",
+        top: 230,
+        scrollWithPage: (AllowDialogsToScroll())
+      });
+
+    }
+}
+
+function openInExternalTool(theABC){
+
+  var modal_msg = '<div id="ceoltasanchor"><p style="text-align:center;margin-bottom:36px;font-size:16pt;font-family:var(--abctools-ui-font-fallbacks);margin-left:15px;">Open ABC in External Tool&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#external_tools" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>';
+
+  modal_msg += '<p style="text-align:center;"> <span class="external-tool" style="display:inline-block; margin-right:48px;margin-bottom:12px;"> <img id="external_pureocarinas" src="img/pureocarinas.png" title="Open the ABC in the Pure Ocarinas Phrase-by-phrase ABC tune practice tool" alt="Pure Ocarinas Phrase-by-phrase ABC practice tool"><br> <span style="font-size:1.2em;">Phrase-by-phrase ABC practice tool</span> </span> <span class="external-tool" style="display:inline-block;margin-bottom:12px;"> <img id="external_abcjs" src="img/abcjs_logo.png" title="Open the ABC in the abcjs quick editor" alt="abcjs quick editor"><br> <span style="font-size:1.2em;">abcjs quick editor</span> </span> </p>';
+
+  DayPilot.Modal.alert(modal_msg, {
+    theme: "modal_flat",
+    top: 150,
+    width: 650,
+    scrollWithPage: (AllowDialogsToScroll())
+  });
+
+  var elem = document.getElementById("external_pureocarinas");
+
+  elem.onclick = function(){
+    OpenInPureOcarinas(theABC);
+  }
+
+  var elem = document.getElementById("external_abcjs");
+
+  elem.onclick = function(){
+    OpenInABCJSQuickEditor(theABC);
+  }
 
 }
 

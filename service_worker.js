@@ -6,26 +6,18 @@
 //
 //
 //
-//
-//
-//
-//
-// Updated 7 Dec 2025 at 1800
+// Updated 13 Dec 2025 at 1500
 //
 //
 //
 //
 // ABC Tools Lite:
 // Last updated on 2025-12-14
-//
-//
-//
-//
 
-const cacheName = 'abctoolscache-3047';
+const cacheName = 'abctoolscache-3066';
 
 const CACHE_PREFIX = 'abctools';
-const CACHE_VERSION = 'lite-3047-4';
+const CACHE_VERSION = 'lite-3066-1';
 const CACHE_NAME_LITE = `${CACHE_PREFIX}${CACHE_VERSION}`;
 
 const contentToCache = [
@@ -89,6 +81,9 @@ const contentToCache = [
     'img/michael2.jpg',
     'img/michael240.jpg',
     'img/settings.png',
+    'img/pureocarinas.png',
+    'img/abcjs_logo.png',
+    'img/external_share.png',
     'img/abclite-icon-192x192.png',
     'img/abclite-icon-512x512.png',
     'img/abclite-icon-maskable-192x192.png',
