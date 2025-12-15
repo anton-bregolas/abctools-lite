@@ -1,6 +1,5 @@
 .DS_Store
 .vscode
-auv.mjs
 CNAME
 git.diff
 package.json
