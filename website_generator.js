@@ -1456,7 +1456,7 @@ function generateAndSaveWebsiteFull() {
     else{
     	theOutput +="           return totalHeight+10;\n";
     }
-
+    // ABC Tools Lite: Customized (cut resizeIframe)
     theOutput +="       }\n";
     theOutput +="\n";
     theOutput +="       function setSelectedTuneByName(optionText) {\n";
@@ -1473,6 +1473,7 @@ function generateAndSaveWebsiteFull() {
     theOutput +="           }\n";
     theOutput +="       }\n";
     theOutput +="\n";
+    // ABC Tools Lite: Customized (cut resizeIframe)
     theOutput +="       // Restore state\n";
     theOutput +="       if (gAllowStatePersistence){\n";
     theOutput +="\n";

@@ -33,17 +33,6 @@
 // Version number for the settings dialog
 var gVersionNumber = "3066_121325_1500";
 
-var gLiteVersionNumber = 'lite-3066-1';
-
-const ABC_TOOLS_BASE_URL =
-  window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
-
-const ABC_TOOLS_EDITOR_URL =
-  `${ABC_TOOLS_BASE_URL}abctools.html`;
-  
-const ABC_TOOLS_VERSION_FILE_URL =
-  `${ABC_TOOLS_BASE_URL}abc_lite_version.json`;
-
 var gMIDIInitStillWaiting = false;
 
 var gShowAdvancedControls = false;
@@ -163,7 +152,7 @@ var gLastClickedTune = -1;
 
 // Top bar showing?
 var gTopBarShowing = true;
-
+// ABC Tools Lite: Customized
 // Bottom bar showing?
 var gBottomBarShowing = true;
 
@@ -209,14 +198,9 @@ var gPDFTitleSpacing = 1.0;
 var gPDFSubTitleSpacing = 1.0;
 
 // Default Export PDF font
+// ABC Tools Lite: Customized
 var gPDFFont = "Fira-Sans";
 var gPDFFontStyle = "Normal";
-
-// Custom Export PDF fonts
-const PDF_FONT_FIRA_REGULAR = "./fonts/firasans-regular.js";
-const PDF_FONT_FIRA_BOLD = "./fonts/firasans-semibold.js";
-const PDF_FONT_FIRA_ITALIC = "./fonts/firasans-italic.js";
-const PDF_FONT_FIRA_BOLDITALIC = "./fonts/firasans-semibolditalic.js";
 
 // PDF orientation
 var gPDFOrientation = "portrait";
@@ -295,7 +279,7 @@ var gAngloButtonNames = [];
 //   historyfont: "Times New Roman 14",
 //   voicefont: "Times New Roman 13"
 // }
-
+// ABC Tools Lite: Customized Fonts
 var gRenderingFonts = {
   titlefont: "Fira Sans Semibold 18",
   subtitlefont: "Fira Sans 14",
@@ -373,6 +357,7 @@ var gUseComhaltasABC = false;
 var gForceComhaltasABC = false;
 
 // Zoom banner has been hidden
+// ABC Tools Lite: Customized (off by default)
 var gZoomBannerHidden = true;
 var gZoomBannerAlwaysHidden = true;
 
@@ -430,7 +415,7 @@ var gFeaturesShowExamples = true;
 var gFeaturesShowTemplates = true;
 var gFeaturesShowTablatures = true;
 var gFeaturesShowExplorers = true;
-var gFeaturesShowTabButtons = false;
+var gFeaturesShowTabButtons = false; // ABC Tools Lite: Customized (false by default)
 var gFeaturesShowBagpipeDrones = true;
 
 // Force an update of local storage for the tab
@@ -482,6 +467,7 @@ var gSuppressQuickPlayer = false;
 
 // Is there an update available?
 var gUpdateAvailable = false;
+// ABC Tools Lite: Customized
 var gUpdateVersion = gLiteVersionNumber;
 
 // Spinner timeout
@@ -497,6 +483,7 @@ var gDisableAndroid = false;
 var gNotoSansLoaded = false;
 var gNotoSerifLoaded = false;
 
+// ABC Tools Lite: Customized
 // Are Fira Sans font styles loaded?
 var gFiraSansRegularLoaded = false;
 var gFiraSansSemiBoldLoaded = false;
@@ -9948,7 +9935,7 @@ function ParseCommentCommands(theNotes) {
 
     // Sanity check font name
     var lcfont = gPDFFont.toLowerCase();
-
+    // ABC Tools Lite: Customized
     switch (lcfont) {
       case "times":
       case "fira-sans":
@@ -11252,6 +11239,7 @@ function ExportPDF() {
 
 //
 // Export the first few bars of each tune in ABC format
+// ABC Tools Lite: Customized
 //
 function ExportTextIncipitsPDF(title, bDoFullTunes, bDoCCETransform, bDoQRCodes) {
 
@@ -11386,6 +11374,7 @@ function ExportTextIncipitsPDF(title, bDoFullTunes, bDoCCETransform, bDoQRCodes)
 
       }
     } else
+      // ABC Tools Lite: Customized
       if (gPDFFont == "Fira-Sans" ) {
 
         let theFontPath;
@@ -11820,6 +11809,7 @@ function ExportTextIncipitsPDF(title, bDoFullTunes, bDoCCETransform, bDoQRCodes)
 
 //
 // Export a PDF document with notation, either full or first line incipits
+// ABC Tools Lite: Customized
 //
 
 // For per-tune PDFs
@@ -12157,6 +12147,7 @@ function ExportNotationPDF(title) {
 
         }
     } else
+      // ABC Tools Lite: Customized
       if (gPDFFont == "Fira-Sans" ) {
 
         let theFontPath;
@@ -13480,6 +13471,7 @@ function GetABCJSParams(instrument) {
 
 //
 // Update local storage
+// ABC Tools Lite: Customized (separate handling of button bars)
 //
 function UpdateLocalStorage() {
 
@@ -14763,7 +14755,7 @@ function RenderAsync(renderAll, tuneNumber, callback) {
   }
 
 }
-
+// ABC Tools Lite: Customized
 function Render(renderAll, tuneNumber) {
 
   // debugger;
@@ -15637,6 +15629,7 @@ function IdleAdvancedControls(bUpdateUI) {
 
 //
 // Recalculate and update the top position for the music
+// ABC Tools Lite: Customized
 //
 function UpdateNotationTopPosition() {
 
@@ -21394,7 +21387,7 @@ function GenerateRenderingDivs(nTunes) {
 
 //
 // Share URL related code provided by Philip McGarvey
-// Update base editor URL for ABC Tools Lite
+// ABC Tools Lite: Customized
 //
 function getUrlWithoutParams() {
 
@@ -26441,6 +26434,7 @@ function SetAbcText(txt) {
 
 //
 // Toggle the control display
+// ABC Tools Lite: Customized
 //
 
 function ShowAllControls() {
@@ -26460,7 +26454,7 @@ function ShowAllControls() {
   }
 
 }
-
+// ABC Tools Lite: Customized
 function HideAllControls() {
 
   HideBottomBar();
@@ -26769,6 +26763,7 @@ function togglePresentationMode() {
 
 }
 
+// ABC Tools Lite: Customized
 function DoMaximize() {
 
 	document.getElementById("noscroller").style.display = "none";
@@ -26793,8 +26788,6 @@ function DoMaximize() {
       gGotRenderDivClick = false;
       gRenderDivClickOffset = -1;
     }
-
-    //debugger;
 
 		// Reset the notation margin
 		// gNotationLeftMarginBeforeMaximize = gTheNotation.style.marginLeft;
@@ -26823,7 +26816,7 @@ function DoMaximize() {
     HideJumpButton();
   }
 }
-
+// ABC Tools Lite: Customized
 function DoMinimize() {
 
   document.getElementById("noscroller").style.display = "block";
@@ -27018,7 +27011,8 @@ function ToggleMaximize() {
   } else {
 
 		DoMaximize();
-
+    // ABC Tools Lite: TO DO
+    //
 		// NB: Buggy behavior, prevents notation from zooming properly
 		// Steps to reproduce: 
 		// 1. Zoom out to 2-column view with both notation and ABC open;
@@ -44953,8 +44947,9 @@ var gInjectTab_StripChords = true;
 var gOpenLinksInTrainer = false;
 
 // Box and concertina tab global state
-var gInjectTab_FontFamily = "Palatino";
-var gInjectTab_TabFontSize = 11;
+// ABC Tools Lite: Customized
+var gInjectTab_FontFamily = "Fira Sans";
+var gInjectTab_TabFontSize = 10;
 var gInjectTab_StaffSep = 80;
 var gInjectTab_MusicSpace = 10;
 var gInjectTab_TabLocation = 1;
@@ -45144,6 +45139,7 @@ const gCustomTabDefault = {
 }
 
 // Get the initial configuration settings from local browser storage, if present
+// ABC Tools Lite: Customized
 function GetInitialConfigurationSettings() {
 
   // MAE 9 Feb 2025 - This setting makes no sense any more, setting it to true.
@@ -45225,12 +45221,12 @@ function GetInitialConfigurationSettings() {
   }
 
   // Box and concertina tab global state
-
+  // ABC Tools Lite: Customized
   val = localStorage.InjectTab_FontFamily;
   if (val) {
     gInjectTab_FontFamily = val;
   } else {
-    gInjectTab_FontFamily = "Palatino";
+    gInjectTab_FontFamily = "Fira Sans";
   }
 
   val = localStorage.InjectTab_TabFontSize;
@@ -46070,7 +46066,7 @@ function GetInitialConfigurationSettings() {
   if (val) {
     gFeaturesShowBagpipeDrones = (val == "true");
   }
-
+  // ABC Tools Lite: Customized (false by default)
   gFeaturesShowTabButtons = false;
   val = localStorage.FeaturesShowTabButtons;
   if (val) {
@@ -47447,13 +47443,13 @@ function ConfigureTablatureSettings() {
     configure_box_tab_style: gInjectTab_BoxTabStyle,
     configure_tab_colors: gInjectTab_Colors,
   };
-
+  // ABC Tools Lite: Customized
   const form = [{
     html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;font-family:var(--abctools-ui-font-fallbacks);margin-left:15px;">Tablature Injection Settings&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#tablature_settings" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
   }, {
     html: '<p style="font-size:12pt;line-height:18pt;font-family:var(--abctools-ui-font-fallbacks)"><strong>General Tablature Formatting Settings:</strong></p>'
   }, {
-    name: "Font family (Recommended: Palatino):",
+    name: "Font family (Default: Fira Sans):",
     id: "configure_font_family",
     type: "text",
     cssClass: "configure_tab_settings_form_text_wide"
@@ -47865,7 +47861,7 @@ function resetABCRenderingFonts() {
   //   historyfont: "Times New Roman 14",
   //   voicefont: "Times New Roman 13"
   // }
-  
+  // ABC Tools Lite: Customized Fonts
   gDialogRenderingFonts = {
     titlefont: "Fira Sans Semibold 18",
     subtitlefont: "Fira Sans 14",
@@ -47929,7 +47925,7 @@ function loadFontSettingsClickHandler() {
   elem.click();
 
 }
-
+// ABC Tools Lite: Customized
 function ConfigureFonts() {
 
   // Keep track of dialogs
@@ -48341,7 +48337,7 @@ function idlePDFExportDialog() {
 
   }
 }
-
+// ABC Tools Lite: Customized
 function PDFExportDialog() {
 
   if (!gAllowCopy) {
@@ -48489,7 +48485,7 @@ function PDFExportDialog() {
     name: "  Alternating Bottom Right/Left",
     id: "brl"
   }, ];
-
+  // ABC Tools Lite: Customized
   const fontname_list = [{
     name: "  Times (Latin)",
     id: "Times"
@@ -50294,6 +50290,7 @@ function idleAdvancedSettings() {
 
 //
 // Show some info on the browser
+// ABC Tools Lite: Customized
 //
 function ShowBrowserInfo() {
   var modal_msg = '<p style="text-align:center;font-size:18pt;font-family:var(--abctools-ui-font-fallbacks)">Browser Information</p>';
@@ -50531,7 +50528,7 @@ function AdvancedSettings() {
       type: "text",
       cssClass: "advanced_settings2_tinyurl_text"
     },
-
+  // ABC Tools Lite: Customized
     {
       html: '<p style="text-align:center;margin-top:18px;margin-bottom:6px"><input id="customthemeeditor" class="btn btn-subdialog" onclick="customThemeEditor()" type="button" value="ABC Syntax Highlighting Theme Editor" title="Opens the ABC Syntax Highlighting Theme Editor"><label class="loadimpulsebutton btn btn-subdialog " for="loadimpulsebutton" title="Load a custom reverb convolution impulse .wav file">Load Custom Reverb Impulse <input type="file" id="loadimpulsebutton"  accept=".wav,.WAV" hidden/></label><input id="resetsettings" class="btn btn-resetsettings resetsettings" onclick="ResetSettingsDialog()" type="button" value="Reset Settings" title="Opens a dialog where you can reset all tool settings to the default and/or clear the instrument notes, reverb settings, and tune search engine collection databases"></p><p style="font-size:10pt;line-height:14pt;font-family:var(--abctools-ui-font-fallbacks);color:grey;position:absolute;left:20px;bottom:30px;margin:0px;cursor:pointer;" onclick="ShowBrowserInfo();" title="Click to show browser information">Click to show browser info<br/>Installed version: ' + gLiteVersionNumber + '</p>'
     },
@@ -51388,6 +51385,7 @@ function ConfigurePlayerSettings(player_callback) {
 
 //
 // Configuration settings dialog
+// ABC Tools Lite: Customized
 //
 function ConfigureToolSettings() {
 
@@ -51610,12 +51608,12 @@ function ConfigureToolSettings() {
   };
 
   if (gUpdateAvailable) {
-    // ABC Lite: Customized
+    // ABC Tools Lite: Customized
     form.push({
       html: '<p style="text-align:center;"><input id="configure_fonts" class="btn btn-subdialog configure_fonts" onclick="ConfigureFonts()" type="button" value="Font Settings" title="Configure the fonts used for rendering the ABC"><input id="configure_box" class="btn btn-subdialog configure_box" onclick="ConfigureTablatureSettings()" type="button" value="Tablature Injection Settings" title="Configure the tablature injection settings"><input id="configure_musicxml_import" class="btn btn-subdialog configure_musicxml_import" onclick="ConfigureMusicXMLImport()" type="button" value="MusicXML/MIDI Settings" title="Configure MusicXML/MIDI import settings"><input id="configure_developer_settings" class="btn btn-subdialog configure_developer_settings" onclick="AdvancedSettings()" type="button" value="Advanced Settings" title="Configure low level tool settings"></p><p style="font-size:10pt;font-family:var(--abctools-ui-font-fallbacks);line-height:14pt;color:forestgreen;position:absolute;left:20px;bottom:20px;margin:0px;cursor:pointer;" title="Click to update to the latest version of the tool" onclick="UpdateToLatestVersion();">Click here to update to the latest version<br/>Latest fork version: ' + gUpdateVersion + '<br/>Installed version: ' + gLiteVersionNumber + '</p>'
     });
   } else {
-    // ABC Lite: Customized
+    // ABC Tools Lite: Customized
     form.push({
       html: '<p style="text-align:center;"><input id="configure_fonts" class="btn btn-subdialog configure_fonts" onclick="ConfigureFonts()" type="button" value="Font Settings" title="Configure the fonts used for rendering the ABC"><input id="configure_box" class="btn btn-subdialog configure_box" onclick="ConfigureTablatureSettings()" type="button" value="Tablature Injection Settings" title="Configure the tablature injection settings"><input id="configure_musicxml_import" class="btn btn-subdialog configure_musicxml_import" onclick="ConfigureMusicXMLImport()" type="button" value="MusicXML/MIDI Settings" title="Configure MusicXML/MIDI import settings"><input id="configure_developer_settings" class="btn btn-subdialog configure_developer_settings" onclick="AdvancedSettings()" type="button" value="Advanced Settings" title="Configure low level tool settings"></p><p style="font-size:10pt;font-family:var(--abctools-ui-font-fallbacks);line-height:14pt;color:grey;position:absolute;left:20px;bottom:20px;margin:0px;cursor:pointer;" title="Click to update to the latest version" onclick="UpdateToLatestVersion();">You have the latest version<br/>Installed version: ' + gLiteVersionNumber + '<br>Click here to force an update</p>'
     });
@@ -53012,7 +53010,7 @@ function DoFileRead(file, callback) {
 
 //
 // Toggle the top bar
-//
+// ABC Tools Lite: Customized
 //
 
 function ShowTopBar() {
@@ -53045,7 +53043,7 @@ function ShowTopBar() {
 
 
 }
-
+// ABC Tools Lite: Customized
 function HideTopBar() {
 
   var elem = document.getElementById("topbar");
@@ -53112,7 +53110,7 @@ function ToggleTopBar() {
 
 //
 // Toggle the bottom bar
-//
+// ABC Tools Lite: Customized
 //
 
 function ShowBottomBar() {
@@ -53354,6 +53352,7 @@ function restoreStateFromLocalStorage() {
   }
 
   // If first time, show a welcome message
+  // ABC Tools Lite: Customized
   if (gIsFirstRun) {
 
     UpdateLocalStorage();
@@ -53743,6 +53742,7 @@ function HideZoomBannerForever(e) {
 
 //
 // Set the margins on window resize
+// ABC Tools Lite: Customized
 //
 function HandleWindowResize() {
 
@@ -54723,6 +54723,7 @@ function initMIDI() {
 
 //
 // Show the first run welcome screen
+// ABC Tools Lite: Customized
 //
 function showWelcomeScreen() {
 
@@ -54763,6 +54764,7 @@ function showWelcomeScreen() {
 
 //
 // Show the first run zoom screen
+// ABC Tools Lite: Customized
 //
 function showZoomInstructionsScreen() {
 
@@ -55418,9 +55420,10 @@ function makeCenteredPromptString(thePrompt) {
 
 //
 // Send a Google analytics event
+// ABC Tools Lite: Customized
 //
 function sendGoogleAnalytics(theCategory, theAction, theLabel) {
-  
+  // Turn off Google analytics for the fork
   return;
   // Don't send analytics if offline
   if (!navigator.onLine) {
@@ -58567,6 +58570,7 @@ function NormalizeVoiceKeySignatures(){
 }
 
 // Open the standard editor in the same window
+// ABC Tools Lite: Customized (open editor in the same tab: expected app behavior)
 function LaunchStandardEditor() {
   var url = "abctools.html";
   // window.open(url, '_blank');
@@ -58574,12 +58578,14 @@ function LaunchStandardEditor() {
 }
 
 // Open the User Guide in a new tab
+// ABC Tools Lite: Customized (open User Guide online)
 function LaunchEditorHelp() {
   var url = "https://michaeleskin.com/abctools/userguide.html";
   window.open(url, '_blank');
 }
 
 // Open the quick editor in the same window
+// ABC Tools Lite: Customized (open editor in the same tab: expected app behavior)
 function LaunchQuickEditor() {
   var url = "abctools-quick-editor.html";
   // window.open(url, '_blank');
@@ -58594,8 +58600,19 @@ function LaunchQuickEditorHelp() {
 
 //
 // Check if an update is available
+// ABC Tools Lite: Customized
 // 
 function DoVersionCheck() {
+
+  // Skip the check when testing on a local development server
+  if (
+    window.origin.toString()
+    .replace(/http[s]*:\/\//, '')
+    .match(/(?:localhost|127\.\d{1,3}\.\d{1,3}\.\d{1,3}|::1)(?:$|:\d{1,5})/)
+  ) {
+    SetupContextMenu(false); 
+    return;
+  }
 
   gUpdateVersion = gLiteVersionNumber;
 
@@ -58626,14 +58643,14 @@ function DoVersionCheck() {
     })
     .catch((err) => {
 
-      console.warn('[ABC Tools Lite] DoVersionCheck() failed\n\n', err);
+      console.warn('[ABC Tools Lite] DoVersionCheck failed\n\n', err);
       SetupContextMenu(false);
     });
 }
 
 //
 // Setup context menu
-//
+// ABC Tools Lite: Customized (separate handling of button toolbars)
 
 function SetupContextMenu(showUpdateItem) {
 
@@ -59638,7 +59655,7 @@ function SetTopButtonMargins() {
   }
 
 }
-
+// ABC Tools Lite: Customized
 function DoStartup() {
 
   // Init global state
@@ -59696,7 +59713,23 @@ function DoStartup() {
 
 
   // Is browser storage available?
-  if (window.localStorage) {
+  // ABC Tools Lite: Customized
+  // More robust check for edge cases
+  // storage-available by Stijn de Witt (MIT)
+  function storageAvailable(type) {
+    try {
+      var storage = window[type],
+        x = '__storage_test__';
+      storage.setItem(x, x);
+      storage.removeItem(x);
+      return true;
+    }
+    catch(e) {
+      return false;
+    }
+  }
+
+  if (storageAvailable("localStorage")) {
 
     gLocalStorageAvailable = true;
 
