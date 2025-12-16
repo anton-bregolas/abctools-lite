@@ -12,12 +12,12 @@
 //
 //
 // ABC Tools Lite:
-// Last updated on 2025-12-15
+// Last updated on 2025-12-16
 
 const cacheName = 'abctoolscache-3066';
 
 const CACHE_PREFIX = 'abctools';
-const CACHE_VERSION = 'lite-3066-3';
+const CACHE_VERSION = 'lite-3066-4';
 const CACHE_NAME_LITE = `${CACHE_PREFIX}${CACHE_VERSION}`;
 
 const contentToCache = [
@@ -29,6 +29,7 @@ const contentToCache = [
     'tipjars.html',
     'app.css',
     'codemirror.css',
+    'app-lite.js',
     'app.js',
     'jquery-1.11.1.min.js',
 	'jszip.min.js',
@@ -96,16 +97,16 @@ const contentToCache = [
 // Installing Service Worker
 self.addEventListener('install', (e) => {
 
-    console.log('[ABC Tools Lite Service Worker] Install');
+    console.log('[Service Worker Lite] Install');
 
     // Make this the current service worker
     self.skipWaiting();
     
     e.waitUntil((async () => {
       const cache = await caches.open(CACHE_NAME_LITE);
-      console.log('[ABC Tools Lite Service Worker] Caching ABC Tools Lite shell and content');
+      console.log('[Service Worker Lite] Caching ABC Tools Lite shell and content');
       await cache.addAll(contentToCache);
-      console.log(`[ABC Tools Lite Service Worker] Cache addAll complete version ${CACHE_VERSION}`);
+      console.log(`[Service Worker Lite] Cache addAll complete version ${CACHE_VERSION}`);
     })());
 
 
@@ -113,12 +114,12 @@ self.addEventListener('install', (e) => {
 
 self.addEventListener('activate', event => {
 
-    console.log("[ABC Tools Lite Service Worker] Activate event");
+    console.log("[Service Worker Lite] Activate event");
 
     clients.claim().then(() => {
         //claim means that the html file will use this new service worker.
         console.log(
-          '[ABC Tools Lite Service Worker] Service worker has now claimed all pages so they use the new service worker'
+          '[Service Worker Lite] Service worker has now claimed all pages so they use the new service worker'
         );
     });
 
@@ -138,7 +139,7 @@ self.addEventListener('activate', event => {
 // Fetching content using Service Worker
 self.addEventListener('fetch', (e) => {
 
-    //console.log(`[ABC Tools Lite Service Worker] fetching: ${e.request.url}`);
+    //console.log(`[Service Worker Lite] fetching: ${e.request.url}`);
 
     // Cache http and https only, skip unsupported chrome-extension:// and file://...
     if (!(
@@ -153,14 +154,14 @@ self.addEventListener('fetch', (e) => {
 
         if (r){
 
-            //console.log(`[ABC Tools Lite Service Worker] Returning cached resource: ${e.request.url}`);
+            //console.log(`[Service Worker Lite] Returning cached resource: ${e.request.url}`);
 
             return r;
         }
 
         try{
 
-            //console.log(`[ABC Tools Lite Service Worker] Fetching resource: ${e.request.url}`);
+            //console.log(`[Service Worker Lite] Fetching resource: ${e.request.url}`);
 
             const response = await fetch(e.request);
 
@@ -170,7 +171,7 @@ self.addEventListener('fetch', (e) => {
             
             //     const cache = await caches.open(CACHE_NAME_LITE);
 
-            //     console.log(`[ABC Tools Lite Service Worker] Caching new resource: ${e.request.url}`);
+            //     console.log(`[Service Worker Lite] Caching new resource: ${e.request.url}`);
 
             //     cache.put(e.request, response.clone());
 
@@ -181,7 +182,7 @@ self.addEventListener('fetch', (e) => {
         }
         catch (error){
 
-            //console.log("[ABC Tools Lite Service Worker] Fetch error: " + error);
+            //console.log("[Service Worker Lite] Fetch error: " + error);
     
         }
     })());

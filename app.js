@@ -55423,56 +55423,9 @@ function makeCenteredPromptString(thePrompt) {
 // ABC Tools Lite: Customized
 //
 function sendGoogleAnalytics(theCategory, theAction, theLabel) {
+
   // Turn off Google analytics for the fork
   return;
-  // Don't send analytics if offline
-  if (!navigator.onLine) {
-    //console.log("sendGoogleAnalytics - Offline: Not sending info ")
-    return;
-  }
-
-  // Don't send analytics on iOS Safari
-  if (gIsIOS) {
-    return;
-  }
-
-  // Don't send analytics if local storage not available
-  if (!gLocalStorageAvailable) {
-    return;
-  }
-
-  if (typeof gtag !== "undefined") {
-
-    if ((gtag) && (gtag instanceof Function)) {
-
-      if (!theLabel) {
-        theLabel = "none";
-      }
-
-      //console.log("sendGoogleAnalytics - Online: Sending gtag abctools event_category: "+theCategory+" event_action: "+theAction+" event_label: "+theLabel);
-
-      if (!gIsQuickEditor) {
-        gtag('event', 'abc_' + theCategory + "_" + theAction, {
-          event_category: theCategory,
-          event_action: theAction,
-          event_label: theLabel
-        });
-      } else {
-        gtag('event', 'q_abc_' + theCategory + "_" + theAction, {
-          event_category: theCategory,
-          event_action: theAction,
-          event_label: theLabel
-        });
-      }
-
-    }
-  }
-  // else{
-
-  //  //console.log("sendGoogleAnalytics - gtag not defined ")
-
-  // }
-
 }
 
 //

@@ -26,16 +26,16 @@
     <link rel="apple-touch-icon" href="./img/apple-touch-icon.png">
 		
 		<script>
-		// Register service worker
-		if ('serviceWorker' in navigator){
-		 	navigator.serviceWorker.register('./service_worker.js',{updateViaCache: "none"})
-		 	.then(reg => {
-		 		console.log("Service Worker Registered!");
-	    		})
-		 	.catch(err => {
-		 		console.log("Service Worker Registration failed: "+err);
-		  	});
-		}	
+			// Register service worker
+			if ('serviceWorker' in navigator) {
+				navigator.serviceWorker.register('./service_worker.js',{updateViaCache: "none"})
+				.then(reg => {
+					console.log("[Service Worker Lite] Service Worker Registered!");
+						})
+				.catch(err => {
+					console.log("[Service Worker Lite] Service Worker Registration failed: "+err);
+					});
+			}	
 		</script>
 
 		<link rel="manifest" href="img/abc-manifest.json">

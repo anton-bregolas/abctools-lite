@@ -24,19 +24,23 @@
     <link rel="icon" href="favicon.ico" sizes="any">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="./img/apple-touch-icon.png">
-		<link rel="manifest" href="./img/abc-manifest-qe.json">
+
+		<script>
+			// Register service worker
+			if ('serviceWorker' in navigator) {
+				navigator.serviceWorker.register('./service_worker.js',{updateViaCache: "none"})
+				.then(reg => {
+					console.log("[Service Worker Lite] Service Worker Registered!");
+						})
+				.catch(err => {
+					console.log("[Service Worker Lite] Service Worker Registration failed: "+err);
+					});
+			}	
+		</script>
 		
+		<link rel="manifest" href="./img/abc-manifest-qe.json">		
 		<link href="app.css?v=3066" media="all" rel="stylesheet" type="text/css">
 		<link href="codemirror.css?v=3066" media="all" rel="stylesheet" type="text/css">
-
-		<!-- Google tag (gtag.js) -->
-		<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-5C74XEDW40"></script>
-		<script>
-			window.dataLayer = window.dataLayer || [];
-			function gtag(){dataLayer.push(arguments);}
-			gtag('js', new Date());
-			gtag('config', 'G-5C74XEDW40');
-		</script> -->
 						
 	</head>
 
