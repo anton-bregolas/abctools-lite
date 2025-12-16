@@ -22,9 +22,7 @@ const liteScriptsFile = path.join(__dirname, 'app-lite.js');
 const liteVersionFile = path.join(__dirname, 'abc_lite_version.json');
 const serviceWorkerFile = path.join(__dirname, 'service_worker.js');
 const abcToolsPage = path.join(__dirname, 'abctools.html');
-const abcToolsOFLPage = path.join(__dirname, 'abctools-offline.html');
 const abcToolsQEPage = path.join(__dirname, 'abctools-quick-editor.html');
-const abcToolsQEOFLPage = path.join(__dirname, 'abctools-quick-editor-offline.html');
 const abcToolsScripts = path.join(__dirname, 'app.js');
 const abcToolsStyles = path.join(__dirname, 'app.css');
 
@@ -103,16 +101,13 @@ async function updateServiceWorker(newLiteVersion, newLiteDate) {
   await updateFile(serviceWorkerFile, updatedSw);
 }
 
-async function updateAbcToolsPages(abcToolsVersion) {
-  const htmlFiles = [abcToolsPage, abcToolsOFLPage, abcToolsQEPage, abcToolsQEOFLPage];
-  const abcToolsVerNum = abcToolsVersion.split('_')[0];
-  const toolScript = /\t<script type="text\/javascript" src="app(?:-min)*\.js(\?v=[\d]*)*">/g;
-  const liteScript = `\t<script type="text/javascript" src="app-lite.js$1"></script><!-- ABC Tools Lite custom scripts -->\n\t<script type="text/javascript" src="app.js$1">`;
-  const toolCssOld = /\t\t<link href="app\.css(\?v=[\d]*)*" media="all" rel="stylesheet" type="text\/css">\r?\n\t\t<link href="codemirror\.css(\?v=[\d]*)*" media="all" rel="stylesheet" type="text\/css">/g;
-  const toolCssNew = `\t\t<link href="app.css?v=${abcToolsVerNum}" media="all" rel="stylesheet" type="text/css">\n\t\t<link href="codemirror.css?v=${abcToolsVerNum}" media="all" rel="stylesheet" type="text/css">`
+async function updateAbcToolsPages() {
+  const htmlFiles = [abcToolsPage, abcToolsQEPage];
+  const toolScript = /\t<script type="text\/javascript" src="app(?:-min)*\.js(?:\?v=[\d]*)*">/g;
+  const liteScript = `\t<script type="text/javascript" src="app-lite.js"></script><!-- ABC Tools Lite custom scripts -->\n\t<script type="text/javascript" src="app.js">`;
   const readData = await Promise.all(htmlFiles.map(file => readFileData(file)));
   const writeTask = readData.map((data, i) =>
-    updateFile(htmlFiles[i], data.replace(toolScript, liteScript).replace(toolCssOld, toolCssNew))
+    updateFile(htmlFiles[i], data.replace(toolScript, liteScript))
   );
   await Promise.all(writeTask);
 }
@@ -273,7 +268,7 @@ async function main() {
   let exitCode = 1;
 
   if (type === '-abc') {
-    await updateAbcToolsPages(toolsVersion);
+    await updateAbcToolsPages();
     await updateAppScripts();
     await updateAppStyles();
     commitMsg =
@@ -294,7 +289,7 @@ async function main() {
     exitCode = await openCommitEditor(commitMsg);
 
   } else if (type === '-up') {
-    await updateAbcToolsPages(toolsVersion);
+    await updateAbcToolsPages();
     exitCode = 0;
 
   } else if (type === '-us') {
