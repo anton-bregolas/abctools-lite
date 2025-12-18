@@ -17,7 +17,7 @@
 const cacheName = 'abctoolscache-3066';
 
 const CACHE_PREFIX = 'abctools';
-const CACHE_VERSION = 'lite-3066-6';
+const CACHE_VERSION = 'lite-3066-7';
 const CACHE_NAME_LITE = `${CACHE_PREFIX}${CACHE_VERSION}`;
 
 const contentToCache = [
@@ -28,6 +28,7 @@ const contentToCache = [
     'credits.html',
     'tipjars.html',
     'app.css',
+    'app-lite.css',
     'codemirror.css',
     'app-lite.js',
     'app.js',

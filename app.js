@@ -152,7 +152,7 @@ var gLastClickedTune = -1;
 
 // Top bar showing?
 var gTopBarShowing = true;
-// ABC Tools Lite: Customized
+// Lite: Customized
 // Bottom bar showing?
 var gBottomBarShowing = true;
 
@@ -198,7 +198,7 @@ var gPDFTitleSpacing = 1.0;
 var gPDFSubTitleSpacing = 1.0;
 
 // Default Export PDF font
-// ABC Tools Lite: Customized
+// Lite: Customized
 var gPDFFont = "Fira-Sans";
 var gPDFFontStyle = "Normal";
 
@@ -279,7 +279,7 @@ var gAngloButtonNames = [];
 //   historyfont: "Times New Roman 14",
 //   voicefont: "Times New Roman 13"
 // }
-// ABC Tools Lite: Customized Fonts
+// Lite: Customized Fonts
 var gRenderingFonts = {
   titlefont: "Fira Sans Semibold 18",
   subtitlefont: "Fira Sans 14",
@@ -357,7 +357,7 @@ var gUseComhaltasABC = false;
 var gForceComhaltasABC = false;
 
 // Zoom banner has been hidden
-// ABC Tools Lite: Customized (off by default)
+// Lite: Customized (off by default)
 var gZoomBannerHidden = true;
 var gZoomBannerAlwaysHidden = true;
 
@@ -415,7 +415,7 @@ var gFeaturesShowExamples = true;
 var gFeaturesShowTemplates = true;
 var gFeaturesShowTablatures = true;
 var gFeaturesShowExplorers = true;
-var gFeaturesShowTabButtons = false; // ABC Tools Lite: Customized (false by default)
+var gFeaturesShowTabButtons = false; // Lite: Customized (false by default)
 var gFeaturesShowBagpipeDrones = true;
 
 // Force an update of local storage for the tab
@@ -467,7 +467,7 @@ var gSuppressQuickPlayer = false;
 
 // Is there an update available?
 var gUpdateAvailable = false;
-// ABC Tools Lite: Customized
+// Lite: Customized
 var gUpdateVersion = gLiteVersionNumber;
 
 // Spinner timeout
@@ -483,7 +483,7 @@ var gDisableAndroid = false;
 var gNotoSansLoaded = false;
 var gNotoSerifLoaded = false;
 
-// ABC Tools Lite: Customized
+// Lite: Customized
 // Are Fira Sans font styles loaded?
 var gFiraSansRegularLoaded = false;
 var gFiraSansSemiBoldLoaded = false;
@@ -9935,7 +9935,7 @@ function ParseCommentCommands(theNotes) {
 
     // Sanity check font name
     var lcfont = gPDFFont.toLowerCase();
-    // ABC Tools Lite: Customized
+    // Lite: Customized
     switch (lcfont) {
       case "times":
       case "fira-sans":
@@ -11239,7 +11239,7 @@ function ExportPDF() {
 
 //
 // Export the first few bars of each tune in ABC format
-// ABC Tools Lite: Customized
+// Lite: Customized
 //
 function ExportTextIncipitsPDF(title, bDoFullTunes, bDoCCETransform, bDoQRCodes) {
 
@@ -11374,7 +11374,7 @@ function ExportTextIncipitsPDF(title, bDoFullTunes, bDoCCETransform, bDoQRCodes)
 
       }
     } else
-      // ABC Tools Lite: Customized
+      // Lite: Customized
       if (gPDFFont == "Fira-Sans" ) {
 
         let theFontPath;
@@ -11809,7 +11809,7 @@ function ExportTextIncipitsPDF(title, bDoFullTunes, bDoCCETransform, bDoQRCodes)
 
 //
 // Export a PDF document with notation, either full or first line incipits
-// ABC Tools Lite: Customized
+// Lite: Customized
 //
 
 // For per-tune PDFs
@@ -12147,7 +12147,7 @@ function ExportNotationPDF(title) {
 
         }
     } else
-      // ABC Tools Lite: Customized
+      // Lite: Customized
       if (gPDFFont == "Fira-Sans" ) {
 
         let theFontPath;
@@ -13471,7 +13471,7 @@ function GetABCJSParams(instrument) {
 
 //
 // Update local storage
-// ABC Tools Lite: Customized (separate handling of button bars)
+// Lite: Customized (separate handling of button bars)
 //
 function UpdateLocalStorage() {
 
@@ -14755,7 +14755,7 @@ function RenderAsync(renderAll, tuneNumber, callback) {
   }
 
 }
-// ABC Tools Lite: Customized
+// Lite: Customized
 function Render(renderAll, tuneNumber) {
 
   // debugger;
@@ -15629,7 +15629,7 @@ function IdleAdvancedControls(bUpdateUI) {
 
 //
 // Recalculate and update the top position for the music
-// ABC Tools Lite: Customized
+// Lite: Customized
 //
 function UpdateNotationTopPosition() {
 
@@ -21387,7 +21387,7 @@ function GenerateRenderingDivs(nTunes) {
 
 //
 // Share URL related code provided by Philip McGarvey
-// ABC Tools Lite: Customized
+// Lite: Customized
 //
 function getUrlWithoutParams() {
 
@@ -26434,7 +26434,7 @@ function SetAbcText(txt) {
 
 //
 // Toggle the control display
-// ABC Tools Lite: Customized
+// Lite: Customized
 //
 
 function ShowAllControls() {
@@ -26454,7 +26454,7 @@ function ShowAllControls() {
   }
 
 }
-// ABC Tools Lite: Customized
+// Lite: Customized
 function HideAllControls() {
 
   HideBottomBar();
@@ -26763,8 +26763,10 @@ function togglePresentationMode() {
 
 }
 
-// ABC Tools Lite: Customized
+// Lite: Customized
 function DoMaximize() {
+
+  document.body.dataset.notation = "maximized";
 
 	document.getElementById("noscroller").style.display = "none";
 	document.getElementById("notation-spacer").style.display = "none";
@@ -26816,8 +26818,10 @@ function DoMaximize() {
     HideJumpButton();
   }
 }
-// ABC Tools Lite: Customized
+// Lite: Customized
 function DoMinimize() {
+
+  document.body.dataset.notation = "minimized";
 
   document.getElementById("noscroller").style.display = "block";
   document.getElementById("notation-spacer").style.display = "block";
@@ -27027,27 +27031,27 @@ function ToggleMaximize() {
 
       if (giPadTwoColumn) {
         document.getElementById("notation-holder").style.width = "80%";
-      } else {
+      // } else {
 
-        // Scale the full screen up a bit if it makes sense
-        var windowWidth = window.innerWidth;
+      //   // Scale the full screen up a bit if it makes sense
+      //   var windowWidth = window.innerWidth;
 
-        if (((windowWidth * gFullScreenScaling) / 100.0) > 850) {
+      //   if (((windowWidth * gFullScreenScaling) / 100.0) > 850) {
 
-          gTheNotation.style.width = gFullScreenScaling + "%";
+      //     gTheNotation.style.width = gFullScreenScaling + "%";
 
-        }
+      //   }
       }
     } else {
 
-      // Scale the full screen up a bit if it makes sense
-      var windowWidth = window.innerWidth;
+      // // Scale the full screen up a bit if it makes sense
+      // var windowWidth = window.innerWidth;
 
-      if (((windowWidth * gFullScreenScaling) / 100.0) > 820) {
+      // if (((windowWidth * gFullScreenScaling) / 100.0) > 820) {
 
-        gTheNotation.style.width = gFullScreenScaling + "%";
+      //   gTheNotation.style.width = gFullScreenScaling + "%";
 
-      }
+      // }
 
     }
 
@@ -44947,7 +44951,7 @@ var gInjectTab_StripChords = true;
 var gOpenLinksInTrainer = false;
 
 // Box and concertina tab global state
-// ABC Tools Lite: Customized
+// Lite: Customized
 var gInjectTab_FontFamily = "Fira Sans";
 var gInjectTab_TabFontSize = 10;
 var gInjectTab_StaffSep = 80;
@@ -45139,7 +45143,7 @@ const gCustomTabDefault = {
 }
 
 // Get the initial configuration settings from local browser storage, if present
-// ABC Tools Lite: Customized
+// Lite: Customized
 function GetInitialConfigurationSettings() {
 
   // MAE 9 Feb 2025 - This setting makes no sense any more, setting it to true.
@@ -45221,7 +45225,7 @@ function GetInitialConfigurationSettings() {
   }
 
   // Box and concertina tab global state
-  // ABC Tools Lite: Customized
+  // Lite: Customized
   val = localStorage.InjectTab_FontFamily;
   if (val) {
     gInjectTab_FontFamily = val;
@@ -46066,7 +46070,7 @@ function GetInitialConfigurationSettings() {
   if (val) {
     gFeaturesShowBagpipeDrones = (val == "true");
   }
-  // ABC Tools Lite: Customized (false by default)
+  // Lite: Customized (false by default)
   gFeaturesShowTabButtons = false;
   val = localStorage.FeaturesShowTabButtons;
   if (val) {
@@ -47443,7 +47447,7 @@ function ConfigureTablatureSettings() {
     configure_box_tab_style: gInjectTab_BoxTabStyle,
     configure_tab_colors: gInjectTab_Colors,
   };
-  // ABC Tools Lite: Customized
+  // Lite: Customized
   const form = [{
     html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;font-family:var(--abctools-ui-font-fallbacks);margin-left:15px;">Tablature Injection Settings&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#tablature_settings" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
   }, {
@@ -47861,7 +47865,7 @@ function resetABCRenderingFonts() {
   //   historyfont: "Times New Roman 14",
   //   voicefont: "Times New Roman 13"
   // }
-  // ABC Tools Lite: Customized Fonts
+  // Lite: Customized Fonts
   gDialogRenderingFonts = {
     titlefont: "Fira Sans Semibold 18",
     subtitlefont: "Fira Sans 14",
@@ -47925,7 +47929,7 @@ function loadFontSettingsClickHandler() {
   elem.click();
 
 }
-// ABC Tools Lite: Customized
+// Lite: Customized
 function ConfigureFonts() {
 
   // Keep track of dialogs
@@ -48337,7 +48341,7 @@ function idlePDFExportDialog() {
 
   }
 }
-// ABC Tools Lite: Customized
+// Lite: Customized
 function PDFExportDialog() {
 
   if (!gAllowCopy) {
@@ -48485,7 +48489,7 @@ function PDFExportDialog() {
     name: "  Alternating Bottom Right/Left",
     id: "brl"
   }, ];
-  // ABC Tools Lite: Customized
+  // Lite: Customized
   const fontname_list = [{
     name: "  Times (Latin)",
     id: "Times"
@@ -50290,7 +50294,7 @@ function idleAdvancedSettings() {
 
 //
 // Show some info on the browser
-// ABC Tools Lite: Customized
+// Lite: Customized
 //
 function ShowBrowserInfo() {
   var modal_msg = '<p style="text-align:center;font-size:18pt;font-family:var(--abctools-ui-font-fallbacks)">Browser Information</p>';
@@ -50528,7 +50532,7 @@ function AdvancedSettings() {
       type: "text",
       cssClass: "advanced_settings2_tinyurl_text"
     },
-  // ABC Tools Lite: Customized
+  // Lite: Customized
     {
       html: '<p style="text-align:center;margin-top:18px;margin-bottom:6px"><input id="customthemeeditor" class="btn btn-subdialog" onclick="customThemeEditor()" type="button" value="ABC Syntax Highlighting Theme Editor" title="Opens the ABC Syntax Highlighting Theme Editor"><label class="loadimpulsebutton btn btn-subdialog " for="loadimpulsebutton" title="Load a custom reverb convolution impulse .wav file">Load Custom Reverb Impulse <input type="file" id="loadimpulsebutton"  accept=".wav,.WAV" hidden/></label><input id="resetsettings" class="btn btn-resetsettings resetsettings" onclick="ResetSettingsDialog()" type="button" value="Reset Settings" title="Opens a dialog where you can reset all tool settings to the default and/or clear the instrument notes, reverb settings, and tune search engine collection databases"></p><p style="font-size:10pt;line-height:14pt;font-family:var(--abctools-ui-font-fallbacks);color:grey;position:absolute;left:20px;bottom:30px;margin:0px;cursor:pointer;" onclick="ShowBrowserInfo();" title="Click to show browser information">Click to show browser info<br/>Installed version: ' + gLiteVersionNumber + '</p>'
     },
@@ -51385,7 +51389,7 @@ function ConfigurePlayerSettings(player_callback) {
 
 //
 // Configuration settings dialog
-// ABC Tools Lite: Customized
+// Lite: Customized
 //
 function ConfigureToolSettings() {
 
@@ -51608,12 +51612,12 @@ function ConfigureToolSettings() {
   };
 
   if (gUpdateAvailable) {
-    // ABC Tools Lite: Customized
+    // Lite: Customized
     form.push({
       html: '<p style="text-align:center;"><input id="configure_fonts" class="btn btn-subdialog configure_fonts" onclick="ConfigureFonts()" type="button" value="Font Settings" title="Configure the fonts used for rendering the ABC"><input id="configure_box" class="btn btn-subdialog configure_box" onclick="ConfigureTablatureSettings()" type="button" value="Tablature Injection Settings" title="Configure the tablature injection settings"><input id="configure_musicxml_import" class="btn btn-subdialog configure_musicxml_import" onclick="ConfigureMusicXMLImport()" type="button" value="MusicXML/MIDI Settings" title="Configure MusicXML/MIDI import settings"><input id="configure_developer_settings" class="btn btn-subdialog configure_developer_settings" onclick="AdvancedSettings()" type="button" value="Advanced Settings" title="Configure low level tool settings"></p><p style="font-size:10pt;font-family:var(--abctools-ui-font-fallbacks);line-height:14pt;color:forestgreen;position:absolute;left:20px;bottom:20px;margin:0px;cursor:pointer;" title="Click to update to the latest version of the tool" onclick="UpdateToLatestVersion();">Click here to update to the latest version<br/>Latest fork version: ' + gUpdateVersion + '<br/>Installed version: ' + gLiteVersionNumber + '</p>'
     });
   } else {
-    // ABC Tools Lite: Customized
+    // Lite: Customized
     form.push({
       html: '<p style="text-align:center;"><input id="configure_fonts" class="btn btn-subdialog configure_fonts" onclick="ConfigureFonts()" type="button" value="Font Settings" title="Configure the fonts used for rendering the ABC"><input id="configure_box" class="btn btn-subdialog configure_box" onclick="ConfigureTablatureSettings()" type="button" value="Tablature Injection Settings" title="Configure the tablature injection settings"><input id="configure_musicxml_import" class="btn btn-subdialog configure_musicxml_import" onclick="ConfigureMusicXMLImport()" type="button" value="MusicXML/MIDI Settings" title="Configure MusicXML/MIDI import settings"><input id="configure_developer_settings" class="btn btn-subdialog configure_developer_settings" onclick="AdvancedSettings()" type="button" value="Advanced Settings" title="Configure low level tool settings"></p><p style="font-size:10pt;font-family:var(--abctools-ui-font-fallbacks);line-height:14pt;color:grey;position:absolute;left:20px;bottom:20px;margin:0px;cursor:pointer;" title="Click to update to the latest version" onclick="UpdateToLatestVersion();">You have the latest version<br/>Installed version: ' + gLiteVersionNumber + '<br>Click here to force an update</p>'
     });
@@ -53010,7 +53014,7 @@ function DoFileRead(file, callback) {
 
 //
 // Toggle the top bar
-// ABC Tools Lite: Customized
+// Lite: Customized
 //
 
 function ShowTopBar() {
@@ -53043,7 +53047,7 @@ function ShowTopBar() {
 
 
 }
-// ABC Tools Lite: Customized
+// Lite: Customized
 function HideTopBar() {
 
   var elem = document.getElementById("topbar");
@@ -53110,7 +53114,7 @@ function ToggleTopBar() {
 
 //
 // Toggle the bottom bar
-// ABC Tools Lite: Customized
+// Lite: Customized
 //
 
 function ShowBottomBar() {
@@ -53352,7 +53356,7 @@ function restoreStateFromLocalStorage() {
   }
 
   // If first time, show a welcome message
-  // ABC Tools Lite: Customized
+  // Lite: Customized
   if (gIsFirstRun) {
 
     UpdateLocalStorage();
@@ -53742,13 +53746,13 @@ function HideZoomBannerForever(e) {
 
 //
 // Set the margins on window resize
-// ABC Tools Lite: Customized
+// Lite: Customized
 //
 function HandleWindowResize() {
 
-  // Only executed on responsive desktop browsers
-
-  if (isDesktopBrowser()) {
+  // Lite: TO DO: Responsive design core based on viewport size, not browser platform 
+  // if (isDesktopBrowser()) {
+  const isDesktopUser = isDesktopBrowser();
 
     if (!gIsMaximized) {
 
@@ -53761,7 +53765,7 @@ function HandleWindowResize() {
 
 				// var marginLeft = (windowWidth - 850)/2;
 
-				var elem = document.getElementById("app-container");
+				// var elem = document.getElementById("app-container");
 				
 				// elem.style.marginLeft = marginLeft+"px";
 
@@ -53769,8 +53773,9 @@ function HandleWindowResize() {
 				gTheNotation.parentElement.style.removeProperty("align-items");
 
         // Reset the number of rows in the ABC editor
+        // Lite: Customized 12 -> 13 to suit larger fonts
         if (gEnableSyntax){
-          setCMRows(gTheCM, 12);
+          setCMRows(gTheCM, 13);
         }
         else{
           gTheABC.rows = 12;
@@ -53778,6 +53783,7 @@ function HandleWindowResize() {
 
         gIsOneColumn = true;
 
+      if (isDesktopUser) {
         // If they haven't dismissed the zoom suggestion banner before, show it now
         if (!gZoomBannerHidden) {
 
@@ -53790,7 +53796,7 @@ function HandleWindowResize() {
 
         elem = document.getElementById("notation-placeholder-text");
         elem.style.marginTop = "64px";
-
+      }
 
       } else {
 
@@ -53805,8 +53811,7 @@ function HandleWindowResize() {
 				
 				// elem.style.marginLeft = marginLeft+"px";
 
-        // We should have more room, resize the editor
-        var windowHeight = window.innerHeight;
+        gIsOneColumn = false;
 
         // Fix odd display after rotation on iPad
         if (giPadTwoColumn) {
@@ -53816,51 +53821,53 @@ function HandleWindowResize() {
           }
         }
 
-        // Leave some room for tools
-        if (!gIsQuickEditor) {
-          windowHeight -= 375; // MAE was 540
-        } else {
-          windowHeight -= 440; // MAE was 540
+        if (isDesktopUser) {
+          // We should have more room, resize the editor
+          var windowHeight = window.innerHeight;
+
+          // Leave some room for tools
+          if (!gIsQuickEditor) {
+            windowHeight -= 375; // MAE was 540
+          } else {
+            windowHeight -= 440; // MAE was 540
+          }
+
+          // Diagnostics showing?
+          if (gShowDiagnostics) {
+            windowHeight -= 90;
+          }
+
+          if (gEnableSyntax){
+            // Adapt the text area size
+            const wrapper = gTheCM.getWrapperElement();
+            const style   = getComputedStyle(wrapper);
+            const fontSize  = parseFloat(style.fontSize);
+            const lineHeight =
+              parseFloat(style.lineHeight) || fontSize * 1.2; // fallback if "normal"
+            var nRows = Math.floor(windowHeight / lineHeight);
+
+            // Resize the text box
+            setCMRows(gTheCM, nRows);
+          }
+          else{
+            // Adapt the text area size
+            elem = document.getElementById("abc");
+            const style = getComputedStyle(elem);
+            const fontSize = parseFloat(style.fontSize);
+            const lineHeight = parseFloat(style.lineHeight) || fontSize * 1.2; // Fallback to 1.2 * fontSize if line-height is not explicitly set
+
+            var nRows = Math.floor(windowHeight / lineHeight);
+
+            // Resize the text box
+            gTheABC.rows = nRows;
+          }
+
+          // Hide the zoom suggestion banner
+          document.getElementById("zoombanner").style.display = "none";
+
+          elem = document.getElementById("notation-placeholder-text");
+          elem.style.marginTop = "136px";
         }
-
-        // Diagnostics showing?
-        if (gShowDiagnostics) {
-          windowHeight -= 90;
-        }
-
-        if (gEnableSyntax){
-          // Adapt the text area size
-          const wrapper = gTheCM.getWrapperElement();
-          const style   = getComputedStyle(wrapper);
-          const fontSize  = parseFloat(style.fontSize);
-          const lineHeight =
-            parseFloat(style.lineHeight) || fontSize * 1.2; // fallback if "normal"
-          var nRows = Math.floor(windowHeight / lineHeight);
-
-          // Resize the text box
-          setCMRows(gTheCM, nRows);
-        }
-        else{
-          // Adapt the text area size
-          elem = document.getElementById("abc");
-          const style = getComputedStyle(elem);
-          const fontSize = parseFloat(style.fontSize);
-          const lineHeight = parseFloat(style.lineHeight) || fontSize * 1.2; // Fallback to 1.2 * fontSize if line-height is not explicitly set
-
-          var nRows = Math.floor(windowHeight / lineHeight);
-
-          // Resize the text box
-          gTheABC.rows = nRows;
-        }
-
-        gIsOneColumn = false;
-
-				// Hide the zoom suggestion banner
-				document.getElementById("zoombanner").style.display = "none";
-
-        elem = document.getElementById("notation-placeholder-text");
-        elem.style.marginTop = "136px";
-
       }
 
       if (giPadTwoColumn) {
@@ -53944,7 +53951,7 @@ function HandleWindowResize() {
 
     } else {
 
-			var elem = document.getElementById("app-container");
+			// var elem = document.getElementById("app-container");
 			
 			// elem.style.marginLeft = "0px";
 
@@ -54026,7 +54033,7 @@ function HandleWindowResize() {
         }
       }
     }
-  }
+  // }
 }
 
 //
@@ -54723,7 +54730,7 @@ function initMIDI() {
 
 //
 // Show the first run welcome screen
-// ABC Tools Lite: Customized
+// Lite: Customized
 //
 function showWelcomeScreen() {
 
@@ -54764,7 +54771,7 @@ function showWelcomeScreen() {
 
 //
 // Show the first run zoom screen
-// ABC Tools Lite: Customized
+// Lite: Customized
 //
 function showZoomInstructionsScreen() {
 
@@ -55420,7 +55427,7 @@ function makeCenteredPromptString(thePrompt) {
 
 //
 // Send a Google analytics event
-// ABC Tools Lite: Customized
+// Lite: Customized
 //
 function sendGoogleAnalytics(theCategory, theAction, theLabel) {
 
@@ -58523,7 +58530,7 @@ function NormalizeVoiceKeySignatures(){
 }
 
 // Open the standard editor in the same window
-// ABC Tools Lite: Customized (open editor in the same tab: expected app behavior)
+// Lite: Customized (open editor in the same tab: expected app behavior)
 function LaunchStandardEditor() {
   var url = "abctools.html";
   // window.open(url, '_blank');
@@ -58531,14 +58538,14 @@ function LaunchStandardEditor() {
 }
 
 // Open the User Guide in a new tab
-// ABC Tools Lite: Customized (open User Guide online)
+// Lite: Customized (open User Guide online)
 function LaunchEditorHelp() {
   var url = "https://michaeleskin.com/abctools/userguide.html";
   window.open(url, '_blank');
 }
 
 // Open the quick editor in the same window
-// ABC Tools Lite: Customized (open editor in the same tab: expected app behavior)
+// Lite: Customized (open editor in the same tab: expected app behavior)
 function LaunchQuickEditor() {
   var url = "abctools-quick-editor.html";
   // window.open(url, '_blank');
@@ -58553,7 +58560,7 @@ function LaunchQuickEditorHelp() {
 
 //
 // Check if an update is available
-// ABC Tools Lite: Customized
+// Lite: Customized
 // 
 function DoVersionCheck() {
 
@@ -58603,7 +58610,7 @@ function DoVersionCheck() {
 
 //
 // Setup context menu
-// ABC Tools Lite: Customized (separate handling of button toolbars)
+// Lite: Customized (separate handling of button toolbars)
 
 function SetupContextMenu(showUpdateItem) {
 
@@ -59608,7 +59615,7 @@ function SetTopButtonMargins() {
   }
 
 }
-// ABC Tools Lite: Customized
+// Lite: Customized
 function DoStartup() {
 
   // Init global state
@@ -59666,7 +59673,7 @@ function DoStartup() {
 
 
   // Is browser storage available?
-  // ABC Tools Lite: Customized
+  // Lite: Customized
   // More robust check for edge cases
   // storage-available by Stijn de Witt (MIT)
   function storageAvailable(type) {

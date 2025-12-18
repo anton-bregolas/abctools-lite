@@ -1,0 +1,158 @@
+body {																											/* vanilla abc tools settings */
+
+	--abctools-code-font-fallbacks: var(--abctools-code-font), 'Fira Mono', Courier, monospace;
+	--abctools-ui-font-fallbacks: var(--abctools-ui-font), 'Fira Sans', Helvetica, sans-serif;
+	
+	--abctools-code-font: 'Fira Mono';												/* Courier */
+	--abctools-ui-font: 'Fira Sans';													/* Helvetica */
+  --abctools-ui-btn-bgcolor: #d8d8d8; 										 /* #d8d8d8 */
+  --abctools-ui-btn-bordercolor: gray; 	 								 /* darken(#d8d8d8, 7.5%) */
+	--abctools-ui-btn-boxshadow: none; 												/* 0 0.1rem 0.1rem rgba(0, 0, 0, 0.25), 0 -0.1rem 0.5rem rgba(0, 0, 0, 0.1) inset */
+  --abctools-ui-btn-flarecolor: transparent;								/* #ffffff */
+  --abctools-ui-btn-hovercolor: #a5fb98;									 /* palegreen */
+	--abctools-ui-btn-textcolor: #000000;									 /* #000000 */
+	--abctools-ui-float-btn-height: 3rem;											/* 48px */
+	--abctools-ui-float-btn-padding: 0.25rem;									/* 4px */
+	--abctools-ui-float-btn-filter: drop-shadow(1px 1px 7px white);
+}
+
+@font-face {
+  font-family: 'Fira Sans';
+  font-weight: 400;
+  font-style: normal;
+  src: url('./fonts/FiraSans-Regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Fira Sans';
+  font-weight: 400;
+  font-style: italic;
+  src: url('./fonts/FiraSans-Italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Fira Sans';
+  font-weight: 600;
+  font-style: normal;
+  src: url('./fonts/FiraSans-SemiBold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Fira Sans';
+  font-weight: 600;
+  font-style: italic;
+  src: url('./fonts/FiraSans-SemiBoldItalic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Fira Sans Bold';
+  font-weight: 600;
+  font-style: normal;
+  src: url('./fonts/FiraSans-SemiBold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Fira Sans Bold';
+  font-weight: 600;
+  font-style: italic;
+  src: url('./fonts/FiraSans-SemiBoldItalic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Fira Sans Semibold';
+  font-weight: 600;
+  font-style: normal;
+  src: url('./fonts/FiraSans-SemiBold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Fira Sans Semibold';
+  font-weight: 600;
+  font-style: italic;
+  src: url('./fonts/FiraSans-SemiBoldItalic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Fira Sans Semibold Italic';
+  font-weight: 600;
+  font-style: normal;
+  src: url('./fonts/FiraSans-SemiBoldItalic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Fira Sans Bold Italic';
+  font-weight: 600;
+  font-style: normal;
+  src: url('./fonts/FiraSans-SemiBoldItalic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Fira Sans Italic';
+  font-weight: 400;
+  font-style: normal;
+  src: url('./fonts/FiraSans-Italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Fira Sans Italic';
+  font-weight: 600;
+  font-style: normal;
+  src: url('./fonts/FiraSans-SemiBoldItalic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Fira Mono';
+  font-weight: 400;
+  font-style: normal;
+  src: url('./fonts/FiraMono-Regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Fira Mono';
+  font-weight: 500;
+  font-style: normal;
+  src: url('./fonts/FiraMono-Medium.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Fira Mono';
+  font-weight: 700;
+  font-style: normal;
+  src: url('./fonts/FiraMono-Bold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Fira Mono Medium';
+  font-weight: 500;
+  font-style: normal;
+  src: url('./fonts/FiraMono-Medium.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Fira Mono Bold';
+  font-weight: 700;
+  font-style: normal;
+  src: url('./fonts/FiraMono-Bold.woff2') format('woff2');
+}
+
+@media screen and (min-width: 1798px) {
+
+	#app-container {
+		flex-direction: row;
+		justify-content: center;
+		align-items: flex-start;
+	}
+
+	/* body[data-notation="minimized"] #notation-container {
+		align-items: flex-start;
+	} */
+
+	#notation-spacer {
+		margin-right: 24px;
+	}
+
+	#noscroller {
+		left: calc(50% - 850px);
+		margin-left: 0;
+	}
+}
