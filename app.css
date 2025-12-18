@@ -6934,6 +6934,10 @@ display:block;
 		align-items: flex-start;
 	}
 
+	#notation-container {
+		align-items: flex-start;
+	}
+
 	#notation-spacer {
 		margin-right: 24px;
 	}

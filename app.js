@@ -59974,45 +59974,45 @@ function DoStartup() {
         }
       }
 
-			// Resize the app-container
-			elem = document.getElementById("app-container");
-			elem.style.width = "860px";
-			elem.style.display = "block";
-			// elem.style.marginLeft = "0px";
+			// // Resize the app-container
+			// elem = document.getElementById("app-container");
+			// elem.style.width = "860px";
+			// elem.style.display = "block";
+			// // elem.style.marginLeft = "0px";
 
-      // Resize the notation placeholder
-      elem = document.getElementById("notation-placeholder");
-      elem.style.width = "860px";
-      elem.style.display = "none";
+      // // Resize the notation placeholder
+      // elem = document.getElementById("notation-placeholder");
+      // elem.style.width = "860px";
+      // elem.style.display = "none";
 
-      // Resize the UI div
-      elem = document.getElementById("noscroller");
-      elem.style.width = "860px";
-      elem.style.display = "none"; // Hidden at startup
+      // // Resize the UI div
+      // elem = document.getElementById("noscroller");
+      // elem.style.width = "860px";
+      // elem.style.display = "none"; // Hidden at startup
 
-      // Resize the notation div
-      elem = gTheNotation;
-      elem.style.width = "820px";
-      elem.style.display = "block";
-      elem.style.marginLeft = "20px";
-      elem.style.marginRight = "0px";
-      elem.style.overflow = "hidden";
+      // // Resize the notation div
+      // elem = gTheNotation;
+      // elem.style.width = "820px";
+      // elem.style.display = "block";
+      // elem.style.marginLeft = "20px";
+      // elem.style.marginRight = "0px";
+      // elem.style.overflow = "hidden";
 
-      // Resize the notation spacer
-      elem = document.getElementById("notation-spacer");
-      elem.style.width = "860px";
-      elem.style.display = "block";
-      elem.style.marginRight = "0px";
+      // // Resize the notation spacer
+      // elem = document.getElementById("notation-spacer");
+      // elem.style.width = "860px";
+      // elem.style.display = "block";
+      // elem.style.marginRight = "0px";
 
-      // Resize the UI overlay
-      elem = document.getElementById("uioverlay");
-      elem.style.width = "860px";
-      elem.style.display = "block";
+      // // Resize the UI overlay
+      // elem = document.getElementById("uioverlay");
+      // elem.style.width = "860px";
+      // elem.style.display = "block";
 
-      // Resize the diagnostics
-      elem = document.getElementById("diagnostics");
-      elem.style.width = "836px";
-      elem.style.display = "block";
+      // // Resize the diagnostics
+      // elem = document.getElementById("diagnostics");
+      // elem.style.width = "836px";
+      // elem.style.display = "block";
 
       // Hide the Highlighting button
       elem = document.getElementById("rawmodebutton");

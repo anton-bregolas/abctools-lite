@@ -258,7 +258,7 @@ async function main() {
     return; 
   }
 
-  if (type === '-abc' || type === '-ca') {
+  if (type === '-abc' || type === '-ca' || type === '-uv') {
     await updateVersionFile(newLiteVersion, newLiteDate);
     await updateServiceWorker(newLiteVersion, newLiteDate);
     await updateLiteScripts(newLiteVersion);
@@ -298,6 +298,7 @@ async function main() {
     exitCode = 0;
 
   } else if (type === '-uv') {
+    await addVersionChanges();
     commitMsg =
       `Bump ABC Tools Lite version\n\n` +
       `- Update app version to ${newLiteVersion}\n`;
