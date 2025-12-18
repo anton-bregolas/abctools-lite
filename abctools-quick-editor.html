@@ -39,17 +39,17 @@
 		</script>
 		
 		<link rel="manifest" href="./img/abc-manifest-qe.json">		
-		<link href="app.css" media="all" rel="stylesheet" type="text/css">
 		<link href="app-lite.css" media="all" rel="stylesheet" type="text/css">
+		<link href="app.css" media="all" rel="stylesheet" type="text/css">
 		<link href="codemirror.css" media="all" rel="stylesheet" type="text/css">
 						
 	</head>
 
 	<body>
 
-		<div id="app-container">
+		<div id="app-container" class="app-container">
 
-			<div id="uioverlay" class="hidden-print">
+			<div id="uioverlay" class="uioverlay hidden-print">
 
 				<img id="helpbutton" class="helpbutton" src="img/helpbutton.png"  title="Get help using the ABC Transcription Tools"/>
 				<img id="playbuttonicon" class="playbuttonicon" src="img/playbutton.png"  title="Play/pause the current tune"/>
@@ -59,16 +59,16 @@
 				<img id="qerewindbutton" class="qerewindbutton" src="img/qerewindbutton.png"  title="Rewinds the currently playing tune.&nbsp;&nbsp;Shift-click to toggle looped play."/>
 				<img id="qetempobutton" class="qetempobutton" src="img/qetempobutton.png"  title="Set the tempo of the currently playing tune.&nbsp;&nbsp;Shift-click to reset the tempo to 100%."/>
 
-				<div id="spinnerOverlay">
-				  <div id="spinnerContainer">
-				    <div id="spinnerLabel">Rendering ABC</div>
-				    <div id="loading-bar-spinner">
-				      <div id="spinner-icon"></div>
+				<div id="spinnerOverlay" class="spinnerOverlay">
+				  <div id="spinnerContainer" class="spinnerContainer">
+				    <div id="spinnerLabel" class="spinnerLabel">Rendering ABC</div>
+				    <div id="loading-bar-spinner" class="loading-bar-spinner">
+				      <div id="spinner-icon" class="spinner-icon"></div>
 				    </div>
 				  </div>
 				</div>
 
-				<div id="pdf-controls" class="modal">
+				<div id="pdf-controls" class="pdf-controls modal">
 
 					<div class="modal-content">
 
@@ -81,7 +81,7 @@
 
 				</div>
 
-				<div id="fontholder">
+				<div id="fontholder" class="fontholder">
 
 					<svg id="fontholdersvg">
 						<style></style>
@@ -91,27 +91,27 @@
 
 			</div>
 			
-			<div id="noscroller" class="hidden-print noscroller">
+			<div id="noscroller" class="noscroller hidden-print">
 
-				<div id="zoombanner" onclick="HideZoomBanner()">
+				<div id="zoombanner" class="zoombanner" onclick="HideZoomBanner()">
 
 					<p style="text-align:left;">&nbsp;&nbsp;x&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Want to see the ABC editor and notation side-by-side?&nbsp;&nbsp;Zoom out:&nbsp;&nbsp;&nbsp;Windows:&nbsp;Ctrl -&nbsp;&nbsp;&nbsp;&nbsp;Mac:&nbsp;⌘ -&nbsp;&nbsp;&nbsp;&nbsp;<span onclick="HideZoomBannerForever(event)">(Hide Forever)</span></p>
 
 				</div>
 
-				<div id="notenlinks" class="hidden-print">
+				<div id="notenlinks" class="notenlinks hidden-print">
 
-					<div id="topbar">
+					<div id="topbar" class="topbar">
 
 						<h1 id="toolpagetitle">ABC Tools Lite Quick Editor</h1>
 
 					</div>
 
 					<!-- name of abc file selected -->
-					<p id="abc-selected">No ABC file selected</p>
+					<p id="abc-selected" class="abc-selected-title">No ABC file selected</p>
 
-					<div id="fileoperations">
-						<input type="file" style="margin-right:24px;" id="selectabcfile" accept=".abc,.txt,.ABC,.TXT,.xml,.XML,.musicxml,.mxl,.MXL,.mid,.MID,.midi,.MIDI,.bww,.BWW" hidden multiple /> 
+					<div id="fileoperations" class="fileoperations">
+						<input type="file" style="margin-right:24px;" id="selectabcfile" class="selectabcfile" accept=".abc,.txt,.ABC,.TXT,.xml,.XML,.musicxml,.mxl,.MXL,.mid,.MID,.midi,.MIDI,.bww,.BWW" hidden multiple /> 
 						<!--our custom abc file upload button-->
 						<input class="abcupload btn btn-top" style="margin-right:24px;" id="openabcfile" title="Opens an existing ABC, MusicXML, BWW, or MIDI file.&nbsp;&nbsp;You may also drag-and-drop ABC, MusicXML, BWW, or MIDI files on the editor area to add them." onclick="fileOpenIntercept(event);" type="button" value="Open"/>
 						<input class="newabcfile btn btn-top" style="margin-right:24px;" id="newabcfile" onclick="AddABC();" type="button" value="Add" title="Add your own tunes, restore from a saved snapshot, seach for tunes, re-order tunes, delete tunes, or add examples tunes and song templates to the ABC"/>
@@ -123,7 +123,7 @@
 						<input style="padding-left:20px;padding-right:20px" class="morecommands btn btn-top context-menu" id="morecommands" type="button" value="☰" title="Brings up a menu with additional useful commands"/>
 					</div>
 
-					<div id="inputarea">
+					<div id="inputarea" class="inputarea">
 
 						<textarea id="abc" rows="12" cols="70" placeholder="Enter ABC or drag-and-drop ABC, MusicXML, BWW, or MIDI files here" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
 
@@ -134,12 +134,12 @@
 				<div id="diagnostics" class="diagnostics hidden-print">
 				</div>
 
-	   			<div id="playback-audio-inline" class="hidden-print" style="margin-top:15px;margin-bottom:2px">
+	   			<div id="playback-audio-inline" class="playback-audio-inline hidden-print" style="margin-top:15px;margin-bottom:2px">
 	   			</div>
 
-				<div id="notenrechts" class="hidden-print">
+				<div id="notenrechts" class="notenrechts hidden-print">
 
-					<div id="tabs-selection" class="toggle-buttons">
+					<div id="tabs-selection" class="tabs-selection toggle-buttons">
 
 						<input type="radio" id="b1" value="noten" name="notenodertab" class="hidebutton" onclick="ChangeTab()"/>
 						<label for="b1" class="btn btn-tab" title="Shows standard music notation" style="margin-right:16px;">Notation</label>
@@ -162,7 +162,7 @@
 
 					</div>					
 
-					<div id="transpose-controls">
+					<div id="transpose-controls" class="transpose-controls">
 
 						<input class="transposedown btn btn-transpose" id="transposedown" onclick="TransposeDown(event)" type="button" value="Transpose Down" title="Transposes the selected tunes down one semitone.&nbsp;&nbsp; Shift-click transposes down one full step.&nbsp;&nbsp;Alt-click transposes down one octave."/>
 						<input class="transposeup btn btn-transpose" id="transposeup" onclick="TransposeUp(event)" type="button" value="Transpose Up" title="Transposes the selected tunes up one semitone.&nbsp;&nbsp;Shift-click transposes up one full step.&nbsp;&nbsp;Alt-click transposes up one octave."/>
@@ -179,17 +179,17 @@
 			</div>
 
 		
-			<div id="notation-spacer" class="hidden-print relativebox"></div>
+			<div id="notation-spacer" class="notation-spacer hidden-print relativebox"></div>
 
-			<div id="notation-container">
+			<div id="notation-container" class="notation-container">
 				
-				<div id="notation-placeholder" class="hidden-print relativebox">
+				<div id="notation-placeholder" class="notation-placeholder hidden-print relativebox">
 
-				<p id="notation-placeholder-text"><strong>Notation will appear here when you enter some ABC.</strong><br><br><br>Click <strong>Open</strong> to open ABC, MusicXML, BWW, or MIDI files.<br><br>Click <strong>Add</strong> to add ABC, MusicXML, BWW, MIDI files or a tune template.</p>
+				<p id="notation-placeholder-text" class="notation-placeholder-text"><strong>Notation will appear here when you enter some ABC.</strong><br><br><br>Click <strong>Open</strong> to open ABC, MusicXML, BWW, or MIDI files.<br><br>Click <strong>Add</strong> to add ABC, MusicXML, BWW, MIDI files or a tune template.</p>
 
-				<p id="desktop_use_message"><strong>Drag-and-drop</strong> ABC, MusicXML, BWW, or MIDI files on the editor area to add them.<br><br><br><strong>Resize the ABC Editor</strong> by clicking and dragging its lower right corner.</p>
+				<p id="desktop_use_message" class="desktop_use_message"><strong>Drag-and-drop</strong> ABC, MusicXML, BWW, or MIDI files on the editor area to add them.<br><br><br><strong>Resize the ABC Editor</strong> by clicking and dragging its lower right corner.</p>
 
-					<p id="notation-placeholder-text-2">Click <strong>Search for Tunes</strong> to find tunes by name.</p>
+					<p id="notation-placeholder-text-2" class="notation-placeholder-text-2">Click <strong>Search for Tunes</strong> to find tunes by name.</p>
 
 					<input class="notation-placeholder-button btn btn-placeholder" onclick="showWelcomeScreen();" type="button" value="Show Intro Screen" title="Shows the intro screen"/>
 				
@@ -202,13 +202,13 @@
 		
 		</div>
 		
-		<div id="offscreenrender" class="hidden-print">
+		<div id="offscreenrender" class="offscreenrender hidden-print">
 		</div>
 
-		<div id="offscreenrenderquickedit" style="position:absolute; left:-5000px;" class="hidden-print">
+		<div id="offscreenrenderquickedit" style="position:absolute; left:-5000px;" class="offscreenrenderquickedit hidden-print">
 		</div>
 
-		<div id="qrcode" class="hidden-print">
+		<div id="qrcode" class="qrcode hidden-print">
 		</div>
 	
 	</body>

@@ -6,7 +6,7 @@
 ///////////////////////////////////////////////////////////////////////
 
 // Custom global variables / constants
-var gLiteVersionNumber = 'lite-3066-7';
+var gLiteVersionNumber = 'lite-3066-8';
 
 var ABC_TOOLS_BASE_URL =
   window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');

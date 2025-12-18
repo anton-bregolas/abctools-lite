@@ -37,7 +37,7 @@ a:active {
   color: black;
 } 
 
-#app-container{
+.app-container {
 	width: 100%;
 	display: flex;
 	flex-direction: column;
@@ -97,14 +97,14 @@ user-select: none;
 	}
 }
 
-#notation-container {
+.notation-container {
 	width: 100%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 }
 
-#notation-holder {
+.notation-holder {
 text-align: center;
 margin-bottom:50px;
 height:100%;
@@ -343,36 +343,36 @@ margin-right: 0px;
 	}
 }
 
-#selectabcfile{
+.selectabcfile {
 -webkit-appearance:none !important;
 margin-right:12px;
 }
 
-#abc-selected{
+.abc-selected-title {
 -webkit-appearance: none !important;
 margin-top:15px;
 margin-bottom:1px;
 }
 
-#notenrechts{
+.notenrechts {
 margin-top:16px;
 display:none;
 }
 
-#inputarea{
+.inputarea{
 margin-top:18px;
 }
 
-#transpose-controls{
+.transpose-controls {
 display:flex;
 margin-top:18px;
 }
 
-#pdf-controls{
+.pdf-controls {
 display:none;
 }
 
-#offscreenrender{
+.offscreenrender {
 position:absolute; 
 left:-2100px;
 }
@@ -425,7 +425,7 @@ font-size:12pt !important;
 margin-left: 36px !important;
 }
 
-#tabs-selection{
+.tabs-selection {
 display:flex;
 }
 
@@ -586,7 +586,7 @@ margin-left:0px;
 margin-right:8px;
 }
 
-#qrcode{
+.qrcode{
 position:absolute;
 left:-3000px;
 }
@@ -1864,7 +1864,7 @@ opacity:1.0;
 	}
 }
 
-#fileoperations{
+.fileoperations {
 text-align:center;
 margin-top:12px;
 }
@@ -1949,7 +1949,7 @@ padding-bottom:16px;
 display:none;
 }
 
-#notation-spacer{
+.notation-spacer {
 background-color: white;
 width: 100%;
 }
@@ -1958,7 +1958,7 @@ width: 100%;
 margin-bottom:-16px;
 }
 
-#notenlinks{
+.notenlinks {
 padding-top:12px;
 }
 
@@ -2061,7 +2061,7 @@ display:block;
 }
 
 
-#notation-placeholder{
+.notation-placeholder {
 font-family: var(--abctools-ui-font-fallbacks);
 font-size:12pt;
 display:none;
@@ -2069,26 +2069,25 @@ width:850px;
 background-color:white;
 }
 
-#notation-placeholder-text{
+.notation-placeholder-text {
 margin-top: 64px;
 font-family: var(--abctools-ui-font-fallbacks);
 font-size:12pt;
 }
 
-#notation-placeholder-text-2{
+.notation-placeholder-text-2 {
 margin-top: 40px;
 font-family: var(--abctools-ui-font-fallbacks);
 font-size:12pt;
 }
 
-
-#desktop_use_message{
+.desktop_use_message {
 margin-top: 40px;
 font-family: var(--abctools-ui-font-fallbacks);
 font-size:12pt;
 }
 
-.notation-placeholder-button{
+.notation-placeholder-button {
 margin-top:40px;
 margin-left:0px;
 margin-right:0px;
@@ -2097,7 +2096,7 @@ opacity:1.0;
 
 /* Spinner */
 /* Overlay (dims the background) */
-#spinnerOverlay {
+.spinnerOverlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -2110,7 +2109,7 @@ opacity:1.0;
 }
 
 /* Container for spinner + label */
-#spinnerContainer {
+.spinnerContainer {
   position: absolute;
   top: 35%;
   left: 50%;
@@ -2120,7 +2119,7 @@ opacity:1.0;
 }
 
 /* Label above spinner */
-#spinnerLabel {
+.spinnerLabel {
   margin-bottom: 20px;
   font-size: 28px;
   font-weight: bold;
@@ -2129,14 +2128,14 @@ opacity:1.0;
   text-shadow: 0 0 8px rgba(0,0,0,0.8); /* optional glow for readability */
 }
 
-#loading-bar-spinner {
+.loading-bar-spinner {
   margin: 0 auto;
   animation: loading-bar-spinner 400ms linear infinite; 
   transform-origin: 50% 50%; /* ensure spin around its own center */
   display: inline-block;     /* keeps dimensions respected for centering */
 }
 
-#spinner-icon {
+.spinner-icon {
   width: 48px;   /* reduced size */
   height: 48px;
   border: solid 6px transparent; /* thinner border for smaller size */
@@ -2192,7 +2191,7 @@ margin-top: 12px;
 margin-bottom: 12px;
 }
 
-#fontholder{
+.fontholder{
 position:absolute; 
 left:-5000px;
 }
@@ -2265,14 +2264,14 @@ body.noui .hidden-print {
 		display: none !important;
 	}
 
-body.noui #app-container{
+body.noui .app-container {
 		width: 100% !important;
 		padding: 0px !important;
 		margin-left: 0% !important;
 		margin-right: 0% !important;
 	}
 
-body.noui #notation-container{
+body.noui .notation-container {
 		display: inline-block !important;
 		width: 95% !important;
  }
@@ -2338,14 +2337,14 @@ body.noui svg {
 /* Browser-based print optimizations */
 @media print {
 
-	#app-container{
+	.app-container {
 		width: 100% !important;
 		padding: 0px !important;
 		margin-left: 0% !important;
 		margin-right: 0% !important;
 	}
 
-	#notation-container{
+	.notation-container {
 		display: inline-block !important;
 		width: 95% !important;
  	}
@@ -4940,7 +4939,7 @@ padding-left:10px;
 margin-top:-7px;
 }
 
-.diagnostics{
+.diagnostics {
 display:none;
 width:826px;
 height:90px;
