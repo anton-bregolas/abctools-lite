@@ -51,7 +51,8 @@ var gStaffSpacing = STAFFSPACEOFFSET + STAFFSPACEDEFAULT;
 
 var gIsIOS = false;
 var gIsIPad = false;
-var giPadTwoColumn = false;
+// Lite: Customized (formerly giPadTwoColumn)
+var gAlwaysTwoColumns = false;
 var gIsIPhone = false;
 var gIsSafari = false;
 var gIsChrome = false;
@@ -254,6 +255,10 @@ var gInjectEditDisabled = false;
 // If true, never show the zoom button
 var gDisableEditFromPlayLink = false;
 
+// Lite: Customized (New setting: false by default)
+// Allow auto-scaling of maximized notation
+var gAutoScaleNotation = false;
+
 // Full screen view scaling (percentage)
 var gFullScreenScaling = 50;
 
@@ -357,7 +362,7 @@ var gUseComhaltasABC = false;
 var gForceComhaltasABC = false;
 
 // Zoom banner has been hidden
-// Lite: Customized (off by default)
+// Lite: Customized (change to always hidden)
 var gZoomBannerHidden = true;
 var gZoomBannerAlwaysHidden = true;
 
@@ -415,7 +420,7 @@ var gFeaturesShowExamples = true;
 var gFeaturesShowTemplates = true;
 var gFeaturesShowTablatures = true;
 var gFeaturesShowExplorers = true;
-var gFeaturesShowTabButtons = false; // Lite: Customized (false by default)
+var gFeaturesShowTabButtons = false; // Lite: Customized (change to false by default)
 var gFeaturesShowBagpipeDrones = true;
 
 // Force an update of local storage for the tab
@@ -11212,7 +11217,7 @@ function ExportPDF() {
         if (fname) {
 
           // Save off the image display size
-          gOriginalWidthBeforePDFExport = gTheNotation.style.width;
+          // gOriginalWidthBeforePDFExport = gTheNotation.style.width;
 
           // Fix the size for the PDF rendering
           gTheNotation.style.width = "850px";
@@ -11225,7 +11230,7 @@ function ExportPDF() {
       // Saving one PDF per tune
 
       // Save off the image display size
-      gOriginalWidthBeforePDFExport = gTheNotation.style.width;
+      // gOriginalWidthBeforePDFExport = gTheNotation.style.width;
 
       // Fix the size for the PDF rendering
       gTheNotation.style.width = "850px";
@@ -12305,7 +12310,8 @@ function ExportNotationPDF(title) {
           clearGetTuneByIndexCache();
 
           // Fix up any display width changes done for the PDF export
-          gTheNotation.style.width = gOriginalWidthBeforePDFExport;
+          // gTheNotation.style.width = gOriginalWidthBeforePDFExport;
+          gTheNotation.style.removeProperty("width");
 
           // Clean up a bit
           pdf = null;
@@ -12698,7 +12704,8 @@ function ExportNotationPDF(title) {
                       clearGetTuneByIndexCache();
 
                       // Fix up any display width changes done for the PDF export
-                      gTheNotation.style.width = gOriginalWidthBeforePDFExport;
+                      // gTheNotation.style.width = gOriginalWidthBeforePDFExport;
+                      gTheNotation.style.removeProperty("width");
 
                       Render(true, null);
 
@@ -12721,7 +12728,8 @@ function ExportNotationPDF(title) {
                     clearGetTuneByIndexCache();
 
                     // Fix up any display width changes done for the PDF export
-                    gTheNotation.style.width = gOriginalWidthBeforePDFExport;
+                    // gTheNotation.style.width = gOriginalWidthBeforePDFExport;
+                    gTheNotation.style.removeProperty("width");
 
                   }
                 }
@@ -13471,7 +13479,7 @@ function GetABCJSParams(instrument) {
 
 //
 // Update local storage
-// Lite: Customized (separate handling of button bars)
+// Lite: Customized (handle bottom button bars separately)
 //
 function UpdateLocalStorage() {
 
@@ -13524,9 +13532,9 @@ function UpdateLocalStorage() {
 
     var bottombar = gBottomBarShowing;
     if (!bottombar) {
-      localStorage.abcHideBottomBar = "true";
+      localStorage.abcLiteHideBottomBar = "true";
     } else {
-      localStorage.abcHideBottomBar = "false";
+      localStorage.abcLiteHideBottomBar = "false";
     }
 
     var showtabnames = gShowTabNames;
@@ -14755,7 +14763,10 @@ function RenderAsync(renderAll, tuneNumber, callback) {
   }
 
 }
+
 // Lite: Customized
+// Handle styles with CSS + data-attributes
+
 function Render(renderAll, tuneNumber) {
 
   // debugger;
@@ -14792,40 +14803,43 @@ function Render(renderAll, tuneNumber) {
     // If available, save all the app settings to local storage
     UpdateLocalStorage();
 
+    document.body.dataset.abc = "rendered";
+
     // Hide the notation placeholder
-    document.getElementById("notation-placeholder").style.display = "none";
+    // document.getElementById("notation-placeholder").style.display = "none";
+    // document.getElementById("notation-placeholder").style.removeProperty("display");
 
-		if (isDesktopBrowser()){
-			// Show the notation block
-			if (gIsMaximized) {
+		// if (isDesktopBrowser()) {
+		// 	// Show the notation block
+		// 	if (gIsMaximized) {
 
-				gTheNotation.style.display = "flex";
-				// Clear the notation column's alignment
-				gTheNotation.parentElement.style.removeProperty("align-items");
+		// 		gTheNotation.style.display = "flex";
+		// 		// Clear the notation column's alignment
+		// 		gTheNotation.parentElement.style.removeProperty("align-items");
 
-			} else {
+		// 	} else {
 
-				gTheNotation.style.display = "inline";
-				// Align the notation column to the left for two-column view
-				if (window.innerWidth >= 1798) gTheNotation.parentElement.style.alignItems = "flex-start";
-			}
-		}
-		else{
-			// Show the notation block
-			if (gIsMaximized) {
+		// 		gTheNotation.style.display = "inline";
+		// 		// Align the notation column to the left for two column view
+		// 		if (window.innerWidth >= 1798) gTheNotation.parentElement.style.alignItems = "flex-start";
+		// 	}
+		// }
+		// else{
+			// // Show the notation block
+			// if (gIsMaximized) {
 
-				gTheNotation.style.display = "flex";
-				// Clear the notation column's alignment
-				gTheNotation.parentElement.style.removeProperty("align-items");
+			// 	gTheNotation.style.display = "flex";
+			// 	// Clear the notation column's alignment
+			// 	gTheNotation.parentElement.style.removeProperty("align-items");
 			
-			} else {
+			// } else {
 				
-				gTheNotation.style.display = "block";
-				// Align the notation column to the left for two-column view
-				if (window.innerWidth >= 1798) gTheNotation.parentElement.style.alignItems = "flex-start";
-			}
+			// 	gTheNotation.style.display = "block";
+			// 	// Align the notation column to the left for two column view
+			// 	if (window.innerWidth >= 1798) gTheNotation.parentElement.style.alignItems = "flex-start";
+			// }
 
-    }
+    // }
 
     // Hide/Show the zoom control
     if (gDisableEditFromPlayLink) {
@@ -14869,12 +14883,19 @@ function Render(renderAll, tuneNumber) {
       HideJumpButton();
     }
 
-    // MAE 20 July 2024 - Avoid showing bottom bar if top bar hidden
-    if (gShowAllControls && gTopBarShowing) {
+    // Lite: Customized (handle Title Bar and Bottom Bar separately)
+    
+    // // MAE 20 July 2024 - Avoid showing bottom bar if top bar hidden
+    // if (gShowAllControls && gTopBarShowing) {
+    if (gShowAllControls) {
 
-      if (gBottomBarShowing) {
-        ShowBottomBar();
-      }
+      // if (gBottomBarShowing) {
+      //   ShowBottomBar();
+      // }
+
+      // Lite: Customized
+      // Show or hide bottom bar depending on last user preference
+      liteRestoreBottomBar();
 
       // Recalculate the notation top position first time the notation is rendered
       if (gIsFirstRender) {
@@ -14882,8 +14903,8 @@ function Render(renderAll, tuneNumber) {
         gIsFirstRender = false;
       }
 
-    } else {
-      HideBottomBar();
+    // } else {
+    //   HideBottomBar();
     }
 
     // Enable the save button
@@ -15048,9 +15069,13 @@ function Render(renderAll, tuneNumber) {
 
   } else {
 
+    document.body.dataset.abc = "noinput";
+
     // Hide all the buttons and notation
-    document.getElementById("notenrechts").style.display = "none";
-    gTheNotation.style.display = "none";
+    // document.getElementById("notenrechts").style.display = "none";
+    liteHideBottomBar();
+    // gTheNotation.style.display = "none";
+    // document.body.removeAttribute("data-share-link");
 
     // Disable the save button
     document.getElementById("saveabcfile").classList.remove("saveabcfile");
@@ -15110,7 +15135,7 @@ function Render(renderAll, tuneNumber) {
     gAllowCopy = false;
 
     // Show the notation placeholder
-    document.getElementById("notation-placeholder").style.display = "block";
+    // document.getElementById("notation-placeholder").style.display = "block";
 
     // Hide the zoom control
     document.getElementById("zoombutton").style.display = "none";
@@ -18187,7 +18212,7 @@ function AddFromSearch(e, callback) {
 
   var theWidth = 800;
 
-  if (giPadTwoColumn) {
+  if (gAlwaysTwoColumns) {
     theWidth = 900;
   }
 
@@ -21094,7 +21119,7 @@ function ScrollABCTextIntoView(cm, startIndex, endIndex, fraction) {
     textarea.scrollTop = Math.max(0, scrollHeight - textareaHeight / fraction);
 
     // Avoid lifting on-screen keyboard on iPad
-    //if (!giPadTwoColumn) {
+    //if (!gAlwaysTwoColumns) {
     textarea.setSelectionRange(startIndex, endIndex);
     //}    
   }
@@ -24664,7 +24689,7 @@ function NotationSpacingExplorer() {
   var theFileHeader = GetABCFileHeader();
 
   if (isDesktopBrowser()) {
-    if (giPadTwoColumn) {
+    if (gAlwaysTwoColumns) {
       if (isLandscapeOrientation()) {
         theWidth = windowWidth * (gPlayerScaling / 100);
       } else {
@@ -26434,12 +26459,13 @@ function SetAbcText(txt) {
 
 //
 // Toggle the control display
-// Lite: Customized
+// Lite: Customized (handle Title Bar and Bottom Bar separately)
+// Show or hide bottom bar depending on last user preference
 //
 
 function ShowAllControls() {
 
-  ShowBottomBar();
+  liteRestoreBottomBar();
 
   gShowAllControls = true;
 
@@ -26454,10 +26480,16 @@ function ShowAllControls() {
   }
 
 }
-// Lite: Customized
+
+//
+// Hide controls and recalculate position
+// Lite: Customized (handle Title Bar and Bottom Bar separately)
+// Hide bottom bar temporarily, keeping user preference
+//
+
 function HideAllControls() {
 
-  HideBottomBar();
+  liteHideBottomBar();
 
   gShowAllControls = false;
 
@@ -26470,7 +26502,6 @@ function HideAllControls() {
     MakeTuneVisible(true);
 
   }
-
 }
 
 //
@@ -26763,16 +26794,21 @@ function togglePresentationMode() {
 
 }
 
+//
 // Lite: Customized
+// Handle styles with CSS + data-attributes
+//
+
 function DoMaximize() {
 
   document.body.dataset.notation = "maximized";
+  document.body.removeAttribute("data-share-link");
 
-	document.getElementById("noscroller").style.display = "none";
-	document.getElementById("notation-spacer").style.display = "none";
-	gTheNotation.style.display = "flex";
+	// document.getElementById("noscroller").style.display = "none";
+	// document.getElementById("notation-spacer").style.display = "none";
+	// gTheNotation.style.display = "flex";
 	// Clear the notation column's alignment
-	gTheNotation.parentElement.style.removeProperty("align-items");
+	// gTheNotation.parentElement.style.removeProperty("align-items");
 
 	// gTheNotation.style.float = "none";
 
@@ -26818,22 +26854,28 @@ function DoMaximize() {
     HideJumpButton();
   }
 }
+
+//
 // Lite: Customized
+// Handle styles with CSS + data-attributes
+//
+
 function DoMinimize() {
 
   document.body.dataset.notation = "minimized";
+  document.body.removeAttribute("data-share-link");
 
-  document.getElementById("noscroller").style.display = "block";
-  document.getElementById("notation-spacer").style.display = "block";
+  // document.getElementById("noscroller").style.display = "block";
+  // document.getElementById("notation-spacer").style.display = "block";
 
 	document.getElementById("zoombutton").src = "img/zoomout.png"
 
 	// Clear the notation column's alignment
-	gTheNotation.parentElement.style.removeProperty("align-items");
+	// gTheNotation.parentElement.style.removeProperty("align-items");
 
-  if (giPadTwoColumn) {
-    var elem = document.getElementById("notation-holder").style.width = "850px";
-  }
+  // if (gAlwaysTwoColumns) {
+  //   var elem = document.getElementById("notation-holder").style.width = "850px";
+  // }
 
   if (!gIsQuickEditor) {
 
@@ -26861,12 +26903,12 @@ function DoMinimize() {
   }
 
 
-	if (isDesktopBrowser()){
-		gTheNotation.style.display = "inline";
-		// gTheNotation.style.float = "left";
-		// gTheNotation.style.marginLeft = gNotationLeftMarginBeforeMaximize;
+	// if (isDesktopBrowser() && gAlwaysTwoColumns) {
+	// 	gTheNotation.style.display = "inline";
+	// 	gTheNotation.style.float = "left";
+	// 	gTheNotation.style.marginLeft = gNotationLeftMarginBeforeMaximize;
 
-  }
+  // }
 
   gIsMaximized = false;
 
@@ -26880,20 +26922,21 @@ function DoMinimize() {
 
     // First time we minimize from a full screen share link or after a window resize while maximized, we need to grab the text box location params
     // Since they are not valid before the UI has been displayed
+    // Lite: Customized (let CodeMirror stretch to container width)
     if (gForceInitialTextBoxRecalc) {
 
-      if (giPadTwoColumn) {
+      if (gAlwaysTwoColumns) {
 
         if (gEnableSyntax){
           // Reset CodeMirror box symmetrical resize
           let wrapper = gTheCM.getWrapperElement();
-          wrapper.style.marginLeft = "0px";
-          wrapper.style.width = "832px";
+          wrapper.style.removeProperty("margin-left");
+          // wrapper.style.width = "832px";
           gTheCM.refresh();
         }
         else{
           // Reset text box symmetrical resize 
-          gTheABC.style.marginLeft = "0px";
+          gTheABC.style.removeProperty("margin-left");
           gTheABC.style.width = "832px";
         }
 
@@ -26927,21 +26970,22 @@ function DoMinimize() {
     }
 
     // If we minimize from a window resize while maximized, we need to reset the text box location params
+    // Lite: Customized (let CodeMirror stretch to container width)
     if (gGotWindowResizeWhileMaximized) {
 
       if (gEnableSyntax){
         let wrapper = gTheCM.getWrapperElement();
 
-        wrapper.style.width = gInitialTextBoxWidth + "px";
+        // wrapper.style.width = gInitialTextBoxWidth + "px";
 
-        wrapper.style.marginLeft = "0px";
+        wrapper.style.removeProperty("margin-left");
 
         gTheCM.refresh();
       }
       else{
         gTheABC.style.width = gInitialTextBoxWidth + "px";
 
-        gTheABC.style.marginLeft = "0px";
+        gTheABC.style.removeProperty("margin-left");
       }
 
       var elem = document.getElementById("notenlinks");
@@ -26994,6 +27038,10 @@ function DoMinimize() {
 
 }
 
+//
+// Lite: Customized
+// Handle styles with CSS + data-attributes
+//
 
 function ToggleMaximize() {
 
@@ -27001,36 +27049,32 @@ function ToggleMaximize() {
 
     DoMinimize();
 
-    if (isDesktopBrowser()) {
+    // if (isDesktopBrowser()) {
 
-      gTheNotation.style.width = "850px";
+      // gTheNotation.style.width = "850px";
 
 
-    } else {
+    // } else {
 
-      gTheNotation.style.width = "820px";
+    //   gTheNotation.style.width = "820px";
 
-    }
+    // }
 
   } else {
 
 		DoMaximize();
-    // ABC Tools Lite: TO DO
-    //
-		// NB: Buggy behavior, prevents notation from zooming properly
-		// Steps to reproduce: 
-		// 1. Zoom out to 2-column view with both notation and ABC open;
-		// 2. Press toggle button to close ABC editor
-		// 3. Try zooming in and out on notation - it's now bugged
 
     // 2 Jul 2024 - Moved this here to avoid binding error on Firefox at start
     document.getElementById("zoombutton").src = "img/zoomin.png"
 
+    // Lite: Customized
+    // Turn off default auto-scaling: prevents user from zooming in/out manually
+    // Add optional auto-scale setting & CSS styles + data-attribute
 
-    if (isDesktopBrowser()) {
+    // if (isDesktopBrowser()) {
 
-      if (giPadTwoColumn) {
-        document.getElementById("notation-holder").style.width = "80%";
+    //   if (gAlwaysTwoColumns) {
+    //     document.getElementById("notation-holder").style.width = "80%";
       // } else {
 
       //   // Scale the full screen up a bit if it makes sense
@@ -27041,8 +27085,8 @@ function ToggleMaximize() {
       //     gTheNotation.style.width = gFullScreenScaling + "%";
 
       //   }
-      }
-    } else {
+      // }
+    // } else {
 
       // // Scale the full screen up a bit if it makes sense
       // var windowWidth = window.innerWidth;
@@ -27053,7 +27097,7 @@ function ToggleMaximize() {
 
       // }
 
-    }
+    // }
 
   }
 
@@ -27498,8 +27542,9 @@ function processShareLink() {
     gDisplayedName = theName;
 
     // Hide the controls if coming in from a share link
-    document.getElementById("notenrechts").style.display = "none";
-
+    // document.getElementById("notenrechts").style.display = "none";
+    // document.getElementById("notenrechts").style.removeProperty("display");
+    liteHideBottomBar();
     // Recalculate the notation top position
     UpdateNotationTopPosition();
 
@@ -27577,28 +27622,32 @@ function processShareLink() {
 
     });
 
-    if (isDesktopBrowser()) {
+    // Lite: Customized
+    // Turn off default auto-scaling: prevents user from zooming in/out manually
+    // Add optional auto-scale setting & CSS styles + data-attribute
+
+    // if (isDesktopBrowser()) {
 
       // Scale the full screen up a bit if it makes sense
-      var windowWidth = window.innerWidth;
+      // var windowWidth = window.innerWidth;
 
-      if (((windowWidth * gFullScreenScaling) / 100.0) > 850) {
+      // if (((windowWidth * gFullScreenScaling) / 100.0) > 850) {
 
-        gTheNotation.style.width = gFullScreenScaling + "%";
+      //   gTheNotation.style.width = gFullScreenScaling + "%";
 
-      }
-    } else {
+      // }
+    // } else {
 
-      // Scale the full screen up a bit if it makes sense
-      var windowWidth = window.innerWidth;
+    //   // Scale the full screen up a bit if it makes sense
+    //   var windowWidth = window.innerWidth;
 
-      if (((windowWidth * gFullScreenScaling) / 100.0) > 820) {
+    //   if (((windowWidth * gFullScreenScaling) / 100.0) > 820) {
 
-        gTheNotation.style.width = gFullScreenScaling + "%";
+    //     gTheNotation.style.width = gFullScreenScaling + "%";
 
-      }
+    //   }
 
-    }
+    // }
 
     return true;
 
@@ -33578,7 +33627,7 @@ function ExportImageDialog(theABC, callback, val, metronome_state) {
 
     if (isDesktopBrowser()) {
 
-      if (giPadTwoColumn) {
+      if (gAlwaysTwoColumns) {
         if (isLandscapeOrientation()) {
           theWidth = windowWidth * (gPlayerScaling / 100);
         } else {
@@ -37490,7 +37539,7 @@ function PlayABCDialog(theABC, callback, val, metronome_state) {
 
     if (isDesktopBrowser()) {
 
-      if (giPadTwoColumn) {
+      if (gAlwaysTwoColumns) {
         if (isLandscapeOrientation()) {
           theWidth = windowWidth * (gPlayerScaling / 100);
         } else {
@@ -39791,7 +39840,7 @@ function SwingExplorerDialog(theOriginalABC, theProcessedABC, swing_explorer_sta
 
     if (isDesktopBrowser()) {
 
-      if (giPadTwoColumn) {
+      if (gAlwaysTwoColumns) {
         if (isLandscapeOrientation()) {
           theWidth = windowWidth * (gPlayerScaling / 100);
         } else {
@@ -40604,7 +40653,7 @@ function ReverbExplorerDialog(theOriginalABC, theProcessedABC, reverb_explorer_s
 
     if (isDesktopBrowser()) {
 
-      if (giPadTwoColumn) {
+      if (gAlwaysTwoColumns) {
         if (isLandscapeOrientation()) {
           theWidth = windowWidth * (gPlayerScaling / 100);
         } else {
@@ -41966,7 +42015,7 @@ function InstrumentExplorerDialog(theOriginalABC, theProcessedABC, instrument_ex
 
     if (isDesktopBrowser()) {
 
-      if (giPadTwoColumn) {
+      if (gAlwaysTwoColumns) {
         if (isLandscapeOrientation()) {
           theWidth = windowWidth * (gPlayerScaling / 100);
         } else {
@@ -42642,7 +42691,7 @@ function GraceExplorerDialog(theOriginalABC, theProcessedABC, grace_explorer_sta
 
     if (isDesktopBrowser()) {
 
-      if (giPadTwoColumn) {
+      if (gAlwaysTwoColumns) {
         if (isLandscapeOrientation()) {
           theWidth = windowWidth * (gPlayerScaling / 100);
         } else {
@@ -43498,7 +43547,7 @@ function RollExplorerDialog(theOriginalABC, theProcessedABC, roll_explorer_state
 
     if (isDesktopBrowser()) {
 
-      if (giPadTwoColumn) {
+      if (gAlwaysTwoColumns) {
         if (isLandscapeOrientation()) {
           theWidth = windowWidth * 0.6;
         } else {
@@ -44542,7 +44591,7 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
 
       theWidth = windowWidth * (gPlayerScaling / 100);
 
-      if (giPadTwoColumn) {
+      if (gAlwaysTwoColumns) {
         if (isLandscapeOrientation()) {
           theWidth = windowWidth * (gPlayerScaling / 100);
         } else {
@@ -45332,6 +45381,13 @@ function GetInitialConfigurationSettings() {
     gInjectTab_UseBarForDraw = false;
   }
 
+  // Lite: Customized
+  gAutoScaleNotation = false;
+  val = localStorage.abcLiteAutoScaleNotation;
+  if (val) {
+    gAutoScaleNotation = (val == "true");
+  }
+
   // Default to 50% full screen scaling
   val = localStorage.FullScreenScaling;
   if (val) {
@@ -46070,7 +46126,7 @@ function GetInitialConfigurationSettings() {
   if (val) {
     gFeaturesShowBagpipeDrones = (val == "true");
   }
-  // Lite: Customized (false by default)
+  // Lite: Customized (change to false by default)
   gFeaturesShowTabButtons = false;
   val = localStorage.FeaturesShowTabButtons;
   if (val) {
@@ -46184,17 +46240,17 @@ function GetInitialConfigurationSettings() {
     gAllowOfflineInstruments = (val == "true");
   }
 
-  // Two column display for iPad
-  giPadTwoColumn = false;
-  val = localStorage.iPadTwoColumn;
+  // Persistent two column mode
+  gAlwaysTwoColumns = false;
+  val = localStorage.AlwaysTwoColumns;
   if (val) {
-    giPadTwoColumn = (val == "true");
+    gAlwaysTwoColumns = (val == "true");
   } else {
-    giPadTwoColumn = false;
+    gAlwaysTwoColumns = false;
   }
 
-  // Force large controls for iPad two-column
-  if (giPadTwoColumn) {
+  // Force large controls for two column mode
+  if (gAlwaysTwoColumns) {
     gLargePlayerControls = true;
   }
 
@@ -46535,6 +46591,9 @@ function SaveConfigurationSettings() {
     localStorage.InjectTab_DrawGlyph = gInjectTab_DrawGlyph;
     localStorage.InjectTab_UseBarForDraw = gInjectTab_UseBarForDraw;
 
+    // Allow auto-scaling of maximized notation
+    localStorage.abcLiteAutoScaleNotation = gAutoScaleNotation;
+    
     // Fullscreen scaling
     localStorage.FullScreenScaling = gFullScreenScaling;
 
@@ -46733,8 +46792,8 @@ function SaveConfigurationSettings() {
     // Clean Smart Quotes
     localStorage.CleanSmartQuotes = gCleanSmartQuotes;
 
-    // iPad two column display
-    localStorage.iPadTwoColumn = giPadTwoColumn;
+    // Persistent two column display
+    localStorage.AlwaysTwoColumns = gAlwaysTwoColumns;
 
     // Player scaling
     localStorage.PlayerScaling = gPlayerScaling;
@@ -51414,7 +51473,7 @@ function ConfigureToolSettings() {
 
   var theOldForceComhaltas = gForceComhaltasABC;
 
-  var oldiPadTwoColumn = giPadTwoColumn;
+  var oldAlwaysTwoColumns = gAlwaysTwoColumns;
 
   var oldRecorderTab = gShowRecorderTab;
 
@@ -51434,6 +51493,7 @@ function ConfigureToolSettings() {
     configure_show_tab_names: gShowTabNames,
     configure_use_custom_gm_sounds: gUseCustomGMSounds,
     configure_open_links_in_trainer: gOpenLinksInTrainer,
+    configure_auto_scale_notation: gAutoScaleNotation, // Lite: Customized (new setting: off by default)
     configure_auto_swing_hornpipes: gAutoSwingHornpipes,
     configure_auto_swing_factor: gAutoSwingFactor,
     configure_allow_midi_input: gAllowMIDIInput,
@@ -51446,7 +51506,7 @@ function ConfigureToolSettings() {
     configure_comhaltas: gUseComhaltasABC,
     configure_RollUseRollForIrishRoll: gRollUseRollForIrishRoll,
     configure_allow_offline_instruments: gAllowOfflineInstruments,
-    configure_ipad_two_column: giPadTwoColumn,
+    configure_always_two_columns: gAlwaysTwoColumns, // Lite: Customized (formerly giPadTwoColumn)
     configure_player_scaling: gPlayerScaling,
     configure_syntax_highlighting:gEnableSyntax,
     configure_syntax_highlighting_dark:gSyntaxDarkMode,
@@ -51457,10 +51517,14 @@ function ConfigureToolSettings() {
   }, ];
 
   // Only show batch export delays on desktop
-  if (gIsIPad) {
+
+  // Lite: Customized
+  // Allow using two column display mode for all devices
+  // if (gIsIPad) {
+  if (!isPureDesktopBrowser()) {
     form.push({
-      name: "    iPad Side-by-Side view (similar to desktop)",
-      id: "configure_ipad_two_column",
+      name: "    Use fixed two-column view for devices (formerly iPad Side-by-Side)",
+      id: "configure_always_two_columns",
       type: "checkbox",
       cssClass: "configure_settings_form_text_checkbox"
     });
@@ -51499,6 +51563,11 @@ function ConfigureToolSettings() {
   }, {
     name: "          Show instrument tablature button bar below ABC editor",
     id: "configure_show_tab_buttons",
+    type: "checkbox",
+    cssClass: "configure_settings_form_text_checkbox"
+  }, {
+    name: "          Allow auto-scaling of maximized notation (prevents manual zooming)",
+    id: "configure_auto_scale_notation",
     type: "checkbox",
     cssClass: "configure_settings_form_text_checkbox"
   }, ]);
@@ -51675,11 +51744,23 @@ function ConfigureToolSettings() {
 
       }
 
-      if (gIsIPad) {
+      // Lite: Customized
+      // Allow using two column display mode for all devices
+      // if (gIsIPad) {
+      if (!isPureDesktopBrowser()) {
+        // Two column display?
+        gAlwaysTwoColumns = args.result.configure_always_two_columns;
+      }
 
-        // Two column display for iPad?
-        giPadTwoColumn = args.result.configure_ipad_two_column;
+      // Lite: Customized
+      // Allow auto-scaling of maximized notation?
 
+      gAutoScaleNotation = args.result.configure_auto_scale_notation;
+
+      if (gAutoScaleNotation) {
+        setAutoScaleNotation();
+      } else if (isAutoScaleNotationApplied()) {
+        resetAutoScaleNotation();
       }
 
       // Sanity check the player scaling
@@ -51918,18 +51999,21 @@ function ConfigureToolSettings() {
 
       }
 
-      if (gIsIPad) {
+      // Lite: Customized
+      // Allow using two column display mode for all devices
+      // if (gIsIPad) {
+      if (!isPureDesktopBrowser()) {
 
-        // If changing the display mode on iPad, force large player controls
-        if (oldiPadTwoColumn != giPadTwoColumn) {
+        // If changing the display mode on a device, force large player controls
+        if (oldAlwaysTwoColumns != gAlwaysTwoColumns) {
 
-          if (giPadTwoColumn) {
+          if (gAlwaysTwoColumns) {
             gLargePlayerControls = true;
-            sendGoogleAnalytics("action", "iPad_Two_Column");
+            sendGoogleAnalytics("action", "Always_Two_Columns");
           } else {
 
             gLargePlayerControls = false;
-            sendGoogleAnalytics("action", "iPad_One_Column");
+            // sendGoogleAnalytics("action", "iPad_One_Column");
           }
 
         }
@@ -51960,14 +52044,17 @@ function ConfigureToolSettings() {
       // Update local storage
       SaveConfigurationSettings();
 
-      if (gIsIPad) {
+      // Lite: Customized
+      // Allow using two column display mode for all devices
+      // if (gIsIPad) {
+      if (!isPureDesktopBrowser()) {
 
-        // If changing the display mode on iPad, let the user know about restarting the tool
-        if (oldiPadTwoColumn != giPadTwoColumn) {
+        // If changing to / from Always Two Columns mode, let the user know about restarting the tool
+        if (oldAlwaysTwoColumns != gAlwaysTwoColumns) {
 
           var thePrompt;
 
-          if (giPadTwoColumn) {
+          if (gAlwaysTwoColumns) {
             thePrompt = "The tool will restart to switch to two-column display.";
           } else {
             thePrompt = "The tool will restart to switch to single-column display.";
@@ -53014,7 +53101,7 @@ function DoFileRead(file, callback) {
 
 //
 // Toggle the top bar
-// Lite: Customized
+// Lite: Customized (Handle Title Bar separately)
 //
 
 function ShowTopBar() {
@@ -53041,13 +53128,16 @@ function ShowTopBar() {
   // abcStatusBar.style.marginBottom = "1px";
 
   // Also shows the controls if allowed
-  if (gAllowControlToggle) {
-    ShowAllControls();
-  }
-
-
+  // if (gAllowControlToggle) {
+  //   ShowAllControls();
+  // }
 }
-// Lite: Customized
+
+//
+// Hide the top bar
+// Lite: Customized (Handle Title Bar separately)
+//
+
 function HideTopBar() {
 
   var elem = document.getElementById("topbar");
@@ -53078,14 +53168,17 @@ function HideTopBar() {
   // }
 
   // Also hides the controls
-  if (gAllowControlToggle) {
-    HideAllControls();
-  }
-
+  // if (gAllowControlToggle) {
+  //   HideAllControls();
+  // }
 }
 
-function ToggleTopBar() {
+//
+// Toggle the top bar
+// Lite: Customized (Handle Title Bar separately)
+//
 
+function ToggleTopBar() {
 
   if (gTopBarShowing) {
 
@@ -53114,14 +53207,18 @@ function ToggleTopBar() {
 
 //
 // Toggle the bottom bar
-// Lite: Customized
+// Lite: Customized (handle Bottom Bar separately)
+// Handle styles and localStorage separately
+// Store user preference (UI triggered manually)
 //
 
 function ShowBottomBar() {
 
-  var elem = document.getElementById("notenrechts");
+  // var elem = document.getElementById("notenrechts");
 
-  elem.style.display = "inline-block";
+  // elem.style.display = "inline-block";
+
+  liteShowBottomBar();
 
   gBottomBarShowing = true;
 
@@ -53129,9 +53226,11 @@ function ShowBottomBar() {
 
 function HideBottomBar() {
 
-  var elem = document.getElementById("notenrechts");
+  // var elem = document.getElementById("notenrechts");
 
-  elem.style.display = "none";
+  // elem.style.display = "none";
+
+  liteHideBottomBar();
 
   gBottomBarShowing = false;
 
@@ -53221,6 +53320,14 @@ function isFirstRun() {
     var theHideTopBar = localStorage.abcHideTopBar;
 
     if (theHideTopBar) {
+
+      return false;
+    }
+
+    // Bottom bar
+    var theHideBottomBar = localStorage.abcLiteHideBottomBar;
+
+    if (theHideBottomBar) {
 
       return false;
     }
@@ -53351,12 +53458,23 @@ function restoreStateFromLocalStorage() {
     if (theHideTopBar == "true") {
 
       HideTopBar();
+    }
+  }
 
+  // Bottom bar
+  var theHideBottomBar = localStorage.abcLiteHideBottomBar;
+
+  if (theHideBottomBar) {
+
+    if (theHideBottomBar === "true") {
+
+      // HideBottomBar();
+      gBottomBarShowing = false;
     }
   }
 
   // If first time, show a welcome message
-  // Lite: Customized
+  // Lite: Customized (disable auto-display of vanilla welcome screen to prevent frame blocking in embedded Tools)
   if (gIsFirstRun) {
 
     UpdateLocalStorage();
@@ -53770,7 +53888,7 @@ function HandleWindowResize() {
 				// elem.style.marginLeft = marginLeft+"px";
 
 				// Clear the notation column's alignment
-				gTheNotation.parentElement.style.removeProperty("align-items");
+				// gTheNotation.parentElement.style.removeProperty("align-items");
 
         // Reset the number of rows in the ABC editor
         // Lite: Customized 12 -> 13 to suit larger fonts
@@ -53802,10 +53920,10 @@ function HandleWindowResize() {
 
         // Two column display
 
-        var elem = document.getElementById("app-container");
+        // var elem = document.getElementById("app-container");
 
 				// Align the notation column to the left
-				gTheNotation.parentElement.style.alignItems = "flex-start";
+				// gTheNotation.parentElement.style.alignItems = "flex-start";
 
 				// var marginLeft = (windowWidth - 1700)/2;
 				
@@ -53813,8 +53931,8 @@ function HandleWindowResize() {
 
         gIsOneColumn = false;
 
-        // Fix odd display after rotation on iPad
-        if (giPadTwoColumn) {
+        // Fix odd display after rotation on iPad / device in two-column mode
+        if (gAlwaysTwoColumns) {
 
           if (!isLandscapeOrientation()) {
             windowHeight -= 200;
@@ -53870,7 +53988,7 @@ function HandleWindowResize() {
         }
       }
 
-      if (giPadTwoColumn) {
+      if (gAlwaysTwoColumns) {
 
         var iconSize;
         var iconOffset;
@@ -53955,7 +54073,7 @@ function HandleWindowResize() {
 			
 			// elem.style.marginLeft = "0px";
 
-      if (giPadTwoColumn) {
+      if (gAlwaysTwoColumns) {
 
         var iconSize;
         var iconOffset;
@@ -54942,7 +55060,7 @@ function ResizeTextBox() {
 
     // console.log("theOffset = "+theOffset);
 
-    if ((currentWidth > gInitialTextBoxContainerWidth) && (!giPadTwoColumn)) {
+    if ((currentWidth > gInitialTextBoxContainerWidth) && (!gAlwaysTwoColumns)) {
 
       // console.log("Setting the marginLeft for stretch");
 
@@ -54998,11 +55116,11 @@ function ResizeTextBox() {
         // console.log("Setting the marginLeft to 0px");
         let wrapper = gTheCM.getWrapperElement();
 
-        wrapper.style.marginLeft = "0px";
+        wrapper.style.removeProperty("margin-left");
         gTheCM.refresh();
       }
       else{
-        gTheABC.style.marginLeft = "0px";
+        gTheABC.style.removeProperty("margin-left");
       }
 
       // Reset the notation left margin
@@ -55389,11 +55507,11 @@ function isMac() {
 
 //
 // Returns true if on desktop, not mobile
-// Two column iPad is treated mostly like desktop for many features
+// Two column mode is treated mostly like desktop for many features
 //
 function isDesktopBrowser() {
 
-  if (giPadTwoColumn) {
+  if (gAlwaysTwoColumns) {
     return true;
   }
 
@@ -55410,7 +55528,7 @@ function isMobileBrowser() {
 
 }
 // 
-// Returns true if it's really a desktop browser and not a two-column iPad
+// Returns true if it's really a desktop browser and not a device in two column mode
 //
 function isPureDesktopBrowser() {
 
@@ -58530,7 +58648,7 @@ function NormalizeVoiceKeySignatures(){
 }
 
 // Open the standard editor in the same window
-// Lite: Customized (open editor in the same tab: expected app behavior)
+// Lite: Customized (open editor in the same tab: app-like behavior)
 function LaunchStandardEditor() {
   var url = "abctools.html";
   // window.open(url, '_blank');
@@ -58538,14 +58656,14 @@ function LaunchStandardEditor() {
 }
 
 // Open the User Guide in a new tab
-// Lite: Customized (open User Guide online)
+// Lite: Customized (open User Guide in a new tab online)
 function LaunchEditorHelp() {
   var url = "https://michaeleskin.com/abctools/userguide.html";
   window.open(url, '_blank');
 }
 
 // Open the quick editor in the same window
-// Lite: Customized (open editor in the same tab: expected app behavior)
+// Lite: Customized (open editor in the same tab: app-like behavior)
 function LaunchQuickEditor() {
   var url = "abctools-quick-editor.html";
   // window.open(url, '_blank');
@@ -58610,7 +58728,7 @@ function DoVersionCheck() {
 
 //
 // Setup context menu
-// Lite: Customized (separate handling of button toolbars)
+// Lite: Customized (handle bottom button bars separately)
 
 function SetupContextMenu(showUpdateItem) {
 
@@ -58702,7 +58820,7 @@ function SetupContextMenu(showUpdateItem) {
               ImportPDF_CSV_Website();
             }
           }, {}, {
-            name: 'Toggle Top/Bottom Toolbars',
+            name: 'Toggle Compact Mode',
             fn: function(target) {
               ToggleTopBar();
             }
@@ -58898,7 +59016,7 @@ function SetupContextMenu(showUpdateItem) {
             ImportPDF_CSV_Website();
           }
         }, {}, {
-          name: 'Toggle Top/Bottom Toolbars',
+          name: 'Toggle Compact Mode',
           fn: function(target) {
             ToggleTopBar();
           }
@@ -59038,7 +59156,7 @@ function SetupContextMenu(showUpdateItem) {
               ImportPDF_CSV_Website();
             }
           }, {}, {
-            name: 'Toggle Top/Bottom Toolbars',
+            name: 'Toggle Compact Mode',
             fn: function(target) {
               ToggleTopBar();
             }
@@ -59232,7 +59350,7 @@ function SetupContextMenu(showUpdateItem) {
             ImportPDF_CSV_Website();
           }
         }, {}, {
-          name: 'Toggle Top/Bottom Toolbars',
+          name: 'Toggle Compact Mode',
           fn: function(target) {
             ToggleTopBar();
           }
@@ -59364,7 +59482,7 @@ function SetupContextMenu(showUpdateItem) {
           ImportPDF_CSV_Website();
         }
       }, {}, {
-        name: 'Toggle Top/Bottom Toolbars',
+        name: 'Toggle Compact Mode',
         fn: function(target) {
           ToggleTopBar();
         }
@@ -59494,7 +59612,7 @@ function SetupContextMenu(showUpdateItem) {
           ImportPDF_CSV_Website();
         }
       }, {}, {
-        name: 'Toggle Top/Bottom Toolbars',
+        name: 'Toggle Compact Mode',
         fn: function(target) {
           ToggleTopBar();
         }
@@ -59562,7 +59680,7 @@ function SetTopButtonMargins() {
 
     }
 
-    if (giPadTwoColumn) {
+    if (gAlwaysTwoColumns) {
 
       theMargin = 32;
 
@@ -59596,7 +59714,7 @@ function SetTopButtonMargins() {
 
     }
 
-    if (giPadTwoColumn) {
+    if (gAlwaysTwoColumns) {
 
       theMargin = 22;
 
@@ -59665,6 +59783,7 @@ function DoStartup() {
   gIncludePageLinks = true;
   gDoForcePDFFilename = false;
   gForcePDFFilename = "";
+  gAutoScaleNotation = false;
   gFullScreenScaling = 50;
   gIsDirty = false;
   gForceComhaltasABC = false;
@@ -59772,11 +59891,11 @@ function DoStartup() {
   //
   // Uncomment these lines as desired for mobile simulation testing
   //
-  //gIsAndroid = true;
-  //gIsIOS = true; 
-  //gIsIPhone = true;  
-  //gIsIPad = true;
-  //giPadTwoColumn = true;  
+  // gIsAndroid = true;
+  // gIsIOS = true;
+  // gIsIPhone = true;
+  // gIsIPad = true;
+  // gAlwaysTwoColumns = true;
 
   // Set the placeholder before creating the CodeMirror
   if (!isPureDesktopBrowser()){
@@ -59831,16 +59950,16 @@ function DoStartup() {
 
   if (gLocalStorageAvailable) {
 
-    // Two column display for iPad
-    var val = localStorage.iPadTwoColumn;
+    // Two column display
+    var val = localStorage.AlwaysTwoColumns;
 
     if (val) {
-      giPadTwoColumn = (val == "true");
+      gAlwaysTwoColumns = (val == "true");
     } else {
-      giPadTwoColumn = false;
+      gAlwaysTwoColumns = false;
     }
-    // Force large controls for iPad two-column
-    if (giPadTwoColumn) {
+    // Force large controls for two column mode
+    if (gAlwaysTwoColumns) {
       gLargePlayerControls = true;
     }
 
@@ -59853,7 +59972,7 @@ function DoStartup() {
         gIsAndroid = true;
         gIsIOS = false;
         gIsIPad = false;
-        giPadTwoColumn = false
+        gAlwaysTwoColumns = false
       } else {
         gForceAndroid = false;
       }
@@ -59868,7 +59987,7 @@ function DoStartup() {
         gIsAndroid = false;
         gIsIOS = false;
         gIsIPad = false;
-        giPadTwoColumn = false
+        gAlwaysTwoColumns = false
       } else {
         gDisableAndroid = false;
       }
@@ -59879,51 +59998,54 @@ function DoStartup() {
   //
   // iOS and Android styling adaptation
   //
-  // Single column stacked blocks
+  // Single column stacked blocks by default
+  // Optional fixed two column mode for all devices
   //
-  if (isMobileBrowser()) {
+  if (isMobileBrowser() || gAlwaysTwoColumns) {
 
     // Add little extra room at the top
     var elem = document.getElementById("notenlinks");
     elem.style.paddingTop = "20px";
 
-    if (giPadTwoColumn) {
+    if (gAlwaysTwoColumns) {
 
       // Reset the viewport to avoid scaling
       var viewport = document.querySelector("meta[name=viewport]");
       viewport.setAttribute("content", "width=1800,maximum-scale=1.0,user-scalable=0");
 
-      // Hide the Highlighting button
-      elem = document.getElementById("rawmodebutton");
-      elem.style.display = "none";
+      document.body.dataset.mode = "always-two-columns";
 
-      // Resize the notation placeholder
-      elem = document.getElementById("notation-placeholder");
-      elem.style.width = "860px";
+      // // Hide the Highlighting button
+      // elem = document.getElementById("rawmodebutton");
+      // elem.style.display = "none";
 
-      // Resize the UI div
-      elem = document.getElementById("noscroller");
-      elem.style.width = "860px";
+      // // Resize the notation placeholder
+      // elem = document.getElementById("notation-placeholder");
+      // elem.style.width = "860px";
 
-      // Resize the notation div
-      elem = gTheNotation;
-      elem.style.width = "860px";
+      // // Resize the UI div
+      // elem = document.getElementById("noscroller");
+      // elem.style.width = "860px";
 
-      // Resize the notation spacer
-      elem = document.getElementById("notation-spacer");
-      elem.style.width = "860px";
+      // // Resize the notation div
+      // elem = gTheNotation;
+      // elem.style.width = "860px";
 
-      // Resize the UI overlay
-      elem = document.getElementById("uioverlay");
-      elem.style.width = "860px";
+      // // Resize the notation spacer
+      // elem = document.getElementById("notation-spacer");
+      // elem.style.width = "860px";
 
-      // Resize the diagnostics
-      elem = document.getElementById("diagnostics");
-      elem.style.width = "836px";
+      // // Resize the UI overlay
+      // elem = document.getElementById("uioverlay");
+      // elem.style.width = "860px";
 
-      // Change the primary control display
-      elem = document.getElementById("transpose-controls");
-      elem.style.display = "inline-block";
+      // // Resize the diagnostics
+      // elem = document.getElementById("diagnostics");
+      // elem.style.width = "836px";
+
+      // // Change the primary control display
+      // elem = document.getElementById("transpose-controls");
+      // elem.style.display = "inline-block";
 
       // Disallow pinch-to-zoom
       document.addEventListener('touchstart', function(event) {
@@ -60045,14 +60167,14 @@ function DoStartup() {
 
   }
 
-  // On iPad, resize the zoom button
-  if (gIsIPad) {
+  // On iPad or in Two column display, resize the zoom button
+  if (gIsIPad || gAlwaysTwoColumns) {
 
     var iconSize = "36px";
     var iconOffset = "8px";
     var offset = 8;
 
-    if (giPadTwoColumn) {
+    if (gAlwaysTwoColumns) {
       iconSize = "54px";
       iconOffset = "16px";
       offset = 16;
@@ -60427,13 +60549,24 @@ function DoStartup() {
 
   gForceInitialTextBoxRecalc = isFromShare;
 
+  // Lite: Customized
+  // Add notation auto-scaling data if setting enabled
+  if (gAutoScaleNotation) {
+
+    setAutoScaleNotation();
+  }
+
   // Not from a share, show the UI
+  // Lite: Customized
+  // Start with default styles for empty ABC editor
   if (!isFromShare) {
+
+    document.body.dataset.abc = "noinput";
 
     DoMinimize();
 
     // Show the notation placeholder
-    document.getElementById("notation-placeholder").style.display = "block";
+    // document.getElementById("notation-placeholder").style.display = "block";
 
     // Update the application state from local storage if available
     restoreStateFromLocalStorage();
@@ -60442,6 +60575,10 @@ function DoStartup() {
     sendGoogleAnalytics("start", "no_share");
 
   } else {
+
+    // Start with ABC-from-share-link styles
+
+    document.body.dataset.shareLink = "true";
 
     if (!gIsQuickEditor) {
 
@@ -60468,10 +60605,13 @@ function DoStartup() {
     }
 
     // Update only the application PDF state from local storage if available
-    restorePDFStateFromLocalStorage();
+    // restorePDFStateFromLocalStorage();
 
-    // Save the state in the share link to local storage
-    UpdateLocalStorage();
+    // // Save the state in the share link to local storage
+    // UpdateLocalStorage();
+
+    // Update the application state from local storage if available
+    restoreStateFromLocalStorage();
 
     // Keep track of raw editor runs
     sendGoogleAnalytics("start", "from_share");
@@ -60501,13 +60641,14 @@ function DoStartup() {
     if (gEnableSyntax){
       let wrapper = gTheCM.getWrapperElement();
 
+      // Lite: Customized (allow CodeMirror to stetch to container width)
       // Setup text box symmetrical resize 
-      if (giPadTwoColumn) {
-        // iPad two column is always fixed width
-        gInitialTextBoxWidth = 832;
+      if (gAlwaysTwoColumns) {
+        // two column mode is always fixed width
+        // gInitialTextBoxWidth = 832;
 
-        wrapper.style.marginLeft = 0 + "px";
-        wrapper.style.width = gInitialTextBoxWidth + "px";
+        wrapper.style.removeProperty("margin-left");
+        // wrapper.style.width = gInitialTextBoxWidth + "px";
         gTheCM.refresh();
 
 
@@ -60517,10 +60658,10 @@ function DoStartup() {
     }
     else{
       // Setup text box symmetrical resize 
-      if (giPadTwoColumn) {
-        // iPad two column is always fixed width
+      if (gAlwaysTwoColumns) {
+        // two column mode is always fixed width
         gInitialTextBoxWidth = 832;
-        gTheABC.style.marginLeft = 0 + "px";
+        gTheABC.style.removeProperty("margin-left");
         gTheABC.style.width = gInitialTextBoxWidth + "px";
 
       } else {
@@ -60554,18 +60695,18 @@ function DoStartup() {
       HandleWindowResize();
 
       if (!gIsMaximized) {
-
+        // Lite: Customized (allow CodeMirror to stetch to container width)
         if (gEnableSyntax){
           let wrapper = gTheCM.getWrapperElement();
 
           // Reset text box symmetrical resize 
-          wrapper.style.marginLeft = 0 + "px";
-          wrapper.style.width = gInitialTextBoxWidth + "px";
+          wrapper.style.removeProperty("margin-left");
+          // wrapper.style.width = gInitialTextBoxWidth + "px";
           gTheCM.refresh();
         }
         else{
           // Reset text box symmetrical resize 
-          gTheABC.style.marginLeft = 0 + "px";
+          gTheABC.style.removeProperty("margin-left");
           gTheABC.style.width = gInitialTextBoxWidth + "px";
 
         }
@@ -60612,7 +60753,8 @@ function DoStartup() {
 
 
   if (!isFromShare) {
-    document.getElementById("notenrechts").style.display = "none";
+    // document.getElementById("notenrechts").style.display = "none";
+    liteHideBottomBar();
     gAllowControlToggle = false;
   }
 
@@ -61147,8 +61289,8 @@ function DoStartup() {
   window.addEventListener('online', doOnlineCheck);
   window.addEventListener('offline', doOnlineCheck);
 
-  // Fix up the div sizes on iPad two column if coming in from a share
-  if (isFromShare && giPadTwoColumn && (!gOpenInEditor)) {
+  // Fix up the div sizes on two column mode if coming in from a share
+  if (isFromShare && gAlwaysTwoColumns && (!gOpenInEditor)) {
     gIsMaximized = false;
     ToggleMaximize();
   }

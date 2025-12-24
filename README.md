@@ -1,5 +1,51 @@
+# ABC Tools Lite
+
+**ABC Tools Lite** is a lightweight fork of ABC Transcription Tools developed by [Anton Zille](https://github.com/anton-bregolas/). This version of the Tools aims to improve cross-platform experience for mobile, tablet and desktop users and minimize the device storage space taken up on startup while retaining key offline functionality of the original Michael Eskin app. It features a custom work-in-progress restyle of the Tools' user interface.
+
+ABC Tools Lite is the default notation editor of the [NS Session Setlist](https://ns.tunebook.app/) app at the Novi Sad Irish traditional music session ([GitHub Source](https://github.com/anton-bregolas/NS-Session-Setlist)).
+
+🎵 [**LITE APP LINK**](https://abc.tunebook.app/) 🎻 [**LITE BACKUP LINK**](https://anton-bregolas.github.io/abctools-lite/abctools.html) 🎵 https://abc.tunebook.app/
+
+
+ABC Transcription Tools is a tunes-to-notation converter developed by <a href="https://michaeleskin.com" target="_blank">Michael Eskin</a>. Both ABC Tools Lite and ABC Transcription Tools are distributed under the terms of the MIT open source license.
+
+Check out the outline of technical and functional differences to see whether Lite fits your use case. Note that this fork may include some experimental features and alternative UI logic as compared to Michael Eskin's ABC Transcription Tools. For full original functionality make sure to visit [ABC Transcription Tools GitHub](https://github.com/seisiuneer/abctools).
+
+## Key Differences (Assets Used)
+
+Feature | ABC Transcription Tools | ABC Tools Lite 
+| --- | --- | --- |
+| Initial Cache Size | **~140MB** | **~25MB** |
+| Assets Cached on Startup | Main app assets, default offline instruments,<br> ABC docs, MIDI docs, PDF fonts, User Guide page | Main app assets, default offline instruments,<br> custom UI fonts |
+| Progressive Web App? | Yes | Yes (Customized) |
+| Offline Functionality? | Full on startup + additional tune & instrument databases cached on demand | Most on startup + additional PDF fonts, tune & instrument databases cached on demand |
+| Updates? | Frequent feature updates and improvements by Michael Eskin | ~Weekly updates merging original updates by Michael Eskin and additional features |
+
+## Lite UI & Features (Roadmap)
+
+UI Improvement | Status | Details
+| --- | --- | --- |
+| *Migrate hardcoded styles to CSS to make ABC Tools UI easier to maintain and customize* | STAGE THREE | Editor shell uses CSS flexbox instead of JS for centering (fixes long-standing tablet issues for mobile users & embedded ABC Tools)<br>Add media breakpoint to apply editor two-column mode styles<br>Add data-attributes to apply abc input and notation states<br>Clean up hardcoded styles & leave comments in app.js|
+| *Add custom UI fonts for better cross-platform experience* | DONE☑️ | New UI font: Fira Sans<br>New ABC font: Fira Code |
+| *Add custom font fallbacks to app styles & scripts* | DONE☑️ | app.js & app.css updated |
+| *Add on-demand PDF fonts for wider selection and multilingual support* | DONE☑️ | New PDF fonts: Fira Sans (Regular, Semibold, Italic, Semibold Italic) with extended Cyrillic character set (supports 1025 languages) |
+| *Enable optional Two Column editor mode for all mobile devices* | DONE☑️ | Previously limited to iPad, now available on all iOS and Android devices (experimental) |
+| *Enable separate show/hide context menu options for Title Bar and Bottom Bar UI* | DONE☑️ | Toggle Bottom Bar now hides/shows Bottom Bar (when available)<br>Toggle Compact Mode now hides/shows Title Bar to save space<br>(TO DO: rearrange UI for compact mode) |
+| *Make auto-scaling optional to fix unexpected zoom-blocking behavior* | DONE☑️ | Auto-scale maximized notation available as Settings option (false by default, forced in Two Column mode) |
+| *Customize app buttons* | IN PROGRESS | New flat look of app buttons<br>Color bottom bar buttons for quicker recognition|
+| *Customize app icons* | IN PROGRESS | TO DO: Add Bootstrap icons, use icons from the same set, use svg/symbol for icons |
+| *Customize app menus* | TO DO | --- |
+| *Add color themes for ABC Tools UI* | TO DO | --- |
+| *Add user-customizable UI color theme option* | TO DO | --- |
+| *Add user-customizable UI font option* | TO DO | --- |
+| *Add basic accessibility features* | TO DO | --- |
+
+
+<details>
+  <summary><b>Original ABC Transcription Tools README & CREDITS</b></summary>
+
 # abctools
-<p>This ABC tunes-to-notation converter was developed by <a href="https://michaeleskin.com" target="_blank">Michael Eskin</a>.</p>
+
 <p>This converter can generate standard music notation from ABC, MusicXML, BWW, and MIDI files, show note names along with notation, and also create tablature for Mandolin, GDAD Bouzouki, CGDA Mandola/Mandocello, CGDAE 5-string Fiddle, DGDAE Bouzouki, Standard Guitar, DADGAD Guitar, Ukulele, Tin Whistle, or Baroque Recorder.</p>
 <p>It can also transpose ABC up or down in semitone increments.</p>
 <p>It can generate PDF tunebooks in tune-per-page, multiple-tunes-per-page, or tune incipits formats.</p>
@@ -19,12 +65,10 @@
 <p style="line-height:28px;"><a href="https://michaeleskin.com/abctools/abctools.html?lzw=BoLgjAUAKiBSCGBbApgZwAQCED2A7AJulABbIoQDCIAsngC4Ce6ActgE6Ly6UgDybASwDm6AIJs2AOnSxsxXFngSGEAFogAlQCYADGACs6AGIDciAK6oBAYwD0yAGYPkBAZPIAZcLYAcEAIreACwAvAY6ENQgQbZBEADSIADiEACk8ABG1gBWqAD6qNjmBA706A7wdBnYKqmpqHRsyHTWxAA28A3ojebIaanUAJIAIoPorez4AA5s2CIAzPP9Q6PoGZ2oAG7YbehgWgDsyyNjE2z427v7RwBq4N1NGW3I6GYhAES8m8jngt-oSXMAjoSnex1WMzmbCQ6C0AE4IHdIO8AKKId5YAA0QXeFAxFCC6AAPqj0egAHoE3EYkIE4noVJaCCkjGYbHU9B0klojGUnF49C0wlEhlxIkgFnoFFGWwy4zUowAWmMKNVxMlKKSti1AKSio5SSMRvpqQAbMyedLZbZ5XilSq1dyyZrtTaknqDUajCa-BqZXKjfqBUZVSj1TypVqde6gxjDSGTWAIpLyfgQvhlfhCZhROHEHDWT50CARal9hayWz+fjhSmqQKhYm4pKqxyuXXq4KuQywObxRqAVoKfgOen5gC87zRJhY1hTYnfRGkkOjPMOWypZTlU78UXS7oKxiw8uOanBfhx0lJxTp7PMPP90zJcvjGuBRvycMUduNUWSwytGbNEDiPKUhxRd5MALYwAD4wyMIcnRAicTyguNYPgxCAPNUlkLDFFwMg6CjDg4xENw9CXySIiMRIzCTS0RdK0wdAAC8sSHdjMBYncsEwViN0wWxuJtbiTXmZMI1bAV2wjPlR27VJ5ifCMrQDBVlRDR0NSjN0PQFeNvVLeY4nQFk1JtIwNIdMNeJdaN9LjL1xJw1T-UspUOS02ydNdXVZ3jWyGXmJjeTTDN0CzLBcydaDMD3UUIilTFn0xLR3moilhkFYYhySTE2W3LFvRCBCsXQXKbxNIImUFURwL1Qdh3TH9gIxfAhwAQmcDhKngTqjAfABdUU4iAA&format=noten&ssp=10&pdf=one&pn=none&fp=yes&name=James_Bond_Theme&play=1" target="_blank">James Bond Theme</a><br/>Overdrive Guitar and Electric Fingered Bass</p>
 <p style="line-height:28px;"><a href="https://michaeleskin.com/abctools/abctools.html?lzw=BoLgjAUAKiCyCWATAdvA5gCwC4AIBCANgK4CmEAwiANInLICe+RATsyQQRAFogCVATAAYwAVhwAxeMgC2RAM7wAxgHoSAMzW1E8AHTSyPCABlwygBwQAiqYAsAXjBCIsEDeU2IASRAEpJAEZsAIYA1jgAJBBUIACC-hAApIk4AMoA9kTIiGppyLhYaTjyJDgAFGkADljwuXI4QWw4asRIADQ4snL0yGjtQVlNQVj+afQAlCCJQf6KAFZyAPpyGVk5eYPDo4nJeEFycsrkGGnMiHUVzGlozEHS9QMAbmnE+nKTCQmwngAinjiKx1OFyuOEEiU+Pz+-j2cieBBwADYPB8vr9-oDEHCcDYLEkAGrgHBYNj+AhkBI4WDsNKIRjA663d4QtH0m53SD48AQABE4mkAHZuTgYjZuQBxAVCvA2HAAH25cWkQVmgv+AGZ8ABacWS-BinAAUX4ct5upFOtV0rlOASap5iuVqsUGrw2ollv1RrlIFNqvExpi4jKarseGUvu5KjDMQkBpNDpVQvEau55H5AGIAJxCgDadgNeBIAF0cAAvCQxRSa60JBE8vlO43qYNhi3chZR5Qx8Rx+VxJMavMF4upjPZsvG8u9iMSANB0oh1sNyPKaOxmuZ+3+JWJiQptNZ3P5wsl8viSvV+XL-5NtQt8MH7Md1dd9dX3XiGVnxAkS82xz1rqJA2NWJA-ogl6jkKiAgTgiCKPBkHXoosGKOIpYxrK-4iDyeD+OOpZfjg5DiFWJp4bqKHVooeA0ZBiqWjKeAxMxf4JGAFhQcKxo9sRBriEG76quW5Cavm2qPtyOYntWObkMORYyiAsoQBAQA&format=noten&ssp=10&pdf=one&pn=none&fp=yes&name=Midnight_Blue&play=1" target="_blank">Midnight Blue</a><br/>Acoustic Grand Piano</p>
 <p style="line-height:28px;"><a href="https://michaeleskin.com/abctools/abctools.html?lzw=BoLgjAUAKiAyCGACAQgewBYFMC2mIGER914AnAG0wGdEBBALwDt4A3VAV1MQHpEApeAGMAju2qIACuXiMALngBa4AJwA2AKwQApFqqDUpTIjCIA3ogBMiAD6IAzIgC+EWOG4AOCAFkQd7gBYIAGkQAFEAI21tXVlDWUF0aSpZRFixKK14cMEAKyoAfSoORgATADNUOUQy+Flw1ABPKIA1cFTDcMp2mSoAB1QqTABeAFplREZsIYAiAGV4AA9UXvRKzGnEKkmZ+YXpjK0vAEkAESPEXtJUAHNSeGxEVVUWkCtYzE6jbemJAEsZVAbLZTH6MVAAOn2WmixzOFyut3uiAADC8HOF4FQaAdYedLjc7g9UdDWpAANohCIAXUQ9FUNlp9NsdIZWjsEEZDJZzKZiC0z05PK5vK0yg51hA9EQJWlQyMJSMtjKcuq11VDKG8AAemr4ENwogsqywBYOYIAORWOX+LmIC2IfWau3mg1KkVgTS050O8JOi2uh2YIxahWIa5asoM5XymPGzzVFVlNVJjXa3X6w0Bi1WC022xaCyQL32-UlzDmkrmhmV+0WjM1qu2OsG-0OtOsiyBNuqEYM+BW-uIHVWWyaqwlfy9-MWADsHJKA6sw9TVswecDVmuS7KI75dlRDrKNrlu6GyBtglPmB7rLs7MQmEXQ63K+lk+rVvCT-zdgF2cD67-vq35hjaO63mKAHSleN62GutJWCA+b+KaUHLqO8CwYaTI0lo-hzq0qFAeEgGWtU75KjmZHAbeZpkdcFFhmqEZqr6SC2Pk8Bgbu-Icme3EMmSmAjNcVJWGS5RiYgZKCJgUm2GSyCCKJVj0OuoriiAXoAGKINpADiemGbYtCGbQyB0BZTZnnaMqCDK+YmhyZL6XJ4mhPpVLrlK8qCA+DnSdptBUu6no+dKfmYAF+mGVqBkoEMtAMqZRmpY58YpeZlkMoINn2bZgkeW50lFV5HZFuFobXJGSpGFF1SKv5TW5VZfKds5oSCCFU4lV1OZWsgu6XnpjEFnOen9Q6g05VY+nrvpVjTYlPH7s5+CJWVC2CWeAA0JxlaEu76VhbL3ltw1nkNVjaYx2nidpJRSWStB9beAouWUT0eWVCmhJ992Pe5+mvbY550CtkFkt9Npkic2nydJ+CeVhZJIyFiBIXyKHObtnnHtNv1dSjnXo9YuH4RArT3tyek7Tt4n4DttA7U9jPMwj2l0wzTMs+JJw8wjbIcoz9MlTt+k7fgX3i5LCOM+5MtSwrEtKwynOSzttMS3QkusgKEt7ZrEuJZruOa7YIsG4g-OhEbuujrbGuIMbtsoDtru2HykESurDiowLqlq3Tfuc8gvNerY6vc+zfMB8aqEi+JKtPZzxthwjUOK6TtOi-7Mdi-njmemS6v86zcewztnPM+nu6J2LyfK7Lu5R4jFfV83cYcq3JcV4zHcc1zbf55XA910PmeNw3nfTkWmca9LU8uZLoSD7nbPh5XhfSQbnMpztu2r+p7WIPXk+b7bEty0PalB07zOMzrj-TuN6uPw-msfwylt04gl+---c2p86ZW0AX-J2P4Dxv01pzd+9tnZ005uApBQx+ZWwtoggBTsJZIJ-Pef2-8pK30jnTOBZCgHQJ1kgk4oQ3rCxAVg-mwD0HAMNsgu2+A77MwQdw2BQC2SQV2lXO27tTZhwYUAkWy9DY0gISzSuV8xZS17vtQSKtV70kxnhVC0i968h-prf+SixI9UzlLHCiAgA&format=noten&ssp=10&pdf=one&pn=none&fp=yes&name=La_Boheme&play=1" target="_blank">La Boheme</a><br/>Tenor Sax and Acoustic Grand Piano</p>
-</div>
 <p><strong>Example ABC Tunebook:</strong></p>
 <p>Click the Share URL below to open an ABC tunebook with 9 tunes in the ABC Tools.</p>
 <p>The set is ready to export to PDF with a Title Page, Table of Contents, and Index:</p>
 <p style="line-height:28px;"><a href="https://michaeleskin.com/abctools/abctools.html?lzw=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-ReZo5GRchQeaBL5onVTsOJFJl8VcUJa-dIGKCHv2IVyAAnBFPwaBNCumoLgNgUSl5vKYRLT5MtnQpNRP8o+gLT7q3PoI7WIio6CEkZ2VuPZKVLOPO3aOaiVXdmLOqt4Dlo6DwCkagZulf73Qssq7ierFVGURpq+y98UQ-xtV2ORBrgyUtNSZQeFygA&format=noten&ssp=10&pdf=multi&pn=bc&fp=yes&name=Sliabh_Notes_Polkas" target="_blank">"Sliabh Notes" Polkas Tunebook</a></p>
-</div>
 <hr>
 <p><strong>Sample Tune Set QR Codes</strong></p>
 <p>I have an album of tune set Share URL QR codes up at <a href="https://flic.kr/s/aHBqjArRJZ">ABC Tune Set QR Codes</a> that you can try scanning with your phone.</p>
@@ -70,3 +114,4 @@
 <p>Thank you to Matteo Brusa for prototyping work on the key/mode aware MIDI input system.</p>
 <p>Thank you to <a href="https://www.youtube.com/@BenjaminHockenberry" target="_blank">Ben Hockenberry</a> for contributing to the Bodhran backing track templates</p>
 <hr>
+</details>

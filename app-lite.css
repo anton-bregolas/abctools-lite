@@ -14,7 +14,12 @@ body {																											/* vanilla abc tools settings */
 	--abctools-ui-float-btn-height: 3rem;											/* 48px */
 	--abctools-ui-float-btn-padding: 0.25rem;									/* 4px */
 	--abctools-ui-float-btn-filter: drop-shadow(1px 1px 7px white);
+  --abctools-notation-fullscreen-scaling: 50%;              /* 50% */
 }
+
+/*//////////////////////////////////////////
+// APP LITE: FONT DECLARATIONS
+/////////////////////////////////////////*/
 
 @font-face {
   font-family: 'Fira Sans';
@@ -135,17 +140,104 @@ body {																											/* vanilla abc tools settings */
   src: url('./fonts/FiraMono-Bold.woff2') format('woff2');
 }
 
+/*//////////////////////////////////////////
+// APP LITE: EDITOR SHELL COMPONENTS
+/////////////////////////////////////////*/
+
+/* Editor: ABC No Input */
+
+[data-abc="noinput"] .notation-spacer,
+[data-abc="noinput"] .noscroller {
+  display: block;
+}
+
+[data-abc="noinput"] .notation-placeholder {
+  display: block;
+}
+
+[data-share-link="true"] .notation-placeholder {
+  display: none;
+}
+
+/* Editor: ABC Input Rendered */
+
+[data-abc="rendered"] .notation-spacer,
+[data-abc="rendered"] .noscroller {
+  display: none;
+}
+
+[data-abc="rendered"] .notation-holder {
+  display: inline;
+}
+
+/* Editor: Notation Maximized */
+
+[data-abc="rendered"][data-notation="maximized"] .notation-holder {
+  display: flex;
+}
+
+[data-abc="rendered"][data-notation="maximized"] .notation-spacer,
+[data-abc="rendered"][data-notation="maximized"] .noscroller {
+  display: none;
+}
+
+[data-notation-scaling="auto"][data-notation="maximized"] .notation-holder {
+  width: var(--abctools-notation-fullscreen-scaling);
+}
+
+/* Editor: Notation Minimized */
+
+[data-abc="rendered"][data-notation="minimized"] .notation-spacer,
+[data-abc="rendered"][data-notation="minimized"] .noscroller {
+  display: block;
+}
+
+[data-abc="rendered"][data-notation="minimized"] .notation-holder {
+  display: inline;
+}
+
+[data-abc="rendered"][data-mode="mobile"][data-notation="minimized"] .notation-holder {
+  display: block;
+}
+
+/*//////////////////////////////////////////
+// APP LITE: EDITOR UI COMPONENTS
+/////////////////////////////////////////*/
+
+/* UI: Bottom Button Bar */
+
+[data-abctools-ui-bottom-bar="show"][data-notation="minimized"] .notenrechts {
+  display: inline-block;
+}
+
+/* UI: Overlay Buttons */
+
+
+/*//////////////////////////////////////////
+// APP LITE: MEDIA RULES / BREAKPOINTS
+/////////////////////////////////////////*/
+
+/* Two-column view breakpoint rules */
+
 @media screen and (min-width: 1798px) {
 
-	#app-container {
+  /* Notation Minimized :: Viewport >= 1798 */
+
+	[data-notation="minimized"] .notation-container {
+		align-items: flex-start;
+	}
+
+	[data-notation="minimized"] .app-container {
 		flex-direction: row;
 		justify-content: center;
 		align-items: flex-start;
 	}
 
-	/* body[data-notation="minimized"] #notation-container {
-		align-items: flex-start;
-	} */
+  /* Notation Maximized :: Viewport >= 1798 */
+
+	[data-notation-scaling="smart"][data-notation="maximized"] .notation-holder {
+		width: var(--abctools-notation-fullscreen-scaling);
+	}
 
 	#notation-spacer {
 		margin-right: 24px;
@@ -155,4 +247,50 @@ body {																											/* vanilla abc tools settings */
 		left: calc(50% - 850px);
 		margin-left: 0;
 	}
+}
+
+/*
+////////////////////////////////////////////
+// APP LITE: CUSTOM FORCED STYLES
+////////////////////////////////////////////
+*/
+
+/* Always Two Columns Mode (Formerly iPad Two-Column) */
+
+[data-mode="always-two-columns"] #noscroller,
+[data-mode="always-two-columns"] #notation-holder,
+[data-mode="always-two-columns"] #notation-placeholder,
+[data-mode="always-two-columns"] #notation-spacer,
+[data-mode="always-two-columns"] #uioverlay {
+  width: 860px;
+}
+
+[data-mode="always-two-columns"] #diagnostics {
+  width: 836px;
+}
+
+[data-mode="always-two-columns"][data-notation="minimized"] #notation-holder {
+  width: 850px;
+  display: inline;
+  float: left;
+}
+
+[data-mode="always-two-columns"][data-notation="maximized"] #notation-holder {
+  width: 80%;
+}
+
+[data-mode="always-two-columns"] #rawmodebutton {
+  display: none;
+}
+
+[data-mode="always-two-columns"] #transpose-controls {
+  display: inline-block;
+}
+
+[data-mode="always-two-columns"][data-notation="minimized"] #notation-container {
+  align-items: center;
+}
+
+[data-mode="always-two-columns"] #notation-spacer {
+  margin-right: 0;
 }
