@@ -2157,10 +2157,10 @@ margin-bottom:32px;
 }
 
 
-.relativebox {
+/* .relativebox {
 position:relative;
 float:left;
-}
+} */
 
 .modal {
 display: none; /* Hidden by default */

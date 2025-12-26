@@ -25,13 +25,14 @@ Feature | ABC Transcription Tools | ABC Tools Lite
 
 UI Improvement | Status | Details
 | --- | --- | --- |
-| *Migrate hardcoded styles to CSS to make ABC Tools UI easier to maintain and customize* | STAGE THREE | Editor shell uses CSS flexbox instead of JS for centering (fixes long-standing tablet issues for mobile users & embedded ABC Tools)<br>Add media breakpoint to apply editor two-column mode styles<br>Add data-attributes to apply abc input and notation states<br>Clean up hardcoded styles & leave comments in app.js|
+| *Migrate hardcoded styles to CSS to make ABC Tools UI easier to maintain and customize* | STAGE THREE | Editor shell uses CSS flexbox instead of JS for centering (fixes long-standing tablet issues for mobile users & embedded ABC Tools)<br>Add media breakpoint to apply editor two-column mode styles<br>Add data-attributes to apply notation and abc input area states<br>Clean up hardcoded styles & leave comments in app.js|
 | *Add custom UI fonts for better cross-platform experience* | DONE☑️ | New UI font: Fira Sans<br>New ABC font: Fira Code |
 | *Add custom font fallbacks to app styles & scripts* | DONE☑️ | app.js & app.css updated |
 | *Add on-demand PDF fonts for wider selection and multilingual support* | DONE☑️ | New PDF fonts: Fira Sans (Regular, Semibold, Italic, Semibold Italic) with extended Cyrillic character set (supports 1025 languages) |
 | *Enable optional Two Column editor mode for all mobile devices* | DONE☑️ | Previously limited to iPad, now available on all iOS and Android devices (experimental) |
-| *Enable separate show/hide context menu options for Title Bar and Bottom Bar UI* | DONE☑️ | Toggle Bottom Bar now hides/shows Bottom Bar (when available)<br>Toggle Compact Mode now hides/shows Title Bar to save space<br>(TO DO: rearrange UI for compact mode) |
+| *Enable separate show/hide context menu options for Title Bar and Bottom Bar UI* | DONE☑️ | Toggle Bottom Bar now hides/shows Bottom Bar (when available)<br>Toggle Compact Mode now hides/shows Title Bar only (use to save space)<br>TO DO: rearrange UI for compact mode |
 | *Make auto-scaling optional to fix unexpected zoom-blocking behavior* | DONE☑️ | Auto-scale maximized notation available as Settings option (false by default, forced in Two Column mode) |
+| *Move ABC Tools links toolbar to context menu, convert items to buttons* | IN PROGRESS | Make links to external pages and tools available via modal menu while making them more mobile-friendly |
 | *Customize app buttons* | IN PROGRESS | New flat look of app buttons<br>Color bottom bar buttons for quicker recognition|
 | *Customize app icons* | IN PROGRESS | TO DO: Add Bootstrap icons, use icons from the same set, use svg/symbol for icons |
 | *Customize app menus* | TO DO | --- |

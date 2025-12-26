@@ -167,7 +167,7 @@ body {																											/* vanilla abc tools settings */
 }
 
 [data-abc="rendered"] .notation-holder {
-  display: inline;
+  display: block;
 }
 
 /* Editor: Notation Maximized */
@@ -193,7 +193,7 @@ body {																											/* vanilla abc tools settings */
 }
 
 [data-abc="rendered"][data-notation="minimized"] .notation-holder {
-  display: inline;
+  display: block;
 }
 
 [data-abc="rendered"][data-mode="mobile"][data-notation="minimized"] .notation-holder {
@@ -270,9 +270,7 @@ body {																											/* vanilla abc tools settings */
 }
 
 [data-mode="always-two-columns"][data-notation="minimized"] #notation-holder {
-  width: 850px;
-  display: inline;
-  float: left;
+  display: block;
 }
 
 [data-mode="always-two-columns"][data-notation="maximized"] #notation-holder {

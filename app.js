@@ -26903,7 +26903,7 @@ function DoMinimize() {
   }
 
 
-	// if (isDesktopBrowser() && gAlwaysTwoColumns) {
+	// if (isDesktopBrowser()) {
 	// 	gTheNotation.style.display = "inline";
 	// 	gTheNotation.style.float = "left";
 	// 	gTheNotation.style.marginLeft = gNotationLeftMarginBeforeMaximize;
@@ -26931,6 +26931,7 @@ function DoMinimize() {
           // Reset CodeMirror box symmetrical resize
           let wrapper = gTheCM.getWrapperElement();
           wrapper.style.removeProperty("margin-left");
+          wrapper.style.removeProperty("width");
           // wrapper.style.width = "832px";
           gTheCM.refresh();
         }
@@ -26938,10 +26939,12 @@ function DoMinimize() {
           // Reset text box symmetrical resize 
           gTheABC.style.removeProperty("margin-left");
           gTheABC.style.width = "832px";
+          gInitialTextBoxWidth = 832;
+          gInitialTextBoxContainerWidth = 832;
         }
 
-        gInitialTextBoxWidth = 832;
-        gInitialTextBoxContainerWidth = 832;
+        // gInitialTextBoxWidth = 832;
+        // gInitialTextBoxContainerWidth = 832;
         gInitialTextBoxContainerLeft = 0;
 
       } else {
@@ -26977,14 +26980,13 @@ function DoMinimize() {
         let wrapper = gTheCM.getWrapperElement();
 
         // wrapper.style.width = gInitialTextBoxWidth + "px";
-
+        wrapper.style.removeProperty("width");
         wrapper.style.removeProperty("margin-left");
 
         gTheCM.refresh();
       }
       else{
         gTheABC.style.width = gInitialTextBoxWidth + "px";
-
         gTheABC.style.removeProperty("margin-left");
       }
 
@@ -51523,7 +51525,7 @@ function ConfigureToolSettings() {
   // if (gIsIPad) {
   if (!isPureDesktopBrowser()) {
     form.push({
-      name: "    Use fixed two-column view for devices (formerly iPad Side-by-Side)",
+      name: "    Use fixed two-column view (formerly iPad Side-by-Side – best suits tablets)",
       id: "configure_always_two_columns",
       type: "checkbox",
       cssClass: "configure_settings_form_text_checkbox"
@@ -54069,9 +54071,9 @@ function HandleWindowResize() {
 
     } else {
 
-			// var elem = document.getElementById("app-container");
+			var elem = document.getElementById("app-container");
 			
-			// elem.style.marginLeft = "0px";
+			elem.style.removeProperty("margin-left");
 
       if (gAlwaysTwoColumns) {
 
@@ -55025,7 +55027,7 @@ var RESIZETEXTBOX_DEBOUNCEMS = 20;
 var gLastResizeTextboxTime = 0;
 
 function ResizeTextBox() {
-
+// debugger;
   if (gIsMaximized) {
     return;
   }
@@ -55124,7 +55126,8 @@ function ResizeTextBox() {
       }
 
       // Reset the notation left margin
-      gTheNotation.style.marginLeft = theDelta + "px";
+      // gTheNotation.style.marginLeft = theDelta + "px";
+      gTheNotation.style.removeProperty("margin-left");
 
     }
   }
@@ -58680,13 +58683,14 @@ function LaunchQuickEditorHelp() {
 // Check if an update is available
 // Lite: Customized
 // 
-function DoVersionCheck() {
+async function DoVersionCheck() {
 
   // Skip the check when testing on a local development server
+  
   if (
     window.origin.toString()
-    .replace(/http[s]*:\/\//, '')
-    .match(/(?:localhost|127\.\d{1,3}\.\d{1,3}\.\d{1,3}|::1)(?:$|:\d{1,5})/)
+      .replace(/http[s]*:\/\//, '')
+      .match(/(?:localhost|127\.\d{1,3}\.\d{1,3}\.\d{1,3}|::1)(?:$|:\d{1,5})/)
   ) {
     SetupContextMenu(false); 
     return;
@@ -58696,34 +58700,61 @@ function DoVersionCheck() {
 
   gUpdateAvailable = false;
 
-  fetch(ABC_TOOLS_VERSION_FILE_URL)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Failed to fetch version JSON: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((json) => {
-      // Check if version changed
-      if (json && json.version && (json.version != gLiteVersionNumber)) {
+  // Create an AbortController to prevent hanged version checks
+  const controller = new AbortController();
+  const timeoutMs = 10000;
 
-          // Yes, show update option
-          SetupContextMenu(true);
+  // Set up the timeout
+  const timeoutId = setTimeout(() => {
+    controller.abort();
+  }, timeoutMs);
 
-          gUpdateAvailable = true;
+  try {
 
-          gUpdateVersion = json.version;
+    const response = await fetch(ABC_TOOLS_VERSION_FILE_URL, {
+      signal: controller.signal
+    });
 
-      } else {
+    clearTimeout(timeoutId);
 
-        SetupContextMenu(false);
-      }
-    })
-    .catch((err) => {
+    if (!response.ok) {
+          console.warn("FAILED")
+      throw new Error(`Failed to fetch version JSON: ${response.status}`);
+    }
+
+    const versionJson = await response.json();
+
+    // Check if version changed
+
+    if (versionJson && versionJson.version && (versionJson.version != gLiteVersionNumber)) {
+    // Yes, show update option
+      SetupContextMenu(true);
+
+      gUpdateAvailable = true;
+
+      gUpdateVersion = versionJson.version;
+
+    // No, setup the context menu as is
+    } else {
+
+      SetupContextMenu(false);
+    }
+
+  } catch (err) {
+
+    clearTimeout(timeoutId);
+
+    if (err.name === 'AbortError') {
+
+      console.warn('[ABC Tools Lite] DoVersionCheck timed out after ', timeoutMs / 1000, 's');
+
+    } else {
 
       console.warn('[ABC Tools Lite] DoVersionCheck failed\n\n', err);
-      SetupContextMenu(false);
-    });
+    }
+
+    SetupContextMenu(false);
+  }
 }
 
 //
@@ -60636,21 +60667,20 @@ function DoStartup() {
     new ResizeObserver(TextBoxResizeHandler).observe(gTheABC);
   }
 
+  // Lite: Customized (allow CodeMirror to stretch to container width)
   if (isDesktopBrowser()) {
-    
+
     if (gEnableSyntax){
       let wrapper = gTheCM.getWrapperElement();
 
-      // Lite: Customized (allow CodeMirror to stetch to container width)
       // Setup text box symmetrical resize 
       if (gAlwaysTwoColumns) {
+        wrapper.style.removeProperty("margin-left");
+        wrapper.style.removeProperty("width");
         // two column mode is always fixed width
         // gInitialTextBoxWidth = 832;
-
-        wrapper.style.removeProperty("margin-left");
         // wrapper.style.width = gInitialTextBoxWidth + "px";
         gTheCM.refresh();
-
 
       } else {
         gInitialTextBoxWidth = gTheCM.offsetWidth;
@@ -60701,6 +60731,7 @@ function DoStartup() {
 
           // Reset text box symmetrical resize 
           wrapper.style.removeProperty("margin-left");
+          wrapper.style.removeProperty("width");
           // wrapper.style.width = gInitialTextBoxWidth + "px";
           gTheCM.refresh();
         }
