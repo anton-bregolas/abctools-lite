@@ -268,7 +268,7 @@ async function main() {
   let exitCode = 1;
 
   if (type === '-abc') {
-    await updateAbcToolsPages();
+    // await updateAbcToolsPages();
     await updateAppScripts();
     await updateAppStyles();
     commitMsg =

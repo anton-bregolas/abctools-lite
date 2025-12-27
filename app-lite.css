@@ -274,7 +274,7 @@ body {																											/* vanilla abc tools settings */
 }
 
 [data-mode="always-two-columns"][data-notation="maximized"] #notation-holder {
-  width: 80%;
+  width: 70%;
 }
 
 [data-mode="always-two-columns"] #rawmodebutton {

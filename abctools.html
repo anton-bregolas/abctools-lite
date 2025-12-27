@@ -93,7 +93,7 @@
 
 				<div id="zoombanner" onclick="HideZoomBanner()">
 
-					<p style="text-align:left;">&nbsp;&nbsp;x&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Want to see the ABC editor and notation side-by-side?&nbsp;&nbsp;Zoom out:&nbsp;&nbsp;&nbsp;Windows:&nbsp;Ctrl -&nbsp;&nbsp;&nbsp;&nbsp;Mac:&nbsp;⌘ -&nbsp;&nbsp;&nbsp;&nbsp;<span onclick="HideZoomBannerForever(event)">(Hide Forever)</span></p>
+					<p style="text-align:left;">&nbsp;&nbsp;x&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;For a better experience please zoom out the browser view:&nbsp;&nbsp;&nbsp;&nbsp;Windows:&nbsp;Ctrl -&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mac:&nbsp;⌘ -&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span onclick="HideZoomBannerForever(event)">(Hide Forever)</span></p>
 
 				</div>
 
@@ -116,8 +116,8 @@
 						<input style="margin-right:8px" class="saveabcfiledisabled btn btn-top" id="saveabcfile" onclick="SaveABC();" type="button" value="Save" title="Saves the current ABC text to a file"/>
 						<input style="margin-right:8px" class="saveaspdfdisabled btn btn-top" id="saveaspdf" onclick="PDFExportDialog();" type="button" value="Export PDF" title="Exports a PDF tunebook"/>
 						<input style="margin-right:8px" class="saveaswebsitedisabled btn btn-top" id="saveaswebsite" onclick="generateWebsite();" type="button" value="Export Website" title="Exports the tunebook as a website"/>
-						<input style="margin-right:8px" class="copybuttondisabled btn btn-top" id="copybutton" onclick="CopyABC();" type="button" value="Copy All" title="Copies all of the ABC text to the clipboard"/>
-						<input style="margin-right:8px;padding-left:20px;padding-right:20px;" class="playbuttondisabled btn btn-play" id="playbutton" onclick="PlayABC(event);" type="button" value="Play" title="Opens the ABC player for the currently selected tune.&nbsp;&nbsp;Shift-click to open the current tune in the Tune Trainer.&nbsp;&nbsp;Alt-click to play a random tune in the current ABC tunebook.&nbsp;&nbsp;Press F4 to open the Player."/>
+						<input style="margin-right:8px;padding-left:20px;padding-right:20px;" class="playbuttondisabled btn btn-play" id="playbutton" onclick="PlayABC(event);" type="button" value="Play" title="Opens the ABC player with the currently selected tune.&nbsp;&nbsp;Alt-click to play a random tune in the current ABC tunebook.&nbsp;&nbsp;Press F4 to open the Player."/>
+						<input style="margin-right:8px;padding-left:20px;padding-right:20px;" class="playbuttondisabled btn btn-train" id="tunetrainerbutton" onclick="TuneTrainerTopBar();" type="button" value="Train" title="Opens the Tune Trainer with the currently selected tune"/>
 						<input style="margin-right:8px" class="rawmodebuttondisabled btn btn-rawmode-off" id="rawmodebutton" onclick="ToggleRawMode()" type="button" value="Highlighting" title="When On, highlight notation by selecting the ABC text or highlight ABC text by clicking on the notation."/>
 						<input style="padding-left:20px;padding-right:20px" class="morecommands btn btn-top context-menu" id="morecommands" type="button" value="☰" title="Brings up a menu with additional useful commands"/>
 					</div>
@@ -186,12 +186,13 @@
 
 					<p id="notation-placeholder-text-2" class="notation-placeholder-text-2">Click <strong>Search for Tunes</strong> to find tunes by name.</p>
 
-					<input class="notation-placeholder-button btn btn-placeholder" onclick="showWelcomeScreen();" type="button" value="Show Intro Screen" title="Shows the intro screen"/>
+				<input class="notation-placeholder-button btn btn-placeholder" style="margin-right:18px" onclick="showWelcomeScreen();" type="button" value="Show Introduction" title="Shows the introduction dialog"/>
 				
-				</div>
-				
-				<div id="notation-holder" class="notation-holder relativebox pagebreak"></div>
-				
+				<input class="notation-placeholder-button btn btn-placeholder" onclick="showWhatsNewScreen();" type="button" value="What's New" title="Shows the latest update info dialog"/>
+			
+			</div>
+			
+			<div id="notation-holder" class="notation-holder relativebox pagebreak">
 			</div>
 		
 		</div>
@@ -224,8 +225,6 @@
 	<script type="text/javascript" src="lame.min.js"></script><!-- .mp3 audio encoder -->
 	<script type="text/javascript" src="unmute.min.js"></script><!-- fixes issue on iOS Safari muting tabs -->
 	<script type="text/javascript" src="tab-injectors-min.js"></script><!-- Tab generation for ABC injection -->
-	<script type="text/javascript" src="visualscript-sdk.js"></script><!-- SmartDraw VSON API -->
-	<script type="text/javascript" src="smartdraw-export-min.js"></script><!-- Export to SmartDraw VSON -->
 	<script type="text/javascript" src="acoustic_grand_piano-mp3.js"></script><!-- Offline grand piano sound -->
 	<script type="text/javascript" src="percussion-mp3.js"></script><!-- Offline percussion -->
 	<script type="text/javascript" src="online-check.js"></script><!-- check if online -->

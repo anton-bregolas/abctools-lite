@@ -31,7 +31,7 @@
  **/
 
 // Version number for the settings dialog
-var gVersionNumber = "3066_121325_1500";
+var gVersionNumber = "3115_122625_1300";
 
 var gMIDIInitStillWaiting = false;
 
@@ -828,39 +828,75 @@ function hasStaffSep(text) {
 //
 // Make sure the More Tools dialog isn't scrolled out of view
 function ensureMoreToolsVisible() {
+  
+  //debugger;
 
-  if (AllowDialogsToScroll()) {
+  //console.log("ensureMoreToolsVisible");
 
-    //console.log("ensureMoreToolsVisible");
-
-    var elem = document.querySelector("#injectheaderstring");
-
-    if (elem) {
-      elem.scrollIntoView({
-        behavior: "instant",
-        block: "center"
-      });
-    }
+  if (!AllowDialogsToScroll()){
+    //console.log("dialogs not allowed to scroll");
+    return;
   }
+
+  const elem = document.querySelector("#moretoolsanchor");
+  if (!elem){
+    //console.log("#moretoolsanchor missing, returning");
+    return;
+  }
+
+  const rect = elem.getBoundingClientRect();
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+  const isVisible =
+    rect.top >= 0 &&
+    rect.bottom <= viewportHeight;
+
+  if (!isVisible) {
+    //console.log("scrolling into view");
+    elem.scrollIntoView({
+      behavior: "instant",
+      block: "center"
+    });
+  }
+  // else{
+  //   console.log("visible already, not scrolling into view");
+  // }
 }
 
 //
-// Make sure the a specific dialog isn't scrolled out of view
+// Make sure a specific dialog isn't scrolled out of view
 function ensureDialogVisible(theID) {
 
-  if (AllowDialogsToScroll()) {
+  //console.log("ensureDialogVisible ID:"+theID);
 
-    //console.log("ensureDialogVisible ID:"+theID);
-
-    var elem = document.querySelector(theID);
-
-    if (elem) {
-      elem.scrollIntoView({
-        behavior: "instant",
-        block: "center"
-      });
-    }
+  if (!AllowDialogsToScroll()){
+    //console.log("dialogs not allowed to scroll");
+    return;
   }
+  
+  const elem = document.querySelector(theID);
+  if (!elem){
+    //console.log(theID+" missing, returning");
+    return;
+  }
+
+  const rect = elem.getBoundingClientRect();
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+  const isVisible =
+    rect.top >= 0 &&
+    rect.bottom <= viewportHeight;
+
+  if (!isVisible) {
+    //console.log("scrolling into view");
+    elem.scrollIntoView({
+      behavior: "instant",
+      block: "center"
+    });
+  }
+  // else{
+  //   console.log("visible already, not scrolling into view");
+  // }
 }
 
 function loadScript(url, callback) {
@@ -2127,15 +2163,22 @@ function ToggleRawMode() {
 
     if (gRawMode) {
 
-      // Disable the play button
+      // Disable the play and train buttons
       document.getElementById("playbutton").classList.remove("playbutton");
       document.getElementById("playbutton").classList.add("playbuttondisabled");
 
+      document.getElementById("tunetrainerbutton").classList.remove("playbutton");
+      document.getElementById("tunetrainerbutton").classList.add("playbuttondisabled");
+
     } else {
 
-      // Enable the play button
+      // Enable the play and train button
       document.getElementById("playbutton").classList.remove("playbuttondisabled");
       document.getElementById("playbutton").classList.add("playbutton");
+
+      // Enable the play button
+      document.getElementById("tunetrainerbutton").classList.remove("playbuttondisabled");
+      document.getElementById("tunetrainerbutton").classList.add("playbutton");
 
     }
 
@@ -2712,7 +2755,7 @@ function TransposeToKeyDialog() {
 
   const modal = DayPilot.Modal.form(form, theData, {
     theme: "modal_flat_wide",
-    top: 200,
+    top: 100,
     width: 600,
     scrollWithPage: (AllowDialogsToScroll()),
     okText: "Transpose",
@@ -3423,9 +3466,6 @@ function DoSortTunesByMeter() {
           window.scrollTo(0, scrollY);
         }
 
-        // Make sure the More Tools dialog visible
-        ensureMoreToolsVisible();
-
         var elem = document.getElementById("sortbutton");
         if (elem) {
           elem.value = "   Sorted!   ";
@@ -3492,9 +3532,6 @@ function DoSortTunesByKey() {
         if (AllowDialogsToScroll()) {
           window.scrollTo(0, scrollY);
         }
-
-        // Make sure the More Tools dialog visible
-        ensureMoreToolsVisible();
 
         var elem = document.getElementById("sortbutton");
         if (elem) {
@@ -3606,7 +3643,6 @@ function SortTunes() {
 
   }
 
-
   // Sort tunes by name
   tunesToProcess.sort(customSortTitleWithDiacriticals);
 
@@ -3689,9 +3725,6 @@ function DoSortTunesByName() {
           window.scrollTo(0, scrollY);
         }
 
-        // Make sure the More Tools dialog visible
-        ensureMoreToolsVisible();
-
         var elem = document.getElementById("sortbutton");
         if (elem) {
           elem.value = "   Sorted!   ";
@@ -3757,9 +3790,6 @@ function DoSortTunesByRhythm() {
         if (AllowDialogsToScroll()) {
           window.scrollTo(0, scrollY);
         }
-
-        // Make sure the More Tools dialog visible
-        ensureMoreToolsVisible();
 
         var elem = document.getElementById("sortbutton");
         if (elem) {
@@ -3827,9 +3857,6 @@ function DoSortTunesByCTag() {
           window.scrollTo(0, scrollY);
         }
 
-        // Make sure the More Tools dialog visible
-        ensureMoreToolsVisible();
-
         var elem = document.getElementById("sortbutton");
         if (elem) {
           elem.value = "   Sorted!   ";
@@ -3895,9 +3922,6 @@ function DoSortTunesByNTag() {
         if (AllowDialogsToScroll()) {
           window.scrollTo(0, scrollY);
         }
-
-        // Make sure the More Tools dialog visible
-        ensureMoreToolsVisible();
 
         var elem = document.getElementById("sortbutton");
         if (elem) {
@@ -3965,9 +3989,6 @@ function DoSortTunesByOTag() {
           window.scrollTo(0, scrollY);
         }
 
-        // Make sure the More Tools dialog visible
-        ensureMoreToolsVisible();
-
         var elem = document.getElementById("sortbutton");
         if (elem) {
           elem.value = "   Sorted!   ";
@@ -4034,9 +4055,6 @@ function DoSortTunesByID() {
         if (AllowDialogsToScroll()) {
           window.scrollTo(0, scrollY);
         }
-
-        // Make sure the More Tools dialog visible
-        ensureMoreToolsVisible();
 
         var elem = document.getElementById("sortbutton");
         if (elem) {
@@ -4210,7 +4228,7 @@ function SortDialog() {
 
   const modal = DayPilot.Modal.form(form, theData, {
     theme: "modal_flat",
-    top: 200,
+    top: 175,
     width: 500,
     scrollWithPage: (AllowDialogsToScroll()),
     okText: "Sort",
@@ -14927,19 +14945,20 @@ function Render(renderAll, tuneNumber) {
     document.getElementById("saveaswebsite").classList.add("saveaswebsite");
     gAllowWebExport = true;
 
-    // Enable the copy button
-    document.getElementById("copybutton").classList.remove("copybuttondisabled");
-    document.getElementById("copybutton").classList.add("copybutton");
-
-    // Enable the play button
+    // Enable the play and train buttons
     if (!gIsQuickEditor) {
       document.getElementById("playbutton").classList.remove("playbuttondisabled");
       document.getElementById("playbutton").classList.add("playbutton");
+      document.getElementById("tunetrainerbutton").classList.remove("playbuttondisabled");
+      document.getElementById("tunetrainerbutton").classList.add("playbutton");
+     tunetrainerbutton
     } else {
-      // Don't enable play button on raw mode on the Quick Editor
+      // Don't enable play or train button on raw mode on the Quick Editor
       if (!gRawMode) {
         document.getElementById("playbutton").classList.remove("playbuttondisabled");
         document.getElementById("playbutton").classList.add("playbutton");
+        document.getElementById("tunetrainerbutton").classList.remove("playbuttondisabled");
+        document.getElementById("tunetrainerbutton").classList.add("playbutton");
       }
     }
 
@@ -15097,13 +15116,13 @@ function Render(renderAll, tuneNumber) {
     // Disable the control display toggle
     gAllowControlToggle = false;
 
-    // Disable the copy button
-    document.getElementById("copybutton").classList.remove("copybutton");
-    document.getElementById("copybutton").classList.add("copybuttondisabled");
-
     // Disable the play button
     document.getElementById("playbutton").classList.remove("playbutton");
     document.getElementById("playbutton").classList.add("playbuttondisabled");
+
+    // Disable the tune trainer button
+    document.getElementById("tunetrainerbutton").classList.remove("playbutton");
+    document.getElementById("tunetrainerbutton").classList.add("playbuttondisabled");
 
     // Disable the raw mode button
     document.getElementById("rawmodebutton").classList.remove("rawmodebutton");
@@ -15900,111 +15919,6 @@ function ToggleOrnaments(bDoStrip) {
   });
 
   IdleAdvancedControls(true);
-
-}
-
-
-//
-// Add a new ABC tune template, song template, or PDF tunebook annotation template to the current ABC
-//
-function idleAddABC() {
-
-  if (gIsIOS) {
-
-    document.getElementById("addabcfilebutton").removeAttribute("accept");
-
-  }
-
-  //
-  // Setup the file import control
-  //
-  document.getElementById("addabcfilebutton").onchange = () => {
-
-    let fileElement = document.getElementById("addabcfilebutton");
-
-    // check if user had selected a file
-    if (fileElement.files.length === 0) {
-
-      var thePrompt = "Please select an ABC, MusicXML, or MIDI file";
-
-      // Center the string in the prompt
-      thePrompt = makeCenteredPromptString(thePrompt);
-
-      DayPilot.Modal.alert(thePrompt, {
-        theme: "modal_flat",
-        top: 200,
-        scrollWithPage: (AllowDialogsToScroll())
-      });
-
-      return;
-
-    }
-
-    const add_files = Array.from(fileElement.files);
-
-    // Use the common multi-file reader
-    DoMultiReadCommon(add_files, fileElement);
-
-  }
-
-  // Show the snapshot button if one is available in browser storage
-  var elem1 = document.getElementById("dialogrestorebutton");
-
-  elem1.style.display = "none";
-
-  var elem2 = document.getElementById("dialogrestoreautobutton");
-
-  elem2.style.display = "none";
-
-  if (gLocalStorageAvailable) {
-
-    var theSnapshot = localStorage.SavedSnapshot;
-    var theSnapshot2 = localStorage.SavedSnapshot2;
-    var theSnapshot3 = localStorage.SavedSnapshot3;
-    var theSnapshot4 = localStorage.SavedSnapshot4;
-
-    var bTheSnapShotAvailable = (((theSnapshot) && (theSnapshot != "")) || ((theSnapshot2) && (theSnapshot2 != "")) || ((theSnapshot3) && (theSnapshot3 != "")) || ((theSnapshot4) && (theSnapshot4 != "")));
-
-    var theLastAutoSnapShot = localStorage.LastAutoSnapShot;
-
-    var bTheLastAutoSnapShotAvailable = ((theLastAutoSnapShot) && (theLastAutoSnapShot != ""));
-
-    if (bTheSnapShotAvailable) {
-
-      elem1.style.display = "inline";
-
-    }
-
-    if (bTheLastAutoSnapShotAvailable) {
-
-      elem2.style.display = "inline";
-
-    }
-
-  }
-
-  // Find the OK button
-
-  var theOKButtons = document.getElementsByClassName("modal_flat_ok");
-
-  // Find the button that says "OK" to use to close the dialog when changing UI settings
-  var theOKButton = null;
-
-  gAddABCOKButton = null;
-
-  for (var i = 0; i < theOKButtons.length; ++i) {
-
-    theOKButton = theOKButtons[i];
-
-    if (theOKButton.innerText == "OK") {
-
-      //console.log("Found OK button");
-      gAddABCOKButton = theOKButton;
-
-      break;
-
-    }
-  }
 
 }
 
@@ -19716,83 +19630,7 @@ function BuildTuneSet() {
 // Add an ABC file, sample tune, or template
 //
 var gAddABCOKButton = null;
-
-function Configure_AddABC_UI() {
-
-  //console.log("Configure_AddABC_UI");
-
-  var old_gFeaturesShowSearch = gFeaturesShowSearch;
-  var old_gFeaturesShowExamples = gFeaturesShowExamples;
-  var old_gFeaturesShowTemplates = gFeaturesShowTemplates;
-
-  // Setup initial values
-  const theData = {
-    showsearch: gFeaturesShowSearch,
-    showexampletunes: gFeaturesShowExamples,
-    showexampletemplates: gFeaturesShowTemplates,
-
-  };
-
-  var form = [{
-    html: '<p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);margin-left:15px;">Select Add ABC Feature Options</p>'
-  }, {
-    name: "          Show Search and Add Tunes",
-    id: "showsearch",
-    type: "checkbox",
-    cssClass: "configure_ui_options_form_text"
-  }, {
-    name: "          Show Example Tunes",
-    id: "showexampletunes",
-    type: "checkbox",
-    cssClass: "configure_ui_options_form_text"
-  }, {
-    name: "          Show Example Templates",
-    id: "showexampletemplates",
-    type: "checkbox",
-    cssClass: "configure_ui_options_form_text"
-  }, ];
-
-  const modal = DayPilot.Modal.form(form, theData, {
-    theme: "modal_flat",
-    top: 100,
-    width: 500,
-    scrollWithPage: (AllowDialogsToScroll()),
-    autoFocus: false
-  }).then(function(args) {
-
-    if (!args.canceled) {
-
-      gFeaturesShowSearch = args.result.showsearch;
-      gFeaturesShowExamples = args.result.showexampletunes;
-      gFeaturesShowTemplates = args.result.showexampletemplates;
-
-      // No change, just return;
-      if ((gFeaturesShowSearch == old_gFeaturesShowSearch) &&
-        (gFeaturesShowExamples == old_gFeaturesShowExamples) &&
-        (gFeaturesShowTemplates == old_gFeaturesShowTemplates)) {
-
-        //console.log("Configure_AddABC_UI - No change in settings");
-
-        return;
-
-      }
-
-      // Save the settings
-      SaveConfigurationSettings();
-
-      // Close the Add ABC dialog
-      gAddABCOKButton.click();
-
-      // And relaunch it after a short delay
-      setTimeout(function() {
-
-        AddABC();
-
-      }, 250);
-    }
-
-  });
-}
+var gAddABCLastTab = "";
 
 //
 // Close the Add dialog after adding tunes to the workarea
@@ -19806,90 +19644,266 @@ function AddABCCallback() {
 
 }
 
+function AddABC_SelectTab(tabId) {
+
+  var dialog = document.getElementById("add-new-tune-dialog");
+  if (!dialog) return;
+
+  // Remember last tab
+  gAddABCLastTab = tabId;
+
+  var buttons = dialog.querySelectorAll(".adv-tab-btn");
+  var panels  = dialog.querySelectorAll(".adv-tab-panel");
+
+  buttons.forEach(function(btn) {
+    var active = (btn.getAttribute("data-tab") === tabId);
+    btn.classList.toggle("active", active);
+    btn.setAttribute("aria-selected", active ? "true" : "false");
+  });
+
+  panels.forEach(function(panel) {
+    panel.classList.toggle("active", panel.id === tabId);
+  });
+
+}
+
+function AddABC_InitTabs() {
+
+  var dialog = document.getElementById("add-new-tune-dialog");
+  if (!dialog) return;
+
+  var tabBar = dialog.querySelector(".adv-tab-bar");
+  if (!tabBar) return;
+
+  var btns = tabBar.querySelectorAll(".adv-tab-btn");
+  if (!btns.length) return;
+
+  // Restore remembered tab if it exists
+  if (gAddABCLastTab && dialog.querySelector("#" + gAddABCLastTab)) {
+    AddABC_SelectTab(gAddABCLastTab);
+  } else {
+    AddABC_SelectTab(btns[0].getAttribute("data-tab"));
+  }
+}
+
+//
+// Add a new ABC tune template, song template, or PDF tunebook annotation template to the current ABC
+//
+function idleAddABC() {
+
+  if (gIsIOS) {
+
+    document.getElementById("addabcfilebutton").removeAttribute("accept");
+
+  }
+
+  //
+  // Setup the file import control
+  //
+  document.getElementById("addabcfilebutton").onchange = () => {
+
+    let fileElement = document.getElementById("addabcfilebutton");
+
+    // check if user had selected a file
+    if (fileElement.files.length === 0) {
+
+      var thePrompt = "Please select an ABC, MusicXML, or MIDI file";
+
+      // Center the string in the prompt
+      thePrompt = makeCenteredPromptString(thePrompt);
+
+      DayPilot.Modal.alert(thePrompt, {
+        theme: "modal_flat",
+        top: 200,
+        scrollWithPage: (AllowDialogsToScroll())
+      });
+
+      return;
+
+    }
+
+    const add_files = Array.from(fileElement.files);
+
+    // Use the common multi-file reader
+    DoMultiReadCommon(add_files, fileElement);
+
+  }
+
+  // Find the OK button
+
+  var theOKButtons = document.getElementsByClassName("modal_flat_ok");
+
+  // Find the button that says "OK" to use to close the dialog when changing UI settings
+  var theOKButton = null;
+
+  gAddABCOKButton = null;
+
+  for (var i = 0; i < theOKButtons.length; ++i) {
+
+    theOKButton = theOKButtons[i];
+
+    if (theOKButton.innerText == "OK") {
+
+      //console.log("Found OK button");
+      gAddABCOKButton = theOKButton;
+
+      break;
+
+    }
+  }
+
+}
+
 function AddABC() {
 
   // Keep track of dialogs
   sendGoogleAnalytics("dialog", "AddABC");
 
-  var modal_msg = '<p style="text-align:center;font-size:18pt;font-family:var(--abctools-ui-font-fallbacks);margin-left:15px;">Add ABC Tunes, Templates, and PDF Features&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#add_templates_dialog" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span><img id="moreaddabcsettings" class="moreaddabcsettings moresettingsbutton" src="img/settings.png" title="Add ABC Settings" onclick="Configure_AddABC_UI()"></img></p>';
+  // ------------------------------------------------------------
+  // Inline idleAddABC() logic BEFORE rendering to avoid flashing
+  // ------------------------------------------------------------
+  var showSnapshotButton = false;
+  var showAutoSnapshotButton = false;
+
+  if (gLocalStorageAvailable) {
+
+    var theSnapshot  = localStorage.SavedSnapshot;
+    var theSnapshot2 = localStorage.SavedSnapshot2;
+    var theSnapshot3 = localStorage.SavedSnapshot3;
+    var theSnapshot4 = localStorage.SavedSnapshot4;
+
+    var bTheSnapShotAvailable =
+      (((theSnapshot)  && (theSnapshot  !== "")) ||
+       ((theSnapshot2) && (theSnapshot2 !== "")) ||
+       ((theSnapshot3) && (theSnapshot3 !== "")) ||
+       ((theSnapshot4) && (theSnapshot4 !== "")));
+
+    var theLastAutoSnapShot = localStorage.LastAutoSnapShot;
+    var bTheLastAutoSnapShotAvailable =
+      ((theLastAutoSnapShot) && (theLastAutoSnapShot !== ""));
+
+    if (bTheSnapShotAvailable) {
+      showSnapshotButton = true;
+    }
+
+    if (bTheLastAutoSnapShotAvailable) {
+      showAutoSnapshotButton = true;
+    }
+  }
+
+  // Decide initial tab BEFORE rendering (prevents flash)
+  var initialTab = "addabc-tab-examples";
+  if (gAddABCLastTab === "addabc-tab-examples" ||
+      gAddABCLastTab === "addabc-tab-templates" ||
+      gAddABCLastTab === "addabc-tab-pdf-features") {
+    initialTab = gAddABCLastTab;
+  }
+
+  var isExamplesActive     = (initialTab === "addabc-tab-examples");
+  var isTemplatesActive    = (initialTab === "addabc-tab-templates");
+  var isPDFFeaturesActive  = (initialTab === "addabc-tab-pdf-features");
+
+  // Precompute button display styles so they are correct on first paint
+  var snapshotDisplayStyle     = showSnapshotButton ? "inline" : "none";
+  var autoSnapshotDisplayStyle = showAutoSnapshotButton ? "inline" : "none";
+
+  var modal_msg = '<p style="text-align:center;font-size:18pt;font-family:var(--abctools-ui-font-fallbacks);margin-left:15px;margin-bottom:10px;">Add ABC Tunes, Templates, and PDF Features<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#add_templates_dialog" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>';
   modal_msg += '<div id="add-new-tune-dialog">';
-  modal_msg += '<p style="text-align:center;margin-top:28px;font-size:18px;">Add Your Own Tunes from ABC, MusicXML, BWW, or MIDI Files</p>';
-  modal_msg += '<p style="text-align:center;margin-top:16px;">';
-  //modal_msg += '';
+  modal_msg += '<p style="text-align:center;font-size:18px;">Add Your Own Tunes from ABC, MusicXML, BWW, or MIDI Files</p>';
+  modal_msg += '<p style="text-align:center;margin-top:24px;">';
   modal_msg += '<label class="abcuploaddialog btn btn-top" for="addabcfilebutton" title="Adds tunes from an existing ABC, MusicXML, BWW, or MIDI file to the end of the ABC">Choose Files to Add <input type="file" id="addabcfilebutton" accept=".abc,.txt,.ABC,.TXT,.xml,.XML,.musicxml,.mxl,.MXL,.mid,.MID,.midi,.MIDI,.bww,.BWW" hidden multiple/></label>';
-  modal_msg += '<input class="dialogrestorebutton btn btn-restorebutton" id="dialogrestorebutton" onclick="RestoreSnapshot(event,false,true);" type="button" value="Restore from Snapshot" title="Replaces the contents of the ABC editor with a Snapshot saved in browser storage.&nbsp;&nbsp;Click for Snapshot #1, Shift-click for Snapshot #2, Alt-click for Snapshot #3, Shift-Alt-click for Snapshot #4." style="display:none;">';
-  modal_msg += '<input class="dialogrestoreautobutton btn btn-restorebutton" id="dialogrestoreautobutton" onclick="RestoreSnapshot(event,true,true);" type="button" value="Restore from Auto-Snapshot" title="Replaces the contents of the ABC editor with an Auto-Snapshot saved in browser storage" style="display:none;">';
+
+  modal_msg += '<input class="dialogrestorebutton btn btn-restorebutton" id="dialogrestorebutton" onclick="RestoreSnapshot(event,false,true);" type="button" value="Restore from Snapshot" title="Replaces the contents of the ABC editor with a Snapshot saved in browser storage.&nbsp;&nbsp;Click for Snapshot #1, Shift-click for Snapshot #2, Alt-click for Snapshot #3, Shift-Alt-click for Snapshot #4." style="display:' + snapshotDisplayStyle + ';">';
+
+  modal_msg += '<input class="dialogrestoreautobutton btn btn-restorebutton" id="dialogrestoreautobutton" onclick="RestoreSnapshot(event,true,true);" type="button" value="Restore from Auto-Snapshot" title="Replaces the contents of the ABC editor with an Auto-Snapshot saved in browser storage" style="display:' + autoSnapshotDisplayStyle + ';">';
+
   modal_msg += '</p>';
 
-  // Showing search?
-  if (gFeaturesShowSearch) {
+  modal_msg += '<hr style="margin-top:26px;">';
 
-    modal_msg += '<p style="text-align:center;font-size:18px;margin-top:24px;">Search and Add Tunes (Over 65,000 Tunes Available)</p>';
-    modal_msg += '<p style="text-align:center;margin-top:16px;">';
-    modal_msg += '<input id="searchandaddtunes" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AddFromSearch(null,AddABCCallback);" type="button" value="Tune Search Engine" title="Search for tunes to add to your tunebook.&nbsp;&nbsp;Over 65,000 tunes available.">';
+  /* ===========================================================
+     TABS
+     =========================================================== */
 
-  }
+  modal_msg += '<div class="adv-tabs">';
+  modal_msg += '<div class="adv-tab-bar">';
+
+  modal_msg += '<button class="adv-tab-btn' + (isExamplesActive ? ' active' : '') + '" data-tab="addabc-tab-examples" aria-selected="' + (isExamplesActive ? 'true' : 'false') + '" onclick="AddABC_SelectTab(\'addabc-tab-examples\')">Add Example Tunes</button>';
+
+  modal_msg += '<button class="adv-tab-btn' + (isTemplatesActive ? ' active' : '') + '" data-tab="addabc-tab-templates" aria-selected="' + (isTemplatesActive ? 'true' : 'false') + '" onclick="AddABC_SelectTab(\'addabc-tab-templates\')">Add Example Templates</button>';
+
+  modal_msg += '<button class="adv-tab-btn' + (isPDFFeaturesActive ? ' active' : '') + '" data-tab="addabc-tab-pdf-features" aria-selected="' + (isPDFFeaturesActive ? 'true' : 'false') + '" onclick="AddABC_SelectTab(\'addabc-tab-pdf-features\')">Inject PDF Features</button>';
+
+  modal_msg += '</div>';
+  modal_msg += '<div class="adv-tab-panels">';
+
+  /* ---------------- Example ABC tunes tab ---------------- */
+
+  modal_msg += '<div id="addabc-tab-examples" class="adv-tab-panel' + (isExamplesActive ? ' active' : '') + '">';
+  modal_msg += '<p style="text-align:center;margin-top:16px;">';
+  modal_msg += '<input id="addnewreel" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AppendSampleReel();" type="button" value="Cooley\'s (reel)" title="Adds an example reel (Cooley\'s) to the end of the ABC">';
+  modal_msg += '<input id="addnewjig" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AppendSampleJig();" type="button" value="The Kesh (jig)" title="Adds an example jig (The Kesh) to the end of the ABC">';
+  modal_msg += '<input id="addnewhornpipe" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AppendSampleHornpipe();" type="button" value="Alexander\'s (hornpipe)" title="Adds an example Hornpipe (Alexander\'s) to the end of the ABC">';
+  modal_msg += '</p>';
+  modal_msg += '<p style="text-align:center;margin-top:24px;">';
+  modal_msg += '<input id="addragtime" class="advancedcontrols btn btn-injectcontrols-headers"  style="margin-right:24px;" onclick="AddRagtimeNightingale();" type="button" value="Ragtime Nightingale" title="Adds Ragtime Nightingale by Joseph Lamb to the end of the ABC">';
+  modal_msg += '<input id="addjsbach" class="advancedcontrols btn btn-injectcontrols-headers" style="margin-right:24px;" onclick="AppendJSBach();" type="button" value="J.S. Bach Two-Part Invention #1" title="Adds the J.S. Bach 2-Part Invention #1 to the end of the ABC">';
+  modal_msg += '<input id="addjsbach2" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AppendJSBach2();" type="button" value="J.S. Bach Fantasia" title="Adds the J.S. Bach BWV570 Fantasia for Pipe Organ to the end of the ABC">';
+
+  modal_msg += '</p></div>';
+
+  /* ---------------- ABC templates tab ---------------- */
+
+  modal_msg += '<div id="addabc-tab-templates" class="adv-tab-panel' + (isTemplatesActive ? ' active' : '') + '">';
+  modal_msg += '<p style="text-align:center;margin-top:16px;">';
+  modal_msg += '<input id="addnewtunetemplate" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AppendTuneTempate();" type="button" value="Add a Tune Template" title="Adds a tune template to the end of the ABC">';
+  modal_msg += '<input id="addsongtemplate" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AppendSongTemplate();" type="button" value="Add a Song Template" title="Adds a minimal song template to the end of the ABC">';
+  modal_msg += '<input id="addnewsong" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AppendSampleSong();" type="button" value="Add an Example Song" title="Adds an example song to the end of the ABC">';
+  modal_msg += '</p>';
+  modal_msg += '<p style="text-align:center;margin-top:24px;">';
+  modal_msg += '<input id="addbodhrantemplate" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AddBodhranTemplate();" type="button" value="Add Bodhran Backing Track Template" title="Opens a dialog where you can choose a bodhran backing track template of common tune styles to add to the end of the ABC">';
+  modal_msg += '</p></div>';
+
+  /* ---------------- PDF features tab ---------------- */
+
+  modal_msg += '<div id="addabc-tab-pdf-features" class="adv-tab-panel' + (isPDFFeaturesActive ? ' active' : '') + '">';
+  modal_msg += '<p style="text-align:center;margin-top:16px;"><input id="tunebookbuilder-add-play" class="advancedcontrols btn btn-injectcontrols-tunebookbuilder-play" onclick="PDFTunebookBuilderPlayOnly();" type="button" value="Inject Only PDF Tunebook Play Features" title="Inject only minimal playback-related instrument and volume commands at the top of your tunebook ABC"><input id="tunebookbuilder_add" class="advancedcontrols btn btn-injectcontrols-tunebookbuilder" onclick="PDFTunebookBuilder();" type="button" value="Inject All PDF Tunebook Features" title="Inject commands at the top of your tunebook ABC for adding a Title Page, Table of Contents, Index, Page Headers, Page Footers, instruments and volumes for Playback Links, and Custom QR Code"></p>';
+  modal_msg += '<p style="text-align:center;margin-top:24px;"><input id="addpdfplayonlytemplate" class="advancedcontrols btn btn-injectcontrols-headers" style="margin-right:24px;" onclick="AddPDFPlayOnlyTemplate();" type="button" value="Example PDF Only Play Features Template" title="Inject an example template with only minimal playback-related instrument and volume commands at the top of your tunebook ABC">';
+  modal_msg += '<input id="addpdfannotationstemplate" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AddPDFAnnotationsTemplate();" type="button" value="Example PDF All Features Template" title="Inject an example template that contains the most common PDF tunebook export feature annotations"></p>';
+  modal_msg += '</div>';
+
+  modal_msg += '<p style="font-size:2pt;">&nbsp;</p>';
+  modal_msg += '</div></div>';
+
+  modal_msg += '<p style="text-align:center;font-size:18px;margin-top:26px;">Search and Add Tunes (Over 65,000 Tunes Available)</p>';
+  modal_msg += '<p style="text-align:center;margin-top:16px;">';
+  modal_msg += '<input id="searchandaddtunes" class="advancedcontrols btn btn-injectcontrols-addabc" onclick="AddFromSearch(null,AddABCCallback);" type="button" value="Tune Search Engine" title="Search for tunes to add to your tunebook.&nbsp;&nbsp;Over 65,000 tunes available.">';
 
   modal_msg += '<p style="text-align:center;font-size:18px;margin-top:24px;">Change the Order or Delete Tunes</p>';
   modal_msg += '<p style="text-align:center;margin-top:16px;">';
 
-  // Reorder uses drag and drop on desktop
   if (isPureDesktopBrowser()) {
-    modal_msg += '<input id="changetuneorder" class="advancedcontrols btn btn-injectcontrols-headers" onclick="ChangeTuneOrder();" type="button" value="Change the Order of the Tunes" title="Change the order of the tunes">';
-  }
-  // Reorder uses up / down buttons on mobile
-  else {
-    modal_msg += '<input id="changetuneorder" class="advancedcontrols btn btn-injectcontrols-headers" onclick="ChangeTuneOrderMobile();" type="button" value="Change the Order of the Tunes" title="Change the order of the tunes">';
+    modal_msg += '<input id="changetuneorder" class="advancedcontrols btn btn-injectcontrols-addabc" onclick="ChangeTuneOrder();" type="button" value="Change the Order of the Tunes" title="Change the order of the tunes">';
+  } else {
+    modal_msg += '<input id="changetuneorder" class="advancedcontrols btn btn-injectcontrols-addabc" onclick="ChangeTuneOrderMobile();" type="button" value="Change the Order of the Tunes" title="Change the order of the tunes">';
   }
 
-  modal_msg += '<input id="culltunes" class="advancedcontrols btn btn-injectcontrols-headers" onclick="CullTunes();" type="button" value="Delete Tunes from the Tunebook" title="Delete selected tunes from the tunebook">';
+  modal_msg += '<input id="culltunes" class="advancedcontrols btn btn-injectcontrols-addabc" onclick="CullTunes();" type="button" value="Delete Tunes from the Tunebook" title="Delete selected tunes from the tunebook">';
   modal_msg += '</p>';
 
-  // Showing examples?
-  if (gFeaturesShowExamples) {
-    modal_msg += '<p style="text-align:center;font-size:18px;margin-top:24px;">Add an Example ABC Tune</p>';
-    modal_msg += '<p style="text-align:center;margin-top:16px;">';
-    modal_msg += '<input id="addnewreel" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AppendSampleReel();" type="button" value="Cooley\'s (reel)" title="Adds an example reel (Cooley\'s) to the end of the ABC">';
-    modal_msg += '<input id="addnewjig" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AppendSampleJig();" type="button" value="The Kesh (jig)" title="Adds an example jig (The Kesh) to the end of the ABC">';
-    modal_msg += '<input id="addnewhornpipe" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AppendSampleHornpipe();" type="button" value="Alexander\'s (hornpipe)" title="Adds an example Hornpipe (Alexander\'s) to the end of the ABC">';
-    modal_msg += '</p>';
-  }
-
-  // Showing templates?
-  if (gFeaturesShowTemplates) {
-    modal_msg += '<p style="text-align:center;margin-top:24px;font-size:18px;">Add an ABC Template</p>';
-    modal_msg += '<p style="text-align:center;margin-top:16px;">';
-    modal_msg += '<input id="addnewtunetemplate" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AppendTuneTempate();" type="button" value="Add a Tune Template" title="Adds a tune template to the end of the ABC">';
-    modal_msg += '<input id="addsongtemplate" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AppendSongTemplate();" type="button" value="Add a Song Template" title="Adds a minimal song template to the end of the ABC">';
-    modal_msg += '<input id="addnewsong" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AppendSampleSong();" type="button" value="Add an Example Song" title="Adds an example song to the end of the ABC">';
-    modal_msg += '</p>';
-    modal_msg += '<p style="text-align:center;margin-top:16px;">';
-    modal_msg += '<input id="addbodhrantemplate" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AddBodhranTemplate();" type="button" value="Add Bodhran Backing Track Template" title="Opens a dialog where you can choose a bodhran backing track template of common tune styles to add to the end of the ABC">';
-    modal_msg += '<input id="addpdfannotationstemplate" class="advancedcontrols btn btn-injectcontrols-headers" style="margin-right:24px;" onclick="AddPDFAnnotationsTemplate(event);" type="button" value="Add PDF Tunebook Features Template" title="Adds a template that contains the most common PDF tunebook export feature annotations">';
-    modal_msg += '</p>';
-  }
-
-  modal_msg += '<p style="text-align:center;margin-top:24px;font-size:18px;">Inject PDF Tunebook Features</p>';
-  modal_msg += '<p style="text-align:center;margin-top:24px;"><input id="tunebookbuilder-add-play" class="advancedcontrols btn btn-injectcontrols-tunebookbuilder-play" onclick="PDFTunebookBuilderPlayOnly();" type="button" value="Inject Only PDF Tunebook Play Features" title="Inject only minimal playback-related instrument and volume commands at the top of your tunebook ABC"><input id="tunebookbuilder_add" class="advancedcontrols btn btn-injectcontrols-tunebookbuilder" onclick="PDFTunebookBuilder();" type="button" value="Inject All PDF Tunebook Features" title="Inject commands at the top of your tunebook ABC for adding a Title Page, Table of Contents, Index, Page Headers, Page Footers, instruments and volumes for Playback Links, and Custom QR Code"></p>';
-
-  modal_msg += '<p style="text-align:center;margin-top:24px;">';
-  modal_msg += '</p>';
   modal_msg += '</div>';
 
+  // With snapshot visibility handled pre-render, this can go away.
+  // Keep any other init you still need here; tabs should not flash now.
   setTimeout(function() {
-
     idleAddABC();
-
-  }, 25);
+  }, 50);
 
   DayPilot.Modal.alert(modal_msg, {
     theme: "modal_flat",
-    top: 25,
-    width: 730,
+    top: 50,
+    width: 700,
     scrollWithPage: false
-  }).then(function() {
-
-
   });
 
 }
@@ -20757,12 +20771,7 @@ function AppendSampleSong() {
 //
 // Add a common PDF annotations template
 //
-function AddPDFAnnotationsTemplate(e) {
-
-  if (e.shiftKey && e.altKey){
-    AddDatabaseTemplate();
-    return;
-  }
+function AddPDFAnnotationsTemplate() {
 
   // Keep track of actions
   sendGoogleAnalytics("action", "AddPDFAnnotationsTemplate");
@@ -20786,7 +20795,30 @@ function AddPDFAnnotationsTemplate(e) {
   theValue += '%indexrightoffset 0\n';
   theValue += '%pageheader This is the Page Header\n';
   theValue += '%pagefooter This is the Page Footer\n';
-  theValue += '%add_all_playback_links 0 0 0 fatboy\n';
+  theValue += '%add_all_playback_links 0 0 0 fluid\n';
+  theValue += '%add_all_playback_volumes 64 64\n';
+  theValue += '%\n';
+  theValue += '% End of PDF Tunebook Features\n\n';
+
+  // Put the annotations at the top
+  setABCEditorText(theValue + getABCEditorText());
+
+}
+
+function AddPDFPlayOnlyTemplate() {
+
+  // Keep track of actions
+  sendGoogleAnalytics("action", "AddPDFPlayOnlyTemplate");
+
+  // Stuff in the most common PDF annotations
+  var theValue = '% Start of PDF Tunebook Features\n';
+  theValue += '%\n';
+  theValue += '%pdfquality 0.75\n';
+  theValue += '%pdf_between_tune_space 20\n';
+  theValue += '%\n';
+  theValue += '%pageheader Click the tune title to play\n';
+  theValue += '%\n';
+  theValue += '%add_all_playback_links 0 0 0 fluid\n';
   theValue += '%add_all_playback_volumes 64 64\n';
   theValue += '%\n';
   theValue += '% End of PDF Tunebook Features\n\n';
@@ -20797,129 +20829,357 @@ function AddPDFAnnotationsTemplate(e) {
 }
 
 //
-// Add note database loader template
+// Add the J.S. Bach 2-Part Invention #1
 //
-function AddDatabaseTemplate() {
+function AppendJSBach(){
 
   // Keep track of actions
-  sendGoogleAnalytics("action", "AddDatabaseTemplate");
+  sendGoogleAnalytics("action","AppendJSBach");
 
   // Stuff in some default ABC with additional options explained
   var theValue = ""
 
   var nTunes = CountTunes();
 
-  if (nTunes > 0) {
+  if (nTunes > 0){
     theValue += "\n";
   }
 
-  // Tempate 1 - Offline Single Instrument Notes + Reverb Database Loader
+  theValue += 'X:1\n';
+  theValue += "%\n";
+  theValue += "% Example J.S. Bach transcription originally imported from MusicXML\n";
+  theValue += "%\n";  
+  theValue += '% Click "Play" to play\n';
+  theValue += "%\n";
+  theValue += 'T:Two-Part Invention #1\n';
+  theValue += 'C:J.S. Bach\n';
+  theValue += 'L:1/16\n';
+  theValue += 'Q:1/4=84\n';
+  theValue += 'M:4/4\n';
+  theValue += 'K:C\n';
+  theValue += '%\n';
+  theValue += '% Try changing the abcjs_soundfont value to\n';
+  theValue += '% fluid, fluidhq, musyng, fatboy, canvas, mscore, or arachno:\n';
+  theValue += '%\n';  
+  theValue += '%abcjs_soundfont fluid\n'; 
+  theValue += '%\n';  
+  theValue += '%%staffsep 40\n';
+  theValue += '%%stretchlast true\n';
+  theValue += '%\n';
+  theValue += '% Try changing these to %%MIDI program mute\n';
+  theValue += '% to isolate individual voices:\n';
+  theValue += '%\n';
+  theValue += 'V:1 treble\n';
+  theValue += '%%MIDI program 6\n';
+  theValue += 'V:2 bass\n';
+  theValue += '%%MIDI program 6\n';
+  theValue += 'V:1\n';
+  theValue += 'z CDE FDEC G2c2 B/A/Bc2 | dGAB cABG d2g2 f/e/fg2 |\n'; 
+  theValue += 'eagf egfa gfed cedf | edcB AcBd cBAG ^FAGB |\n'; 
+  theValue += 'A2D2 c/B/c2d BAG^F EGFA | GBAc Bdce dB/c/dg B/c/BAG |\n';
+  theValue += '.G4 z4 z GAB cABG | .^F4 z4 z ABc dBcA |\n';
+  theValue += '.B4 z4 z dcB AcBd | .c4 z4 z edc Bd^ce |\n';
+  theValue += 'd2^c2d2e2 f2A2B2c2 | d2^F2^G2A2 B2c2 d4 |\n';
+  theValue += 'z E^F^G AFGE edce dcBd | ca^gb aefd ^Gfed c/d/cBA |\n';
+  theValue += 'Aagf egfa g8- | gefg afge f8 |\n';
+  theValue += 'z gfe dfeg f8- | fdef gefd e8- |\n';
+  theValue += "ecde fdec defg afge | fgab c'abg c'2g2 e/f/edc|\n";
+  theValue += '[][Q:1/4=56][M:2/4]c_BAG FAGB|[Q:1/4=42]A=BcE DcFB |[M:4/4][EGc]16|]\n'; 
+  theValue += 'V:2\n';
+  theValue += 'z8 z C,D,E, F,D,E,C, | G,2G,,2 z4 z G,A,B, CA,B,G, |\n'; 
+  theValue += 'C2B,2C2D2 E2G,2A,2B,2 | C2E,2^F,2G,2 A,2B,2 C4- |\n';
+  theValue += 'CD,E,^F, G,E,F,D, G,2B,,2C,2D,2 | E,2^F,2G,2E,2 B,,2>C,2 D,2D,,2 |\n';
+  theValue += 'z G,,A,,B,, C,A,,B,,G,, D,2G,2^F,2G,2 | A,D,E,^F, G,E,F,D, A,2D2C2D2 |\n';
+  theValue += 'G,GFE DFEG F2E2F2D2 | EAGF EGFA G2F2G2E2 |\n';
+  theValue += 'F_BAG FAGB AGFE DFEG | FEDC B,DCE DCB,A, ^G,B,A,C |\n';
+  theValue += 'B,2E,2D/C/.D3 CB,A,G, ^F,A,^G,B, | A,CB,D CEDF E2A,2E2E,2 |\n';
+  theValue += 'A,2A,,2 z4 z EDC B,D^CE | D8- DA,B,C DB,CA, |\n';
+  theValue += 'B,8- B,DCB, A,CB,D | C8- CG,A,_B, CA,B,G, |\n';
+  theValue += 'A,2_B,2A,2G,2 F,2D2C2B,2 | A,2F2E2D2 ED,E,F, G,E,F,D, |\n';
+  theValue += '[][Q:1/4=56][M:2/4]E,2C,2D,2E,2|[Q:1/4=42]F,D,E,F, G,2G,,2 |[M:4/4][C,,C,]16 |]\n';
+
+  // Do common tune addition processing
+  ProcessAddTune(theValue);
+
+}
+
+//
+// Add the J.S. Bach Fantasia BWV570
+//
+function AppendJSBach2(){
+
+  // Keep track of actions
+  sendGoogleAnalytics("action","AppendJSBach2");
+
+  // Stuff in some default ABC with additional options explained
+  var theValue = ""
+
+  var nTunes = CountTunes();
+
+  if (nTunes > 0){
+    theValue += "\n";
+  }
 
   theValue += 'X:1\n';
-  theValue += 'T: Single Soundfont Instrument Notes + Reverb Setting Database Loader\n';
-  theValue += 'M: 4/4\n';
-  theValue += 'L: 1/8\n';
-  theValue += 'K: C\n';
-  theValue += 'Q: 1/4=400\n';
+  theValue += "%\n";
+  theValue += "% Example J.S. Bach transcription originally imported from MusicXML\n";
+  theValue += "%\n";  
+  theValue += '% Click "Play" to play\n';
+  theValue += "%\n";
+  theValue += 'T:Fantasia\n';
+  theValue += 'T:BWV570\n';
+  theValue += 'T:Johann Sebastian Bach (1685-1750)\n';
+  theValue += '%%score { 1 | 2 | 3 | 4 }\n';
+  theValue += 'L:1/16\n';
+  theValue += 'M:4/4\n';
+  theValue += 'K:C\n';
   theValue += '%\n';
-  theValue += '% 1) Select the soundfont:\n';
+  theValue += '% Try changing the abcjs_soundfont value to\n';
+  theValue += '% fluid, fluidhq, musyng, fatboy, canvas, mscore, or arachno:\n';
+  theValue += '%\n';  
+  theValue += '%abcjs_soundfont fluid\n'; 
+  theValue += '%\n';   
+  theValue += '% Add some large church-style reverb\n';
   theValue += '%\n';
-  theValue += '% Available soundfonts are:\n';
-  theValue += '% fluid, musyng, fatboy, canvas, mscore, arachno, and fluidhq\n';
+  theValue += '%reverb church 0.8 0.2\n';
+  theValue += '%\n';    
+  theValue += '%%stretchlast true\n';
+  theValue += '%%staffsep 40\n';
+  theValue += 'Q:1/4=100\n';
   theValue += '%\n';
-  theValue += '%soundfont fluid\n';
+  theValue += '% Try changing these to %%MIDI program mute\n';
+  theValue += '% to isolate individual voices:\n';
   theValue += '%\n';
-  theValue += '% 2) Select the MIDI instrument program you want to use\n';
-  theValue += '% in the soundfont and have all the notes stored in the database:\n';
-  theValue += '%\n';
-  theValue += '% Example: Acoustic Grand Piano\n';
-  theValue += '%%MIDI program 0\n';
-  theValue += '%\n';
-  theValue += '% 3) Select the reverb environment you want to have stored in the database\n';
-  theValue += '%\n';
-  theValue += '% Available reverb environments are:\n';
-  theValue += '% off, room1, room2, room3, chamber1, chamber2, chamber3,\n';
-  theValue += '% hall1, hall2, hall3, church1,\n';
-  theValue += '% room (same as room3), chamber (same as chamber2),\n';
-  theValue += '% hall (same as hall2), and church (same as church1)\n';
-  theValue += '%\n';
-  theValue += '% chamber is the default reverb, so probably already stored:\n';
-  theValue += '%\n';
-  theValue += '%reverb chamber 0.9 0.1\n';
-  theValue += '%\n';
-  theValue += '% 4) While online, click "Play" to load the ABC into the player.\n';
-  theValue += '%\n';
-  theValue += "% You do not need to actually play the tune, just loading the template\n";
-  theValue += "% into the player is enough to save the notes and reverb setting in\n";
-  theValue += "% the instrument notes and reverb database.\n";
-  theValue += '%\n';
-  theValue += '[|C,,,4 ^C,,,4 D,,,4 ^D,,,4 E,,,4 F,,,4 ^F,,,4 G,,,4 ^G,,,4 A,,,4 ^A,,,4 B,,,4 |\n';
-  theValue += 'C,,4 ^C,,4 D,,4 ^D,,4 E,,4 F,,4 ^F,,4 G,,4 ^G,,4 A,,4 ^A,,4 B,,4 |\n';
-  theValue += 'C,4 ^C,4 D,4, ^D,4 E,4 F,4 ^F,4 G,4 ^G,4 A,4 ^A,4 B,4 |\n';
-  theValue += 'C4 ^C4 D4 ^D4 E4 F4 ^F4 G4 ^G4 A4 ^A4 B4 |\n';
-  theValue += 'c4 ^c4 d4 ^d4 e4 f4 ^f4 g4 ^g4 a4 ^a4 b4 |\n';
-  theValue += "c'4 ^c'4 d'4 ^d'4 e'4 f'4 ^f'4 g'4 ^g'4 a'4 ^a'4 b'4|\n";
-  theValue += "c''4 ^c''4 d''4 ^d''4 e''4 f''4 ^f''4 g''4 ^g''4 a''4 ^a''4 b''4|]\n\n";
+  theValue += 'V:1 treble\n';
+  theValue += '%%MIDI program 19\n';
+  theValue += 'V:2 treble\n';
+  theValue += '%%MIDI program 19\n';
+  theValue += 'V:3 bass\n';
+  theValue += '%%MIDI program 19\n';
+  theValue += 'V:4 bass\n';
+  theValue += '%%MIDI program 19\n';
+  theValue += 'V:1\n';
+  theValue += 'G4 c6 d2 B4 | e6 f2 d6 e2 | c8- c2e2d2c2 | B2A2 B4 z2 e2g2e2 |\n';
+  theValue += 'c2e2G2c2 A2c2d2e2 | f2e2d2c2 B2G2 c4- | c2dcB2cB A8- | A2Bc d6 efB2cd |\n';
+  theValue += '^G6 AB A2Bcd2cd | B6 cB A6 B^G | c8- c2dc_B2cA | _B8- B2>G2A2GA |\n';
+  theValue += 'F6 EF G2A_B A4- | A2Bc d6 Bcd2ef | e8- e2dc d4- | d2ef e6 fg f4- |\n';
+  theValue += 'f2ga g6 ag f4- | f2gf e6 fe d4 | d8d8- | d2cB c6 dc B4 |\n';
+  theValue += 'c4 z12 | z4 d8 c4- | c8 B4 _B4 | A4 B4 G8 |\n';
+  theValue += 'A4 c4 B8 | c8c8 | f8 e8- | e6e6 d4- |\n';
+  theValue += 'd4 d2ef g2agf2gf | e4 g6 ag f4- | f2gfe2fe d8 | g2agf2gf e6 fe |\n';
+  theValue += 'd6 ed c6 dc | B4 c4 d4 e4- | e2fe d6 ef e4- | e2fe d6 efg2ab |\n';
+  theValue += 'c2Bcd2ef B4 c4- | cdBd cdBd cedf egfa | gGAB c4- cede fdef | B2cd2<c2B c8- |\n';
+  theValue += 'c8c8 | c16 |]\n';
+  theValue += 'V:2\n';
+  theValue += 'G8G8- | G2G2 c6 c2 B4- | B2B2 A6A6- | A4 G4 z8 |\n';
+  theValue += 'z16 | z16 | z4 G4 E8 | F8F8- |\n';
+  theValue += 'F2ED C4 E8- | E8E8- | E8 D8- | D2E^F G6 E2- E4- |\n';
+  theValue += 'E2D^C D4 E6 ^FG | ^F6 EF G8- | G2AB c4 A6 Bc | B6 cd c6 de |\n';
+  theValue += 'd6 ef e6 dc | d6 cB c6 BA | B8B8 | G6 FE F6 ED |\n';
+  theValue += 'E6 FG A6 Bc | B8- B6 A^G | A8 G8 | F8 E6 FE |\n';
+  theValue += 'D6 ED D4 G4 | G4 A6A6 | d8- d2cB c4- | c2dc c6 dc c4- |\n';
+  theValue += 'c2BA B6 c4 B2 | c4 d4 c6 dc | B4 c6 BA B4 | c4 B6 cB A4- |\n';
+  theValue += 'A2BA G6 AG ^F4 | G8 B4 c4- | c6 BA B6 cd | c6 BA B8 |\n';
+  theValue += 'A8 G8- | G8G8- | G8G8- | G6G6 F4 |\n';
+  theValue += 'G4 F6 GF EFDF | E16 |]\n';
+  theValue += 'V:3\n';
+  theValue += 'E8 D8- | D4 C4 D4 G4 | E8 D8- | D8 C8- |\n';
+  theValue += 'C8 C8 | D6D6 E2FE | D8 ^C8 | D4 A,2B,C B,8- |\n';
+  theValue += 'B,4 A,8 ^G,4- | G,2A,B, C6 B,A, B,4- | B,2A,^G,A,2E,=G, ^F,8 | G,6 A,_B,- B,4 A,4- |\n';
+  theValue += 'A,8 _B,4 E,4 | A,8 G,8- | G,6 E,C, ^F,6 D,2 | G,8G,8- |\n';
+  theValue += 'G,8G,8- | G,8G,8- | G,2G,A,B,2CD G,2A,B,D,2E,F, | E,4 A,4 D,4 G,4- |\n';
+  theValue += 'G,2A,B, C6 DE F4- | F8 E8- | E4 D8 C4- | C4 D6 CB, C4- |\n';
+  theValue += 'C2B,C A,4 B,4 E4- | E8 F8- | F4 G6G6 | A8A8 |\n';
+  theValue += 'G4 G2F2 E4 D4 | C2DCB,2CB, A,4 D4- | D4 E2C2 G6 FG | E2FED2ED C6 DC |\n';
+  theValue += 'B,6 CB, A,2B,2 C4 | D4 E4 G8 | A4 D4 G8- | G8G8 |\n';
+  theValue += 'E4 D8 E4- | E2D2E2D2 E2B,2C2D2 | E4- EEDC D8- | D4 F4 E4 C4|\n';
+  theValue += 'z2 C_B,A,2G,F, G,6 F,2 | G,16 |]\n';
+  theValue += 'V:4\n';
+  theValue += 'C,2D,2E,2C,2 G,8- | G,8G,8 | A,6 G,2 ^F,8 | G,6 F,2 E,8- |\n';
+  theValue += 'E,8 F,8- | F,4 ^F,4 G,8- | G,8- G,2A,_B,A,2G,A, | F,8 D,8 |\n';
+  theValue += 'E,8E,8- | E,8E,8 | A,,8 D,8- | D,8 ^C,8 |\n';
+  theValue += 'D,6D,6 ^C,4 | C,8 B,,8 | C,8 ^F,,8 | G,,8G,,8- |\n';
+  theValue += 'G,,8G,,8- | G,,8G,,8- | G,,4 z12 | z16 |\n';
+  theValue += 'C,6 D,E, F,6 G,A, | D,2E,F,B,,2C,D, ^G,,2E,,2 A,,4- | A,,2A,G,^F,2E,D, G,2D,=F,E,2D,C, | F,2C,E,D,2C,B,, E,8 |\n';
+  theValue += 'F,4 ^F,4 G,2G,=F,E,2E,D, | C,2C,B,,A,,2A,,G,, F,,2A,,G,,F,,2F,,E,, | D,,2D,C,B,,2A,,G,, C,6 D,E, | A,,6 B,,C, F,,4 ^F,,2E,,F,, |\n';
+  theValue += 'G,,4 z8 x4 | z16 | G,8G,8- | G,8G,8- |\n';
+  theValue += 'G,8G,8- | G,2G,F,E,2D,C, B,,2A,,G,,F,,2E,,D,, | F,,4 F,4 G,8- | G,8G,8- |\n';
+  theValue += 'G,4 F,6 G,F,E,2D,C, | G,8G,8- | G,8G,8- | G,8 C,2C_B,A,2G,F, |\n';
+  theValue += 'E,4 F,4 C,8 | C,16 |]\n';
 
-  // Template 2 - Complete Soundfont Instrument Notes Database Loader Primer
 
-  theValue += "X: 2\n";
-  theValue += "T: All Soundfont Instruments Notes Database Primer Loader\n";
-  theValue += "M: 4/4\n";
-  theValue += "L: 1/8\n";
-  theValue += "K: C\n";
-  theValue += "Q: 1/8=400\n";
+  // Do common tune addition processing
+  ProcessAddTune(theValue);
+
+}
+
+// 
+// Add Ragtime Nightingale by Joseph Lamb
+//
+
+function AddRagtimeNightingale(){
+
+    // Keep track of actions
+  sendGoogleAnalytics("action","AddRagtimeNightingale");
+
+  // Stuff in some default ABC with additional options explained
+  var theValue = ""
+
+  var nTunes = CountTunes();
+
+  if (nTunes > 0){
+    theValue += "\n";
+  }
+
+  theValue += "X:1\n";
+  theValue += "T:Ragtime Nightingale\n";
+  theValue += "C:Joseph Lamb\n";
+  theValue += "%%score { ( 4 5 ) | ( 1 2 3 ) }\n";
+  theValue += "L:1/4\n";
+  theValue += "M:2/4\n";
+  theValue += "Q:80\n";
+  theValue += "K:Eb\n";
   theValue += "%\n";
-  theValue += "% Loads one note for each MIDI instrument in an entire soundfont\n";
-  theValue += "% into the instrument notes database to allow you to easily\n";
-  theValue += "% load the rest of the notes for all the instruments.\n";
+  theValue += "%%staffsep 90\n";
+  theValue += "%%sysstaffsep 50\n";
   theValue += "%\n";
-  theValue += "% 1) Select the soundfont you want to load:\n";
+  theValue += "%abcjs_soundfont fatboy\n";
+  theValue += "V:1 bass stems=down\n";
+  theValue += "% Acoustic Grand Piano\n";
+  theValue += "%%MIDI program 0\n";
+  theValue += "V:2 bass stems=down\n";
+  theValue += "% Acoustic Grand Piano\n";
+  theValue += "%%MIDI program 0\n";
+  theValue += "V:3 bass stems=down\n";
+  theValue += "% Acoustic Grand Piano\n";
+  theValue += "%%MIDI program 0\n";
+  theValue += "V:4 treble\n";
+  theValue += "% Acoustic Grand Piano\n";
+  theValue += "%%MIDI program 0\n";
+  theValue += "V:5 treble\n";
+  theValue += "% Acoustic Grand Piano\n";
+  theValue += "%%MIDI program 0\n";
   theValue += "%\n";
-  theValue += "% Available soundfonts are:\n";
-  theValue += "% fluid, musyng, fatboy, canvas, mscore, arachno, and fluidhq\n";
-  theValue += "%\n";
-  theValue += "%soundfont fluid\n";
-  theValue += "%\n";
-  theValue += '% 2) While online, click "Play" to load the ABC into the player.\n';
-  theValue += "%\n";
-  theValue += "% You don't need to actually play the file, just loading the template\n";
-  theValue += "% into the player is enough to create single note placeholder\n";
-  theValue += "% entries in the instrument notes database.\n";
-  theValue += "%\n";
-  theValue += "% 3) Once the player load is complete, you can close the player.\n";
-  theValue += "%\n";
-  theValue += '% 4) Open "Settings"/"Manage Notes, Reverb, and Tune Search Databases"\n';
-  theValue += "%\n";
-  theValue += '% 5) Click "Instrument Notes Database"\n';
-  theValue += "%\n";
-  theValue += '% 6) Click "Load All Notes for All Instruments"\n';
-  theValue += "%\n";
-  theValue += "% 7) The tool will download all the notes for all the instruments.\n";
-  theValue += "%\n";
-  theValue += "% This is a very aggressive use of the database loader feature.\n";
-  theValue += "%\n";
-  theValue += "% While I do not expect there to be any issues, use at your own risk.\n";
-  theValue += "%\n";
-  theValue += '[I:MIDI= program 0] "_0" G4 |[I:MIDI= program 1] "_1" G4 |[I:MIDI= program 2] "_2" G4 |[I:MIDI= program 3] "_3" G4 |[I:MIDI= program 4] "_4" G4 |[I:MIDI= program 5] "_5" G4 |[I:MIDI= program 6] "_6" G4 |[I:MIDI= program 7] "_7" G4 |\n';
-  theValue += '[I:MIDI= program 8] "_8" G4 |[I:MIDI= program 9] "_9" G4 |[I:MIDI= program 10] "_10" G4 |[I:MIDI= program 11] "_11" G4 |[I:MIDI= program 12] "_12" G4 |[I:MIDI= program 13] "_13" G4 |[I:MIDI= program 14] "_14" G4 |[I:MIDI= program 15] "_15" G4 |\n';
-  theValue += '[I:MIDI= program 16] "_16" G4 |[I:MIDI= program 17] "_17" G4 |[I:MIDI= program 18] "_18" G4 |[I:MIDI= program 19] "_19" G4 |[I:MIDI= program 20] "_20" G4 |[I:MIDI= program 21] "_21" G4 |[I:MIDI= program 22] "_22" G4 |[I:MIDI= program 23] "_23" G4 |\n';
-  theValue += '[I:MIDI= program 24] "_24" G4 |[I:MIDI= program 25] "_25" G4 |[I:MIDI= program 26] "_26" G4 |[I:MIDI= program 27] "_27" G4 |[I:MIDI= program 28] "_28" G4 |[I:MIDI= program 29] "_29" G4 |[I:MIDI= program 30] "_30" G4 |[I:MIDI= program 31] "_31" G4 |\n';
-  theValue += '[I:MIDI= program 32] "_32" G4 |[I:MIDI= program 33] "_33" G4 |[I:MIDI= program 34] "_34" G4 |[I:MIDI= program 35] "_35" G4 |[I:MIDI= program 36] "_36" G4 |[I:MIDI= program 37] "_37" G4 |[I:MIDI= program 38] "_38" G4 |[I:MIDI= program 39] "_39" G4 |\n';
-  theValue += '[I:MIDI= program 40] "_40" G4 |[I:MIDI= program 41] "_41" G4 |[I:MIDI= program 42] "_42" G4 |[I:MIDI= program 43] "_43" G4 |[I:MIDI= program 44] "_44" G4 |[I:MIDI= program 45] "_45" G4 |[I:MIDI= program 46] "_46" G4 |[I:MIDI= program 47] "_47" G4 |\n';
-  theValue += '[I:MIDI= program 48] "_48" G4 |[I:MIDI= program 49] "_49" G4 |[I:MIDI= program 50] "_50" G4 |[I:MIDI= program 51] "_51" G4 |[I:MIDI= program 52] "_52" G4 |[I:MIDI= program 53] "_53" G4 |[I:MIDI= program 54] "_54" G4 |[I:MIDI= program 55] "_55" G4 |\n';
-  theValue += '[I:MIDI= program 56] "_56" G4 |[I:MIDI= program 57] "_57" G4 |[I:MIDI= program 58] "_58" G4 |[I:MIDI= program 59] "_59" G4 |[I:MIDI= program 60] "_60" G4 |[I:MIDI= program 61] "_61" G4 |[I:MIDI= program 62] "_62" G4 |[I:MIDI= program 63] "_63" G4 |\n';
-  theValue += '[I:MIDI= program 64] "_64" G4 |[I:MIDI= program 65] "_65" G4 |[I:MIDI= program 66] "_66" G4 |[I:MIDI= program 67] "_67" G4 |[I:MIDI= program 68] "_68" G4 |[I:MIDI= program 69] "_69" G4 |[I:MIDI= program 70] "_70" G4 |[I:MIDI= program 71] "_71" G4 |\n';
-  theValue += '[I:MIDI= program 72] "_72" G4 |[I:MIDI= program 73] "_73" G4 |[I:MIDI= program 74] "_74" G4 |[I:MIDI= program 75] "_75" G4 |[I:MIDI= program 76] "_76" G4 |[I:MIDI= program 77] "_77" G4 |[I:MIDI= program 78] "_78" G4 |[I:MIDI= program 79] "_79" G4 |\n';
-  theValue += '[I:MIDI= program 80] "_80" G4 |[I:MIDI= program 81] "_81" G4 |[I:MIDI= program 82] "_82" G4 |[I:MIDI= program 83] "_83" G4 |[I:MIDI= program 84] "_84" G4 |[I:MIDI= program 85] "_85" G4 |[I:MIDI= program 86] "_86" G4 |[I:MIDI= program 87] "_87" G4 |\n';
-  theValue += '[I:MIDI= program 88] "_88" G4 |[I:MIDI= program 89] "_89" G4 |[I:MIDI= program 90] "_90" G4 |[I:MIDI= program 91] "_91" G4 |[I:MIDI= program 92] "_92" G4 |[I:MIDI= program 93] "_93" G4 |[I:MIDI= program 94] "_94" G4 |[I:MIDI= program 95] "_95" G4 |\n';
-  theValue += '[I:MIDI= program 96] "_96" G4 |[I:MIDI= program 97] "_97" G4 |[I:MIDI= program 98] "_98" G4 |[I:MIDI= program 99] "_99" G4 |[I:MIDI= program 100] "_100" G4 |[I:MIDI= program 101] "_101" G4 |[I:MIDI= program 102] "_102" G4 |[I:MIDI= program 103] "_103" G4 |\n';
-  theValue += '[I:MIDI= program 104] "_104" G4 |[I:MIDI= program 105] "_105" G4 |[I:MIDI= program 106] "_106" G4 |[I:MIDI= program 107] "_107" G4 |[I:MIDI= program 108] "_108" G4 |[I:MIDI= program 109] "_109" G4 |[I:MIDI= program 110] "_110" G4 |[I:MIDI= program 111] "_111" G4 |\n';
-  theValue += '[I:MIDI= program 112] "_112" G4 |[I:MIDI= program 113] "_113" G4 |[I:MIDI= program 114] "_114" G4 |[I:MIDI= program 115] "_115" G4 |[I:MIDI= program 116] "_116" G4 |[I:MIDI= program 117] "_117" G4 |[I:MIDI= program 118] "_118" G4 |[I:MIDI= program 119] "_119" G4 |\n';
-  theValue += '[I:MIDI= program 120] "_120" G4 |[I:MIDI= program 121] "_121" G4 |[I:MIDI= program 122] "_122" G4 |[I:MIDI= program 123] "_123" G4 |[I:MIDI= program 124] "_124" G4 |[I:MIDI= program 125] "_125" G4 |[I:MIDI= program 126] "_126" G4 |[I:MIDI= program 127] "_127" G4 |\n';
-  theValue += '[I:MIDI= program 128] "_128" G4 |[I:MIDI= program 129] "_129" G4 |[I:MIDI= program 130] "_130" G4 |[I:MIDI= program 131] "_131" G4 |[I:MIDI= program 132] "_132" G4 |[I:MIDI= program 133] "_133" G4 |[I:MIDI= program 134] "_134" G4 |[I:MIDI= program 135] "_135" G4 |\n';
-  theValue += '[I:MIDI= program 136] "_136" G4 |[I:MIDI= program 137] "_137" G4 |[I:MIDI= program 138] "_138" G4 |[I:MIDI= program 139] "_139" G4 |[I:MIDI= program 140] "_140" G4 |[I:MIDI= program 141] "_141" G4 |[I:MIDI= program 142] "_142" G4 |[I:MIDI= program 143] "_143" G4 |[I:MIDI= program 144] "_144" G4 |\n';
-  theValue += '[I:MIDI= program 145] "_145" G4 |[I:MIDI= program 146] "_146" G4 |[I:MIDI= program 147] "_147" G4 |[I:MIDI= program 148] "_148" G4 |[I:MIDI= program 149] "_149" G4 | [I:MIDI= program 158] "_158" G4 |]\n';
+  theValue += "V:1\n";
+  theValue += "C,,/4!<(!G,,/4C,/4D,/4 E,/4G,/4C/4!<)!E/4 | [A,D]/[A,D]/4[G,D]/4- [G,D]/ z/ | [A,C]/>[A,C]/- [A,C]/[A,E]/ | [G,D] !^![G,,,G,,]/ [G,=B,F]/ | %4\n";
+  theValue += "|: C,,/4G,,/4C,/4D,/4 E,/4G,/4C/4E/4 | [A,D]/[A,D]/ [G,D]/[=B,F]/ | C,,/4G,,/4C,/4D,/4 E,/4G,/4C/4E/4 | [A,D]/[A,D]/ [G,D]/ z/ | %8\n";
+  theValue += "[G,,G,]/[B,C=E]/[C,,C,]/[B,CE]/ | [F,,F,]/[A,CF]/ [C,,C,]/[A,CF]/ | [F,,F,]/[A,B,D]/ [B,,,B,,]/[A,B,D]/ | [E,,E,]/[G,B,E]/ [D,,D,]/[G,=B,F]/ | %12\n";
+  theValue += "C,,/4G,,/4C,/4D,/4 E,/4G,/4C/4E/4 | [A,D]/[A,D]/ [G,D]/[=B,F]/ | C,,/4G,,/4C,/4D,/4 E,/4G,/4C/4E/4 | [A,D]/[A,D]/ [G,D]/ z/ | %16\n";
+  theValue += "[G,,G,]/[B,C=E]/ [C,,C,]/[B,CE]/ | [F,,F,]/[A,CF]/ [A,,A,]/[=A,,=A,]/ | [B,,B,]/[=B,EG]/ [_B,,_B,]/[B,FA]/ |1 [E,E]/[B,,B,]/ [E,,E,]/[D,,D,]/ :| %20\n";
+  theValue += "|2 [E,E]/[B,,B,]/!<(! [E,,E,]/ z/ |: [F,,F,]/[A,B,D]/!<)! [B,,,B,,]/[A,,,A,,]/ | [G,,,G,,]/[G,B,E]/ [G,,G,]/[_G,,_G,]/ | [F,,F,]/[A,B,D]/ [B,,,B,,]/[A,B,D]/ | %24\n";
+  theValue += "[E,,E,]/[G,B,E]/ [G,,G,]/[_G,,_G,]/ | [F,,F,]/[A,B,D]/ [B,,,B,,]/[A,,,A,,]/ | [G,,,G,,]/[G,B,E]/ [E,,E,]/[G,B,E]/ | x C/4=A,/4^F,/4D,/4 | %28\n";
+  theValue += "x/x/ z | x2 | x2 | x2 | %32\n";
+  theValue += "x2 | x2 | x2 | x2 | %36\n";
+  theValue += "|1 x2 :|2 E,/[B,,B,]/ [E,,E,]/[D,,D,]/ || C,,/4G,,/4C,/4D,/4 E,/4G,/4C/4E/4 | [A,D]/[A,D]/ [G,D]/[=B,F]/ | %40\n";
+  theValue += "C,,/4G,,/4C,/4D,/4 E,/4G,/4C/4E/4 | [A,D]/[A,D]/ [G,D]/ z/ | [G,,G,]/[B,C=E]/[C,,C,]/[B,CE]/ | [F,,F,]/[A,CF]/ [C,,C,]/[A,CF]/ | %44\n";
+  theValue += "[F,,F,]/[A,B,D]/ [B,,,B,,]/[A,B,D]/ | [E,,E,]/[G,B,E]/ [D,,D,]/[G,=B,F]/ | C,,/4G,,/4C,/4D,/4 E,/4G,/4C/4E/4 | [A,D]/[A,D]/ [G,D]/[=B,F]/ | %48\n";
+  theValue += "C,,/4G,,/4C,/4D,/4 E,/4G,/4C/4E/4 | [A,D]/[A,D]/ [G,D]/ z/ | [G,,G,]/[B,C=E]/ [C,,C,]/[B,CE]/ | [F,,F,]/[A,CF]/ [A,,A,]/[=A,,=A,]/ | %52\n";
+  theValue += "[B,,B,]/[=B,EG]/ [_B,,_B,]/[B,FA]/ | [E,E]/[B,,B,]/ [E,,E,]/ z/ |:[K:Ab] [A,,A,]/[E,A,C]/ [C,C]/[E,A,C]/ | [B,,B,]/[E,G,D]/ [E,,E,]/[D,,D,]/ | %56\n";
+  theValue += "[C,,C,]/[E,A,C]/ [E,,E,]/[E,A,C]/ | [B,,B,]/[E,G,D]/ [E,,E,]/[D,,D,]/ | [C,,C,]/[E,A,C]/ [C,C]/[_C,_C]/ |!<(! [B,,B,]/[B,EG]/!<)! [=A,,=A,]/[A,E^F]/ | %60\n";
+  theValue += "[B,,B,]/[B,=DA]/ [B,,,B,,]/[A,B,D]/ | [E,,E,]/[B,,A,]/ [E,G,]/ z/ | [A,,,A,,]/[E,A,C]/ [C,,C,]/[E,A,C]/ | [B,,,B,,]/[E,G,D]/ [E,,E,]/[D,,D,]/ | %64\n";
+  theValue += "[C,,C,]/[E,A,C]/ [E,,E,]/[E,A,C]/ | [B,,B,]/[E,G,D]/ [E,,E,]/[E,G,D]/ | [A,,A,]/[=A,C_G]/ [C,C]/[A,EG]/ | [D,D]/[A,DF]/ [F,F]/[=D,=D]/ | %68\n";
+  theValue += "[E,E]/[A,CE]/ [E,,E,]/[E,B,_D]/ |1 [A,,A,]/[=A,C^F]/ [B,DG]/ z/ :|2 [A,,_A,]/ z/ [A,,,A,,]/ z/ ||[K:Eb] [B,D]/ z/ z | %72\n";
+  theValue += "z !^![B,,,B,,] | z2 | z/ !^![B,,,B,,] z/ || [F,,F,]/[A,B,D]/ [B,,,B,,]/[A,,,A,,]/ | %76\n";
+  theValue += "[G,,,G,,]/[G,B,E]/ [G,,G,]/[_G,,_G,]/ | [F,,F,]/[A,B,D]/ [B,,,B,,]/[A,B,D]/ | [E,,E,]/[G,B,E]/ [G,,G,]/[_G,,_G,]/ | [F,,F,]/[A,B,D]/ [B,,,B,,]/[A,,,A,,]/ | %80\n";
+  theValue += "[G,,,G,,]/[G,B,E]/ [E,,E,]/[G,B,E]/ | x C/4=A,/4^F,/4D,/4 | x/x/ z | [F,,F,]/[A,B,D]/ [B,,,B,,]/[A,,,A,,]/ | %84\n";
+  theValue += "[G,,,G,,]/[G,B,E]/ [G,,G,]/[_G,,_G,]/ | [F,,F,]/[A,B,D]/ [B,,,B,,]/[A,B,D]/ | [E,,E,]/[G,B,E]/ [G,,G,]/[G,B,E]/ | [A,,A,]/[A,=B,F]/ [A,B,F]/[=B,,=B,]/ | %88\n";
+  theValue += "[_B,,_B,]/[B,EG]/ [G,,,G,,] | [F,,,F,,]/[F,A,C]/ [B,,,B,,]/[A,B,D]/ | [B,EG]/!>![B,,B,]/ !>![E,,E,]/ z/ |] %91\n";
+  theValue += "V:2\n";
+  theValue += "x2 | x2 | x2 | x2 | %4\n";
+  theValue += "|: x2 | x2 | x2 | x2 | %8\n";
+  theValue += "x2 | x2 | x2 | x2 | %12\n";
+  theValue += "x2 | x2 | x2 | x2 | %16\n";
+  theValue += "x2 | x2 | x2 |1 x2 :| %20\n";
+  theValue += "|2 x2 |: x2 | x2 | x2 | %24\n";
+  theValue += "x2 | x2 | x2 | [D,,D,]/[D,G,B,]/ C,/D,,/ | %28\n";
+  theValue += "x/G/8B/8d/8g/8 z | [F,,F,]/[A,B,D]/ [B,,,B,,]/[A,,,A,,]/ | [G,,,G,,]/[G,B,E]/ [G,,G,]/[_G,,_G,]/ | [F,,F,]/[A,B,D]/ [B,,,B,,]/[A,B,D]/ | %32\n";
+  theValue += "[E,,E,]/[G,B,E]/ [G,,G,]/[G,B,E]/ | [A,,A,]/[A,=B,F]/ [A,B,F]/[=B,,=B,]/ | [_B,,_B,]/[B,EG]/ z | [F,,,F,,]/[F,A,C]/ [B,,,B,,]/[A,B,D]/ | %36\n";
+  theValue += "|1 E,/[B,,B,]/ [E,,E,]/ z/ :|2 x2 || x2 | x2 | %40\n";
+  theValue += "x2 | x2 | x2 | x2 | %44\n";
+  theValue += "x2 | x2 | x2 | x2 | %48\n";
+  theValue += "x2 | x2 | x2 | x2 | %52\n";
+  theValue += "x2 | x2 |:[K:Ab] x2 | x2 | %56\n";
+  theValue += "x2 | x2 | x2 | x2 | %60\n";
+  theValue += "x2 | x2 | x2 | x2 | %64\n";
+  theValue += "x2 | x2 | x2 | x2 | %68\n";
+  theValue += "x2 |1 x2 :|2 x2 ||[K:Eb] x2 | %72\n";
+  theValue += "x2 | x2 | x2 || x2 | %76\n";
+  theValue += "x2 | x2 | x2 | x2 | %80\n";
+  theValue += "x2 | [D,,D,]/[D,G,B,]/ C,/D,,/ | x/G/8B/8d/8g/8 z | x2 | %84\n";
+  theValue += "x2 | x2 | x2 | x2 | %88\n";
+  theValue += "x2 | x2 | x2 |] %91\n";
+  theValue += "V:3\n";
+  theValue += "x2 | x2 | x2 | x2 | %4\n";
+  theValue += "|: x2 | x2 | x2 | x2 | %8\n";
+  theValue += "x2 | x2 | x2 | x2 | %12\n";
+  theValue += "x2 | x2 | x2 | x2 | %16\n";
+  theValue += "x2 | x2 | x2 |1 x2 :| %20\n";
+  theValue += "|2 x2 |: x2 | x2 | x2 | %24\n";
+  theValue += "x2 | x2 | x2 | x2 | %28\n";
+  theValue += "G,, x | x2 | x2 | x2 | %32\n";
+  theValue += "x2 | x2 | x2 | x2 | %36\n";
+  theValue += "|1 x2 :|2 x2 || x2 | x2 | %40\n";
+  theValue += "x2 | x2 | x2 | x2 | %44\n";
+  theValue += "x2 | x2 | x2 | x2 | %48\n";
+  theValue += "x2 | x2 | x2 | x2 | %52\n";
+  theValue += "x2 | x2 |:[K:Ab] x2 | x2 | %56\n";
+  theValue += "x2 | x2 | x2 | x2 | %60\n";
+  theValue += "x2 | x2 | x2 | x2 | %64\n";
+  theValue += "x2 | x2 | x2 | x2 | %68\n";
+  theValue += "x2 |1 x2 :|2 x2 ||[K:Eb] x2 | %72\n";
+  theValue += "x2 | x2 | x2 || x2 | %76\n";
+  theValue += "x2 | x2 | x2 | x2 | %80\n";
+  theValue += "x2 | x2 | G,, x | x2 | %84\n";
+  theValue += "x2 | x2 | x2 | x2 | %88\n";
+  theValue += "x2 | x2 | x2 |] %91\n";
+  theValue += "V:4\n";
+  theValue += "!mf! x2 | [Fc]/4f/4[Fc]/4[G=Bg]/4- [GBg]/4G/4g/4f/4 | e/4d/4c/4e/4- e/4d/4c/ | [G=Bg] z/4 G/4[dg]/4G/4 | %4\n";
+  theValue += "|: e/<g/- g | x2 | e/<g/- g | x2 | %8\n";
+  theValue += "x2 | x2 | x2 | x2 | %12\n";
+  theValue += "e/<g/- g | x2 | e/<g/- g | x2 | %16\n";
+  theValue += "x2 | x f/4e/4=f/4^f/4 | [Geg]/4[Bb]/4[=B=b]/4[cdac']/4- [cdac']/4[_B_b]/4[cdac']/ |1 [GBe]- [GBe]/4G/4[=Bg]/4G/4 :| %20\n";
+  theValue += "|2 [G_Be]- [GBe]/4[ee']/4[dd']/4[cc']/4 |: [=Bfa=b] [cfac']/4 [DA_Bd]3/4 | [DGBd]/4[EGBe]/[B-eg-b-]/4 [B^^egb]/4[ee']/4[dd']/4[cc']/4 | [=Bfa=b]/4[cfac']/[dfad']/4- [dfad']/4[ee']/4[dd']/4[cc']/4 | %24\n";
+  theValue += "[=Beg=b]/4[cegc']/[dgbd']/4- [dgbd']/4[ee']/4[dd']/4[cc']/4 | [=Bfa=b]/<[cfac']/ [^CG_B^c]/<[DABd]/ | [DGBd]/4[EGBe]/[Begb]/4- [Begb]/4[=A=a]/4[Bb]/4[cc']/4 | [dgbd']/4[Bb]/4[Gg]/4[EG=Ae]/4 [EGAe]/[DAcd]/ | %28\n";
+  theValue += "[GBdg]/ z/ g'/4[ee']/4[dd']/4[cc']/4 | [=Bfa=b] [cfac']/4 [DA_Bd]3/4 | [DGBd]/4[EGBe]/[Begb]/4- [Begb]/4[ee']/4[dd']/4[cc']/4 | [=Bfa=b]/4[cfac']/[dfad']/4- [dfad']/4[ee']/4[dd']/4[cc']/4 | %32\n";
+  theValue += "[=Beg=b]/4[cegc']/[dgbd']/4- [dgbd']/4[_B_b]/4[=A=a]/4[Bb]/4 | [=Be=b]/4[ee']/[EAe]/4- [EAe]/4[Ee]/4[F=Af]/4[^F^f]/4 | [G_Beg]/4[Bb]/4[cc']/4[d=ebd']/4 z | [B_db]/4[Aca]/[GBg]/4- [GBg]/[FAf]/ | %36\n";
+  theValue += "|1 [EGe]- [EGe]/4[ee']/4[dd']/4[cc']/4 :|2 [EGe]- [EGe]/4!>(!G/4[=Bg]/4!>)!G/4 || e/<g/- g | x2 | %40\n";
+  theValue += "e/<g/- g | x2 | x2 | x2 | %44\n";
+  theValue += "x2 | x2 | e/<g/- g | x2 | %48\n";
+  theValue += "e/<g/- g | x2 | x2 | x f/4e/4=f/4^f/4 | %52\n";
+  theValue += "[Geg]/4[Bb]/4[=B=b]/4[cdac']/4- [cdac']/4[_B_b]/4[cdac']/ | [GBe]- [GBe]/ (3c'/4e'/4c'/4 |:[K:Ab] e/4e'/4c'/4e'/4 c'/4e'/4c'/4e'/4 | [d'e']/4[d'e']/[d'e']/4- [d'e']/x/ | %56\n";
+  theValue += "e'/4e''/4c''/4e''/4 c''/4e''/4c''/4e''/4 | [d''e'']/4[d''e'']/[d''e'']/4- [d''e'']/ x/ | e/4e'/4c'/4e'/4 c'/<e'/ | x2 | %60\n";
+  theValue += "b/a/4b/4 g/4b/4f/4b/4 | e/ (5:4:5B/8c/8B/8=A/8B/8 e/ (3c/4e/4c/4 | E/4e/4c/4e/4 c/4e/4c/4e/4 | [de]/4[de]/4x/4[de]/4- [de]/ x/ | %64\n";
+  theValue += "e/4e'/4c'/4e'/4 c'/4e'/4c'/4e'/4 | d'/4d'/[d'e']/4- [d'e']/ x/ | A/4a/4_g/4a/4 g/4a/4g/4a/4 | [fa]/>[da]/- [da]/4a/4=g/4f/4 | %68\n";
+  theValue += "e/4f/4a/4g/4- g/4f/4e/ |1 .[Acea]/Te/{=de} e'/(3c'/4e'/4c'/4 :|2 .[Acea]/ z/ [Acea]/ z/ ||[K:Eb]!mf! B/f/ b/f'/ | %72\n";
+  theValue += "x z/ (3c/4f/4d/4 | B/ (3c'/4f'/4d'/4 a/ (3c'/4f'/4d'/4 | (3b/ [da]/ z/ z/4!ff! [Bb]/4[=A=a]/4[Bb]/4 || [=Bf=a=b] [cfac']/4 [DA_Bd]3/4 | %76\n";
+  theValue += "[DGBd]/4[EGBe]/[Begb]/4- [Begb]/4[ee']/4[dd']/4[cc']/4 | [=Bfa=b]/4[cfac']/[dfad']/4- [dfad']/4[ee']/4[dd']/4[cc']/4 | [=Beg=b]/4[cegc']/[dgbd']/4- [dgbd']/4[ee']/4[dd']/4[cc']/4 | [=Bfa=b]/<[cfac']/ [^CG_B^c]/<[DABd]/ | %80\n";
+  theValue += "[DGBd]/4[EGBe]/[Begb]/4- [Begb]/4[=A=a]/4[Bb]/4[cc']/4 | [dgbd']/4[Bb]/4[Gg]/4[EG=Ae]/4 [EGAe]/[DAcd]/ | [GBdg]/ z/ g'/4[ee']/4[dd']/4[cc']/4 | [=Bfa=b] [cfac']/4 [DA_Bd]3/4 | %84\n";
+  theValue += "[DGBd]/4[EGBe]/[Begb]/4- [Begb]/4[ee']/4[dd']/4[cc']/4 | [=Bfa=b]/4[cfac']/[dfad']/4- [dfad']/4[ee']/4[dd']/4[cc']/4 | [=Beg=b]/4[cegc']/[dgbd']/4- [dgbd']/4[_B_b]/4[=A=a]/4[Bb]/4 | [=Be=b]/4[ee']/[EAe]/4- [EAe]/4[Ee]/4[F=Af]/4[^F^f]/4 | %88\n";
+  theValue += "[G_Beg]/4[Bb]/4[cc']/4[d=ebd']/4 [Gg] | [Aca]/4[Bb]/4[cc']/4[dad']/4- [dad']/4[cc']/4[Bdb]/ | [egbe'] [egbe']/ z/ |] %91\n";
+  theValue += "V:5\n";
+  theValue += "x2 | x2 | F/>^F/- F/F/ | x2 | %4\n";
+  theValue += "|: !mp! [Gce]2 | [Fc]/4f/4[Fc]/4[G=Bg]/4- [GBg]/4G/4[dg]/4G/4 | [Gce]2 | [Fc]/4f/4[Fc]/4[G=Bg]/4- [GBg]/g/4f/4 | %8\n";
+  theValue += "=e/4c'/4[_db]/4c'/4 [ca]/4c'/4[Bg]/4c'/4 | [Acf]/4g/4c/4[Acf]/4- [Acf]/4g/4[Af]/4e/4 | [Ad]/4b/4[ca]/4b/4 [Bg]/4b/4[Af]/4b/4 | [Ge]/4g/4G/4[=Bf]/4- [Bf]/4G/4[dg]/4G/4 | %12\n";
+  theValue += "[Gce]2 | [Fc]/4f/4[Fc]/4[G=Bg]/4- [GBg]/4G/4[dg]/4G/4 | [Gce]2 | [Fc]/4f/4[Fc]/4[G=Bg]/4- [GBg]/g/4f/4 | %16\n";
+  theValue += "=e/4c'/4[_db]/4c'/4 [ca]/4c'/4[Bg]/4c'/4 | [Acf]/4g/4c/4[Fcf]/4- [Fcf]/[=Fc]/ | x2 |1 x2 :| %20\n";
+  theValue += "|2 x2 |: x2 | x2 | x2 | %24\n";
+  theValue += "x2 | x2 | x2 | x2 | %28\n";
+  theValue += "x2 | x2 | x2 | x2 | %32\n";
+  theValue += "x2 | x2 | x2 | x2 | %36\n";
+  theValue += "|1 x2 :|2 x2 ||!mp! [Gce]2 | [Fc]/4f/4[Fc]/4[G=Bg]/4- [GBg]/4G/4[dg]/4G/4 | %40\n";
+  theValue += "[Gce]2 | [Fc]/4f/4[Fc]/4[G=Bg]/4- [GBg]/g/4f/4 | =e/4c'/4[_db]/4c'/4 [ca]/4c'/4[Bg]/4c'/4 | [Acf]/4g/4c/4[Acf]/4- [Acf]/4g/4[Af]/4e/4 | %44\n";
+  theValue += "[Ad]/4b/4[ca]/4b/4 [Bg]/4b/4[Af]/4b/4 | [Ge]/4g/4G/4[=Bf]/4- [Bf]/4G/4[dg]/4G/4 | [Gce]2 | [Fc]/4f/4[Fc]/4[G=Bg]/4- [GBg]/4G/4[dg]/4G/4 | %48\n";
+  theValue += "[Gce]2 | [Fc]/4f/4[Fc]/4[G=Bg]/4- [GBg]/g/4f/4 | =e/4c'/4[_db]/4c'/4 [ca]/4c'/4[Bg]/4c'/4 | [Acf]/4g/4c/4[Fcf]/4- [Fcf]/[=Fc]/ | %52\n";
+  theValue += "x2 | x2 |:[K:Ab]!mp! e/f/ a/c'/ | a/4f/g/4- g/(3c''/4e''/4c''/4 | %56\n";
+  theValue += "e'/f'/ a'/c''/ | a'/4f'/g'/4- g'/ (3c'/4e'/4c'/4 | e/f/ a/f/4^f/4 | g/4[Bb]/4[cc']/4[=d=f=d']/4- [dfd']/4[cfc']/[dfd']/4 | %60\n";
+  theValue += "[B=d]/c/ B/A/ | G/!>(!F/!>)! E/ x/ | E/F/ _A/B/ | A/4F/G/4- G/ (3c'/4e'/4c'/4 | %64\n";
+  theValue += "e/f/a/c'/ | a/4f/g/4- g/(3c/4e/4c/4 | A/=A/B/c/ | B/4F/_A/4- A/[A=B]/ | %68\n";
+  theValue += "[Ac]/>[Gd]/- [Gd]/[Gd]/ |1 x2 :|2 x2 ||[K:Eb] x3/2x/ | %72\n";
+  theValue += "b'!f! x/ [EA]/ | [DA]/ [ea]/ d/[ea]/ | x2 || x2 | %76\n";
+  theValue += "x2 | x2 | x2 | x2 | %80\n";
+  theValue += "x2 | x2 | x2 | x2 | %84\n";
+  theValue += "x2 | x2 | x2 | x2 | %88\n";
+  theValue += "x2 | x2 | x2 |] %91\n";
 
   // Do common tune addition processing
   ProcessAddTune(theValue);
@@ -22611,7 +22871,7 @@ function InjectRepeatsAndClickTrackAll() {
 
   const modal = DayPilot.Modal.form(form, theData, {
     theme: "modal_flat",
-    top: 100,
+    top: 50,
     width: 760,
     scrollWithPage: (AllowDialogsToScroll()),
     okText: "Inject",
@@ -23252,7 +23512,7 @@ function InjectHeaderString() {
 
   const modal = DayPilot.Modal.form(form, theData, {
     theme: "modal_flat",
-    top: 100,
+    top: 25,
     width: 650,
     scrollWithPage: (AllowDialogsToScroll()),
     okText: "Inject",
@@ -23588,7 +23848,7 @@ function InjectCustomStringedInstrumentTab() {
 
   const modal = DayPilot.Modal.form(form, theData, {
     theme: "modal_flat",
-    top: 50,
+    top: 25,
     width: 650,
     scrollWithPage: (AllowDialogsToScroll()),
     okText: "Inject",
@@ -24037,7 +24297,7 @@ function InjectFontSettings() {
 
   const modal = DayPilot.Modal.form(form, gTheFontInjectData, {
     theme: "modal_flat",
-    top: 75,
+    top: 25,
     width: 675,
     scrollWithPage: (AllowDialogsToScroll()),
     okText: "Inject",
@@ -25313,7 +25573,7 @@ function InjectAllMIDIParams() {
   var form = [{
     html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;font-family:var(--abctools-ui-font-fallbacks);margin-left:15px;">Inject MIDI Soundfont, Melody, Bass, and Chords&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#selecting_the_instruments_for_playback" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
   }, {
-    html: '<p style="margin-top:24px;margin-bottom:24px;font-size:12pt;line-height:18pt;font-family:var(--abctools-ui-font-fallbacks)">This will inject a %soundfont directive into the ABC:</p>'
+    html: '<p style="margin-top:18px;margin-bottom:18px;font-size:12pt;line-height:18pt;font-family:var(--abctools-ui-font-fallbacks)">This will inject a %soundfont directive into the ABC:</p>'
   }, {
     name: "            Inject MIDI Soundfont",
     id: "configure_inject_soundfont",
@@ -25326,7 +25586,7 @@ function InjectAllMIDIParams() {
     options: sound_fonts_list,
     cssClass: "configure_soundfont_select"
   }, {
-    html: '<p style="margin-top:24px;margin-bottom:24px;font-size:12pt;line-height:18pt;font-family:var(--abctools-ui-font-fallbacks)">This will inject a %%MIDI program directive into the ABC:</p>'
+    html: '<p style="margin-top:18px;margin-bottom:18px;font-size:12pt;line-height:18pt;font-family:var(--abctools-ui-font-fallbacks)">This will inject a %%MIDI program directive into the ABC:</p>'
   }, {
     name: "            Inject MIDI Melody program",
     id: "configure_inject_melody_program",
@@ -25339,7 +25599,7 @@ function InjectAllMIDIParams() {
     options: midi_program_list,
     cssClass: "configure_midi_program_select"
   }, {
-    html: '<p style="margin-top:24px;margin-bottom:24px;font-size:12pt;line-height:18pt;font-family:var(--abctools-ui-font-fallbacks)">This will inject %%MIDI bassprog and %%MIDI bassvol directives into the ABC:</p>'
+    html: '<p style="margin-top:18px;margin-bottom:18px;font-size:12pt;line-height:18pt;font-family:var(--abctools-ui-font-fallbacks)">This will inject %%MIDI bassprog and %%MIDI bassvol directives into the ABC:</p>'
   }, {
     name: "            Inject MIDI Bass program and volumes",
     id: "configure_inject_bass_program",
@@ -25357,7 +25617,7 @@ function InjectAllMIDIParams() {
     type: "text",
     cssClass: "configure_midi_program_form_number_input"
   }, {
-    html: '<p style="margin-top:24px;margin-bottom:24px;font-size:12pt;line-height:18pt;font-family:var(--abctools-ui-font-fallbacks)">This will inject %%MIDI chordprog and %%MIDI chordvol directives into the ABC:</p>'
+    html: '<p style="margin-top:18px;margin-bottom:18px;font-size:12pt;line-height:18pt;font-family:var(--abctools-ui-font-fallbacks)">This will inject %%MIDI chordprog and %%MIDI chordvol directives into the ABC:</p>'
   }, {
     name: "            Inject MIDI Chord program and volumes",
     id: "configure_inject_chord_program",
@@ -25375,7 +25635,7 @@ function InjectAllMIDIParams() {
     type: "text",
     cssClass: "configure_midi_program_form_number_input"
   }, {
-    html: '<p style="font-size:14pt;line-height:19pt;font-family:var(--abctools-ui-font-fallbacks);margin-bottom:30px;text-align:center;"><a href="https://michaeleskin.com/documents/general_midi_extended_v10.pdf" target="_blank">General MIDI Instrument Program Numbers</a></p>'
+    html: '<p style="font-size:14pt;line-height:19pt;font-family:var(--abctools-ui-font-fallbacks);margin-bottom:24px;text-align:center;"><a href="https://michaeleskin.com/documents/general_midi_extended_v10.pdf" target="_blank">General MIDI Instrument Program Numbers</a></p>'
   }, {
     name: "            Inject all tunes",
     id: "configure_inject_all",
@@ -26041,8 +26301,6 @@ function InjectMetronome() {
 //
 // Copy the ABC to the clipboard
 //
-// If shift key is pressed, copy the text and open the ABC in editor.drawthedots.com
-//
 function CopyABC() {
 
   if (gAllowCopy) {
@@ -26052,16 +26310,34 @@ function CopyABC() {
     // Copy the abc to the clipboard
     CopyToClipboard(theData);
 
-    // Give some feedback
-    document.getElementById("copybutton").value = "Copied!";
+    var thePrompt = "All tunes copied to the clipboard!"
+      
+    // Center the string in the prompt
+    thePrompt = makeCenteredPromptString(thePrompt);
 
-    setTimeout(function() {
-
-      document.getElementById("copybutton").value = "Copy All";
-
-    }, 500);
+    // Nope, exit
+    DayPilot.Modal.alert(thePrompt, {
+      theme: "modal_flat",
+      top: 200,
+      scrollWithPage: (AllowDialogsToScroll())
+    });
 
   }
+  else{
+
+    var thePrompt = "No tunes to copy."
+
+    // Center the string in the prompt
+    thePrompt = makeCenteredPromptString(thePrompt);
+
+    // Nope, exit
+    DayPilot.Modal.alert(thePrompt, {
+      theme: "modal_flat",
+      top: 200,
+      scrollWithPage: (AllowDialogsToScroll())
+    });
+  }
+
 }
 
 //
@@ -27621,7 +27897,6 @@ function processShareLink() {
           scrollWithPage: (AllowDialogsToScroll())
         });
       }
-
     });
 
     // Lite: Customized
@@ -29193,7 +29468,7 @@ function InjectBagpipeSounds() {
 
   const modal = DayPilot.Modal.form(form, theData, {
     theme: "modal_flat",
-    top: 75,
+    top: 25,
     width: 685,
     scrollWithPage: (AllowDialogsToScroll()),
     okText: "Inject",
@@ -29525,7 +29800,7 @@ function IncipitsBuilderDialog() {
 
   const modal = DayPilot.Modal.form(form, theData, {
     theme: "modal_flat",
-    top: 100,
+    top: 25,
     width: 600,
     scrollWithPage: (AllowDialogsToScroll()),
     okText: "Build",
@@ -30809,7 +31084,7 @@ function DoInjectHarmonicaTab() {
 
   const modal = DayPilot.Modal.form(form, theData, {
     theme: "modal_flat",
-    top: 50,
+    top: 37,
     width: 700,
     scrollWithPage: (AllowDialogsToScroll()),
     okText: "Inject",
@@ -31860,7 +32135,7 @@ function DoInjectTablature_Anglo() {
 
   const modal = DayPilot.Modal.form(form, theData, {
     theme: "modal_flat",
-    top: 100,
+    top: 75,
     width: 720,
     scrollWithPage: (AllowDialogsToScroll()),
     okText: "Inject",
@@ -33272,8 +33547,43 @@ function LaunchCSVTagExtractor() {
 }
 
 //
-// Export All Audio and Images
+// Export All dialog
 //
+
+var gExportAllLastTab = "exportall-tab-audio";
+
+function AdvTabs_SelectTab(rootId, tabId) {
+  var root = document.getElementById(rootId);
+  if (!root) return;
+
+  // Remember last used tab for ExportAll dialog
+  if (rootId === "exportall-dialog") {
+    gExportAllLastTab = tabId;
+  }
+
+  root.querySelectorAll(".adv-tab-btn").forEach(function(btn) {
+    btn.classList.toggle("active", btn.getAttribute("data-tab") === tabId);
+    btn.setAttribute("aria-selected", (btn.getAttribute("data-tab") === tabId) ? "true" : "false");
+  });
+
+  root.querySelectorAll(".adv-tab-panel").forEach(function(panel) {
+    panel.classList.toggle("active", panel.id === tabId);
+  });
+}
+
+function AdvTabs_Init(rootId) {
+  var root = document.getElementById(rootId);
+  if (!root) return;
+
+  // If already active (preselected in HTML), don't change anything.
+  if (root.querySelector(".adv-tab-btn.active") && root.querySelector(".adv-tab-panel.active")) return;
+
+  var firstBtn = root.querySelector(".adv-tab-btn");
+  if (!firstBtn) return;
+
+  AdvTabs_SelectTab(rootId, firstBtn.getAttribute("data-tab"));
+}
+
 function ExportAll() {
 
   // Apparently doesn't work on mobile
@@ -33300,56 +33610,119 @@ function ExportAll() {
 
   var format = GetRadioValue("notenodertab");
 
-  var modal_msg = '<p style="text-align:center;font-size:20pt;font-family:var(--abctools-ui-font-fallbacks)">Export All Tunes</p>';
+  // Restore last selected tab if available
+  var initialTab = (typeof gExportAllLastTab === "string" && gExportAllLastTab) ? gExportAllLastTab : "exportall-tab-audio";
 
-  modal_msg += '<p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);margin-top:28px;">Export All Tunes as Audio/MIDI</p>';
-  modal_msg += '<p style="text-align:center;font-size:18pt;font-family:var(--abctools-ui-font-fallbacks);">';
-  modal_msg += '<input id="exportall_mp3button" class="exportall_mp3button btn btn-allmp3download" onclick="BatchMP3Export();" type="button" value="Export all as MP3 Audio" title="Saves the audio for all the tunes as .MP3 files">'
-  modal_msg += '<input id="exportall_midibutton" class="exportall_midibutton btn btn-allmididownload" onclick="BatchMIDIExport();" type="button" value="Export all as MIDI" title="Saves the MIDI file for all the tunes">'
-  modal_msg += '</p>';
+  var validTabs = ["exportall-tab-audio", "exportall-tab-image", "exportall-tab-abcmxl", "exportall-tab-titles", "exportall-tab-dev"];
 
-  modal_msg += '<p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);margin-top:28px;">Export All Tunes as Images</p>';
-  modal_msg += '<p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);">';
-  modal_msg += '<input id="exportall_jpegbutton" class="exportall_jpegbutton btn btn-alljpegdownload" onclick="BatchJPEGExport();" type="button" value="Export all as JPEG" title="Saves the images for all the tunes as bitmap JPEG files">'
-  modal_msg += '<input id="exportall_pngbutton" class="exportall_pngbutton btn btn-allpngdownload" onclick="BatchPNGExport();" type="button" value="Export all as PNG" title="Saves the images for all the tunes as bitmap PNG files">'
-  modal_msg += '<input id="exportall_svgbutton" class="exportall_svgbutton btn btn-allsvgdownload" onclick="BatchSVGExport();" type="button" value="Export all as SVG" title="Saves the images for all the tunes as vector format SVG files">'
-  modal_msg += '</p>';
-  modal_msg += '<p class="export_all_text">';
-  modal_msg += 'Image width to export: <input id="export_width" type="number" min="0" step="1" max="4096" title="Image width to export" autocomplete="off"/>';
-  modal_msg += '</p>';
-  modal_msg += '<p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);margin-top:28px;">Export All Tunes as ABC or MusicXML</p>';
-  modal_msg += '<p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);">';
-  modal_msg += '<input id="exportall_abcbutton" class="exportall_abcbutton btn btn-allabcdownload" onclick="BatchABCExport();" type="button" value="Export all Tunes as ABC" title="Saves each tune in its own ABC file">'
-  modal_msg += '<input id="exportall_musicxmlbutton" class="exportall_musicxmlbutton btn btn-allmusicxmldownload" onclick="BatchMusicXMLExport();" type="button" value="Export all Tunes as MusicXML" title="Saves each tune in its own MusicXML file">'
-  modal_msg += '</p>';
-  modal_msg += '<p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);margin-top:28px;">Export All Tunes Titles</p>';
-  modal_msg += '<p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);">';
-  modal_msg += '<input id="export_tunetitlesbutton" class="export_tunetitlesbutton btn btn-exporttunetitles" onclick="ExportAllTuneTitles();" type="button" value="Export All Tune Titles" title="Saves a text file with all the tune titles">'
-  modal_msg += '<p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);margin-top:28px;">Developer Share URL Batch Export Tools</p>';
-  modal_msg += '<p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);">';
-  modal_msg += '<input id="exportall_jsonbutton" class="exportall_jsonbutton btn btn-alljsondownload" onclick="BatchJSONExport();" type="button" value="Export all Share URLs as JSON" title="Saves the Share URLs for all the tunes as a JSON file">'
-  modal_msg += '<input id="exportall_csvbutton" class="exportall_csvbutton btn btn-allcsvdownload" onclick="BatchCSVExport();" type="button" value="Export all Share URLs as CSV" title="Saves the Share URLs for all the tunes as a CSV file">'
-  modal_msg += '</p>';
-  modal_msg += '<p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);">';
-  modal_msg += '<input id="launchcsvextractor" class="launchcsvextractor btn btn-launchcsvextractor" onclick="LaunchCSVTagExtractor();");" type="button" value="Launch the ABC Tags to CSV Extractor Utility" title="Extract all ABC tags from one or more ABC files to a CSV file">';
-  modal_msg += '</p>';
-  modal_msg += '<p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);margin-top:28px;">SmartDraw Set List Builder</p>';
-  modal_msg += '<p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);">';
-  modal_msg += '<input id="export_smartdrawbutton" class="export_smartdrawbutton btn btn-smartdraw" onclick="SmartDrawExport();" type="button" value="SmartDraw Set List Builder" title="Build a SmartDraw set list using drag and drop">'
-  modal_msg += '</p>';
+  if (validTabs.indexOf(initialTab) === -1) initialTab = "exportall-tab-audio";
 
+  var modal_msg = '<div id="exportall-dialog">';
+
+  modal_msg += '<p style="text-align:center;font-size:18pt;font-family:var(--abctools-ui-font-fallbacks)">Export All Tunes</p>';
+
+  // Help corner button (keep same id & link)
   modal_msg += '<a id="exportall_help" href="https://michaeleskin.com/abctools/userguide.html#export_all" target="_blank" style="text-decoration:none;" title="Learn more about the audio and image exporter" class="dialogcornerbutton">?</a>';
+
+  // Tabs container (uses your existing adv-* CSS)
+  modal_msg += '<div class="adv-tabs">';
+  modal_msg += '  <div class="adv-tab-bar" role="tablist" aria-label="Export All Tabs">';
+
+  modal_msg += '    <button type="button" class="adv-tab-btn' + (initialTab === "exportall-tab-audio" ? ' active' : '') + '" data-tab="exportall-tab-audio" onclick="AdvTabs_SelectTab(\'exportall-dialog\', \'exportall-tab-audio\')">Audio/MIDI</button>';
+  modal_msg += '    <button type="button" class="adv-tab-btn' + (initialTab === "exportall-tab-image" ? ' active' : '') + '" data-tab="exportall-tab-image" onclick="AdvTabs_SelectTab(\'exportall-dialog\', \'exportall-tab-image\')">Image</button>';
+  modal_msg += '    <button type="button" class="adv-tab-btn' + (initialTab === "exportall-tab-abcmxl" ? ' active' : '') + '" data-tab="exportall-tab-abcmxl" onclick="AdvTabs_SelectTab(\'exportall-dialog\', \'exportall-tab-abcmxl\')">ABC/MusicXML</button>';
+  modal_msg += '    <button type="button" class="adv-tab-btn' + (initialTab === "exportall-tab-titles" ? ' active' : '') + '" data-tab="exportall-tab-titles" onclick="AdvTabs_SelectTab(\'exportall-dialog\', \'exportall-tab-titles\')">Titles</button>';
+  modal_msg += '    <button type="button" class="adv-tab-btn' + (initialTab === "exportall-tab-dev" ? ' active' : '') + '" data-tab="exportall-tab-dev" onclick="AdvTabs_SelectTab(\'exportall-dialog\', \'exportall-tab-dev\')">Developer Tools</button>';
+
+  modal_msg += '  </div>';
+
+  modal_msg += '  <div class="adv-tab-panels">';
+
+  // -------------------------------------------------------------------
+  // Audio tab
+  // -------------------------------------------------------------------
+  modal_msg += '    <div id="exportall-tab-audio" class="adv-tab-panel' + (initialTab === "exportall-tab-audio" ? ' active' : '') + '">';
+  //modal_msg += '      <p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);margin-top:18px;">Export All Tunes as Audio/MIDI</p>';
+  modal_msg += '      <p style="text-align:center;font-size:18pt;font-family:var(--abctools-ui-font-fallbacks);">';
+  modal_msg += '        <input id="exportall_mp3button" class="exportall_mp3button btn btn-allmp3download" onclick="BatchMP3Export();" type="button" value="Export all as MP3 Audio" title="Saves the audio for all the tunes as .MP3 files">';
+  modal_msg += '        <input id="exportall_midibutton" class="exportall_midibutton btn btn-allmididownload" onclick="BatchMIDIExport();" type="button" value="Export all as MIDI" title="Saves the MIDI file for all the tunes">';
+  modal_msg += '      </p>';
+  modal_msg += '    </div>';
+
+  // -------------------------------------------------------------------
+  // Image tab
+  // -------------------------------------------------------------------
+  modal_msg += '    <div id="exportall-tab-image" class="adv-tab-panel' + (initialTab === "exportall-tab-image" ? ' active' : '') + '">';
+  //modal_msg += '      <p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);margin-top:18px;">Export All Tunes as Images</p>';
+  modal_msg += '      <p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);">';
+  modal_msg += '        <input id="exportall_jpegbutton" class="exportall_jpegbutton btn btn-alljpegdownload" onclick="BatchJPEGExport();" type="button" value="Export all as JPEG" title="Saves the images for all the tunes as bitmap JPEG files">';
+  modal_msg += '        <input id="exportall_pngbutton" class="exportall_pngbutton btn btn-allpngdownload" onclick="BatchPNGExport();" type="button" value="Export all as PNG" title="Saves the images for all the tunes as bitmap PNG files">';
+  modal_msg += '        <input id="exportall_svgbutton" class="exportall_svgbutton btn btn-allsvgdownload" onclick="BatchSVGExport();" type="button" value="Export all as SVG" title="Saves the images for all the tunes as vector format SVG files">';
+  modal_msg += '      </p>';
+  modal_msg += '      <p class="export_all_text">';
+  modal_msg += '        Image width to export: <input id="export_width" type="number" min="0" step="1" max="4096" title="Image width to export" autocomplete="off"/>';
+  modal_msg += '      </p>';
+  modal_msg += '    </div>';
+
+  // -------------------------------------------------------------------
+  // ABC/MusicXML tab
+  // -------------------------------------------------------------------
+  modal_msg += '    <div id="exportall-tab-abcmxl" class="adv-tab-panel' + (initialTab === "exportall-tab-abcmxl" ? ' active' : '') + '">';
+  //modal_msg += '      <p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);margin-top:18px;">Export All Tunes as ABC or MusicXML</p>';
+  modal_msg += '      <p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);">';
+  modal_msg += '        <input id="exportall_abcbutton" class="exportall_abcbutton btn btn-allabcdownload" onclick="BatchABCExport();" type="button" value="Export all Tunes as ABC" title="Saves each tune in its own ABC file">';
+  modal_msg += '        <input id="exportall_musicxmlbutton" class="exportall_musicxmlbutton btn btn-allmusicxmldownload" onclick="BatchMusicXMLExport();" type="button" value="Export all Tunes as MusicXML" title="Saves each tune in its own MusicXML file">';
+  modal_msg += '      </p>';
+  modal_msg += '    </div>';
+
+  // -------------------------------------------------------------------
+  // Titles tab
+  // -------------------------------------------------------------------
+  modal_msg += '    <div id="exportall-tab-titles" class="adv-tab-panel' + (initialTab === "exportall-tab-titles" ? ' active' : '') + '">';
+  //modal_msg += '      <p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);margin-top:18px;">Export All Tunes Titles</p>';
+  modal_msg += '      <p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);">';
+  modal_msg += '        <input id="export_tunetitlesbutton" class="export_tunetitlesbutton btn btn-exporttunetitles" onclick="ExportAllTuneTitles();" type="button" value="Export All Tune Titles" title="Saves a text file with all the tune titles">';
+  modal_msg += '      </p>';
+  modal_msg += '    </div>';
+
+  // -------------------------------------------------------------------
+  // Developer Tools tab
+  // -------------------------------------------------------------------
+  modal_msg += '    <div id="exportall-tab-dev" class="adv-tab-panel' + (initialTab === "exportall-tab-dev" ? ' active' : '') + '">';
+  //modal_msg += '      <p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);margin-top:18px;">Developer Share URL Batch Export Tools</p>';
+  modal_msg += '      <p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);">';
+  modal_msg += '        <input id="exportall_jsonbutton" class="exportall_jsonbutton btn btn-alljsondownload" onclick="BatchJSONExport();" type="button" value="Export all Share URLs as JSON" title="Saves the Share URLs for all the tunes as a JSON file">';
+  modal_msg += '        <input id="exportall_csvbutton" class="exportall_csvbutton btn btn-allcsvdownload" onclick="BatchCSVExport();" type="button" value="Export all Share URLs as CSV" title="Saves the Share URLs for all the tunes as a CSV file">';
+  modal_msg += '      </p>';
+  modal_msg += '      <p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);margin-top:24px;">';
+  modal_msg += '        <input id="launchcsvextractor" class="launchcsvextractor btn btn-launchcsvextractor" onclick="LaunchCSVTagExtractor();" type="button" value="Launch the ABC Tags to CSV Extractor Utility" title="Extract all ABC tags from one or more ABC files to a CSV file">';
+  modal_msg += '      </p>';
+  modal_msg += '    </div>';
+
+  modal_msg += '  </div>'; // adv-tab-panels
+  modal_msg += '</div>';   // adv-tabs
+
+  modal_msg += '</div>';   // exportall-dialog
 
   DayPilot.Modal.alert(modal_msg, {
     theme: "modal_flat",
-    top: 37,
-    width: 670,
+    top: 150,
+    width: 740,
     scrollWithPage: (AllowDialogsToScroll())
-  })
+  });
 
-  document.getElementById("export_width").value = gExportWidthAll;
+  // Set export width after dialog exists
+  setTimeout(function() {
 
+    var w = document.getElementById("export_width");
+    if (w) w.value = gExportWidthAll;
+
+    // Safety init (should be no-op because we preselected)
+    AdvTabs_Init("exportall-dialog");
+
+  }, 0);
 }
+
 
 // 
 // Batch image exporters
@@ -33744,7 +34117,7 @@ function BatchMusicXMLRoundTrip() {
   };
 
   const form = [{
-    html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;font-family:var(--abctools-ui-font-fallbacks);margin-left:15px;">Reformat Using MusicXML&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#reformatusingxml" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;font-family:var(--abctools-ui-font-fallbacks);margin-left:15px;">Reformat Using MusicXML&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#reformat_using_musicxml" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
   }, {
     html: '<p style="margin-top:36px;margin-bottom:12px;font-size:12pt;line-height:18pt;font-family:var(--abctools-ui-font-fallbacks)">Click OK to reformat either the current tune or all the tunes in the ABC by exporting the tune(s) in MusicXML format and then re-import them using the current MusicXML import settings.</p>'
   }, {
@@ -33826,13 +34199,23 @@ function BatchMusicXMLRoundTripCurrentTune() {
         if (gRawMode) {
 
           RenderAsync(true, null, function() {
+
             hideTheSpinner();
+
+            // Make sure the More Tools dialog visible
+            ensureMoreToolsVisible();
+
           });
 
         } else {
 
           RenderAsync(true, theSelectedTuneIndex, function() {
+
             hideTheSpinner();
+
+            // Make sure the More Tools dialog visible
+            ensureMoreToolsVisible();
+
           });
 
         }
@@ -33892,7 +34275,12 @@ function BatchMusicXMLRoundTripWorker() {
         setABCEditorText(gBatchMusicXMLRoundTripAccum);
 
         RenderAsync(true, null, function() {
+          
           hideTheSpinner();
+
+          // Make sure the More Tools dialog visible
+          ensureMoreToolsVisible();
+
         });
 
         gIsDirty = true;
@@ -37000,35 +37388,21 @@ function PlayABC(e) {
         }
       }
     } else {
-      // If shift key click on play, open the Tune Trainer
-      if (e && e.shiftKey) {
-        
-        // Get the current tune index and tune count
-        gPlayABCTuneIndex = findSelectedTuneIndex();
+      // Select random tune if user clicks play with the alt keys pressed
+      if (e && e.altKey) {
+
         gPlayABCTuneCount = CountTunes();
 
-        //console.log("gPlayABCTuneIndex: "+gPlayABCTuneIndex)
+        gPlayABCTuneIndex = Math.floor(Math.random() * gPlayABCTuneCount);
 
-        TuneTrainer(false);
+        theSelectedABC = getTuneByIndex(gPlayABCTuneIndex);
 
-        return;
-
-      } else
-        // Select random tune if user clicks play with the alt keys pressed
-        if (e && e.altKey) {
-
-          gPlayABCTuneCount = CountTunes();
-
-          gPlayABCTuneIndex = Math.floor(Math.random() * gPlayABCTuneCount);
-
-          theSelectedABC = getTuneByIndex(gPlayABCTuneIndex);
-
-          if (theSelectedABC == "") {
-            // This should never happen
-            return;
-          }
-
+        if (theSelectedABC == "") {
+          // This should never happen
+          return;
         }
+
+      }
       else {
 
         // Try to find the current tune
@@ -37474,7 +37848,7 @@ function PlayABCDialog(theABC, callback, val, metronome_state) {
       modal_msg += '<input id="abcplayer_zoom_out" class="btn btn-player_zoom abcplayer_zoom_out" onclick="ZoomPlayer(false)" type="button" value="→&nbsp;←" title="Decreases the player width 10% of the window screen size">';
     }
 
-    modal_msg += '<input id="abcplayer_trainer" class="btn btn-looper abcplayer_trainer" onclick="TuneTrainerLaunchFromPlayer()" type="button" value="Start Tune Trainer" title="Opens the Tune Trainer for practicing tunes with increasing tempos">';
+    modal_msg += '<input id="abcplayer_trainer" class="btn btn-looper abcplayer_trainer" onclick="TuneTrainerLaunchFromPlayer()" type="button" value="Launch Tune Trainer" title="Launches the Tune Trainer to practice the tune with increasing tempos and optional phrase-by-phrase call-and-response training">';
 
     if (gPlayMetronome) {
       modal_msg += '<input id="abcplayer_metronomebutton" class="abcplayer_metronome button btn btn-metronome" onclick="ToggleMetronome();" type="button" value="Disable Metronome" title="Disables the metronome">';
@@ -43678,6 +44052,40 @@ function RollExplorerDialog(theOriginalABC, theProcessedABC, roll_explorer_state
 //
 
 //
+// Tune trainer phrase builder
+function TrainerPhraseBuilder(e){
+
+  // Shift key restores original tune
+  if (e.shiftKey){
+      phrase_builder_callback(gPlayerLooperOriginal);
+      return;
+  }
+ 
+  var theTrainerTune = gPlayerLooperOriginal;
+
+  PhraseBuilder(theTrainerTune,phrase_builder_callback);
+
+  function phrase_builder_callback(thePhrases){
+
+    if (thePhrases){
+      gPlayerLooperProcessed = thePhrases;
+    }
+
+     // Click the OK button in the player
+    gTheOKButton.click();
+
+    setTimeout(function() {
+
+      // Launch the trainer
+      TuneTrainerDialog(gPlayerLooperOriginal, gPlayerLooperProcessed, true);
+
+    }, 250);
+
+  }
+ 
+}
+
+//
 // Launched from the player, close the player, launch the trainer
 function TuneTrainerLaunchFromPlayer() {
 
@@ -43690,6 +44098,17 @@ function TuneTrainerLaunchFromPlayer() {
     TuneTrainer(true);
 
   }, 250);
+}
+
+function TuneTrainerTopBar(){
+        
+    // Get the current tune index and tune count
+    gPlayABCTuneIndex = findSelectedTuneIndex();
+    gPlayABCTuneCount = CountTunes();
+
+    //console.log("gPlayABCTuneIndex: "+gPlayABCTuneIndex)
+
+    TuneTrainer(false);
 }
 
 function TuneTrainer(bIsFromPlayer) {
@@ -44558,7 +44977,7 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
     modal_msg += '<span id="looper_text_4">Increment tempo after how many loops:</span> <input style="width:60px;margin-right:14px;" id="looper_count" type="number" min="1" step="1" max="100" title="Increment tempo after this many times through the tune" autocomplete="off"/><span id="looper_text_5">Countdown?</span><input style="width:18px;margin-left:8px;margin-right:14px;" id="looper_docountdown" type="checkbox" onchange="ToggleLoopCountdown();"/><span id="looper_text_6">Countdown secs:</span><input style="width:60px;margin-left:8px;" id="looper_countdown" type="number" min="1" step="1" max="30" title="Countdown secs" autocomplete="off" onchange="SaveLoopCountdown();"/>';
     modal_msg += '</p>';
     modal_msg += '<p class="configure_looper_text" style="text-align:center;margin:0px;margin-top:20px">';
-    modal_msg += '<input id="looperreset" class="looperreset button btn btn-looperreset" onclick="TuneTrainerReset();" type="button" value="Apply Tune Trainer Settings and Reload" title="Applies the entered tune trainer settings and reloads the player">';
+    modal_msg += '<input id="looperreset" class="looperreset button btn btn-looperreset" onclick="TuneTrainerReset();" type="button" value="Apply Settings and Reload" title="Applies the entered tune trainer settings and reloads the player">';
 
     if (gPlayMetronome) {
       modal_msg += '<input id="looper_metronomebutton" class="looper_metronome button btn btn-metronome" onclick="ToggleTuneTrainerMetronome();" type="button" value="Disable Metronome" title="Disables the metronome">';
@@ -44566,13 +44985,9 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
       modal_msg += '<input id="looper_metronomebutton" class="looper_metronome button btn btn-metronome" onclick="ToggleTuneTrainerMetronome();" type="button" value="Enable Metronome" title="Enables the metronome">';
     }
 
-    // Change message based on requested add measure count
-    if (gLooperAddMeasureCount == 1){
-      modal_msg += '<span id="looper_text_7" style="margin-left:14px;">Add a measure of rests?</span><input style="width:18px;margin-left:8px;margin-right:14px;" id="looper_addmeasure" type="checkbox" onchange="ToggleTuneTrainerAddMeasure();"/>';
-    }
-    else{
-      modal_msg += '<span id="looper_text_7" style="margin-left:14px;">Add '+gLooperAddMeasureCount+' measures of rests?</span><input style="width:18px;margin-left:8px;margin-right:14px;" id="looper_addmeasure" type="checkbox" onchange="ToggleTuneTrainerAddMeasure();"/>';
-    }
+    modal_msg += '<input id="trainer_phrase_builder" class="trainer_phrase_builder button btn btn-phrasebuilder" onclick="TrainerPhraseBuilder(event);" type="button" value="Phrase Builder" title="Builds phrases of specified measure length for the tune and then reloads the Tune Trainer.&nbsp;&nbsp;This does not change the original tune ABC.&nbsp;&nbsp;Shift-click to restore the original tune.">';
+    
+    modal_msg += '<span id="looper_text_7" style="margin-left:12px;" title="Adds additional full measure trailing rests at the end of the ABC.&nbsp;&nbsp;The number of measures of rests to add can be configured in the Advanced Settings dialog.">Add trailing rests?</span><input style="width:18px;margin-left:8px;margin-right:14px;" id="looper_addmeasure" type="checkbox" onchange="ToggleTuneTrainerAddMeasure();" title="Adds additional full measure trailing rests at the end of the ABC.&nbsp;&nbsp;The number of measures of rests to add can be configured in the Advanced Settings dialog."/>';
 
     modal_msg += '</p>';
     
@@ -44581,6 +44996,11 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
     modal_msg += '<div id="looperstatusbar"></div>';
     modal_msg += '<div id="looperstatusbaroverlay"></div>';
     modal_msg += '<div id="loopercountdown" class="looper-modal"><div class="looper-modal-content"><div class="looper-modal-text" id="loopercountdowntext"></div></div></div>';
+
+    // Add the share controls
+    if (gPlayerShowExternalToolsIcon){
+      modal_msg += '<img id="external_tools_share" class="external_tools_share" src="img/external_share.png" title="Open the tune in an external ABC tool.&nbsp;&nbsp;This control can be shown/hidden in the Tune Trainer by a setting in the Player Settings dialog."/>';
+    }
 
     // Scale the player for larger screens
     var windowWidth = window.innerWidth;
@@ -44618,6 +45038,20 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
       okText: "Close",
       scrollWithPage: (isMobileBrowser())
     });
+
+    // Add external tools icon?
+    if (gPlayerShowExternalToolsIcon){
+
+      var elem = document.getElementById("external_tools_share");
+      elem.onclick = function(){
+
+        sendGoogleAnalytics("dialog", "ExternalToolsTuneTrainer");
+
+        openInExternalTool(theOriginalABC);
+      
+      };
+
+    }
 
     // Set the initial loop parameters
     document.getElementById("looper_start_percent").value = gLooperSpeedStart;
@@ -46085,49 +46519,6 @@ function GetInitialConfigurationSettings() {
   if (val) {
     gShapeNoteStyle = val;
   }
-
-  // Save feature selections
-  gFeaturesShowSearch = true;
-  val = localStorage.FeaturesShowSearch;
-  if (val) {
-    gFeaturesShowSearch = (val == "true");
-  }
-
-  gFeaturesShowExamples = true;
-  val = localStorage.FeaturesShowExamples;
-  if (val) {
-    gFeaturesShowExamples = (val == "true");
-  }
-
-  gFeaturesShowTemplates = true;
-  val = localStorage.FeaturesShowTemplates;
-  if (val) {
-    gFeaturesShowTemplates = (val == "true");
-  }
-
-  gFeaturesShowTablatures = true;
-  val = localStorage.FeaturesShowTablatures;
-  if (val) {
-    gFeaturesShowTablatures = (val == "true");
-  }
-
-  gFeaturesShowExplorers = true;
-  val = localStorage.FeaturesShowExplorers;
-  if (val) {
-    gFeaturesShowExplorers = (val == "true");
-  }
-
-  gFeaturesShowExport = true;
-  val = localStorage.FeaturesShowExport;
-  if (val) {
-    gFeaturesShowExport = (val == "true");
-  }
-
-  gFeaturesShowBagpipeDrones = true;
-  val = localStorage.FeaturesShowBagpipeDrones;
-  if (val) {
-    gFeaturesShowBagpipeDrones = (val == "true");
-  }
   // Lite: Customized (change to false by default)
   gFeaturesShowTabButtons = false;
   val = localStorage.FeaturesShowTabButtons;
@@ -46749,14 +47140,7 @@ function SaveConfigurationSettings() {
     localStorage.DisableSelectedPlay = gDisableSelectedPlay;
 
     // Save UI features preferences
-    localStorage.FeaturesShowSearch = gFeaturesShowSearch;
-    localStorage.FeaturesShowExamples = gFeaturesShowExamples;
-    localStorage.FeaturesShowTemplates = gFeaturesShowTemplates;
-    localStorage.FeaturesShowTablatures = gFeaturesShowTablatures;
-    localStorage.FeaturesShowExplorers = gFeaturesShowExplorers;
-    localStorage.FeaturesShowExport = gFeaturesShowExport;
     localStorage.FeaturesShowTabButtons = gFeaturesShowTabButtons;
-    localStorage.FeaturesShowBagpipeDrones = gFeaturesShowBagpipeDrones;
 
     // Save Editor font size
     localStorage.ABCEditorFontSize = gABCEditorFontsize;
@@ -49460,230 +49844,227 @@ function Do_Browser_PDF_Export() {
 }
 
 //
-// Advanced controls dialog
+// More ABC Tools Dialog
 //
-//
 
-// Add an ABC file, sample tune, or template
-//
-var gMoreABCToolsOKButton = null;
+// ------------------------------------------------------------
+// Remember last selected More Tools tab
+// ------------------------------------------------------------
+var gMoreToolsLastTab = "";
 
-function Configure_AdvancedControlsDialog_UI() {
+function AdvancedControls_SelectTab(tabId) {
 
-  //console.log("Configure_AdvancedControlsDialog_UI");
+  var dialog = document.getElementById("advanced-controls-dialog");
+  if (!dialog) return;
 
-  var old_gFeaturesShowTablatures = gFeaturesShowTablatures;
-  var old_gFeaturesShowExplorers = gFeaturesShowExplorers;
-  var old_gFeaturesShowExport = gFeaturesShowExport;
-  var old_gFeaturesShowBagpipeDrones = gFeaturesShowBagpipeDrones;
+  // Remember last tab
+  gMoreToolsLastTab = tabId;
 
-  // Setup initial values
-  const theData = {
-    showtablatures: gFeaturesShowTablatures,
-    showexplorers: gFeaturesShowExplorers,
-    showexport: gFeaturesShowExport,
-    showbagpipedrones: gFeaturesShowBagpipeDrones
-  };
+  var buttons = dialog.querySelectorAll(".adv-tab-btn");
+  var panels  = dialog.querySelectorAll(".adv-tab-panel");
 
-  var form = [{
-    html: '<p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);margin-left:15px;">More ABC Tools Feature Options</p>'
-  }, {
-    name: "          Show Tablature Injectors",
-    id: "showtablatures",
-    type: "checkbox",
-    cssClass: "configure_ui_options_form_text"
-  }, {
-    name: "          Show MIDI, Swing, Grace, Roll, and Reverb Explorers",
-    id: "showexplorers",
-    type: "checkbox",
-    cssClass: "configure_ui_options_form_text"
-  }, ];
-
-  if (isDesktopBrowser()) {
-    form.push({
-      name: "          Show Export All Tunes, Sort by Tag, and Incipits Builder",
-      id: "showexport",
-      type: "checkbox",
-      cssClass: "configure_ui_options_form_text"
-    });
-  } else {
-    form.push({
-      name: "          Show Sort by Tag and Incipits Builder",
-      id: "showexport",
-      type: "checkbox",
-      cssClass: "configure_ui_options_form_text"
-    });
-  }
-
-  form.push({
-    name: "          Show Phrase Builder, Custom CSS Generator, Transpose to Key, and Inject Bagpipes",
-    id: "showbagpipedrones",
-    type: "checkbox",
-    cssClass: "configure_ui_options_form_text"
+  buttons.forEach(function(btn) {
+    var active = (btn.getAttribute("data-tab") === tabId);
+    btn.classList.toggle("active", active);
+    btn.setAttribute("aria-selected", active ? "true" : "false");
   });
 
-  const modal = DayPilot.Modal.form(form, theData, {
-    theme: "modal_flat",
-    top: 100,
-    width: 500,
-    scrollWithPage: (AllowDialogsToScroll()),
-    autoFocus: false
-  }).then(function(args) {
-
-    if (!args.canceled) {
-
-      gFeaturesShowTablatures = args.result.showtablatures;
-
-      gFeaturesShowExplorers = args.result.showexplorers;
-
-      gFeaturesShowExport = args.result.showexport;
-
-      gFeaturesShowBagpipeDrones = args.result.showbagpipedrones;
-
-      // No change, just return;
-      if ((gFeaturesShowTablatures == old_gFeaturesShowTablatures) &&
-        (gFeaturesShowExplorers == old_gFeaturesShowExplorers) &&
-        (gFeaturesShowExport == old_gFeaturesShowExport) &&
-        (gFeaturesShowBagpipeDrones == old_gFeaturesShowBagpipeDrones)
-      ) {
-
-        //console.log("Configure_AdvancedControlsDialog_UI - No change in settings");
-
-        return;
-
-      }
-
-      // Save the settings
-      SaveConfigurationSettings();
-
-      // Close the ABC tools dialog
-      gMoreABCToolsOKButton.click();
-
-      // And relaunch it after a short delay
-      setTimeout(function() {
-
-        AdvancedControlsDialog();
-
-      }, 250);
-    }
-
+  panels.forEach(function(panel) {
+    panel.classList.toggle("active", panel.id === tabId);
   });
+
 }
 
-// Find the OK button for the options dialog use
-function IdleMoreABCTools() {
+function AdvancedControls_InitTabs() {
+  
+  var dialog = document.getElementById("advanced-controls-dialog");
+  if (!dialog) return;
 
-  // Find the OK button
-  var theOKButtons = document.getElementsByClassName("modal_flat_ok");
+  var tabBar = dialog.querySelector(".adv-tab-bar");
+  if (!tabBar) return;
 
-  // Find the button that says "OK" to use to close the dialog when changing UI settings
-  var theOKButton = null;
+  var btns = tabBar.querySelectorAll(".adv-tab-btn");
+  if (!btns.length) return;
 
-  for (var i = 0; i < theOKButtons.length; ++i) {
-
-    theOKButton = theOKButtons[i];
-
-    if (theOKButton.innerText == "OK") {
-
-      //console.log("Found OK button");
-      gMoreABCToolsOKButton = theOKButton;
-
-      break;
-
-    }
+  // Restore remembered tab if it exists
+  if (gMoreToolsLastTab && dialog.querySelector("#" + gMoreToolsLastTab)) {
+    AdvancedControls_SelectTab(gMoreToolsLastTab);
+  } else {
+    AdvancedControls_SelectTab(btns[0].getAttribute("data-tab"));
   }
 }
 
 function AdvancedControlsDialog() {
 
-  // Keep track of advanced controls dialog
   sendGoogleAnalytics("dialog", "AdvancedControlsDialog");
 
-  // Moving the advanced controls to their own dialog
-  var modal_msg = '<p style="text-align:center;font-size:18pt;font-family:var(--abctools-ui-font-fallbacks);margin-left:15px;">More ABC Tools&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#more_tools" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span><img id="moreabctoolssettings" class="moreabctoolssettings moresettingsbutton" src="img/settings.png" title="More ABC Tools Settings" onclick="Configure_AdvancedControlsDialog_UI();"</img></p>';
+  // Decide initial tab BEFORE rendering to prevent flashing
+  // Uses your global from earlier: gMoreToolsLastTab
+  var initialTab = "adv-tab-injection";
+  if (gMoreToolsLastTab === "adv-tab-injection" ||
+      gMoreToolsLastTab === "adv-tab-tablatures" ||
+      gMoreToolsLastTab === "adv-tab-players" ||
+      gMoreToolsLastTab === "adv-tab-bagpipes") {
+    initialTab = gMoreToolsLastTab;
+  }
+
+  var isInjectionActive   = (initialTab === "adv-tab-injection");
+  var isTablaturesActive  = (initialTab === "adv-tab-tablatures");
+  var isPlayersActive     = (initialTab === "adv-tab-players");
+  var isOtherToolsActive  = (initialTab === "adv-tab-bagpipes");
+
+  var modal_msg = '';
+  modal_msg += '<p style="text-align:center;font-size:18pt;font-family:var(--abctools-ui-font-fallbacks);">';
+  modal_msg += 'More ABC Tools';
+  modal_msg += '<span style="font-size:24pt;" title="View documentation in new tab">';
+  modal_msg += '<a href="https://michaeleskin.com/abctools/userguide.html#more_tools" target="_blank" ';
+  modal_msg += 'style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a>';
+  modal_msg += '</span>';
+  modal_msg += '</p>';
+
   modal_msg += '<div id="advanced-controls-dialog">';
 
-  modal_msg += '<p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);margin-top:20px;">Show/Hide ABC Features</p>'
-  modal_msg += '<p style="text-align:center;">'
-  modal_msg += '<input id="toggleannotations" class="advancedcontrolsdisabled btn btn-advancedcontrols" onclick="ToggleAnnotations(false)" type="button" value="Hide Annotations" title="Hides/Shows all common annotations in the ABC">';
-  modal_msg += '<input id="toggletext" class="advancedcontrolsdisabled btn btn-advancedcontrols" onclick="ToggleTextAnnotations(false)" type="button" value="Hide Text" title="Hides/Shows all text in the ABC">';
-  modal_msg += '<input id="togglechords" class="advancedcontrolsdisabled btn btn-advancedcontrols" onclick="ToggleChords(false)" type="button" value="Hide Chords" title="Hides/Shows all chords in the ABC">';
-  modal_msg += '<input id="toggletab" class="advancedcontrolsdisabled btn btn-advancedcontrols" onclick="ToggleTab(false)" type="button" value="Hide Injected Tab" title="Hides/Shows all injected tablature in the ABC">';
-  modal_msg += '<input id="toggleornaments" class="advancedcontrolsdisabled btn btn-advancedcontrols" onclick="ToggleOrnaments(false)" type="button" value="Hide Ornaments" title="Hides/Shows all ~ and {} style ornaments in the ABC">';
-  modal_msg += '</p>';
+  /* ===========================================================
+     ALWAYS VISIBLE: SHOW / HIDE
+     =========================================================== */
 
-  modal_msg += '<p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);margin-top:20px;">Strip ABC Features</p>'
+  modal_msg += '<p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);margin-top:20px;">Show/Hide ABC Features</p>';
   modal_msg += '<p style="text-align:center;">';
-  modal_msg += '<input id="stripannotations" class="advancedcontrolsdisabled btn btn-injectcontrols" onclick="ToggleAnnotations(true)" type="button" value="Strip Annotations" title="Strips all common annotations from the ABC">';
-  modal_msg += '<input id="striptext" class="advancedcontrolsdisabled btn btn-injectcontrols" onclick="ToggleTextAnnotations(true)" type="button" value="Strip Text" title="Strips all text from the ABC">';
-  modal_msg += '<input id="stripchords" class="advancedcontrolsdisabled btn btn-injectcontrols" onclick="ToggleChords(true)" type="button" value="Strip Chords" title="Strips all chords from the ABC">';
-  modal_msg += '<input id="striptab" class="advancedcontrolsdisabled btn btn-injectcontrols" onclick="ToggleTab(true)" type="button" value="Strip Injected Tab" title="Strips all injected tablature from the ABC">';
-  modal_msg += '<input id="stripornaments" class="advancedcontrolsdisabled btn btn-injectcontrols" onclick="ToggleOrnaments(true)" type="button" value="Strip Ornaments" title="Strips all injected ~ and {} style ornaments from the ABC">';
-  modal_msg += '</p>';
-  modal_msg += '<p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);margin-top:20px;">ABC Injection Features</p>'
-  modal_msg += '<p style="text-align:center;">'
-  modal_msg += '<input id="injecttunenumbers" class="advancedcontrols btn btn-injectcontrols-headers" onclick="TuneTitlesNumbersDialog()" type="button" value="Inject Tune Title Numbers" title="Opens a dialog where you can add or remove numbers on the tune titles">';
-  modal_msg += '<input id="injectsectionheader" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectSectionHeader()" type="button" value="Inject PDF Section Header" title="Injects a PDF section header placeholder tune at the cursor insertion point">';
-  modal_msg += '<input id="injectfontsettings" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectFontSettings()" type="button" value="Inject Font Settings" title="Injects all ABC font directives at the top of the current or all tunes from the current font settings">'
-  modal_msg += '</p>';
-  modal_msg += '<p style="text-align:center;margin-top:20px;">';
-  modal_msg += '<input id="injectallmidiparams" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectAllMIDIParams()" type="button" value="Inject MIDI Programs and Volumes" title="Injects MIDI Soundfont, Melody program, Bass program, Chord program, and volume annotations into one or all tunes">';
-  modal_msg += '<input id="injectmetronome" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectMetronome()" type="button" value="Inject Metronome" title="Injects ABC for a metronome into one or all tunes">';
-  modal_msg += '<input id="injectclicktrackall" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectRepeatsAndClickTrackAll()" type="button" value="Inject Repeats + Intros" title="Injects repeated copies of tunes and optional style-adaptive two-bar click intros into every tune">';
-  modal_msg += '</p>';
-  modal_msg += '<p style="text-align:center;margin-top:20px;">';
-  modal_msg += '<input id="injectheaderstring" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectHeaderString()" type="button" value="Inject ABC Header Text" title="Injects text at the top or bottom of the ABC header for one or all tunes">';
-  modal_msg += '<input id="injectstaffwidth" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectCustomStringedInstrumentTab()" type="button" value="Custom Stringed Instrument Tab" title="Injects a custom tablature description for stringed instruments">';
-  modal_msg += '<input id="injectlargeprint" class="advancedcontrols btn btn-injectcontrols-headers" onclick="NotationSpacingExplorer()" type="button" value="Notation Spacing Explorer" title="Find the right spacing and scale values for your notation">';
+  modal_msg += '<input id="toggleannotations" class="advancedcontrolsdisabled btn btn-advancedcontrols" onclick="ToggleAnnotations(false)" type="button" value="Hide Annotations">';
+  modal_msg += '<input id="toggletext" class="advancedcontrolsdisabled btn btn-advancedcontrols" onclick="ToggleTextAnnotations(false)" type="button" value="Hide Text">';
+  modal_msg += '<input id="togglechords" class="advancedcontrolsdisabled btn btn-advancedcontrols" onclick="ToggleChords(false)" type="button" value="Hide Chords">';
+  modal_msg += '<input id="toggletab" class="advancedcontrolsdisabled btn btn-advancedcontrols" onclick="ToggleTab(false)" type="button" value="Hide Injected Tab">';
+  modal_msg += '<input id="toggleornaments" class="advancedcontrolsdisabled btn btn-advancedcontrols" onclick="ToggleOrnaments(false)" type="button" value="Hide Ornaments">';
   modal_msg += '</p>';
 
-  // Showing tablature injectors?
-  if (gFeaturesShowTablatures) {
-    modal_msg += '<p style="text-align:center;margin-top:20px;">'
-    modal_msg += '<input id="injectharmonicatab" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectHarmonicaTab()" type="button" value="Inject Harmonica Tab" title="Injects 10-hole diatonic harmonica tablature into the ABC">';
-    modal_msg += '<input id="injectboxtab" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectBoxTablature()" type="button" value="Inject Irish Button Box Tab" title="Injects B/C or C#/D box tablature into the ABC">';
-    modal_msg += '<input id="injectanglotab" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectTablature_Anglo()" type="button" value="Inject Anglo Concertina Tab" title="Injects Anglo Concertina tablature into the ABC">';
-    modal_msg += '</p>';
-    modal_msg += '<p style="text-align:center;margin-top:20px;">'
-    modal_msg += '<input id="injectfiddlefingerings" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectTablature_Fiddle_Fingerings_Dialog()" type="button" value="Inject Fiddle Fingerings" title="Injects Fiddle fingerings tablature with either finger numbers or string names and finger numbers into the ABC">';
-    modal_msg += '<input id="injectmd" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectTablature_MD()" type="button" value="Inject Dulcimer Tab" title="Injects Mountain Dulcimer tablature into the ABC">';
-    modal_msg += '<input id="injectbambooflute" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectTablature_Bamboo_Flute()" type="button" value="Inject Bamboo Flute Tab" title="Injects Bamboo flute tablature into the ABC">';
-    modal_msg += '</p>';
-    modal_msg += '<p style="text-align:center;margin-top:20px;"><input id="ceoltastransform" style="margin-right:18px;" class="advancedcontrols btn btn-injectcontrols" onclick="DoCeoltasTransformDialog()" type="button" value="Comhaltas Transform" title="Brings up a dialog where you can transform the ABC to/from Comhaltas format"><input id="injectshapenotes" style="margin-right:18px;" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectTablature_ShapeNotes()" type="button" value="Inject Note Names/Shapes/Solfège" title="Injects note names (Pitch Names, Standard ABC, Comhaltas ABC), Shape Note shapes, or Solfège note names into the ABC"><input id="injectcustomtab" style="margin-right:18px;" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectCustomTab()" type="button" value="Inject Custom Tab" title="Injects custom tablature into the ABC"></p>';
-  }
+  /* ===========================================================
+     ALWAYS VISIBLE: STRIP
+     =========================================================== */
 
-  // Showing explorers?
-  if (gFeaturesShowExplorers) {
-    modal_msg += '<p style="text-align:center;margin-top:20px;"><input id="configure_instrument_explorer" class="configure_instrument_explorer button btn btn-instrumentexplorer" onclick="InstrumentExplorer();" type="button" value="MIDI Instrument Explorer" title="Brings up a tune player where you can experiment playing the current tune with different MIDI soundfonts and melody/chord instruments"><input id="configure_swing_explorer" class="btn btn-swingexplorer configure_swing_explorer " onclick="SwingExplorer()" type="button" value="Swing Explorer" title="Brings up a tune player where you can experiment with different swing factor settings"><input id="configure_grace_explorer" class="btn btn-graceexplorer configure_grace_explorer " onclick="GraceExplorer()" type="button" value="Grace Duration Explorer" title="Brings up a tune player where you can experiment with different grace note duration settings"><input id="configure_roll_explorer" class="btn btn-rollexplorer configure_roll_explorer " onclick="RollExplorer()" type="button" value="Roll Explorer" title="Brings up a tune player where you can experiment with different roll parameters"></p>';
-  }
+  modal_msg += '<p style="text-align:center;font-size:14pt;font-family:var(--abctools-ui-font-fallbacks);margin-top:20px;">Strip ABC Features</p>';
+  modal_msg += '<p style="text-align:center;">';
+  modal_msg += '<input id="stripannotations" class="advancedcontrolsdisabled btn btn-injectcontrols" onclick="ToggleAnnotations(true)" type="button" value="Strip Annotations">';
+  modal_msg += '<input id="striptext" class="advancedcontrolsdisabled btn btn-injectcontrols" onclick="ToggleTextAnnotations(true)" type="button" value="Strip Text">';
+  modal_msg += '<input id="stripchords" class="advancedcontrolsdisabled btn btn-injectcontrols" onclick="ToggleChords(true)" type="button" value="Strip Chords">';
+  modal_msg += '<input id="striptab" class="advancedcontrolsdisabled btn btn-injectcontrols" onclick="ToggleTab(true)" type="button" value="Strip Injected Tab">';
+  modal_msg += '<input id="stripornaments" class="advancedcontrolsdisabled btn btn-injectcontrols" onclick="ToggleOrnaments(true)" type="button" value="Strip Ornaments">';
+  modal_msg += '</p>';
+  modal_msg += '<hr style="margin-top:24px;">';
 
-  // Showing export and explorers?
-  if (gFeaturesShowExport && gFeaturesShowExplorers) {
-    modal_msg += '<p style="text-align:center;margin-top:20px;"><input id="configure_reverb_explorer" class="btn btn-reverbexplorer configure_reverb_explorer " onclick="ReverbExplorer()" type="button" value="Reverb Explorer" title="Brings up a tune player where you can experiment with different reverb parameters"><input id="configure_batch_mp3_export" class="btn btn-batchmp3export configure_batch_mp3_export " onclick="ExportAll()" type="button" value="Export All Tunes" title="Exports all the tunes in the ABC text area as audio, image, MusicXML, and other formats"><input class="sortbutton btn btn-sortbutton" id="sortbutton" onclick="SortDialog()" type="button" value="Sort by Tag" title="Brings up the Sort by Specific Tag dialog"><input class="incipitsbuilder btn btn-incipitsbuilder" id="incipitsbuilder" onclick="IncipitsBuilderDialog()" type="button" value="Notes Incipits Builder" title="Formats the ABC for notation incipits PDF export"></p>';
-  } else
-  if ((!gFeaturesShowExport) && gFeaturesShowExplorers) {
-    modal_msg += '<p style="text-align:center;margin-top:20px;"><input id="configure_reverb_explorer" class="btn btn-reverbexplorer configure_reverb_explorer " style="margin-right:0px" onclick="ReverbExplorer()" type="button" value="Reverb Explorer" title="Brings up a tune player where you can experiment with different reverb parameters"></p>';
-  } else
-  if (gFeaturesShowExport && (!gFeaturesShowExplorers)) {
-    modal_msg += '<p style="text-align:center;margin-top:20px;"><input id="configure_batch_mp3_export" class="btn btn-batchmp3export configure_batch_mp3_export " onclick="ExportAll()" type="button" value="Export All Tunes" title="Exports all the tunes in the ABC text area as audio, image, MusicXML, and other formats"><input class="sortbutton btn btn-sortbutton" id="sortbutton" onclick="SortDialog()" type="button" value="Sort by Tag" title="Brings up the Sort by Specific Tag dialog"><input class="incipitsbuilder btn btn-incipitsbuilder" id="incipitsbuilder" onclick="IncipitsBuilderDialog()" type="button" value="Notes Incipits Builder" title="Formats the ABC for notation incipits PDF export"></p>';
+  /* ===========================================================
+     TABS
+     =========================================================== */
 
-  }
+  modal_msg += '<div id="moretoolsanchor" class="adv-tabs">';
+  modal_msg += '<div class="adv-tab-bar">';
 
-  // Showing only bagpipes drones/tranpose tools?
-  if (gFeaturesShowBagpipeDrones) {
-    modal_msg += '<p style="text-align:center;margin-top:20px;"><input id="phrasebuilder" class="advancedcontrols btn btn-phrasebuilder" onclick="PhraseBuilder()" type="button" value="Phrase Builder" title="Builds a phrase-by-phrase version of the tune for use with the Tune Trainer"><input id="customcssgenerator" class="advancedcontrols btn btn-cssgenerator" onclick="abcjsColorEditor()" type="button" value="Custom CSS Generator" title="Inject a custom CSS block at the top of the ABC where you can set the color of each abcjs element"><input class="transposetokey btn btn-transposetokey" id="transposetokey" onclick="TransposeToKeyDialog()" type="button" value="Transpose to Key" title="Transposes one or all the tunes to a specific key"><input id="injectbagpipedrones" class="advancedcontrols btn btn-injectcontrols" onclick="InjectBagpipeSounds()" type="button" value="Inject Bagpipes" title="Changes the melody sound to one of several bagpipe instruments and inject drones as a second voice of the tune(s)"></p>';
-  }
+  modal_msg += '<button class="adv-tab-btn' + (isInjectionActive ? ' active' : '') +
+               '" data-tab="adv-tab-injection" aria-selected="' + (isInjectionActive ? 'true' : 'false') +
+               '" onclick="AdvancedControls_SelectTab(\'adv-tab-injection\')">ABC Features</button>';
+
+  modal_msg += '<button class="adv-tab-btn' + (isTablaturesActive ? ' active' : '') +
+               '" data-tab="adv-tab-tablatures" aria-selected="' + (isTablaturesActive ? 'true' : 'false') +
+               '" onclick="AdvancedControls_SelectTab(\'adv-tab-tablatures\')">Inject Tablature</button>';
+
+  modal_msg += '<button class="adv-tab-btn' + (isPlayersActive ? ' active' : '') +
+               '" data-tab="adv-tab-players" aria-selected="' + (isPlayersActive ? 'true' : 'false') +
+               '" onclick="AdvancedControls_SelectTab(\'adv-tab-players\')">Explorers</button>';
+
+  modal_msg += '<button class="adv-tab-btn' + (isOtherToolsActive ? ' active' : '') +
+               '" data-tab="adv-tab-bagpipes" aria-selected="' + (isOtherToolsActive ? 'true' : 'false') +
+               '" onclick="AdvancedControls_SelectTab(\'adv-tab-bagpipes\')">Other Tools</button>';
 
   modal_msg += '</div>';
+  modal_msg += '<div class="adv-tab-panels">';
+
+  /* ---------------- Injection tab ---------------- */
+  // Hide Export All Tunes on mobile BEFORE render to prevent a layout jump
+  var exportAllTunesStyle = isMobileBrowser() ? ' style="display:none;"' : '';
+
+  modal_msg += '<div id="adv-tab-injection" class="adv-tab-panel' + (isInjectionActive ? ' active' : '') + '">';
+  modal_msg += '<p style="text-align:center;">';
+  modal_msg += '<input id="injecttunenumbers" class="advancedcontrols btn btn-injectcontrols-headers" onclick="TuneTitlesNumbersDialog()" type="button" value="Inject Tune Title Numbers">';
+  modal_msg += '<input id="injectsectionheader" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectSectionHeader()" type="button" value="Inject PDF Section Header">';
+  modal_msg += '<input id="injectfontsettings" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectFontSettings()" type="button" value="Inject Font Settings">';
+  modal_msg += '</p>';
+
+  modal_msg += '<p style="text-align:center;margin-top:24px;">';
+  modal_msg += '<input id="injectallmidiparams" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectAllMIDIParams()" type="button" value="Inject MIDI Programs and Volumes">';
+  modal_msg += '<input id="injectmetronome" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectMetronome()" type="button" value="Inject Metronome">';
+  modal_msg += '<input id="injectclicktrackall" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectRepeatsAndClickTrackAll()" type="button" value="Inject Repeats + Intros">';
+  modal_msg += '</p>';
+
+  modal_msg += '<p style="text-align:center;margin-top:24px;">';
+  modal_msg += '<input id="injectheaderstring" style="margin-right:20px;" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectHeaderString()" type="button" value="Inject ABC Header Text">';
+  modal_msg += '<input id="injectcustomstringedtab" style="margin-right:20px;" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectCustomStringedInstrumentTab()" type="button" value="Inject Custom Stringed Instrument Tab">';
+  modal_msg += '<input id="ceoltastransform" class="advancedcontrols btn btn-injectcontrols-headers" onclick="DoCeoltasTransformDialog()" type="button" value="Comhaltas Transform" title="Brings up a dialog where you can transform the ABC to/from Comhaltas format">';
+  modal_msg += '</p>';
+  modal_msg += '<p style="text-align:center;margin-top:24px;">';
+  modal_msg += '<input id="phrasebuilder" class="advancedcontrols btn btn-phrasebuilder" onclick="PhraseBuilder(null,null)" type="button" value="Phrase Builder">';
+  modal_msg += '<input id="incipitsbuilder" class="advancedcontrols incipitsbuilder btn btn-incipitsbuilder" onclick="IncipitsBuilderDialog()" type="button" value="Notes Incipits Builder">';
+  modal_msg += '<input id="configure_batch_mp3_export" class="advancedcontrols btn btn-batchmp3export" onclick="ExportAll()" type="button" value="Export All Tunes"' + exportAllTunesStyle + '>';
+
+  modal_msg += '</p></div>';
+
+  /* ---------------- Tablatures tab ---------------- */
+
+  modal_msg += '<div id="adv-tab-tablatures" class="adv-tab-panel' + (isTablaturesActive ? ' active' : '') + '">';
+  modal_msg += '<p style="text-align:center;">';
+  modal_msg += '<input id="injectharmonicatab" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectHarmonicaTab()" type="button" value="Inject Harmonica Tab">';
+  modal_msg += '<input id="injectboxtab" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectBoxTablature()" type="button" value="Inject Irish Button Box Tab">';
+  modal_msg += '<input id="injectanglotab" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectTablature_Anglo()" type="button" value="Inject Anglo Concertina Tab">';
+  modal_msg += '</p>';
+
+  modal_msg += '<p style="text-align:center;margin-top:24px;">';
+  modal_msg += '<input id="injectfiddlefingerings" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectTablature_Fiddle_Fingerings_Dialog()" type="button" value="Inject Fiddle Fingerings">';
+  modal_msg += '<input id="injectmd" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectTablature_MD()" type="button" value="Inject Dulcimer Tab">';
+  modal_msg += '<input id="injectbambooflute" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectTablature_Bamboo_Flute()" type="button" value="Inject Bamboo Flute Tab">';
+  modal_msg += '<p style="text-align:center;margin-top:24px;">';
+  modal_msg += '<input id="injectshapenotes" style="margin-right:24px;" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectTablature_ShapeNotes()" type="button" value="Inject Note Names/Shapes/Solfège" title="Injects note names (Pitch Names, Standard ABC, Comhaltas ABC), Shape Note shapes, or Solfège note names into the ABC">';
+  modal_msg += '<input id="injectcustomtab" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectCustomTab()" type="button" value="Inject Custom Tab" title="Injects custom tablature into the ABC">';
+  modal_msg += '</p></div>';
+
+  /* ---------------- Explorers tab ---------------- */
+
+  modal_msg += '<div id="adv-tab-players" class="adv-tab-panel' + (isPlayersActive ? ' active' : '') + '">';
+  modal_msg += '<p style="text-align:center;">';
+
+  modal_msg += '<input id="configure_instrument_explorer" class="advancedcontrols btn btn-instrumentexplorer" onclick="InstrumentExplorer()" type="button" value="MIDI Instrument Explorer">';
+  modal_msg += '<input id="configure_swing_explorer" class="advancedcontrols btn btn-swingexplorer" onclick="SwingExplorer()" type="button" value="Swing Explorer">';
+  modal_msg += '<input id="configure_grace_explorer" class="advancedcontrols btn btn-graceexplorer" onclick="GraceExplorer()" type="button" value="Grace Duration Explorer">';
+  modal_msg += '</p>';
+
+  modal_msg += '<p style="text-align:center;margin-top:24px;">';
+  modal_msg += '<input id="configure_roll_explorer" class="advancedcontrols btn btn-rollexplorer" onclick="RollExplorer()" type="button" value="Roll Explorer">';
+  modal_msg += '<input id="configure_reverb_explorer" class="advancedcontrols btn btn-reverbexplorer" onclick="ReverbExplorer()" type="button" value="Reverb Explorer">';
+  modal_msg += '<input id="injectlargeprint" class="advancedcontrols btn btn-notation-spacing-explorer" onclick="NotationSpacingExplorer()" type="button" value="Notation Spacing Explorer">';
+
+  modal_msg += '</p></div>';
+
+  /* ---------------- Other tools tab ---------------- */
+
+  modal_msg += '<div id="adv-tab-bagpipes" class="adv-tab-panel' + (isOtherToolsActive ? ' active' : '') + '">';
+  modal_msg += '<p style="text-align:center;">';
+  modal_msg += '<input id="customcssgenerator" class="advancedcontrols btn btn-cssgenerator" onclick="abcjsColorEditor()" type="button" value="Custom CSS Generator">';
+  modal_msg += '<input id="transposetokey" class="advancedcontrols transposetokey btn btn-transposetokey" onclick="TransposeToKeyDialog()" type="button" value="Transpose to Key">';
+  modal_msg += '<input id="injectbagpipedrones" class="advancedcontrols btn btn-injectbagpipedrones" onclick="InjectBagpipeSounds()" type="button" value="Inject Bagpipe Sounds">';
+  modal_msg += '</p>';
+  modal_msg += '<p style="text-align:center;margin-top:24px;">';
+  modal_msg += '<input id="splitlongtextandtags" class="advancedcontrols btn btn-splitlongtextandtags" onclick="SplitLongTextAndTags()" type="button" value="Split Long Tags and Text">';
+  modal_msg += '<input id="normalizediacriticals" class="advancedcontrols  btn btn-normalizediacriticals" onclick="NormalizeDiacriticals()" type="button" value="Normalize Diacriticals">';
+  modal_msg += '<input id="normalizetitles" class="advancedcontrols btn btn-normalizetitles" onclick="NormalizeTitles()" type="button" value="Normalize Title Postfixes">';
+  modal_msg += '</p>';
+  modal_msg += '<p style="text-align:center;margin-top:24px;">';
+  modal_msg += '<input id="normalizevoicekeysignatures" class="advancedcontrols btn btn-normalizevoicekeysignatures" onclick="NormalizeVoiceKeySignatures()" type="button" value="Normalize Voice Keys">';
+  modal_msg += '<input id="reformatusingmusicxml" class="advancedcontrols  btn btn-reformatusingmusicxml" onclick="BatchMusicXMLRoundTrip()" type="button" value="Reformat Using MusicXML">';
+  modal_msg += '<input id="injectmidigchord" class="advancedcontrols btn btn-injectmidigchord" onclick="InjectMIDIGChordTemplates()" type="button" value="Inject MIDI gchord Templates">';
+  modal_msg += '</p>';
+  modal_msg += '</div>';
+
+  modal_msg += '<p style="font-size:2pt;">&nbsp;</p>';
+  modal_msg += '</div></div></div>';
 
   var format = GetRadioValue("notenodertab");
-
-  // Find the OK button for the settings dialog
-  setTimeout(function() {
-
-    IdleMoreABCTools();
-
-  }, 25);
 
   setTimeout(function() {
 
@@ -49693,34 +50074,19 @@ function AdvancedControlsDialog() {
     // Idle the show tab names control
     IdleAllowShowTabNames();
 
-  }, 50);
+    // Init the tabs (safe now: panels are hidden by default and one is already active)
+    AdvancedControls_InitTabs();
 
+  }, 50);
 
   DayPilot.Modal.alert(modal_msg, {
     theme: "modal_flat",
-    top: 20,
+    top: 50,
     width: 740,
-    scrollWithPage: (AllowDialogsToScroll())
-  }).then(function() {
-
+    scrollWithPage: AllowDialogsToScroll()
   });
 
-  // Change button label for export all for whistle
-
-  var elem = document.getElementById("configure_batch_mp3_export");
-
-  if (elem) {
-    // Hide the batch exporter button on mobile
-    if (isMobileBrowser()) {
-      document.getElementById("configure_batch_mp3_export").style.display = "none";
-    }
-  }
 }
-
-//
-// Advanced tool settings
-// This is used for less-commonly access settings and options
-//
 
 // Reset the default roll parameter strings
 function ResetRollDefaultParams() {
@@ -51214,7 +51580,7 @@ function ConfigurePlayerSettings(player_callback) {
     type: "checkbox",
     cssClass: "configure_settings_form_text_checkbox_fs"
   },{
-    name: "            Show open ABC in external tool icon at top right of the Player",
+    name: '            Show "Open ABC in External Tool" icon at top right of the Player and Tune Trainer',
     id: "configure_show_external_tools",
     type: "checkbox",
     cssClass: "configure_settings_form_text_checkbox_fs"
@@ -54849,6 +55215,94 @@ function initMIDI() {
 }
 
 //
+// Show the Happy New Year-themed What's New screen
+//
+function showWhatsNewScreen() {
+
+  // Keep track of dialogs
+  sendGoogleAnalytics("dialog", "showWhatsNewScreen");
+
+  // --- Inline styles to keep this self-contained like your existing dialog ---
+  var modal_msg = '';
+  modal_msg += '<div style="font-family:var(--abctools-ui-font-fallbacks); line-height:16pt;">';
+
+  // Header (New Year banner)
+  modal_msg += '<div style="text-align:center; padding:14px 10px; border-radius:12px;';
+  modal_msg += 'background: linear-gradient(135deg, #0b1f4a 0%, #5b2aa8 55%, #d4a62a 100%);';
+  modal_msg += 'box-shadow: 0 6px 16px rgba(0,0,0,0.14); color:#fff;">';
+  modal_msg += '<div style="font-size:20pt; line-height:24pt; font-weight:bold;">What&apos;s New</div>';
+  modal_msg += '<div style="font-size:11pt; opacity:0.92; margin-top:3px;">Version ' + gVersionNumber + '</div>';
+  modal_msg += '</div>';
+
+  // Short intro
+  modal_msg += '<p style="margin:14px 4px 10px 4px; font-size:12pt;">';
+  modal_msg += 'Starting the new year with fresh updates — here’s what’s new in my ABC Transcription Tools:';
+  modal_msg += '</p>';
+
+  // Feature card
+  modal_msg += '<div style="margin:10px 0 6px 0; padding:12px 12px; border-radius:12px;';
+  modal_msg += 'background:#fff; border:1px solid #e7e7e7; box-shadow: 0 2px 10px rgba(0,0,0,0.06);">';
+
+  modal_msg += '<div style="font-size:14pt; font-weight:bold; margin-bottom:12px;">';
+  modal_msg += '✨ Phrase-by-phrase practice inside the Tune Trainer</div>';
+
+  modal_msg += '<p style="margin:6px 0 8px 0; font-size:12pt; margin-bottom:12px;">';
+  modal_msg += 'You can now do <strong>phrase-by-phrase practice</strong> from right inside the <strong>Tune Trainer</strong>!';
+  modal_msg += '</p>';
+
+  // Steps
+  modal_msg += '<div style="margin:8px 0 0 0; padding:10px 10px; border-radius:10px;';
+  modal_msg += 'background:#f6f7ff; border:1px solid #e3e6ff;">';
+
+  modal_msg += '<div style="font-size:12pt; font-weight:bold; margin-bottom:6px;">How it works</div>';
+  modal_msg += '<p style="margin:6px 0; font-size:12pt;">';
+  modal_msg += '1) Click <strong>Train</strong> to launch the <strong>Tune Trainer</strong>.</p>';
+
+  modal_msg += '<p style="margin:6px 0; font-size:12pt;">';
+  modal_msg += '2) Click <strong>Phrase Builder</strong> to break the tune into phrases of a specified number of measures, followed by the same number of measures of rests.</p>';
+
+  modal_msg += '<p style="margin:6px 0; font-size:12pt;">';
+  modal_msg += '3) Play the tune, listen to each phrase, then play along during the rests.</p>';
+
+  modal_msg += '<p style="margin:6px 0; font-size:12pt;">';
+  modal_msg += '<strong>Tip:</strong> Turn on the metronome to help keep a steady tempo.</p>';
+
+  modal_msg += '</div>'; // end how-it-works block
+  modal_msg += '</div>'; // end feature card
+
+  // More info link (New Year accent)
+  modal_msg += '<p style="margin:12px 4px 8px 4px; font-size:12pt; text-align:center;">';
+  modal_msg += 'For more information on the <strong>Tune Trainer</strong>, ';
+  modal_msg += '<a href="https://michaeleskin.com/abctools/userguide.html#tune_trainer" ';
+  modal_msg += 'target="_blank" style="color:#5b2aa8; text-decoration:none; font-weight:bold;">';
+  modal_msg += 'click here</a>.';
+  modal_msg += '</p>';
+
+  // New sample tune (New Year highlight)
+  modal_msg += '<div style="margin-top:10px; padding:10px 12px; border-radius:12px;';
+  modal_msg += 'background:#fff8db; border:1px solid #ffe39a;">';
+
+  modal_msg += '<div style="font-size:12pt; font-weight:bold; margin-bottom:6px;">Updated or changed features:</div>';
+  modal_msg += '<p style="margin:6px 0; font-size:12pt;">There is now a dedicated <strong>Train</strong> button on the top button bar that brings up the <strong>Tune Trainer</strong> loaded with the currently selected tune.</p>';
+  modal_msg += '<p style="margin:6px 0; font-size:12pt;">The ☰ dropdown menu has been simplified, added <strong>Copy All Tunes</strong>, and moved many less commonly used  features to the <strong>More ABC Tools</strong> dialog.</p>';
+  modal_msg += '</div>';
+
+  // Footer (New Year)
+  modal_msg += '<p style="text-align:center; margin:14px 0 0 0; font-size:11pt; color:#666;">';
+  modal_msg += '🎉 Happy New Year — Happy Practicing! 🎶</p>';
+
+  modal_msg += '</div>'; // wrapper
+
+  DayPilot.Modal.alert(modal_msg, {
+    theme: "modal_flat",
+    top: 25,
+    width: 675,
+    scrollWithPage: (AllowDialogsToScroll())
+  });
+
+}
+
+//
 // Show the first run welcome screen
 // Lite: Customized
 //
@@ -56474,7 +56928,12 @@ function InjectMIDIGChordTemplates() {
         }).then(function(){
 
           // Force a redraw of the tune
-          RenderAsync(false, theSelectedTuneIndex, null);
+          RenderAsync(false, theSelectedTuneIndex, function(){
+            
+            // Make sure the More Tools dialog visible
+            ensureMoreToolsVisible();
+
+          });
 
       });
 
@@ -56848,6 +57307,16 @@ function JumpToTune() {
         }
       }
     }, 25);
+  }
+
+  // Auto focus on the search field
+  if (isPureDesktopBrowser()){
+    setTimeout(function(){
+     var elem=document.getElementById("jumpToSearchValue");
+     if (elem){
+      elem.focus();
+     }
+    },50);
   }
 
 }
@@ -57778,7 +58247,7 @@ function SplitLongTextAndTags() {
   };
 
   const form = [{
-    html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;font-family:var(--abctools-ui-font-fallbacks);margin-left:15px;">Split Long Tags and Text&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#moretoolsdropdown" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;font-family:var(--abctools-ui-font-fallbacks);margin-left:15px;">Split Long Tags and Text&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#hamburger_split" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
   }, {
     html: '<p style="margin-top:36px;margin-bottom:24px;font-size:12pt;line-height:18pt;font-family:var(--abctools-ui-font-fallbacks)">This will split long strings in tags and/or text at the specified line length.</p>'
   }, {
@@ -57903,6 +58372,8 @@ function SplitLongTextAndTags() {
 
             }
 
+            ensureMoreToolsVisible();
+
             // Focus after operation
             FocusAfterOperation();
 
@@ -57973,6 +58444,8 @@ function SplitLongTextAndTags() {
               gTheABC.selectionEnd = theSelectionStart;
             }
 
+            ensureMoreToolsVisible();
+
             // Focus after operation
             FocusAfterOperation();
 
@@ -58033,6 +58506,9 @@ function DoNormalizeDiacriticals(inverse) {
         gTheABC.selectionStart = 0;
         gTheABC.selectionEnd = 0;
       }
+
+      // Make sure the More Tools dialog visible
+      ensureMoreToolsVisible();
 
       // Focus after operation
       FocusAfterOperation();
@@ -58254,6 +58730,9 @@ function normalizeTitleArticles(inverse) {
         gTheABC.selectionEnd = 0;
       }
 
+      // Make sure the More Tools dialog visible
+      ensureMoreToolsVisible();
+
       // Focus after operation
       FocusAfterOperation();
 
@@ -58317,15 +58796,18 @@ function splitVoices(abcTune) {
   let isInVoice = false;
   let wLines = [];
 
-  const voicePattern1 = /^V:\s*(\d+)(.*)$/; // Matches "V: number"
-  const voicePattern2 = /^\[V:\s*(\d+)\s*\](.*)$/; // Matches "[V: number]"
-  const wPattern = /^W:/; // Matches "W:" lines
+  // Allow zero or more spaces after V:
+  // Voice id may be numeric or named (LH, RH, etc.)
+  const voicePattern1 = /^V:\s*([A-Za-z0-9_.-]+)(.*)$/;        // V:1, V: 1, V:LH, V: LH
+  const voicePattern2 = /^\[V:\s*([A-Za-z0-9_.-]+)\s*\](.*)$/; // [V:1], [V: LH]
+  const wPattern = /^W:/;
 
   lines.forEach(line => {
     // Skip %%score lines
-    if (line.startsWith('%%score')) {
-      return;
-    }
+    if (line.startsWith('%%score')) return;
+
+    // Skip %%staves lines
+    if (line.startsWith('%%staves')) return;
 
     // Capture and skip W: lines
     if (wPattern.test(line)) {
@@ -58336,28 +58818,17 @@ function splitVoices(abcTune) {
     const matchVoice1 = line.match(voicePattern1);
     const matchVoice2 = line.match(voicePattern2);
 
-    if (matchVoice1) {
-      const voiceId = matchVoice1[1];
-      const extraText = matchVoice1[2].trim();
+    if (matchVoice1 || matchVoice2) {
+      const match = matchVoice1 || matchVoice2;
+      const voiceId = match[1];
+      const extraText = (match[2] || "").trim();
+
       currentVoice = voiceId;
 
       if (!voices[currentVoice]) {
         voices[currentVoice] = [...header];
         if (extraText !== "") {
-          voices[currentVoice].push(`V:1 ${extraText}`);
-        }
-      }
-
-      isInVoice = true;
-    } else if (matchVoice2) {
-      const voiceId = matchVoice2[1];
-      const extraText = matchVoice2[2].trim();
-      currentVoice = voiceId;
-
-      if (!voices[currentVoice]) {
-        voices[currentVoice] = [...header];
-        if (extraText !== "") {
-          voices[currentVoice].push(`V:1 ${extraText}`);
+          voices[currentVoice].push(`V:${voiceId} ${extraText}`);
         }
       } else {
         if (extraText !== "") {
@@ -58366,7 +58837,10 @@ function splitVoices(abcTune) {
       }
 
       isInVoice = true;
-    } else if (!isInVoice) {
+      return;
+    }
+
+    if (!isInVoice) {
       header.push(line);
     } else if (currentVoice) {
       voices[currentVoice].push(line);
@@ -58374,11 +58848,9 @@ function splitVoices(abcTune) {
   });
 
   // Append W: lines to the end of each voice
-  const splitTunes = Object.keys(voices).map(voice => {
-    return voices[voice].concat(wLines).join('\n');
-  });
-
-  return splitTunes;
+  return Object.keys(voices).map(voiceId =>
+    voices[voiceId].concat(wLines).join('\n')
+  );
 }
 
 function SplitVoices() {
@@ -58640,6 +59112,9 @@ function NormalizeVoiceKeySignatures(){
         gTheABC.selectionEnd = 0;
       }
 
+      // Make sure the More Tools dialog visible
+      ensureMoreToolsVisible();
+
       // Focus after operation
       FocusAfterOperation();
 
@@ -58763,6 +59238,9 @@ async function DoVersionCheck() {
 
 function SetupContextMenu(showUpdateItem) {
 
+  // For context menu screenshots
+  //showUpdateItem = true;
+
   var items;
 
   if (isDesktopBrowser()) {
@@ -58772,6 +59250,11 @@ function SetupContextMenu(showUpdateItem) {
       if (isPureDesktopBrowser()) {
 
         items = [{}, {
+          name: 'Copy All Tunes',
+          fn: function(target) {
+            CopyABC();
+          }
+        }, {}, {
           name: 'Reorder Tunes',
           fn: function(target) {
             ChangeTuneOrder();
@@ -58811,41 +59294,11 @@ function SetupContextMenu(showUpdateItem) {
               AlignMeasures(true);
             }
           }, {}, {
-            name: 'Split Long Tags and Text',
-            fn: function(target) {
-              SplitLongTextAndTags();
-            }
-          }, {}, {
-            name: 'Normalize Diacriticals',
-            fn: function(target) {
-              NormalizeDiacriticals();
-            }
-          }, {
-            name: 'Normalize Title Postfixes',
-            fn: function(target) {
-              NormalizeTitles();
-            }
-          }, {}, {
-            name: 'Reformat Using MusicXML',
-            fn: function(target) {
-              BatchMusicXMLRoundTrip();
-            }
-          }, {}, {
             name: 'Split Voices',
             fn: function(target) {
               SplitVoices();
             }
-          }, {
-            name: 'Normalize Voice Keys',
-            fn: function(target) {
-              NormalizeVoiceKeySignatures();
-            }
           },{}, {
-            name: 'Inject MIDI gchord Templates',
-            fn: function(target) {
-              InjectMIDIGChordTemplates();
-            }
-          }, {}, {
             name: 'Import PDF, Website, or CSV',
             fn: function(target) {
               ImportPDF_CSV_Website();
@@ -58904,7 +59357,7 @@ function SetupContextMenu(showUpdateItem) {
           // Change ☰ button styles
           var elem = document.getElementById("morecommands");
           elem.classList.add("attention");
-          elem.title = "An update to the tool is available!"
+          elem.title = "An update to the tool is available!";
         }
 
         var theTuneSetItem = {
@@ -58986,6 +59439,12 @@ function SetupContextMenu(showUpdateItem) {
           fn: function(target) {
             BuildTuneSet();
           }
+        }, {}, 
+        {
+          name: 'Copy All Tunes',
+          fn: function(target) {
+            CopyABC();
+          }
         }, {}, {
           name: 'Reorder Tunes',
           fn: function(target) {
@@ -59012,36 +59471,11 @@ function SetupContextMenu(showUpdateItem) {
             AlignMeasures(true);
           }
         }, {}, {
-          name: 'Split Long Tags and Text',
-          fn: function(target) {
-            SplitLongTextAndTags();
-          }
-        }, {}, {
-          name: 'Normalize Diacriticals',
-          fn: function(target) {
-            NormalizeDiacriticals();
-          }
-        }, {
-          name: 'Normalize Title Postfixes',
-          fn: function(target) {
-            NormalizeTitles();
-          }
-        }, {}, {
-          name: 'Reformat Using MusicXML',
-          fn: function(target) {
-            BatchMusicXMLRoundTrip();
-          }
-        }, {}, {
           name: 'Split Voices',
           fn: function(target) {
             SplitVoices();
           }
-        }, {
-          name: 'Normalize Voice Keys',
-          fn: function(target) {
-            NormalizeVoiceKeySignatures();
-          }
-        },{}, {
+        }, {}, {
           name: 'Import PDF, Website, or CSV',
           fn: function(target) {
             ImportPDF_CSV_Website();
@@ -59100,14 +59534,19 @@ function SetupContextMenu(showUpdateItem) {
           // Change ☰ button styles
           var elem = document.getElementById("morecommands");
           elem.classList.add("attention");
-          elem.title = "An update to the tool is available!"
+          elem.title = "An update to the tool is available!";
         }
       }
     } else {
 
       if (isPureDesktopBrowser()) {
 
-        items = [{}, {
+        items = [{},{
+          name: 'Copy All Tunes',
+          fn: function(target) {
+            CopyABC();
+          }
+        }, {}, {
           name: 'Reorder Tunes',
           fn: function(target) {
             ChangeTuneOrder();
@@ -59147,39 +59586,9 @@ function SetupContextMenu(showUpdateItem) {
               AlignMeasures(true);
             }
           }, {}, {
-            name: 'Split Long Tags and Text',
-            fn: function(target) {
-              SplitLongTextAndTags();
-            }
-          }, {}, {
-            name: 'Normalize Diacriticals',
-            fn: function(target) {
-              NormalizeDiacriticals();
-            }
-          }, {
-            name: 'Normalize Title Postfixes',
-            fn: function(target) {
-              NormalizeTitles();
-            }
-          }, {}, {
-            name: 'Reformat Using MusicXML',
-            fn: function(target) {
-              BatchMusicXMLRoundTrip();
-            }
-          }, {}, {
             name: 'Split Voices',
             fn: function(target) {
               SplitVoices();
-            }
-          }, {
-            name: 'Normalize Voice Keys',
-            fn: function(target) {
-              NormalizeVoiceKeySignatures();
-            }
-          },{}, {
-            name: 'Inject MIDI gchord Templates',
-            fn: function(target) {
-              InjectMIDIGChordTemplates();
             }
           }, {}, {
             name: 'Import PDF, Website, or CSV',
@@ -59218,9 +59627,6 @@ function SetupContextMenu(showUpdateItem) {
             }
           }, ]);
 
-        // For forcing display for User Guide screen shots
-        //showUpdateItem = true;// UPDATEFOOFOO
-
         if (showUpdateItem) {
           items = items.concat(
             [{}, {
@@ -59238,7 +59644,7 @@ function SetupContextMenu(showUpdateItem) {
           // Change ☰ button styles
           var elem = document.getElementById("morecommands");
           elem.classList.add("attention");
-          elem.title = "An update to the tool is available!"
+          elem.title = "An update to the tool is available!";
         }
 
         var theTuneSetItem = {
@@ -59321,6 +59727,11 @@ function SetupContextMenu(showUpdateItem) {
             BuildTuneSet();
           }
         }, {}, {
+          name: 'Copy All Tunes',
+          fn: function(target) {
+            CopyABC();
+          }
+        }, {},{
           name: 'Reorder Tunes',
           fn: function(target) {
             ChangeTuneOrderMobile();
@@ -59346,34 +59757,9 @@ function SetupContextMenu(showUpdateItem) {
             AlignMeasures(true);
           }
         }, {}, {
-          name: 'Split Long Tags and Text',
-          fn: function(target) {
-            SplitLongTextAndTags();
-          }
-        }, {}, {
-          name: 'Normalize Diacriticals',
-          fn: function(target) {
-            NormalizeDiacriticals();
-          }
-        }, {
-          name: 'Normalize Title Postfixes',
-          fn: function(target) {
-            NormalizeTitles();
-          }
-        }, {}, {
-          name: 'Reformat Using MusicXML',
-          fn: function(target) {
-            BatchMusicXMLRoundTrip();
-          }
-        }, {}, {
           name: 'Split Voices',
           fn: function(target) {
             SplitVoices();
-          }
-        },{
-          name: 'Normalize Voice Keys',
-          fn: function(target) {
-            NormalizeVoiceKeySignatures();
           }
         }, {}, {
           name: 'Import PDF, Website, or CSV',
@@ -59429,7 +59815,7 @@ function SetupContextMenu(showUpdateItem) {
           // Change ☰ button styles
           var elem = document.getElementById("morecommands");
           elem.classList.add("attention");
-          elem.title = "An update to the tool is available!"
+          elem.title = "An update to the tool is available!";
         }
       }
     }
@@ -59438,7 +59824,7 @@ function SetupContextMenu(showUpdateItem) {
 
       items = [
       {
-          name: 'Find and Replace',
+        name: 'Find and Replace',
           fn: function(target) {
             FindAndReplace();
           }
@@ -59451,6 +59837,11 @@ function SetupContextMenu(showUpdateItem) {
         name: 'Create Tune Set',
         fn: function(target) {
           BuildTuneSet();
+        }
+      }, {}, {
+        name: 'Copy All Tunes',
+        fn: function(target) {
+          CopyABC();
         }
       }, {}, {
         name: 'Reorder Tunes',
@@ -59478,36 +59869,11 @@ function SetupContextMenu(showUpdateItem) {
           AlignMeasures(true);
         }
       }, {}, {
-        name: 'Split Long Tags and Text',
-        fn: function(target) {
-          SplitLongTextAndTags();
-        }
-      }, {}, {
-        name: 'Normalize Diacriticals',
-        fn: function(target) {
-          NormalizeDiacriticals();
-        }
-      }, {
-        name: 'Normalize Title Postfixes',
-        fn: function(target) {
-          NormalizeTitles();
-        }
-      }, {}, {
-        name: 'Reformat Using MusicXML',
-        fn: function(target) {
-          BatchMusicXMLRoundTrip();
-        }
-      }, {}, {
         name: 'Split Voices',
         fn: function(target) {
           SplitVoices();
         }
-      },{
-        name: 'Normalize Voice Keys',
-        fn: function(target) {
-          NormalizeVoiceKeySignatures();
-        }
-      }, {}, {
+      },{}, {
         name: 'Import PDF, Website, or CSV',
         fn: function(target) {
           ImportPDF_CSV_Website();
@@ -59583,6 +59949,11 @@ function SetupContextMenu(showUpdateItem) {
           BuildTuneSet();
         }
       }, {}, {
+        name: 'Copy All Tunes',
+        fn: function(target) {
+          CopyABC();
+        }
+      }, {}, {
         name: 'Reorder Tunes',
         fn: function(target) {
           ChangeTuneOrderMobile();
@@ -59608,34 +59979,9 @@ function SetupContextMenu(showUpdateItem) {
           AlignMeasures(true);
         }
       }, {}, {
-        name: 'Split Long Tags and Text',
-        fn: function(target) {
-          SplitLongTextAndTags();
-        }
-      }, {}, {
-        name: 'Normalize Diacriticals',
-        fn: function(target) {
-          NormalizeDiacriticals();
-        }
-      }, {
-        name: 'Normalize Title Postfixes',
-        fn: function(target) {
-          NormalizeTitles();
-        }
-      }, {}, {
-        name: 'Reformat Using MusicXML',
-        fn: function(target) {
-          BatchMusicXMLRoundTrip();
-        }
-      }, {}, {
         name: 'Split Voices',
         fn: function(target) {
           SplitVoices();
-        }
-      },{
-        name: 'Normalize Voice Keys',
-        fn: function(target) {
-          NormalizeVoiceKeySignatures();
         }
       }, {}, {
         name: 'Import PDF, Website, or CSV',
@@ -59686,7 +60032,7 @@ function SetupContextMenu(showUpdateItem) {
         // Change ☰ button styles
         var elem = document.getElementById("morecommands");
         elem.classList.add("attention");
-        elem.title = "An update to the tool is available!"
+        elem.title = "An update to the tool is available!";
       }
     }
   }
@@ -59701,7 +60047,7 @@ function SetTopButtonMargins() {
 
   if (gIsQuickEditor) {
 
-    var elems = ["openabcfile", "newabcfile", "saveabcfile", "saveaswebsite", "copybutton", "playbutton", "rawmodebutton"];
+    var elems = ["openabcfile", "newabcfile", "saveabcfile", "saveaswebsite", "tunetrainerbutton", "playbutton", "rawmodebutton"];
 
     var theMargin = 20;
 
@@ -59729,7 +60075,7 @@ function SetTopButtonMargins() {
 
   } else {
 
-    var elems = ["openabcfile", "newabcfile", "saveabcfile", "saveaspdf", "saveaswebsite", "copybutton", "playbutton", "rawmodebutton"];
+    var elems = ["openabcfile", "newabcfile", "saveabcfile", "saveaspdf", "saveaswebsite", "tunetrainerbutton", "playbutton", "rawmodebutton"];
 
     var theMargin = 8;
 
@@ -61350,6 +61696,21 @@ function DoStartup() {
    
   }
 
+  // Show update message?
+  // if (gLocalStorageAvailable && (!isFromShare)){
+
+  //   var updatePresented = localStorage.sawUpdate_26dec2025;
+
+  //   if (updatePresented != "true") {
+
+  //     showWhatsNewScreen();
+
+  //     localStorage.sawUpdate_26dec2025 = true;
+
+  //   }
+
+  // }
+
 }
 
 //
@@ -62426,13 +62787,24 @@ function processAbcPhrases(abcText, phraseBars, phrasePadding) {
 
 }
 
+//
+// Strip [I*] style annotations
+//
+function StripInlineAnnotations(abc){
+
+  abc = abc.replace(/\[[A-Za-z]:[^\]\r\n]*\]/g, "");
+  
+  return abc;
+
+}
+
 var gPhraseBuilderLength = 2;
 var gPhraseBuilderPadding = 0;
 
 //
 // Phrase builder dialog
 //
-function PhraseBuilder(){
+function PhraseBuilder(theTrainerTune,callback){
     
   function hasProblemTags(abcText) {
 
@@ -62493,24 +62865,46 @@ function PhraseBuilder(){
     id: "phrasePadding",
     type: "number",
     cssClass: "configure_phrase_length"
-  },
-  {
-    name: "      Process all tunes",
-    id: "buildPhraseAll",
-    type: "checkbox",
-    cssClass: "configure_transposetokey_text"
-  }
-  ];
+  }];
 
-  sendGoogleAnalytics("dialog", "PhraseBuilder");
+  if (!callback){
+
+    form = form.concat(
+      [{
+        name: "      Process all tunes",
+        id: "buildPhraseAll",
+        type: "checkbox",
+        cssClass: "configure_transposetokey_text"
+      }]);
+
+    sendGoogleAnalytics("dialog", "PhraseBuilder");
+  
+  }
+  else{
+
+    sendGoogleAnalytics("dialog", "TrainerPhraseBuilder");
+
+  }
 
   const modal = DayPilot.Modal.form(form, theData, {
     theme: "modal_flat",
-    top: 100,
+    top: 51,
     width: 600,
     scrollWithPage: (AllowDialogsToScroll()),
     autoFocus: true
   }).then(function(args) {
+
+    // If canceled from the Tune Trainer, just return the original 
+    if (callback){
+
+      if (args.canceled){
+        
+        callback(theTrainerTune);
+
+        return;
+
+      }
+    }
 
     if (!args.canceled) {
 
@@ -62518,6 +62912,10 @@ function PhraseBuilder(){
       var phraseLengthStr = args.result.phraseLength;
 
       if (phraseLengthStr == null) {
+        
+        if (callback){
+          callback(null);
+        }
 
         return;
       
@@ -62526,6 +62924,11 @@ function PhraseBuilder(){
       var phraseLength = parseInt(phraseLengthStr);
 
       if ((isNaN(phraseLength)) || (phraseLength == undefined) || (phraseLength < 1) || (phraseLength > 32)) {
+
+        // Just return the processed phrases?
+        if (callback){
+          callback(null);
+        }
 
         return;
 
@@ -62538,6 +62941,10 @@ function PhraseBuilder(){
 
       if (phrasePaddingStr == null) {
 
+        if (callback){
+          callback(null);
+        }
+
         return;
       
       }
@@ -62546,13 +62953,25 @@ function PhraseBuilder(){
 
       if ((isNaN(phrasePadding)) || (phrasePadding == undefined) || (phrasePadding < 0) || (phrasePadding > 32)) {
 
+        if (callback){
+          callback(null);
+        }
+
         return;
 
       }
 
+
       gPhraseBuilderPadding = phrasePadding;
 
-      var doAllTunes = args.result.buildPhraseAll;
+      var doAllTunes;
+
+      if (callback){
+        doAllTunes = false;
+      }
+      else{
+        doAllTunes = args.result.buildPhraseAll;
+      }
 
       if (doAllTunes){
 
@@ -62574,6 +62993,8 @@ function PhraseBuilder(){
           if (!hasProblemTags(theTune)){
 
             theTune = StripChordsOne(theTune);
+
+            theTune = StripInlineAnnotations(theTune);
 
             theTune = processAbcPhrases(theTune,gPhraseBuilderLength,gPhraseBuilderPadding)
 
@@ -62636,10 +63057,25 @@ function PhraseBuilder(){
         var theSelectedTuneIndex = findSelectedTuneIndex();
 
         // Try to find the current tune
-        var theSelectedABC = findSelectedTune();
+        var theSelectedABC;
+
+        if (callback){ 
+          theSelectedABC = theTrainerTune;
+        }
+        else{
+          theSelectedABC = findSelectedTune();
+        }
 
         if (theSelectedABC == "") {
           // This should never happen
+
+          // Just return the processed phrases?
+          if (callback){
+
+            callback(null);
+          
+          }
+
           return;
         }
 
@@ -62655,14 +63091,51 @@ function PhraseBuilder(){
             thePrompt = '"' + theTitle + '"' + " contains a V: tag or tags after the header and cannot have phrases expanded.";
             doPhrasesRender = false;
         }
+
+        // If just returning the phrases, but there is an error
+        if (!doPhrasesRender){
+
+          //debugger;
+
+          // Just return the processed phrases?
+          if (callback){
+
+            // Center the string in the prompt
+            thePrompt = makeCenteredPromptString(thePrompt);
+
+            DayPilot.Modal.alert(thePrompt, {
+              theme: "modal_flat",
+              top: 300,
+              scrollWithPage: (AllowDialogsToScroll())}
+            ).then(function(){
+
+              callback(null);
+
+            });
+
+            return;
+          }
+
+        }
   
         if (doPhrasesRender){
 
           var thePhrases = StripChordsOne(theSelectedABC);
+          
+          thePhrases = StripInlineAnnotations(thePhrases);
 
           thePhrases = processAbcPhrases(thePhrases,gPhraseBuilderLength,gPhraseBuilderPadding);
 
           thePhrases = thePhrases.trim();
+
+          // Just return the processed phrases?
+          if (callback){
+
+            callback(thePhrases);
+            
+            return;
+
+          }
 
           var theSelectionStart;
 
@@ -62674,7 +63147,6 @@ function PhraseBuilder(){
             // Try and keep the same tune after the redraw for immediate play
             theSelectionStart = gTheABC.selectionStart;
           }
-
           // Stuff in the processed ABC
           var theABC = getABCEditorText();
           theABC = theABC.replace(theSelectedABC, thePhrases);
@@ -63019,7 +63491,7 @@ async function abcjsColorEditor(currentTheme = {}){
   const promise = DayPilot.Modal.alert(html, {
     width: 700,
     theme: 'modal_flat',
-    top: 35,
+    top: 12,
     scrollWithPage: (typeof AllowDialogsToScroll === 'function' ? AllowDialogsToScroll() : true)
   });
 
