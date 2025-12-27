@@ -128,7 +128,7 @@ margin-left:0px;
 .btn {
   --color: #000000;
   --background-color: #d8d8d8;
-  --border-color: darken(#d8d8d8, 7.5%);
+  --border-color: gray;
   color: var(--color);
   font-family: helvetica !important;
   font-size: 11pt !important;
@@ -140,14 +140,13 @@ margin-left:0px;
   position: relative;
   border-radius: 0.5rem;
   user-select: none;
-  box-shadow: 0 0.1rem 0.1rem rgba(0, 0, 0, 0.25), 0 -0.1rem 0.5rem rgba(0, 0, 0, 0.1) inset;
-  transition: box-shadow 64ms ease-out;
+  box-shadow: none;
   -webkit-appearance:none;
 }
 
 .btn:after {
   content: "";
-  background-color: #ffffff;
+  background-color: transparent;
   width: 75%;
   height: 12.5%;
   position: absolute;

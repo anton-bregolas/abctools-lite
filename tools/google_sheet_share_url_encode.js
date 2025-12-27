@@ -51,7 +51,7 @@ function encodeABCToolsShareURL(theABC,setName,displayFormat,staffSpacing,addPla
     // Encode the ABC into LZW format with URI syntax
     var abcInLZW = LZString.compressToEncodedURIComponent(theABC);
 
-    var url = "https://michaeleskin.com/abctools/abctools.html?lzw=" + abcInLZW + "&format=" + displayFormat + "&ssp=" + staffSpacing+ "&pdf=one&pn=br&fp=yes&name="+setName;
+    var url = "https://abc.tunebook.app/abctools.html?lzw=" + abcInLZW + "&format=" + displayFormat + "&ssp=" + staffSpacing+ "&pdf=one&pn=br&fp=yes&name="+setName;
 
     if (addPlayLink){
       url = url + "&play=1";

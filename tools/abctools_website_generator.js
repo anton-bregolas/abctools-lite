@@ -66,7 +66,7 @@ function FillUrlBoxWithAbcInLZW(ABCtoEncode,bUpdateUI) {
 
     var abcInLZW = LZString.compressToEncodedURIComponent(ABCtoEncode);
 
-    var url = "https://michaeleskin.com/abctools/abctools.html?lzw=" + abcInLZW + "&format=noten&ssp=10&play=1";
+    var url = "https://abc.tunebook.app/abctools.html?lzw=" + abcInLZW + "&format=noten&ssp=10&play=1";
 
     // If just encoding some ABC, return it now
     return url;

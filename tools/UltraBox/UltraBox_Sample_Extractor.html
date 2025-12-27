@@ -355,9 +355,9 @@
               <h3 style="text-align:center; margin-top:0; margin-bottom:0.8em; color:black;">
                 Using Extracted Samples in the ABC Transcription Tools
               </h3>
-              <p>To create a custom instrument for the <a href="https://michaeleskin.com/abctools/abctools.html" target="_blank">ABC Transcription Tools</a> from the extracted samples, first save a .zip of extracted instrument .wav files from the .sf2 file.</p>
+              <p>To create a custom instrument for the <a href="https://abc.tunebook.app/abctools.html" target="_blank">ABC Transcription Tools</a> from the extracted samples, first save a .zip of extracted instrument .wav files from the .sf2 file.</p>
               <p>The <strong>ABC Transcription Tools Custom Instrument Builder</strong> can directly import and pitch-map samples that have the MIDI note number before the file extension (e.g., Piano-60.wav):</p>
-              <p style="text-align: center;"><a href="https://michaeleskin.com/tools/custom_instrument_builder.html" target="_blank">ABC Transcription Tools - Custom Instrument Builder</a></p>
+              <p style="text-align: center;"><a href="https://abc.tunebook.app/tools/custom_instrument_builder.html" target="_blank">ABC Transcription Tools - Custom Instrument Builder</a></p>
               <p>Ideally, you'll want to have only a single instrument with no duplicate MIDI pitch numbers in the filenames in the .zip file.</p>
               <p>If there are no duplicate pitch numbers in the extracted sample filenames, you can directly import the saved .zip file using the <strong>Import Custom Instrument</strong> feature of the <strong>Custom Instrument Builder</strong>.</p>
               <p>If there are duplicate pitch numbers in the filenames, or you wish to pick and choose the samples to use for a custom instrument, you can unzip the .zip file exported by this tool into a directory and then open the specfic samples you want to use in the <strong>Custom Instrument Builder</strong> from that directory.</p>
@@ -4669,7 +4669,7 @@
             const msg = typeof ev.data.split === 'function' ? ev.data.split(',') : [];
             /** @type {string} */
             // @ts-ignore
-            const type = msg !== [] ? msg.shift() : '';
+            const type = msg?.length ? msg.shift() : '';
             /** @type {string} */
             let command;
 

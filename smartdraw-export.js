@@ -425,7 +425,7 @@ function SDEncodeABCToolsShareURL(theABC,setName,displayFormat,staffSpacing,addP
     // Encode the ABC into LZW format with URI syntax
     var abcInLZW = LZString.compressToEncodedURIComponent(theABC);
 
-    var url = "https://michaeleskin.com/abctools/abctools.html?lzw=" + abcInLZW + "&format=" + displayFormat + "&ssp=" + staffSpacing+ "&pdf=one&pn=br&fp=yes&name="+setName;
+    var url = "https://abc.tunebook.app/abctools.html?lzw=" + abcInLZW + "&format=" + displayFormat + "&ssp=" + staffSpacing+ "&pdf=one&pn=br&fp=yes&name="+setName;
 
     if (addPlayLink){
       url = url + "&play=1";
@@ -433,7 +433,7 @@ function SDEncodeABCToolsShareURL(theABC,setName,displayFormat,staffSpacing,addP
 
     if (url.length > 8100) {
 
-        return("https://michaeleskin.com/abctools/abctools.html");
+        return("https://abc.tunebook.app/abctools.html");
 
     }
 

@@ -330,7 +330,7 @@ function copyToClipboard(textToCopy) {
 //
 function getUrlWithoutParams() {
 
-    return "https://michaeleskin.com/abctools/abctools.html";
+    return "https://abc.tunebook.app/abctools.html";
 
 }
 
@@ -357,7 +357,7 @@ function testOutput() {
 
     var abcInLZW = LZString.compressToEncodedURIComponent(abcText);
 
-    var url = "https://michaeleskin.com/abctools/abctools.html?lzw=" + abcInLZW + "&format=guitare&ssp=10&pdf=one&pn=br&fp=yes&btfs=10&name=" + shareName;
+    var url = "https://abc.tunebook.app/abctools.html?lzw=" + abcInLZW + "&format=guitare&ssp=10&pdf=one&pn=br&fp=yes&btfs=10&name=" + shareName;
 
     if (url.length > 8100) {
 

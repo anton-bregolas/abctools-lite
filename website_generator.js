@@ -742,7 +742,7 @@ function generateAndSaveWebsiteFull() {
     theOutput +='<meta charset="UTF-8">\n';
 
     theOutput +='<meta name="viewport" content="width=860" />\n'; 
-    theOutput +='<meta property="og:image" content="https://michaeleskin.com/abctools/img/abc-icon.png" />\n';
+    theOutput +='<meta property="og:image" content="../img/abclite-icon-512x512.png" />\n';
     theOutput +="\n";
     theOutput +="<title>"+gWebsiteTitle+"</title>\n";
     theOutput +="\n";
@@ -1665,7 +1665,7 @@ function generateAndSaveWebsiteSimple() {
     theOutput +='<meta charset="UTF-8">\n';
 
     theOutput +='<meta name="viewport" content="width=860" />\n'; 
-    theOutput +='<meta property="og:image" content="https://michaeleskin.com/abctools/img/abc-icon.png" />\n';
+    theOutput +='<meta property="og:image" content="https://abc.tunebook.app/img/abclite-icon-512x512.png" />\n';
     theOutput +="\n";
     theOutput +="<title>"+gWebsiteTitle+"</title>\n";
     theOutput +="\n";
@@ -2062,7 +2062,7 @@ function generateAndSaveWebsiteImageGallery() {
     theOutput +='<meta charset="UTF-8">\n';
 
     theOutput +='<meta name="viewport" content="width=860" />\n'; 
-    theOutput +='<meta property="og:image" content="https://michaeleskin.com/abctools/img/abc-icon.png" />\n';
+    theOutput +='<meta property="og:image" content="https://abc.tunebook.app/img/abclite-icon-512x512.png" />\n';
     theOutput +="\n";
     theOutput +="<title>"+gWebsiteTitle+"</title>\n";
     theOutput +="\n";
@@ -2620,7 +2620,7 @@ function generateAndSaveWebsiteLightbox() {
     theOutput +='<meta charset="UTF-8">\n';
 
     theOutput +='<meta name="viewport"  content="width=device-width, initial-scale=1.0" />\n'; 
-    theOutput +='<meta property="og:image" content="https://michaeleskin.com/abctools/img/abc-icon.png" />\n';
+    theOutput +='<meta property="og:image" content="https://abc.tunebook.app/img/abclite-icon-512x512.png" />\n';
     theOutput +="\n";
     theOutput +="<title>"+gWebsiteTitle+"</title>\n";
     theOutput +="\n";
