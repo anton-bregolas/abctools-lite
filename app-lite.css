@@ -167,7 +167,7 @@ body {																											/* vanilla abc tools settings */
 }
 
 [data-abc="rendered"] .notation-holder {
-  display: block;
+  display: inline;
 }
 
 /* Editor: Notation Maximized */
@@ -193,7 +193,7 @@ body {																											/* vanilla abc tools settings */
 }
 
 [data-abc="rendered"][data-notation="minimized"] .notation-holder {
-  display: block;
+  display: inline;
 }
 
 [data-abc="rendered"][data-mode="mobile"][data-notation="minimized"] .notation-holder {
@@ -269,11 +269,12 @@ body {																											/* vanilla abc tools settings */
   width: 836px;
 }
 
-[data-mode="always-two-columns"][data-notation="minimized"] #notation-holder {
-  display: block;
+[data-mode="always-two-columns"][data-abc="rendered"][data-notation="minimized"] #notation-holder {
+  display: inline;
+  float: left;
 }
 
-[data-mode="always-two-columns"][data-notation="maximized"] #notation-holder {
+[data-mode="always-two-columns"][data-abc="rendered"][data-notation="maximized"] #notation-holder {
   width: 70%;
 }
 

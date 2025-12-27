@@ -14945,13 +14945,17 @@ function Render(renderAll, tuneNumber) {
     document.getElementById("saveaswebsite").classList.add("saveaswebsite");
     gAllowWebExport = true;
 
+    // Enable the copy button
+    // document.getElementById("copybutton").classList.remove("copybuttondisabled");
+    // document.getElementById("copybutton").classList.add("copybutton");
+
     // Enable the play and train buttons
     if (!gIsQuickEditor) {
       document.getElementById("playbutton").classList.remove("playbuttondisabled");
       document.getElementById("playbutton").classList.add("playbutton");
       document.getElementById("tunetrainerbutton").classList.remove("playbuttondisabled");
       document.getElementById("tunetrainerbutton").classList.add("playbutton");
-     tunetrainerbutton
+    //  tunetrainerbutton
     } else {
       // Don't enable play or train button on raw mode on the Quick Editor
       if (!gRawMode) {
@@ -15115,6 +15119,10 @@ function Render(renderAll, tuneNumber) {
 
     // Disable the control display toggle
     gAllowControlToggle = false;
+
+    // Disable the copy button
+    // document.getElementById("copybutton").classList.remove("copybutton");
+    // document.getElementById("copybutton").classList.add("copybuttondisabled");
 
     // Disable the play button
     document.getElementById("playbutton").classList.remove("playbutton");
@@ -49996,7 +50004,7 @@ function AdvancedControlsDialog() {
 
   modal_msg += '<p style="text-align:center;margin-top:24px;">';
   modal_msg += '<input id="injectheaderstring" style="margin-right:20px;" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectHeaderString()" type="button" value="Inject ABC Header Text">';
-  modal_msg += '<input id="injectcustomstringedtab" style="margin-right:20px;" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectCustomStringedInstrumentTab()" type="button" value="Inject Custom Stringed Instrument Tab">';
+  modal_msg += '<input id="injectcustomstringedtab" style="margin-right:20px;" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectCustomStringedInstrumentTab()" type="button" value="Inject Stringed Instrument Tab">';
   modal_msg += '<input id="ceoltastransform" class="advancedcontrols btn btn-injectcontrols-headers" onclick="DoCeoltasTransformDialog()" type="button" value="Comhaltas Transform" title="Brings up a dialog where you can transform the ABC to/from Comhaltas format">';
   modal_msg += '</p>';
   modal_msg += '<p style="text-align:center;margin-top:24px;">';
