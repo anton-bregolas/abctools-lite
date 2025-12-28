@@ -104,7 +104,7 @@ function LoadWebsiteSettings(){
             gWebsiteTitle = val;
         }
         else{
-            gWebsiteTitle = "ABC Transcription Tools Generated Website";
+            gWebsiteTitle = "ABC Tools Lite Generated Website";
         }
 
         val = localStorage.WebsiteSubtitle;
@@ -112,7 +112,7 @@ function LoadWebsiteSettings(){
             gWebsiteSubtitle = val;
         }
         else{
-            gWebsiteSubtitle = "Select a tune from the dropdown to load it into the frame below:";
+            gWebsiteSubtitle = "Select a tune from the list below:";
         }
 
         val = localStorage.WebsiteFooter1;
@@ -168,7 +168,7 @@ function LoadWebsiteSettings(){
             gWebsiteOpenInPlayer = (val == "true");
         }
         else{
-            gWebsiteOpenInPlayer = true;
+            gWebsiteOpenInPlayer = false;
         }
 
         val = localStorage.WebsiteDisableEdit;
@@ -751,7 +751,6 @@ function generateAndSaveWebsiteFull() {
     theOutput +="<style>\n";
     theOutput +="\n";
     theOutput +="    body {\n";
-    theOutput +="        font-family: Arial, sans-serif;\n";
     if ((gWebsiteColor.indexOf("gradient") == -1) && (gWebsiteColor.indexOf("url(") == -1)){
         theOutput +="        background-color: "+gWebsiteColor+";\n";
     }
@@ -766,36 +765,58 @@ function generateAndSaveWebsiteFull() {
             theOutput +="        background-image: "+gWebsiteColor+";\n";   
         }
     }
-    theOutput +="        margin: 0px;\n";
-    theOutput +="        padding: 0px;\n";
+    theOutput +="        margin: 0;\n";
+    theOutput +="        padding: 0;\n";
+    theOutput +="    }\n";
+    theOutput +="\n";
+    theOutput +="    body * {\n";
+    theOutput +="        font-family: 'Fira Sans', 'Droid Sans', Helvetica, Arial, sans-serif;\n";
     theOutput +="    }\n";
     theOutput +="\n";
     theOutput +="    .container {\n";
-    theOutput +="        margin: 0px auto;\n";
+    theOutput +="        display: flex;\n";
+    theOutput +="        flex-direction: column;\n";
+    theOutput +="        width: 100%;\n";
+    theOutput +="        height: 100dvh;\n";
+    theOutput +="        margin: 0 auto;\n";
     theOutput +="        text-align: center;\n";
     theOutput +="        overflow-x: hidden;\n";
     theOutput +="    }\n";
     theOutput +="\n";
+    theOutput +="    .container, main {\n";
+    theOutput +="        display: flex;\n";
+    theOutput +="        flex-direction: column;\n";
+    theOutput +="    }\n";
+    theOutput +="\n";
+    theOutput +="    main {\n";
+    theOutput +="        flex: 1;\n";
+    theOutput +="    }\n";
+    theOutput +="\n";
+    theOutput +="    #tuneFrame {\n";
+    theOutput +="        width: 100%;\n";
+    theOutput +="        height: 100%;\n";
+    theOutput +="    }\n";
+    theOutput +="\n";
     theOutput +="    h1 {\n";
-    theOutput +="        font-size: 24px;\n";
-    theOutput +="        margin-top: 16px;\n";
-    theOutput +="        margin-bottom: 0px;\n";
+    theOutput +="        font-size: 1.5rem;\n";
+    theOutput +="        margin-top: 1rem;\n";
+    theOutput +="        margin-bottom: 0;\n";
     theOutput +="        color: "+gWebsiteTextColor+";\n";
     theOutput +="    }\n";
     theOutput +="\n";
 
     if (gWebsiteTitle && (gWebsiteTitle != "")) {   
         theOutput +="    h2 {\n";
-        theOutput +="        font-size: 16px;\n";
-        theOutput +="        margin-top: 8px;\n";
-        theOutput +="        margin-bottom: 0px;\n";
+        theOutput +="        font-size: 1rem;\n";
+        theOutput +="        margin-top: 0.5rem;\n";
+        theOutput +="        margin-bottom: 0;\n";
         theOutput +="        color: "+gWebsiteTextColor+";\n";
         theOutput +="    }\n";
     }else{
         theOutput +="    h2 {\n";
-        theOutput +="        font-size: 16px;\n";
-        theOutput +="        margin-top: 14px;\n";
-        theOutput +="        margin-bottom: 0px;\n";
+        theOutput +="        font-size: 1rem;\n";
+        theOutput +="        margin-top: 0.875rem;\n";
+        theOutput +="        margin-bottom: 0;\n";
         theOutput +="        color: "+gWebsiteTextColor+";\n";
         theOutput +="    }\n";       
     }
@@ -823,21 +844,21 @@ function generateAndSaveWebsiteFull() {
     theOutput +="\n";
     if (gWebsiteAddFullscreen){
         theOutput +="    #fullscreenbutton {\n";
-        theOutput +="        position: fixed;\n";
-        theOutput +="        top: 16px;   /* Distance from the top of the page */\n";
-        theOutput +="        right: 16px; /* Distance from the right of the page */\n";
-        theOutput +="        padding: 10px 20px;\n";
-        theOutput +="        background-color: #007BFF;\n";
+        theOutput +="        position: absolute;\n";
+        theOutput +="        top: 1rem;   /* Distance from the top of the page */\n";
+        theOutput +="        right: 1rem; /* Distance from the right of the page */\n";
+        theOutput +="        padding: 0.95em 1.3em;\n";
+        theOutput +="        background-color: #663399;\n";
         theOutput +="        color: white;\n";
-        theOutput +="        border: none;\n";
-        theOutput +="        border-radius: 5px;\n";
+        theOutput +="        border: 1px solid gray;\n";
+        theOutput +="        border-radius: 0.3125rem;\n";
         theOutput +="        cursor: pointer;\n";
-        theOutput +="        font-size: 14px;\n";
+        theOutput +="        font-size: 0.875rem;\n";
         theOutput +="        z-index: 1000; /* Ensures it stays above other content */\n";
         theOutput +="    }\n";
         theOutput +="\n";
         theOutput +="    #fullscreenbutton:hover {\n";
-        theOutput +="        background-color: #0056b3;\n";
+        theOutput +="        background-color: #893399;\n";
         theOutput +="    }\n";
         theOutput +="\n";
     }
@@ -846,16 +867,16 @@ function generateAndSaveWebsiteFull() {
     theOutput +="        -moz-appearance: none;\n";
     theOutput +="        appearance: none;\n";
     theOutput +="        background: url(\"data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' fill=\'%238C98F2\'><polygon points=\'0,0 100,0 50,50\'/></svg>\") no-repeat;\n";
-    theOutput +="        background-size: 12px;\n";
-    theOutput +="        background-position: calc(100% - 10px) center;\n";
+    theOutput +="        background-size: 0.75rem;\n";
+    theOutput +="        background-position: calc(100% - 0.625rem) center;\n";
     theOutput +="        background-repeat: no-repeat;\n";
     theOutput +="        background-color: #efefef;\n";
     theOutput +="        color: black;\n";
-    theOutput +="        font-size: 17px;\n";
-    theOutput +="        padding: 5px;\n";
-    theOutput +="        margin-top: 12px;\n";
-    theOutput +="        margin-bottom: 16px;\n";
-    theOutput +="        width: 350px;\n";
+    theOutput +="        font-size: 1.0625rem;\n";
+    theOutput +="        padding: 0.3125em;\n";
+    theOutput +="        margin-top: 0.75rem;\n";
+    theOutput +="        margin-bottom: 1rem;\n";
+    theOutput +="        width: 21.875rem;\n";
     theOutput +="    }\n";
     theOutput +="\n";
     theOutput +="    iframe {\n";
@@ -864,14 +885,14 @@ function generateAndSaveWebsiteFull() {
     theOutput +="    }\n";
     theOutput +="\n";
     theOutput +="    #footer1{\n";
-    theOutput +="        margin-top: 12px;\n";
-    theOutput +="        margin-bottom: 12px;\n";
+    theOutput +="        margin-top: 0.75rem;\n";
+    theOutput +="        margin-bottom: 0.75rem;\n";
     theOutput +="        color: "+gWebsiteTextColor+";\n";
     theOutput +="    }\n";
     theOutput +="\n";
     theOutput +="    #footer2{\n";
-    theOutput +="        margin-top: 12px;\n";
-    theOutput +="        margin-bottom: 0px;\n";
+    theOutput +="        margin-top: 0.75rem;\n";
+    theOutput +="        margin-bottom: 0.375rem;\n";
     theOutput +="        color: "+gWebsiteTextColor+";\n";
     theOutput +="    }\n";
     theOutput +="\n";
@@ -881,47 +902,47 @@ function generateAndSaveWebsiteFull() {
         if ((gWebsiteTitle && (gWebsiteTitle != "")) || (gWebsiteSubtitle && (gWebsiteSubtitle != ""))){
             theOutput +="    #website_help{\n";
             theOutput +="        color: "+gWebsiteHyperlinkColor+";\n";
-            theOutput +="        font-size: 28pt;\n";
+            theOutput +="        font-size: 2.333rem;\n";
             theOutput +="        position: absolute;\n";
-            theOutput +="        left: 16px;\n";
-            theOutput +="        top: 12px;\n";
+            theOutput +="        left: 1rem;\n";
+            theOutput +="        top: 0.75rem;\n";
             theOutput +="    }\n";
             theOutput +="\n";
         }
         else{
             theOutput +="    #website_help{\n";
             theOutput +="        color: "+gWebsiteHyperlinkColor+";\n";
-            theOutput +="        font-size: 28pt;\n";
+            theOutput +="        font-size: 2.333rem;\n";
             theOutput +="        position: absolute;\n";
-            theOutput +="        left: 16px;\n";
-            theOutput +="        top: 10px;\n";
+            theOutput +="        left: 1rem;\n";
+            theOutput +="        top: 0.625rem;\n";
             theOutput +="    }\n";
             theOutput +="\n";
         }
     }
 
     theOutput +="    #previous_tune, #next_tune{\n";
-    theOutput +="        padding: 10px 15px;\n";
+    theOutput +="        padding: 0.625em 0.9375em;\n";
     theOutput +="        background-color: #dddddd;\n";
     theOutput +="        color: black;\n";
     theOutput +="        border: none;\n";
-    theOutput +="        border-radius: 5px;\n";
+    theOutput +="        border-radius: 0.3125rem;\n";
     theOutput +="        cursor: pointer;\n";
-    theOutput +="        font-size: 14px;\n";
+    theOutput +="        font-size: 0.875rem;\n";
     theOutput +="        z-index: 1000; /* Ensures it stays above other content */\n";
-    theOutput +="        margin-top: 12px;\n";
-    theOutput +="        margin-bottom: 16px;\n";
-    theOutput +="        transform:translate(0px, -1px);\n";
+    theOutput +="        margin-top: 0.75rem;\n";
+    theOutput +="        margin-bottom: 1rem;\n";
+    theOutput +="        transform:translate(0rem, -0.0625rem);\n";
     theOutput +="    }\n";
     theOutput +="\n";
 
     theOutput +="    #previous_tune{\n";
-    theOutput +="        margin-right:10px;\n";
+    theOutput +="        margin-right:0.625rem;\n";
     theOutput +="    }\n";
     theOutput +="\n";
 
     theOutput +="    #next_tune{\n";
-    theOutput +="        margin-left:10px;\n";
+    theOutput +="        margin-left:0.625rem;\n";
     theOutput +="    }\n";
     theOutput +="\n";
 
@@ -949,78 +970,81 @@ function generateAndSaveWebsiteFull() {
     theOutput +="<body>\n";
     theOutput +="\n";
     theOutput +='    <div class="container">\n';
+    theOutput +='        <header>\n';
     if (gWebsiteAddHelp){
-        theOutput +='        <a id="website_help" href="'+gWebsiteHelpURL+'" target="_blank" style="text-decoration:none;" title="Information about using this tunebook" class="cornerbutton">?</a>\n';
+        theOutput +='            <a id="website_help" href="'+gWebsiteHelpURL+'" target="_blank" style="text-decoration:none;" title="Information about using this tunebook" class="cornerbutton">?</a>\n';
     }
 
     if (gWebsiteAddFullscreen){
-        theOutput +='        <button id="fullscreenbutton">Full Screen</button>\n';
+        theOutput +='            <button id="fullscreenbutton">Full Screen</button>\n';
     }
 
     var gotTitle = false;
     if (gWebsiteTitle && (gWebsiteTitle != "")){
-        theOutput +="        <h1 id=\"title\">"+gWebsiteTitle+"</h1>\n";
+        theOutput +="            <h1 id=\"title\">"+gWebsiteTitle+"</h1>\n";
         gotTitle = true;
     }
     var gotSubTitle = false;
     if (gWebsiteSubtitle && (gWebsiteSubtitle != "")){
-        theOutput +="        <h2 id=\"subtitle\">"+gWebsiteSubtitle+"</h2>\n";
+        theOutput +="            <h2 id=\"subtitle\">"+gWebsiteSubtitle+"</h2>\n";
         gotSubTitle = true;
     }
 
-    theOutput +='        <button id="previous_tune" title="Previous tune">←</button>\n';
+    theOutput +='            <button id="previous_tune" title="Previous tune">←</button>\n';
 
     if (gotTitle || gotSubTitle){
         if (gWebsiteTabSelector){
-    	   theOutput +='        <select id="tuneSelector" style="margin-right:10px;">\n';
+    	   theOutput +='            <select id="tuneSelector" style="margin-right:0.625rem;">\n';
         }
         else{
-           theOutput +='        <select id="tuneSelector">\n';            
+           theOutput +='            <select id="tuneSelector">\n';            
         }
     }
     else{
         if (gWebsiteTabSelector){
-    	   theOutput +='        <select id="tuneSelector" style="margin-top:18px;margin-right:10px;">\n';
+    	   theOutput +='            <select id="tuneSelector" style="margin-top:1.125rem;margin-right:0.625rem;">\n';
         }
         else{
-           theOutput +='        <select id="tuneSelector" style="margin-top:18px;">\n';            
+           theOutput +='            <select id="tuneSelector" style="margin-top:1.125rem;">\n';            
         }
     }
-    theOutput +='            <option value="">Click to Select a Tune</option>\n';
-    theOutput +="        </select>\n";
+    theOutput +='                <option value="">--Click to select a tune--</option>\n';
+    theOutput +="            </select>\n";
 
 
     if (gWebsiteTabSelector){
         if (gotTitle || gotSubTitle){
-            theOutput +='        <select id="displayOptions" style="width:250px;">\n';
+            theOutput +='            <select id="displayOptions" style="width:15.625rem;">\n';
         }
         else{
-            theOutput +='        <select id="displayOptions" style="width:250px;margin-top:18px;">\n';
+            theOutput +='            <select id="displayOptions" style="width:15.625rem;margin-top:1.125rem;">\n';
         }
-        theOutput +='           <option value="-1">Select an Instrument</option>\n';
+        theOutput +='               <option value="-1">--Select an instrument--</option>\n';
 
         var instrumentName = getInstrumentNameForWebSelector(gWebsiteMelodyInstrumentInject);
 
-        theOutput +='           <option value="0">'+instrumentName+' - Notation</option>\n';
-        theOutput +='           <option value="1">'+instrumentName+' - Note Names</option>\n';
-        theOutput +='           <option value="2">Mandolin</option>\n';
-        theOutput +='           <option value="3">Tenor Banjo</option>\n';
-        theOutput +='           <option value="4">GDAD Bouzouki</option>\n';
-        theOutput +='           <option value="5">Standard Guitar</option>\n';
-        theOutput +='           <option value="6">DADGAD</option>\n';
-        theOutput +='           <option value="7">Tin Whistle</option>\n';
-        theOutput +='           <option value="8">Irish Flute</option>\n';
-        theOutput +='           <option value="9">Accordion</option>\n';
-        theOutput +='           <option value="10">Concertina</option>\n';
-        theOutput +='           <option value="11">Hammered Dulcimer</option>\n';
-        theOutput +='        </select>\n'
+        theOutput +='               <option value="0">'+instrumentName+' - Notation</option>\n';
+        theOutput +='               <option value="1">'+instrumentName+' - Note Names</option>\n';
+        theOutput +='               <option value="2">Mandolin</option>\n';
+        theOutput +='               <option value="3">Tenor Banjo</option>\n';
+        theOutput +='               <option value="4">GDAD Bouzouki</option>\n';
+        theOutput +='               <option value="5">Standard Guitar</option>\n';
+        theOutput +='               <option value="6">DADGAD</option>\n';
+        theOutput +='               <option value="7">Tin Whistle</option>\n';
+        theOutput +='               <option value="8">Irish Flute</option>\n';
+        theOutput +='               <option value="9">Accordion</option>\n';
+        theOutput +='               <option value="10">Concertina</option>\n';
+        theOutput +='               <option value="11">Hammered Dulcimer</option>\n';
+        theOutput +='            </select>\n'
     }
 
-    theOutput +='        <button id="next_tune" title="Next tune">→</button>\n';
+    theOutput +='            <button id="next_tune" title="Next tune">→</button>\n';
 
-    theOutput +="        <br/>\n";
-    theOutput +='        <iframe id="tuneFrame" src=""></iframe>\n';        
-
+    theOutput +="        </header>\n";
+    theOutput +="        <main>\n";
+    theOutput +='            <iframe id="tuneFrame" src=""></iframe>\n';        
+    theOutput +="        </main>\n";
+    theOutput +="        <footer>\n";
     var gotFooter = false;
     if (gWebsiteFooter1 && (gWebsiteFooter1 != "")){
         theOutput +='        <p id="footer1">'+gWebsiteFooter1+'</p>\n';
@@ -1032,10 +1056,10 @@ function generateAndSaveWebsiteFull() {
         	theOutput +='        <p id="footer2">'+gWebsiteFooter2+'</p>\n';
         }
         else{
-        	theOutput +='        <p id="footer2" style="margin-bottom:14px;">'+gWebsiteFooter2+'</p>\n';        	
+        	theOutput +='        <p id="footer2" style="margin-bottom:0.875rem;">'+gWebsiteFooter2+'</p>\n';        	
         }
     }
-
+    theOutput +="        </footer>\n";
     theOutput +="    </div>\n";
     theOutput +="\n";
 
@@ -1089,14 +1113,14 @@ function generateAndSaveWebsiteFull() {
     if (((!gotTitle) && gotSubTitle) || ((!gotSubTitle) && gotTitle)){
 
         if (gWebsiteAddFullscreen){
-            theOutput +="        document.getElementById('fullscreenbutton').style.top = '8px';\n";
-            theOutput +="        document.getElementById('fullscreenbutton').style.right = '8px';\n";
+            theOutput +="        document.getElementById('fullscreenbutton').style.top = '0.5rem';\n";
+            theOutput +="        document.getElementById('fullscreenbutton').style.right = '0.5rem';\n";
             theOutput +="\n";
         }
 
         if (gWebsiteAddHelp){
-            theOutput +="        document.getElementById('website_help').style.top = '4px';\n";
-            theOutput +="        document.getElementById('website_help').style.left = '12px';\n";
+            theOutput +="        document.getElementById('website_help').style.top = '0.25rem';\n";
+            theOutput +="        document.getElementById('website_help').style.left = '0.75rem';\n";
             theOutput +="\n";
         }
         
@@ -1165,7 +1189,7 @@ function generateAndSaveWebsiteFull() {
     theOutput +="                   var tuneIndex = tuneSelector.selectedIndex;\n";
     theOutput +="                   tuneIndex++;\n";
     theOutput +="                   if (tuneIndex > tunes.length){\n";
-    theOutput +="                    tuneIndex = tunes.length;\n";
+    theOutput +="                    tuneIndex = 1\n";
     theOutput +="                   }\n";
     theOutput +="                   tuneSelector.selectedIndex = tuneIndex;\n";
     theOutput +="                   tuneSelector.dispatchEvent(new Event('change'));\n";
@@ -1174,8 +1198,8 @@ function generateAndSaveWebsiteFull() {
     theOutput +="               function previousTune(){\n";
     theOutput +="                   var tuneIndex = tuneSelector.selectedIndex;\n";
     theOutput +="                   tuneIndex--;\n";
-    theOutput +="                   if (tuneIndex < 0){\n";
-    theOutput +="                       tuneIndex = 0;\n";
+    theOutput +="                   if (tuneIndex < 1){\n";
+    theOutput +="                       tuneIndex = tunes.length;;\n";
     theOutput +="                   }\n";
     theOutput +="                   tuneSelector.selectedIndex = tuneIndex;\n";
     theOutput +="                   tuneSelector.dispatchEvent(new Event('change'));\n";
@@ -1412,53 +1436,7 @@ function generateAndSaveWebsiteFull() {
         theOutput +="        });\n";
         theOutput +="\n";
     }
-
-    theOutput +="       function getElementsTotalHeight() {\n";
-    theOutput +="\n";
-    theOutput +="           var ids;\n";
-    theOutput +="\n";
-    theOutput +="           if (tunes.length > 1){\n";
-    theOutput +="               if (gAllowPreviousNextButtons){\n";
-    theOutput +="                   ids = ['title', 'subtitle', 'previous_tune', 'footer1', 'footer2'];\n";
-    theOutput +="               }\n";
-    theOutput +="               else{\n";
-    theOutput +="                   ids = ['title', 'subtitle', 'tuneSelector', 'footer1', 'footer2'];\n";
-    theOutput +="               }\n";
-    theOutput +="           }\n";
-    theOutput +="           else{\n";
-    theOutput +="               ids = ['title', 'subtitle', 'displayOptions', 'footer1', 'footer2'];\n";
-    theOutput +="           }\n";
-    theOutput +="\n";
-    theOutput +="           let totalHeight = 0;\n";
-    theOutput +="\n";
-    theOutput +="           ids.forEach(id => {\n";
-    theOutput +="\n";
-    theOutput +="               const element = document.getElementById(id);\n";
-    theOutput +="\n";
-    theOutput +="               if (element && (element.textContent.trim() !== \"\")) {\n";
-    theOutput +="                   const elementHeight = element.offsetHeight;\n";
-    theOutput +="                   const computedStyle = window.getComputedStyle(element);\n";
-    theOutput +="\n";
-    theOutput +="                   // Include margins\n";
-    theOutput +="                   const marginTop = parseFloat(computedStyle.marginTop);\n";
-    theOutput +="                   const marginBottom = parseFloat(computedStyle.marginBottom);\n";
-    theOutput +="                   totalHeight += elementHeight + marginTop + marginBottom + 1;\n";
-    theOutput +="               }\n";
-    theOutput +="           });\n";
-    theOutput +="\n";
-    theOutput +="           if ((tunes.length == 1) && (!document.getElementById('displayOptions'))){\n";
-    theOutput +="               totalHeight += 24;\n";
-    theOutput +="           }\n";
-
-    if ((!gotTitle) && (!gotSubTitle)){
-        theOutput +="           return totalHeight+12;\n";
-    }
-    else{
-    	theOutput +="           return totalHeight+10;\n";
-    }
     // ABC Tools Lite: Customized (cut resizeIframe)
-    theOutput +="       }\n";
-    theOutput +="\n";
     theOutput +="       function setSelectedTuneByName(optionText) {\n";
     theOutput +="           var gotMatch = false;\n";
     theOutput +="           for (let i = 0; i < tuneSelector.options.length; i++) {\n";
@@ -1529,7 +1507,7 @@ function generateAndSaveWebsiteFull() {
 
     var thePlaceholder = gWebsiteFilename;
     if (thePlaceholder == ""){
-        thePlaceholder = "abctools_website.html";
+        thePlaceholder = "abctools-lite-export.html";
     }
 
     var thePrompt = "Please enter a filename for your output website HTML file:";
@@ -1689,36 +1667,36 @@ function generateAndSaveWebsiteSimple() {
             theOutput +="        background-image: "+gWebsiteColor+";\n";   
         }
     }
-    theOutput +="        margin: 0px;\n";
-    theOutput +="        padding: 0px;\n";
+    theOutput +="        margin: 0;\n";
+    theOutput +="        padding: 0;\n";
     theOutput +="    }\n";
     theOutput +="\n";
     theOutput +="    .container {\n";
-    theOutput +="        margin: 0px auto;\n";
+    theOutput +="        margin: 0 auto;\n";
     theOutput +="        text-align: center;\n";
     theOutput +="        overflow-x: hidden;\n";
     theOutput +="    }\n";
     theOutput +="\n";
     theOutput +="    h1 {\n";
-    theOutput +="        font-size: 24px;\n";
-    theOutput +="        margin-top: 24px;\n";
-    theOutput +="        margin-bottom: 0px;\n";
+    theOutput +="        font-size: 1.5rem;\n";
+    theOutput +="         margin-top: 1.5rem;\n";
+    theOutput +="        margin-bottom: 0;\n";
     theOutput +="        color: "+gWebsiteTextColor+";\n";
     theOutput +="    }\n";
     theOutput +="\n";
 
     if (gWebsiteTitle && (gWebsiteTitle != "")) {   
         theOutput +="    h2 {\n";
-        theOutput +="        font-size: 18px;\n";
-        theOutput +="        margin-top: 18px;\n";
-        theOutput +="        margin-bottom: 24px;\n";
+        theOutput +="        font-size: 1.125rem;\n";
+        theOutput +="        margin-top: 1.125rem;\n";
+        theOutput +="        margin-bottom: 1.5rem;\n";
         theOutput +="        color: "+gWebsiteTextColor+";\n";
         theOutput +="    }\n";
     }else{
         theOutput +="    h2 {\n";
-        theOutput +="        font-size: 18px;\n";
-        theOutput +="        margin-top: 24px;\n";
-        theOutput +="        margin-bottom: 24px;\n";
+        theOutput +="        font-size: 1.125rem;\n";
+        theOutput +="         margin-top: 1.5rem;\n";
+        theOutput +="        margin-bottom: 1.5rem;\n";
         theOutput +="        color: "+gWebsiteTextColor+";\n";
         theOutput +="    }\n";       
     }
@@ -1729,7 +1707,7 @@ function generateAndSaveWebsiteSimple() {
     theOutput +="    }\n";
     theOutput +="\n";
     theOutput +="    a {\n";
-    theOutput +="        font-size: 18px;\n";
+    theOutput +="        font-size: 1.125rem;\n";
     theOutput +="        text-decoration: none;\n";
     theOutput +="        color: "+gWebsiteHyperlinkColor+";\n";
     theOutput +="    }\n";
@@ -1748,16 +1726,16 @@ function generateAndSaveWebsiteSimple() {
     theOutput +="\n";
 
     theOutput +="    #footer1{\n";
-    theOutput +="        font-size: 18px;\n";
-    theOutput +="        margin-top: 16px;\n";
-    theOutput +="        margin-bottom: 16px;\n";
+    theOutput +="        font-size: 1.125rem;\n";
+    theOutput +="        margin-top: 1rem;\n";
+    theOutput +="        margin-bottom: 1rem;\n";
     theOutput +="        color: "+gWebsiteTextColor+";\n";
     theOutput +="    }\n";
     theOutput +="\n";
     theOutput +="    #footer2{\n";
-    theOutput +="        font-size: 18px;\n";
-    theOutput +="        margin-top: 16px;\n";
-    theOutput +="        margin-bottom: 16px;\n";
+    theOutput +="        font-size: 1.125rem;\n";
+    theOutput +="        margin-top: 1rem;\n";
+    theOutput +="        margin-bottom: 1rem;\n";
     theOutput +="        color: "+gWebsiteTextColor+";\n";
     theOutput +="    }\n";
     theOutput +="\n";
@@ -1767,20 +1745,20 @@ function generateAndSaveWebsiteSimple() {
         if ((gWebsiteTitle && (gWebsiteTitle != "")) || (gWebsiteSubtitle && (gWebsiteSubtitle != ""))){
             theOutput +="    #website_help{\n";
             theOutput +="        color: "+gWebsiteHyperlinkColor+";\n";
-            theOutput +="        font-size: 28pt;\n";
+            theOutput +="        font-size: 2.333rem;\n";
             theOutput +="        position: absolute;\n";
-            theOutput +="        left: 16px;\n";
-            theOutput +="        top: 12px;\n";
+            theOutput +="        left: 1rem;\n";
+            theOutput +="        top: 0.75rem;\n";
             theOutput +="    }\n";
             theOutput +="\n";
         }
         else{
             theOutput +="    #website_help{\n";
             theOutput +="        color: "+gWebsiteHyperlinkColor+";\n";
-            theOutput +="        font-size: 28pt;\n";
+            theOutput +="        font-size: 2.333rem;\n";
             theOutput +="        position: absolute;\n";
-            theOutput +="        left: 16px;\n";
-            theOutput +="        top: 10px;\n";
+            theOutput +="        left: 1rem;\n";
+            theOutput +="        top: 0.625rem;\n";
             theOutput +="    }\n";
             theOutput +="\n";
         }
@@ -1788,13 +1766,13 @@ function generateAndSaveWebsiteSimple() {
 
     theOutput +="    ul{\n";
     theOutput +="        list-style-type:none;\n";
-    theOutput +="        padding:0px;\n";
+    theOutput +="        padding: 0;\n";
     theOutput +="        text-align:center;\n";
     theOutput +="    }\n";
     theOutput +="    \n";
 
     theOutput +="    li{\n";
-    theOutput +="        margin-bottom: 16px;\n";
+    theOutput +="        margin-bottom: 1rem;\n";
     theOutput +="    }\n";
     theOutput +="\n";
 
@@ -1822,7 +1800,7 @@ function generateAndSaveWebsiteSimple() {
     }
 
     if (gotTitle || gotSubTitle){
-        theOutput +='        <hr style="margin-top:24px;margin-bottom:24px;width:500px;color:white;">\n';
+        theOutput +='        <hr style="margin-top:1.5rem;margin-bottom:1.5rem;width:31.25rem;color:white;">\n';
     }
 
     theOutput +='        <div id="tuneShareLinkHolder"></div>\n';  
@@ -1833,7 +1811,7 @@ function generateAndSaveWebsiteSimple() {
     }
 
     if (doHR){
-        theOutput +='        <hr style="margin-top:24px;margin-bottom:24px;width:500px;color:white;">\n';
+        theOutput +='        <hr style="margin-top:1.5rem;margin-bottom:1.5rem;width:31.25rem;color:white;">\n';
     }
       
     var gotFooter = false;
@@ -1852,7 +1830,7 @@ function generateAndSaveWebsiteSimple() {
     }
 
     if (doHR){
-        theOutput +='        <hr style="margin-top:24px;margin-bottom:24px;width:500px;color:white;">\n';
+        theOutput +='        <hr style="margin-top:1.5rem;margin-bottom:1.5rem;width:31.25rem;color:white;">\n';
     }
 
     theOutput +="    </div>\n";
@@ -1923,7 +1901,7 @@ function generateAndSaveWebsiteSimple() {
 
     var thePlaceholder = gWebsiteFilename;
     if (thePlaceholder == ""){
-        thePlaceholder = "abctools_website.html";
+        thePlaceholder = "abctools-lite-export.html";
     }
 
     var thePrompt = "Please enter a filename for your output website HTML file:";
@@ -2086,36 +2064,36 @@ function generateAndSaveWebsiteImageGallery() {
             theOutput +="        background-image: "+gWebsiteColor+";\n";   
         }
     }
-    theOutput +="        margin: 0px;\n";
-    theOutput +="        padding: 0px;\n";
+    theOutput +="        margin: 0;\n";
+    theOutput +="        padding: 0;\n";
     theOutput +="    }\n";
     theOutput +="\n";
     theOutput +="    .container {\n";
-    theOutput +="        margin: 0px auto;\n";
+    theOutput +="        margin: 0 auto;\n";
     theOutput +="        text-align: center;\n";
     theOutput +="        overflow-x: hidden;\n";
     theOutput +="    }\n";
     theOutput +="\n";
     theOutput +="    h1 {\n";
-    theOutput +="        font-size: 24px;\n";
-    theOutput +="        margin-top: 24px;\n";
-    theOutput +="        margin-bottom: 0px;\n";
+    theOutput +="        font-size: 1.5rem;\n";
+    theOutput +="         margin-top: 1.5rem;\n";
+    theOutput +="        margin-bottom: 0;\n";
     theOutput +="        color: "+gWebsiteTextColor+";\n";
     theOutput +="    }\n";
     theOutput +="\n";
 
     if (gWebsiteTitle && (gWebsiteTitle != "")) {   
         theOutput +="    h2 {\n";
-        theOutput +="        font-size: 18px;\n";
-        theOutput +="        margin-top: 18px;\n";
-        theOutput +="        margin-bottom: 24px;\n";
+        theOutput +="        font-size: 1.125rem;\n";
+        theOutput +="        margin-top: 1.125rem;\n";
+        theOutput +="        margin-bottom: 1.5rem;\n";
         theOutput +="        color: "+gWebsiteTextColor+";\n";
         theOutput +="    }\n";
     }else{
         theOutput +="    h2 {\n";
-        theOutput +="        font-size: 18px;\n";
-        theOutput +="        margin-top: 24px;\n";
-        theOutput +="        margin-bottom: 24px;\n";
+        theOutput +="        font-size: 1.125rem;\n";
+        theOutput +="         margin-top: 1.5rem;\n";
+        theOutput +="        margin-bottom: 1.5rem;\n";
         theOutput +="        color: "+gWebsiteTextColor+";\n";
         theOutput +="    }\n";       
     }
@@ -2126,7 +2104,7 @@ function generateAndSaveWebsiteImageGallery() {
     theOutput +="    }\n";
     theOutput +="\n";
     theOutput +="    a {\n";
-    theOutput +="        font-size: 18px;\n";
+    theOutput +="        font-size: 1.125rem;\n";
     theOutput +="        text-decoration: none;\n";
     theOutput +="        color: "+gWebsiteHyperlinkColor+";\n";
     theOutput +="    }\n";
@@ -2145,22 +2123,22 @@ function generateAndSaveWebsiteImageGallery() {
     theOutput +="\n";
 
     theOutput +="    #footer1{\n";
-    theOutput +="        font-size: 18px;\n";
-    theOutput +="        margin-top: 16px;\n";
-    theOutput +="        margin-bottom: 16px;\n";
+    theOutput +="        font-size: 1.125rem;\n";
+    theOutput +="        margin-top: 1rem;\n";
+    theOutput +="        margin-bottom: 1rem;\n";
     theOutput +="        color: "+gWebsiteTextColor+";\n";
     theOutput +="    }\n";
     theOutput +="\n";
     theOutput +="    #footer2{\n";
-    theOutput +="        font-size: 18px;\n";
-    theOutput +="        margin-top: 16px;\n";
-    theOutput +="        margin-bottom: 16px;\n";
+    theOutput +="        font-size: 1.125rem;\n";
+    theOutput +="        margin-top: 1rem;\n";
+    theOutput +="        margin-bottom: 1rem;\n";
     theOutput +="        color: "+gWebsiteTextColor+";\n";
     theOutput +="    }\n";
     theOutput +="\n";
 
     theOutput +="    .image-container {\n";
-    theOutput +="      margin: 20px 0;\n";
+    theOutput +="      margin: 1.25rem 0;\n";
     theOutput +="      text-align: center;\n";
     theOutput +="    }\n";
     theOutput +="\n";
@@ -2231,9 +2209,9 @@ function generateAndSaveWebsiteImageGallery() {
         theOutput +="\n";
         theOutput +="        .image-container {\n"
         theOutput +="          width: 100%;\n"
-        theOutput +="          border: 0px !important;\n"
-        theOutput +="          margin: 0px !important;\n"
-        theOutput +="          padding: 0px !important;\n"
+        theOutput +="          border: 0 !important;\n"
+        theOutput +="          margin: 0 !important;\n"
+        theOutput +="          padding: 0 !important;\n"
         theOutput +="          text-align: center;\n"
         theOutput +="          page-break-after: always;\n"
         theOutput +="        }\n"
@@ -2242,9 +2220,9 @@ function generateAndSaveWebsiteImageGallery() {
         theOutput +="\n";
         theOutput +="        .image-container {\n"
         theOutput +="          width: 100%;\n"
-        theOutput +="          border: 0px !important;\n"
-        theOutput +="          margin: 0px !important;\n"
-        theOutput +="          padding: 0px !important;\n"
+        theOutput +="          border: 0 !important;\n"
+        theOutput +="          margin: 0 !important;\n"
+        theOutput +="          padding: 0 !important;\n"
         theOutput +="          text-align: center;\n"
         theOutput +="        }\n"
     }
@@ -2256,9 +2234,9 @@ function generateAndSaveWebsiteImageGallery() {
     theOutput +="          width: 100% !important;\n"
     theOutput +="          height: auto;\n"
     theOutput +="          cursor: pointer;\n"
-    theOutput +="          border: 0px !important;\n"
-    theOutput +="          margin: 0px !important;\n"
-    theOutput +="          padding: 0px !important;\n"
+    theOutput +="          border: 0 !important;\n"
+    theOutput +="          margin: 0 !important;\n"
+    theOutput +="          padding: 0 !important;\n"
     theOutput +="          background: white;\n"
     theOutput +="        }\n"
 
@@ -2281,9 +2259,9 @@ function generateAndSaveWebsiteImageGallery() {
         theOutput +="      max-width: 100%;\n";
         theOutput +="      height: auto;\n";
         theOutput +="      cursor: pointer;\n";
-        theOutput +="      border-left: 18px solid white;\n";
-        theOutput +="      border-right: 18px solid white;\n";
-        theOutput +="      border-bottom: 32px solid white;\n";
+        theOutput +="      border-left: 1.125rem solid white;\n";
+        theOutput +="      border-right: 1.125rem solid white;\n";
+        theOutput +="      border-bottom: 2rem solid white;\n";
         theOutput +="      background: white;\n";
         theOutput +="    }\n";
         theOutput +="\n";
@@ -2293,9 +2271,9 @@ function generateAndSaveWebsiteImageGallery() {
         theOutput +="      max-width: 100%;\n";
         theOutput +="      height: auto;\n";
         theOutput +="      cursor: pointer;\n";
-        theOutput +="      border-left: 12px solid white;\n";
-        theOutput +="      border-right: 12px solid white;\n";
-        theOutput +="      border-bottom: 26px solid white;\n";
+        theOutput +="      border-left: 0.75rem solid white;\n";
+        theOutput +="      border-right: 0.75rem solid white;\n";
+        theOutput +="      border-bottom: 1.625rem solid white;\n";
         theOutput +="      background: white;\n";
         theOutput +="    }\n";
         theOutput +="\n";
@@ -2306,20 +2284,20 @@ function generateAndSaveWebsiteImageGallery() {
         if ((gWebsiteTitle && (gWebsiteTitle != "")) || (gWebsiteSubtitle && (gWebsiteSubtitle != ""))){
             theOutput +="    #website_help{\n";
             theOutput +="        color: "+gWebsiteHyperlinkColor+";\n";
-            theOutput +="        font-size: 28pt;\n";
+            theOutput +="        font-size: 2.333rem;\n";
             theOutput +="        position: absolute;\n";
-            theOutput +="        left: 16px;\n";
-            theOutput +="        top: 12px;\n";
+            theOutput +="        left: 1rem;\n";
+            theOutput +="        top: 0.75rem;\n";
             theOutput +="    }\n";
             theOutput +="\n";
         }
         else{
             theOutput +="    #website_help{\n";
             theOutput +="        color: "+gWebsiteHyperlinkColor+";\n";
-            theOutput +="        font-size: 28pt;\n";
+            theOutput +="        font-size: 2.333rem;\n";
             theOutput +="        position: absolute;\n";
-            theOutput +="        left: 16px;\n";
-            theOutput +="        top: 10px;\n";
+            theOutput +="        left: 1rem;\n";
+            theOutput +="        top: 0.625rem;\n";
             theOutput +="    }\n";
             theOutput +="\n";
         }
@@ -2349,7 +2327,7 @@ function generateAndSaveWebsiteImageGallery() {
     }
 
     if (gotTitle || gotSubTitle){
-        theOutput +='        <hr class="hidden-print" style="margin-top:24px;margin-bottom:24px;width:500px;color:white;">\n';
+        theOutput +='        <hr class="hidden-print" style="margin-top:1.5rem;margin-bottom:1.5rem;width:31.25rem;color:white;">\n';
     }
 
     theOutput +='        <div id="image_gallery"></div>\n';  
@@ -2360,7 +2338,7 @@ function generateAndSaveWebsiteImageGallery() {
     }
 
     if (doHR){
-        theOutput +='        <hr class="hidden-print" style="margin-top:24px;margin-bottom:24px;width:500px;color:white;">\n';
+        theOutput +='        <hr class="hidden-print" style="margin-top:1.5rem;margin-bottom:1.5rem;width:31.25rem;color:white;">\n';
     }
       
     var gotFooter = false;
@@ -2379,7 +2357,7 @@ function generateAndSaveWebsiteImageGallery() {
     }
 
     if (doHR){
-        theOutput +='        <hr class="hidden-print" style="margin-top:24px;margin-bottom:24px;width:500px;color:white;">\n';
+        theOutput +='        <hr class="hidden-print" style="margin-top:1.5rem;margin-bottom:1.5rem;width:31.25rem;color:white;">\n';
     }
 
     theOutput +="    </div>\n";
@@ -2464,7 +2442,7 @@ function generateAndSaveWebsiteImageGallery() {
 
     var thePlaceholder = gWebsiteFilename;
     if (thePlaceholder == ""){
-        thePlaceholder = "abctools_website.html";
+        thePlaceholder = "abctools-lite-export.html";
     }
 
     var thePrompt = "Please enter a filename for your output website HTML file:";
@@ -2664,7 +2642,7 @@ function generateAndSaveWebsiteLightbox() {
     theOutput +="        flex-direction: column;\n";
     theOutput +="        align-items: center;\n";
     theOutput +="        justify-content: center;\n";
-    theOutput +="        margin-top: 80px;\n";
+    theOutput +="        margin-top: 5rem;\n";
     theOutput +="    }\n";
 
     theOutput +="\n";
@@ -2674,13 +2652,13 @@ function generateAndSaveWebsiteLightbox() {
     theOutput +="        max-height: 100%;\n";
     theOutput +="        cursor: pointer;\n";
     theOutput +="        background:white;\n";
-    theOutput +="        padding: 0px 0px 24px 0px\n";
+    theOutput +="        padding: 0 0 1.5em 0\n";
     theOutput +="    }\n";
 
     theOutput +="\n";
 
     theOutput +="    #controls {\n";
-    theOutput +="        margin-top: 32px;\n";
+    theOutput +="        margin-top: 2rem;\n";
     theOutput +="    }\n";
 
     theOutput +="\n";
@@ -2698,10 +2676,10 @@ function generateAndSaveWebsiteLightbox() {
     theOutput +="\n";
 
     theOutput +="    button {\n";
-    theOutput +="        margin: 7px;\n";
-    theOutput +="        padding: 10px 20px;\n";
-    theOutput +="        font-size: 14px;\n";
-    theOutput +="        border-radius: 0px;\n";
+    theOutput +="        margin: 0.4375rem;\n";
+    theOutput +="        padding: 0.625em 1.25em;\n";
+    theOutput +="        font-size: 0.875rem;\n";
+    theOutput +="        border-radius: 0;\n";
     theOutput +="        color:black;\n";
     theOutput +="        background:white;\n";
     theOutput +="        -webkit-appearance: none;\n";
@@ -2715,17 +2693,17 @@ function generateAndSaveWebsiteLightbox() {
     theOutput +="        -moz-appearance: none;\n";
     theOutput +="        appearance: none;\n";
     theOutput +='        background: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' fill=\'%238C98F2\'><polygon points=\'0,0 100,0 50,50\'/></svg>") no-repeat;\n';
-    theOutput +="        background-size: 12px;\n";
-    theOutput +="        background-position: calc(100% - 10px) center;\n";
+    theOutput +="        background-size: 0.75rem;\n";
+    theOutput +="        background-position: calc(100% - 0.625rem) center;\n";
     theOutput +="        background-repeat: no-repeat;\n";
     theOutput +="        background-color: #efefef;\n";
     theOutput +="        color:black;\n";
-    theOutput +="        font-size:12pt;\n";
+    theOutput +="        font-size:1rem;\n";
     theOutput +='        font-family:"Arial";\n';
-    theOutput +="        height:40px;\n";
-    theOutput +="        width:300px;\n";
-    theOutput +="        padding-left:10px;\n";
-    theOutput +="        margin:7px;\n";
+    theOutput +="        height:2.5rem;\n";
+    theOutput +="        width:18.75rem;\n";
+    theOutput +="        padding-left:0.625em;\n";
+    theOutput +="        margin:0.4375rem;\n";
     theOutput +="    }\n";
 
     theOutput +="\n";
@@ -2741,7 +2719,7 @@ function generateAndSaveWebsiteLightbox() {
     theOutput +="    #subtitle {\n";
     theOutput +="        font-size: 1.5em;\n";
     theOutput +="        color: "+gWebsiteTextColor+";\n";
-    theOutput +="        margin-top: 24px;\n";
+    theOutput +="         margin-top: 1.5rem;\n";
     theOutput +="    }\n";
 
     theOutput +="\n";
@@ -2796,7 +2774,7 @@ function generateAndSaveWebsiteLightbox() {
         theOutput +="        #print_title {\n";
         theOutput +="          display:block;\n";
         theOutput +="          font-family: Arial, sans-serif;\n";
-        theOutput +="          font-size: 24px;\n";
+        theOutput +="          font-size: 1.5rem;\n";
         theOutput +="          color: black;\n";
         theOutput +="          text-align: center;\n";
         theOutput +="          margin-top: 32vh;\n";
@@ -2806,8 +2784,8 @@ function generateAndSaveWebsiteLightbox() {
         theOutput +="        #print_subtitle {\n";
         theOutput +="          display:block;\n";
         theOutput +="          font-family: Arial, sans-serif;\n";
-        theOutput +="          font-size: 18px;\n";
-        theOutput +="          margin-top: 24px;\n";
+        theOutput +="          font-size: 1.125rem;\n";
+        theOutput +="           margin-top: 1.5rem;\n";
         theOutput +="          color: black;\n";
         theOutput +="          text-align: center;\n";
         theOutput +="          font-size: 1.25em;\n";
@@ -2820,7 +2798,7 @@ function generateAndSaveWebsiteLightbox() {
         theOutput +="        #print_title {\n";
         theOutput +="          display:block;\n";
         theOutput +="          font-family: Arial, sans-serif;\n";
-        theOutput +="          font-size: 24px;\n";
+        theOutput +="          font-size: 1.5rem;\n";
         theOutput +="          color: black;\n";
         theOutput +="          text-align: center;\n";
         theOutput +="          margin-top: 32vh;\n";
@@ -2834,7 +2812,7 @@ function generateAndSaveWebsiteLightbox() {
         theOutput +="        #print_subtitle {\n";
         theOutput +="          display:block;\n";
         theOutput +="          font-family: Arial, sans-serif;\n";
-        theOutput +="          font-size: 24px;\n";
+        theOutput +="          font-size: 1.5rem;\n";
         theOutput +="          color: black;\n";
         theOutput +="          text-align: center;\n";
         theOutput +="          margin-top: 32vh;\n";
@@ -2853,9 +2831,9 @@ function generateAndSaveWebsiteLightbox() {
         theOutput +="\n";
         theOutput +="        .image-container {\n"
         theOutput +="          width: 100%;\n"
-        theOutput +="          border: 0px !important;\n"
-        theOutput +="          margin: 0px !important;\n"
-        theOutput +="          padding: 0px !important;\n"
+        theOutput +="          border: 0 !important;\n"
+        theOutput +="          margin: 0 !important;\n"
+        theOutput +="          padding: 0 !important;\n"
         theOutput +="          text-align: center;\n"
         theOutput +="          page-break-after: always;\n"
         theOutput +="        }\n"
@@ -2864,9 +2842,9 @@ function generateAndSaveWebsiteLightbox() {
         theOutput +="\n";
         theOutput +="        .image-container {\n"
         theOutput +="          width: 100%;\n"
-        theOutput +="          border: 0px !important;\n"
-        theOutput +="          margin: 0px !important;\n"
-        theOutput +="          padding: 0px !important;\n"
+        theOutput +="          border: 0 !important;\n"
+        theOutput +="          margin: 0 !important;\n"
+        theOutput +="          padding: 0 !important;\n"
         theOutput +="          text-align: center;\n"
         theOutput +="        }\n"
     }
@@ -2878,9 +2856,9 @@ function generateAndSaveWebsiteLightbox() {
     theOutput +="          width: 100% !important;\n"
     theOutput +="          height: auto;\n"
     theOutput +="          cursor: pointer;\n"
-    theOutput +="          border: 0px !important;\n"
-    theOutput +="          margin: 0px !important;\n"
-    theOutput +="          padding: 0px !important;\n"
+    theOutput +="          border: 0 !important;\n"
+    theOutput +="          margin: 0 !important;\n"
+    theOutput +="          padding: 0 !important;\n"
     theOutput +="          background: white;\n"
     theOutput +="        }\n"
     theOutput +="\n";
@@ -2890,16 +2868,16 @@ function generateAndSaveWebsiteLightbox() {
     if (gWebsiteAddHelp){
         theOutput +="    #website_help{\n";
         theOutput +="        color: "+gWebsiteHyperlinkColor+";\n";
-        theOutput +="        font-size: 28pt;\n";
+        theOutput +="        font-size: 2.333rem;\n";
         theOutput +="        position: absolute;\n";
-        theOutput +="        left: 16px;\n";
-        theOutput +="        top: 12px;\n";
+        theOutput +="        left: 1rem;\n";
+        theOutput +="        top: 0.75rem;\n";
         theOutput +="    }\n";
         theOutput +="\n";
     }
 
     theOutput +="    a {\n";
-    theOutput +="        font-size: 18px;\n";
+    theOutput +="        font-size: 1.125rem;\n";
     theOutput +="        text-decoration: none;\n";
     theOutput +="        color: "+gWebsiteHyperlinkColor+";\n";
     theOutput +="    }\n";
@@ -2925,7 +2903,7 @@ function generateAndSaveWebsiteLightbox() {
     theOutput +="    @media screen and (max-width: 45rem) {\n";
     theOutput +="\n";
     theOutput +="        #viewer {\n";
-    theOutput +="            margin-top: 0px;\n";
+    theOutput +="            margin-top: 0;\n";
     theOutput +="        }\n";
     theOutput +="\n";
     theOutput +="        #first, #last {\n";
@@ -2933,8 +2911,8 @@ function generateAndSaveWebsiteLightbox() {
     theOutput +="        }\n";
     theOutput +="\n";
     theOutput +="        #prev, #next {\n";
-    theOutput +="            width: 40px;\n";
-    theOutput +="            padding: 10px;\n";
+    theOutput +="            width: 2.5rem;\n";
+    theOutput +="            padding: 0.625em;\n";
     theOutput +="        }\n";
     theOutput +="\n";
     theOutput +="        #prev::after {\n";
@@ -2955,12 +2933,12 @@ function generateAndSaveWebsiteLightbox() {
     theOutput +="        #tuneselector {\n";
     theOutput +="            display: flex;\n";
     theOutput +="            width: 70%;\n";
-    theOutput +="            padding-right: 32px;\n";
+    theOutput +="            padding-right: 2em;\n";
     theOutput +="        }\n";
     theOutput +="\n";
     theOutput +="        #website_help {\n";
-    theOutput +="            left: 16px;\n";
-    theOutput +="            top: 20px;\n";
+    theOutput +="            left: 1rem;\n";
+    theOutput +="            top: 1.25rem;\n";
     theOutput +="        }\n";
     theOutput +="\n";
     theOutput +="    }\n"
@@ -3126,7 +3104,7 @@ function generateAndSaveWebsiteLightbox() {
     theOutput +="\n"; 
    
     theOutput +='        if (gIsIPad){\n';
-    theOutput +='            viewerElem.style.marginTop = "0px";\n';
+    theOutput +='            viewerElem.style.marginTop = "0";\n';
     theOutput +='        }\n';
 
     theOutput +="\n"; 
@@ -3197,15 +3175,19 @@ function generateAndSaveWebsiteLightbox() {
     theOutput +='        prevButton.addEventListener("click", () => {\n';
     theOutput +='            if (currentIndex > 0) {\n';
     theOutput +='                currentIndex--;\n';
-    theOutput +='                updateViewer();\n';
+    theOutput +='            } else {\n';
+    theOutput +='                currentIndex = tunes.length - 1;\n';
     theOutput +='            }\n';
+    theOutput +='            updateViewer();\n';
     theOutput +='        });\n';
     theOutput +="\n";
     theOutput +='        nextButton.addEventListener("click", () => {\n';
     theOutput +='            if (currentIndex < tunes.length - 1) {\n';
     theOutput +='                currentIndex++;\n';
-    theOutput +='                updateViewer();\n';
+    theOutput +='            } else {\n';
+    theOutput +='                currentIndex = 0;\n';
     theOutput +='            }\n';
+    theOutput +='            updateViewer();\n';
     theOutput +='        });\n';
     theOutput +="\n";
     theOutput +='        lastButton.addEventListener("click", () => {\n';
@@ -3376,7 +3358,7 @@ function generateAndSaveWebsiteLightbox() {
 
     var thePlaceholder = gWebsiteFilename;
     if (thePlaceholder == ""){
-        thePlaceholder = "abctools_website.html";
+        thePlaceholder = "abctools-lite-export.html";
     }
 
     var thePrompt = "Please enter a filename for your output website HTML file:";
@@ -3467,15 +3449,15 @@ var gWebsiteBassVolume = 64;
 var gWebsiteChordVolume = 64;
 var gWebsiteMelodyInstrument = 1;
 var gWebsiteMelodyInstrumentInject = 1;
-var gWebsiteTitle = "ABC Transcription Tools Generated Website";
-var gWebsiteSubtitle = "Select a tune from the dropdown to load it into the frame below:";
+var gWebsiteTitle = "ABC Tools Lite Generated Website";
+var gWebsiteSubtitle = "Select a tune from the list below:";
 var gWebsiteFooter1 = "";
 var gWebsiteFooter2 = "";
 var gWebsiteColor = "#FFFFFF";
 var gWebsiteTextColor = "#000000";
 var gWebsiteHyperlinkColor = "#000000";
 var gWebsiteFilename = "";
-var gWebsiteOpenInPlayer = true;
+var gWebsiteOpenInPlayer = false;
 var gWebsiteDisableEdit = false;
 var gWebsiteTabSelector = true;
 var gWebsiteAddHelp = false;
@@ -3592,13 +3574,13 @@ function generateWebsiteFull(){
     ];
 
     var form = [
-      {html: '<p style="text-align:center;font-size:18pt;font-family:helvetica;margin-left:15px;margin-bottom:18px">Export Full-Featured Tunebook Website&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#generate_website" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'},  
-      {html: '<p style="margin-top:10px;margin-bottom:18px;font-size:12pt;line-height:14pt;font-family:helvetica">Clicking "Export" will export a tunebook player website with the settings you enter below:</p>'},  
+      {html: '<p style="text-align:center;font-size:1.5rem;margin-left:0.9375rem;margin-bottom:1.125rem">Export Full-Featured Tunebook Website&nbsp;&nbsp;<span style="font-size:2rem;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#generate_website" target="_blank" style="text-decoration:none;position:absolute;left:1.25rem;top:1.25rem" class="dialogcornerbutton">?</a></span></p>'},  
+      {html: '<p style="margin-top:0.625rem;margin-bottom:1.125rem;font-size:1rem;line-height:1.167rem;">Clicking "Export" will export a tunebook player website with the settings you enter below:</p>'},  
       {name: "Website title:", id: "website_title", type:"text", cssClass:"configure_website_form_text_wide"},
       {name: "Website subtitle:", id: "website_subtitle", type:"text", cssClass:"configure_website_form_text_wide2"},
       {name: "Website footer #1:", id: "website_footer1", type:"text", cssClass:"configure_website_form_text_wide2"},
       {name: "Website footer #2:", id: "website_footer2", type:"text", cssClass:"configure_website_form_text_wide2"},
-      {html: '<p style="margin-top:28px;margin-bottom:18px;font-size:12pt;line-height:14pt;font-family:helvetica">Background can be an HTML color, HTML gradient, or url(\'path_to_image\') image:</p>'},  
+      {html: '<p style="margin-top:1.75rem;margin-bottom:1.125rem;font-size:1rem;line-height:1.167rem;">Background can be an HTML color, HTML gradient, or url(\'path_to_image\') image:</p>'},  
       {name: "Website background:", id: "website_color", type:"text",cssClass:"configure_website_form_text_wide5"},      
       {name: "Text color (HTML color):", id: "website_textcolor", type:"text",cssClass:"configure_website_form_text2"},      
       {name: "Hyperlink color (HTML color, also used for help icon):", id: "website_hyperlinkcolor", type:"text",cssClass:"configure_website_form_text2"},      
@@ -3806,13 +3788,13 @@ function generateWebsiteSimple(){
         { name: "  FluidHQ", id: "fluidhq"}
     ];
     var form = [
-      {html: '<p style="text-align:center;font-size:18pt;font-family:helvetica;margin-left:15px;margin-bottom:18px">Export Basic Tune List Website&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#generate_website" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'},  
-      {html: '<p style="margin-top:10px;margin-bottom:18px;font-size:12pt;line-height:14pt;font-family:helvetica">Clicking "Export" will export a tune list hyperlink website with the settings you enter below:</p>'},  
+      {html: '<p style="text-align:center;font-size:1.5rem;margin-left:0.9375rem;margin-bottom:1.125rem">Export Basic Tune List Website&nbsp;&nbsp;<span style="font-size:2rem;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#generate_website" target="_blank" style="text-decoration:none;position:absolute;left:1.25rem;top:1.25rem" class="dialogcornerbutton">?</a></span></p>'},  
+      {html: '<p style="margin-top:0.625rem;margin-bottom:1.125rem;font-size:1rem;line-height:1.167rem;">Clicking "Export" will export a tune list hyperlink website with the settings you enter below:</p>'},  
       {name: "Website title:", id: "website_title", type:"text", cssClass:"configure_website_form_text_wide_simple"},
       {name: "Website subtitle:", id: "website_subtitle", type:"text", cssClass:"configure_website_form_text_wide2_simple"},
       {name: "Website footer #1:", id: "website_footer1", type:"text", cssClass:"configure_website_form_text_wide2_simple"},
       {name: "Website footer #2:", id: "website_footer2", type:"text", cssClass:"configure_website_form_text_wide2_simple"},
-      {html: '<p style="margin-top:20px;margin-bottom:18px;font-size:12pt;line-height:14pt;font-family:helvetica">Background can be an HTML color, HTML gradient, or url(\'path_to_image\') image:</p>'},  
+      {html: '<p style="margin-top:1.25rem;margin-bottom:1.125rem;font-size:1rem;line-height:1.167rem;">Background can be an HTML color, HTML gradient, or url(\'path_to_image\') image:</p>'},  
       {name: "Website background:", id: "website_color", type:"text",cssClass:"configure_website_form_text_wide5_simple"},      
       {name: "Text color (HTML color):", id: "website_textcolor", type:"text",cssClass:"configure_website_form_text2_simple"},      
       {name: "Hyperlink color (HTML color, also used for help icon):", id: "website_hyperlinkcolor", type:"text",cssClass:"configure_website_form_text2_simple"},      
@@ -4011,13 +3993,13 @@ function generateWebsiteImageGallery(){
     ];
 
     var form = [
-      {html: '<p style="text-align:center;font-size:18pt;font-family:helvetica;margin-left:15px;margin-bottom:18px">Export Tune Image Gallery Website&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#generate_website" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'},  
-      {html: '<p style="margin-top:10px;margin-bottom:18px;font-size:12pt;line-height:14pt;font-family:helvetica">Clicking "Export" will export a tune image gallery website with the settings you enter below:</p>'},  
+      {html: '<p style="text-align:center;font-size:1.5rem;margin-left:0.9375rem;margin-bottom:1.125rem">Export Tune Image Gallery Website&nbsp;&nbsp;<span style="font-size:2rem;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#generate_website" target="_blank" style="text-decoration:none;position:absolute;left:1.25rem;top:1.25rem" class="dialogcornerbutton">?</a></span></p>'},  
+      {html: '<p style="margin-top:0.625rem;margin-bottom:1.125rem;font-size:1rem;line-height:1.167rem;">Clicking "Export" will export a tune image gallery website with the settings you enter below:</p>'},  
       {name: "Website title:", id: "website_title", type:"text", cssClass:"configure_website_form_text_wide_gallery"},
       {name: "Website subtitle:", id: "website_subtitle", type:"text", cssClass:"configure_website_form_text_wide2_gallery"},
       {name: "Website footer #1:", id: "website_footer1", type:"text", cssClass:"configure_website_form_text_wide2_gallery"},
       {name: "Website footer #2:", id: "website_footer2", type:"text", cssClass:"configure_website_form_text_wide2_gallery"},
-      {html: '<p style="margin-top:20px;margin-bottom:18px;font-size:12pt;line-height:14pt;font-family:helvetica">Background can be an HTML color, HTML gradient, or url(\'path_to_image\') image:</p>'},  
+      {html: '<p style="margin-top:1.25rem;margin-bottom:1.125rem;font-size:1rem;line-height:1.167rem;">Background can be an HTML color, HTML gradient, or url(\'path_to_image\') image:</p>'},  
       {name: "Website background:", id: "website_color", type:"text",cssClass:"configure_website_form_text_wide5_gallery"},      
       {name: "Text color (HTML color):", id: "website_textcolor", type:"text",cssClass:"configure_website_form_text2_gallery"},      
       {name: "Hyperlink color (HTML color, also used for help icon):", id: "website_hyperlinkcolor", type:"text",cssClass:"configure_website_form_text2_gallery"},
@@ -4234,11 +4216,11 @@ function generateWebsiteLightbox(){
     ];
 
     var form = [
-      {html: '<p style="text-align:center;font-size:18pt;font-family:helvetica;margin-left:15px;margin-bottom:18px">Export Tune Image Lightbox Website&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#generate_website" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'},  
-      {html: '<p style="margin-top:10px;margin-bottom:18px;font-size:12pt;line-height:14pt;font-family:helvetica">Clicking "Export" will export a tune image lightbox website with the settings you enter below:</p>'},  
+      {html: '<p style="text-align:center;font-size:1.5rem;margin-left:0.9375rem;margin-bottom:1.125rem">Export Tune Image Lightbox Website&nbsp;&nbsp;<span style="font-size:2rem;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#generate_website" target="_blank" style="text-decoration:none;position:absolute;left:1.25rem;top:1.25rem" class="dialogcornerbutton">?</a></span></p>'},  
+      {html: '<p style="margin-top:0.625rem;margin-bottom:1.125rem;font-size:1rem;line-height:1.167rem;">Clicking "Export" will export a tune image lightbox website with the settings you enter below:</p>'},  
       {name: "Website title:", id: "website_title", type:"text", cssClass:"configure_website_form_text_wide_lightbox"},
       {name: "Website subtitle:", id: "website_subtitle", type:"text", cssClass:"configure_website_form_text_wide2_lightbox"},
-      {html: '<p style="margin-top:20px;margin-bottom:18px;font-size:12pt;line-height:14pt;font-family:helvetica">Background can be an HTML color, HTML gradient, or url(\'path_to_image\') image:</p>'},  
+      {html: '<p style="margin-top:1.25rem;margin-bottom:1.125rem;font-size:1rem;line-height:1.167rem;">Background can be an HTML color, HTML gradient, or url(\'path_to_image\') image:</p>'},  
       {name: "Website background:", id: "website_color", type:"text",cssClass:"configure_website_form_text_wide5_lightbox"},      
       {name: "Text color (HTML color):", id: "website_textcolor", type:"text",cssClass:"configure_website_form_text2_lightbox"},      
       {name: "Hyperlink color (HTML color, also used for help icon):", id: "website_hyperlinkcolor", type:"text",cssClass:"configure_website_form_text2_lightbox"},
@@ -4424,31 +4406,31 @@ function generateWebsite(){
 
     var format = GetRadioValue("notenodertab");
 
-    var modal_msg  = '<p style="text-align:center;margin-bottom:36px;font-size:18pt;font-family:helvetica;margin-left:15px;">Export Website&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#generate_website" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>';
+    var modal_msg  = '<p style="text-align:center;margin-bottom:2.25rem;font-size:1.5rem;margin-left:0.9375rem;">Export Website&nbsp;&nbsp;<span style="font-size:2rem;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#generate_website" target="_blank" style="text-decoration:none;position:absolute;left:1.25rem;top:1.25rem" class="dialogcornerbutton">?</a></span></p>';
     
-    modal_msg  += '<p style="font-size:18px;line-height:28px;">For all websites, clicking a tune will open the tune in a new browser tab.</p>';
-    modal_msg  += '<p style="font-size:18px;line-height:28px;">Click <strong>Export Basic Tune List Website</strong> to export a technically simple website with a list of all tunes in the ABC vertically down the center of the page. Playback instruments may be optionally specified.</p>';
+    modal_msg  += '<p style="font-size:1.125rem;line-height:1.75rem;">For all websites, clicking a tune will open the tune in a new browser tab.</p>';
+    modal_msg  += '<p style="font-size:1.125rem;line-height:1.75rem;">Click <strong>Export Basic Tune List Website</strong> to export a technically simple website with a list of all tunes in the ABC vertically down the center of the page. Playback instruments may be optionally specified.</p>';
 
     if (isPureDesktopBrowser()){
-        modal_msg  += '<p style="font-size:18px;line-height:28px;">Click <strong>Export Tune Image Gallery Website</strong> to export a website with tune notation images of all the tunes in the ABC vertically down the center of the page. Playback instruments may be optionally specified. Print the website to get a PDF tunebook.</p>';
+        modal_msg  += '<p style="font-size:1.125rem;line-height:1.75rem;">Click <strong>Export Tune Image Gallery Website</strong> to export a website with tune notation images of all the tunes in the ABC vertically down the center of the page. Playback instruments may be optionally specified. Print the website to get a PDF tunebook.</p>';
 
-        modal_msg  += '<p style="font-size:18px;line-height:28px;">Click <strong>Export Tune Image Lightbox Website</strong> to export a website with tune notation images of all the tunes in the ABC in a lightbox with navigation controls. Playback instruments may be optionally specified. Print the website to get a PDF tunebook.</p>';
+        modal_msg  += '<p style="font-size:1.125rem;line-height:1.75rem;">Click <strong>Export Tune Image Lightbox Website</strong> to export a website with tune notation images of all the tunes in the ABC in a lightbox with navigation controls. Playback instruments may be optionally specified. Print the website to get a PDF tunebook.</p>';
     }
 
-    modal_msg  += '<p style="font-size:18px;line-height:28px;margin-bottom:36px;">Click <strong>Export Full-Featured Tunebook Website</strong> to export a website with a dropdown list of tune names and optional tablature styles. Playback instruments may be optionally specified. The website remembers the user\'s last selected tune and tablature setting.</p>';
+    modal_msg  += '<p style="font-size:1.125rem;line-height:1.75rem;margin-bottom:2.25rem;">Click <strong>Export Full-Featured Tunebook Website</strong> to export a website with a dropdown list of tune names and optional tablature styles. Playback instruments may be optionally specified. The website remembers the user\'s last selected tune and tablature setting.</p>';
 
     modal_msg  += '<p style="text-align:center;"><input id="websitesimple" class="advancedcontrols btn btn-websiteexport" onclick="generateWebsiteSimple()" type="button" value="Export Basic Tune List Website" title="Generates a website that has a list of tunes that open in a new browser tab when clicked."></p>';
     
     if (isPureDesktopBrowser()){
 
-       modal_msg  += '<p style="text-align:center; margin-top:24px;"><input id="websiteimages" class="advancedcontrols btn btn-websiteexport" onclick="generateWebsiteImageGallery()" type="button" value="Export Tune Image Gallery Website" title="Generates a website that has the images of the tunes that open for playback in a new browser tab when clicked">';
+       modal_msg  += '<p style="text-align:center; margin-top:1.5rem;"><input id="websiteimages" class="advancedcontrols btn btn-websiteexport" onclick="generateWebsiteImageGallery()" type="button" value="Export Tune Image Gallery Website" title="Generates a website that has the images of the tunes that open for playback in a new browser tab when clicked">';
 
        modal_msg  += '<input id="websitelightbox" class="advancedcontrols btn btn-websiteexport" onclick="generateWebsiteLightbox()" type="button" value="Export Tune Image Lightbox Website" title="Generates a image lightbox website that has the images of the tunes that open for playback in a new browser tab when clicked"></p>';
     }
 
-    modal_msg  += '<p style="text-align:center;margin-top:24px;"><input id="websitefull" class="advancedcontrols btn btn-websiteexport" onclick="generateWebsiteFull()" type="button" value="Export Full-Featured Tunebook Website" title="Generates a website that has dropdowns for the tunes and optional display tablature selection.&nbsp;&nbsp;When a tune is selected from the dropdown, the tune opens in an iframe on the page."></p>';
+    modal_msg  += '<p style="text-align:center;margin-top:1.5rem;"><input id="websitefull" class="advancedcontrols btn btn-websiteexport" onclick="generateWebsiteFull()" type="button" value="Export Full-Featured Tunebook Website" title="Generates a website that has dropdowns for the tunes and optional display tablature selection.&nbsp;&nbsp;When a tune is selected from the dropdown, the tune opens in an iframe on the page."></p>';
     
-    modal_msg  += '<p style="font-size:4px;">&nbsp;</p>';
+    modal_msg  += '<p style="font-size:0.25rem;">&nbsp;</p>';
 
     DayPilot.Modal.alert(modal_msg,{ theme: "modal_flat", top: 10, width: 760, scrollWithPage: (AllowDialogsToScroll()) });
 
