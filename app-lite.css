@@ -1,10 +1,21 @@
 body {																											/* vanilla abc tools settings */
 
-	--abctools-code-font-fallbacks: var(--abctools-code-font), 'Fira Mono', Courier, monospace;
-	--abctools-ui-font-fallbacks: var(--abctools-ui-font), 'Fira Sans', Helvetica, sans-serif;
+	--abctools-font-fallback-code: var(--abctools-font-code), 'Fira Mono', Courier, monospace;
+	--abctools-font-fallback-ui: var(--abctools-font-ui), 'Fira Sans', Helvetica, sans-serif;
 	
-	--abctools-code-font: 'Fira Mono';												/* Courier */
-	--abctools-ui-font: 'Fira Sans';													/* Helvetica */
+	--abctools-font-code: 'Fira Mono';												/* Courier */
+	--abctools-font-ui: 'Fira Sans';													/* Helvetica */
+  --abctools-font-size-header-xl-24: 2rem;                  /* 24pt */
+  --abctools-font-size-header-l-20: 1.667rem;               /* 20pt */
+  --abctools-font-size-header-m-18: 1.5rem;                 /* 18pt */
+  --abctools-font-size-header-s: 1.125rem;                  /* 18px */
+	--abctools-font-size-label-l-14: 1.167rem;    					  /* 14pt */
+	--abctools-font-size-code-13: 1.083rem;								    /* 13pt */
+	--abctools-font-size-label-m-12: 1rem;    					      /* 12pt */
+	--abctools-font-size-label-s-11: 0.917rem;							  /* 11pt */
+  --abctools-font-size-contextmenu: 0.917rem;               /* 11pt */
+  --abctools-font-size-select: 0.917rem;                    /* 11pt */
+	--abctools-font-size-label-xs-10: 0.833rem;						    /* 10pt */
   --abctools-ui-btn-bgcolor: #d8d8d8; 										 /* #d8d8d8 */
   --abctools-ui-btn-bordercolor: gray; 	 								 /* darken(#d8d8d8, 7.5%) */
 	--abctools-ui-btn-boxshadow: none; 												/* 0 0.1rem 0.1rem rgba(0, 0, 0, 0.25), 0 -0.1rem 0.5rem rgba(0, 0, 0, 0.1) inset */
@@ -141,6 +152,82 @@ body {																											/* vanilla abc tools settings */
 }
 
 /*//////////////////////////////////////////
+// APP LITE: CONTEXT MENU
+/////////////////////////////////////////*/
+
+.ContextMenu * {
+  font-family: var(--abctools-font-fallback-ui);
+  font-size: var(--abctools-font-size-contextmenu);
+}
+
+/*//////////////////////////////////////////
+// APP LITE: MODAL DIALOGS
+/////////////////////////////////////////*/
+
+.modal_flat_main *:not(.abcjs-container *),
+.modal_flat_wide_main *:not(.abcjs-container *) {
+  font-family: var(--abctools-font-fallback-ui);
+}
+
+.modal_flat_main input,
+.modal_flat_main label,
+.modal_flat_wide_main input,
+.modal_flat_wide_main label,
+div.modal_flat_form_item_label {
+  font-size: var(--abctools-font-size-label-m-12);
+  /* color: purple; */
+}
+
+.modal_flat_main select,
+.modal_flat_wide_main select {
+  font-size: var(--abctools-font-size-select);
+  /* color: blue !important; */
+}
+
+.modal_flat_main textarea,
+.modal_flat_wide_main textarea {
+  font-size: var(--abctools-font-size-code);
+  /* color: green !important; */
+}
+
+.modal_flat_main .modal_flat_buttons button,
+.modal_flat_wide_main .modal_flat_wide_buttons button {
+  font-size: var(--abctools-font-size-label-m-12);
+  border: 1px solid var(--abctools-ui-btn-bordercolor);
+  border-radius: 0.12em;
+}
+
+.modal-header {
+  font-weight: 400;
+  text-align: center;
+  margin: 1em 0;
+}
+
+.modal-textgroup-explanation.modal-header {
+  font-size: var(--abctools-font-size-header-m-18);
+}
+
+.modal-textgroup-explanation ~ p {
+  font-size: var(--abctools-font-size-label-l-14);
+  line-height: 1.57;
+}
+
+.modal-table-row-octavelabel {
+  text-align: left;
+  font-size: var(--abctools-font-size-label-m-12);
+}
+
+.modal-table-row-notelabel {
+  text-align: center;
+  font-size: var(--abctools-font-size-label-s-11);
+}
+
+.modal-table-row-spacer {
+  text-align: center;
+  font-size: 0.167rem;
+}
+
+/*//////////////////////////////////////////
 // APP LITE: EDITOR SHELL COMPONENTS
 /////////////////////////////////////////*/
 
@@ -153,6 +240,7 @@ body {																											/* vanilla abc tools settings */
 
 [data-abc="noinput"] .notation-placeholder {
   display: block;
+  margin-bottom: 0.33rem;
 }
 
 [data-share-link="true"] .notation-placeholder {
@@ -219,9 +307,10 @@ body {																											/* vanilla abc tools settings */
 
 /* Two-column view breakpoint rules */
 
-@media screen and (min-width: 1798px) {
+/* @media screen and (min-width: 1798px) { */
+@media screen and (min-width: 112.375rem) {
 
-  /* Notation Minimized :: Viewport >= 1798 */
+  /* Notation Minimized :: Viewport >= 1798px */
 
 	[data-notation="minimized"] .notation-container {
 		align-items: flex-start;
@@ -233,7 +322,7 @@ body {																											/* vanilla abc tools settings */
 		align-items: flex-start;
 	}
 
-  /* Notation Maximized :: Viewport >= 1798 */
+  /* Notation Maximized :: Viewport >= 1798px */
 
 	[data-notation-scaling="smart"][data-notation="maximized"] .notation-holder {
 		width: var(--abctools-notation-fullscreen-scaling);

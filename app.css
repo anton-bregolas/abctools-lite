@@ -11,8 +11,8 @@ html {
 body {
 display: flex;
 justify-content: center;
-padding:0px; 
-margin:0px;
+padding: 0; 
+margin: 0;
 touch-action: pan-x pan-y;
 width:100%;
 }
@@ -116,19 +116,19 @@ flex-flow:column;
 }
 
 #abc {
-font-family: var(--abctools-code-font-fallbacks);
-font-size: 13pt;
-line-height: 16pt;
+font-family: var(--abctools-font-fallback-code);
+font-size: var(--abctools-font-size-code-13);
+line-height: 1.23;
 padding: 6px;
-margin-top: 0px;
-margin-bottom: 0px;
+margin-top: 0;
+margin-bottom: 0;
 -webkit-appearance: none;
 -moz-appearance: none;
 }
 
 .transposeup {
 margin-right:24px;
-margin-left:0px;
+margin-left: 0;
 }
 
 @media (hover: hover) {
@@ -139,7 +139,7 @@ margin-left:0px;
 
 .transposedown {
 margin-right:20px;
-margin-left:0px;
+margin-left: 0;
 }
 
 @media (hover: hover) {
@@ -149,11 +149,11 @@ margin-left:0px;
 }
 
 .saveaspdf {
-margin-left:0px;
+margin-left: 0;
 }
 
 .saveaspdfdisabled {
-margin-left:0px;
+margin-left: 0;
 opacity: 0.4;
 }
 
@@ -164,11 +164,11 @@ opacity: 0.4;
 }
 
 .saveaswebsite {
-margin-left:0px;
+margin-left: 0;
 }
 
 .saveaswebsitedisabled {
-margin-left:0px;
+margin-left: 0;
 opacity: 0.4;
 }
 
@@ -179,7 +179,7 @@ opacity: 0.4;
 }
 
 .toggleadvancedcontrols{
-margin-left:0px;
+margin-left: 0;
 margin-right:22px;
 }
 
@@ -190,7 +190,7 @@ margin-right:22px;
 }
 
 .togglesharecontrols{
-margin-left:0px;
+margin-left: 0;
 margin-right:21px;
 }
 
@@ -225,13 +225,13 @@ margin-right:12px;
 
 .urlcontrols{
 margin-right:16px;
-margin-left:0px;
+margin-left: 0;
 height:42px;
 padding:12px !important;
 }
 
 .urlcontrolslast{
-margin-left:0px;
+margin-left: 0;
 height:42px;
 padding:12px !important;
 }
@@ -245,7 +245,7 @@ padding:12px !important;
 
 .urlcontrolsdisabled{
 margin-right:21px;
-margin-left:0px;
+margin-left: 0;
 opacity:0.4;
 height:42px;
 padding:12px;}
@@ -277,7 +277,7 @@ padding:12px;}
 #incipitsbuilder{
 	height:42px;
 	padding:12px;
-	margin-right:0px;
+	margin-right: 0;
 }
 
 @media (hover: hover) {
@@ -287,7 +287,7 @@ padding:12px;}
 }
 
 .snapshotbutton{
-margin-left: 0px;
+margin-left: 0;
 margin-right: 22px;
 }
 
@@ -298,7 +298,7 @@ margin-right: 22px;
 }
 
 .restorebutton{
-margin-left: 0px;
+margin-left: 0;
 margin-right: 22px;
 }
 
@@ -333,8 +333,8 @@ margin-right: 22px;
 }
 
 .clearbutton{
-margin-left: 0px;
-margin-right: 0px;
+margin-left: 0;
+margin-right: 0;
 }
 
 @media (hover: hover) {
@@ -396,8 +396,8 @@ text-align: center;
 }
 
 .full-screen-percentage {
-font-family: var(--abctools-ui-font-fallbacks) !important;
-font-size:12pt !important;
+font-family: var(--abctools-font-fallback-ui) !important;
+font-size: var(--abctools-font-size-label-m-12) !important;
 margin-left: 12px !important;
 }
 
@@ -419,8 +419,8 @@ margin-left:8px !important;
 }
 
 .capo {
-font-family: var(--abctools-ui-font-fallbacks) !important;
-font-size:12pt !important;
+font-family: var(--abctools-font-fallback-ui) !important;
+font-size: var(--abctools-font-size-label-m-12) !important;
 margin-left: 36px !important;
 }
 
@@ -429,13 +429,14 @@ display:flex;
 }
 
 p{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+/* font-size: 11pt;*/
+font-size: var(--abctools-font-size-label-m-12);
+font-family: var(--abctools-font-fallback-ui);
 }
 
 #pagestatustext{
-font-family: var(--abctools-ui-font-fallbacks);
-font-size:11pt;
+font-family: var(--abctools-font-fallback-ui);
+font-size: var(--abctools-font-size-label-s-11);
 }
 
 select {
@@ -451,35 +452,35 @@ color:black;
 }
 
 #pdfformatlabel{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
+font-family: var(--abctools-font-fallback-ui);
 padding-top: 8px;
-margin-left:0px;
+margin-left: 0;
 margin-right:4px;
 user-select: none;
 }
 
 #pdfformatlabel_dialog{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
+font-family: var(--abctools-font-fallback-ui);
 padding-top: 8px;
-margin-left:0px;
-margin-right:0px;
+margin-left: 0;
+margin-right: 0;
 user-select: none;
 }
 
 
 #pdfformat,#pdfformat_dialog{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
+font-family: var(--abctools-font-fallback-ui);
 height:32px;
 width:213px;
 margin-left:4px;
 }
 
 #pagenumberslabel{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
+font-family: var(--abctools-font-fallback-ui);
 padding-top:8px;
 margin-left:11px;
 margin-right:8px;
@@ -487,17 +488,17 @@ user-select: none;
 }
 
 #pagenumberslabel_dialog{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
+font-family: var(--abctools-font-fallback-ui);
 padding-top:8px;
 margin-left:11px;
-margin-right:0px;
+margin-right: 0;
 user-select: none;
 }
 
 #pagenumbers,#pagenumbers_dialog{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
+font-family: var(--abctools-font-fallback-ui);
 height:32px;
 width:152px;
 margin-left:4px;
@@ -505,8 +506,8 @@ margin-left:4px;
 }
 
 #firstpagelabel{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
+font-family: var(--abctools-font-fallback-ui);
 padding-top:8px;
 margin-left:11px;
 margin-right:8px;
@@ -514,59 +515,59 @@ user-select: none;
 }
 
 #firstpagelabel_dialog{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
+font-family: var(--abctools-font-fallback-ui);
 padding-top:8px;
 margin-left:11px;
-margin-right:0px;
+margin-right: 0;
 user-select: none;
 }
 
 #firstpage, #firstpage_dialog{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
+font-family: var(--abctools-font-fallback-ui);
 height:32px;
 width:64px;
 margin-left:4px;
 }
 
 #pdffonts,#pdffonts_dialog{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
+font-family: var(--abctools-font-fallback-ui);
 height:32px;
 width:120px;
 margin-left:4px;
 }
 
 #pdffontslabel_dialog{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
+font-family: var(--abctools-font-fallback-ui);
 padding-top:8px;
 margin-left:11px;
-margin-right:0px;
+margin-right: 0;
 user-select: none;
 }
 
 #pdffontstyle,#pdffontstyle_dialog{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
+font-family: var(--abctools-font-fallback-ui);
 height:32px;
 width:120px;
 margin-left:4px;
 }
 
 #pdffontstylelabel_dialog{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
+font-family: var(--abctools-font-fallback-ui);
 padding-top:8px;
 margin-left:24px;
-margin-right:0px;
+margin-right: 0;
 user-select: none;
 }
 
 #pagenumberslabel{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
+font-family: var(--abctools-font-fallback-ui);
 padding-top:8px;
 margin-left:11px;
 margin-right:8px;
@@ -578,10 +579,10 @@ margin-top:36px;
 }
 
 #displayformatlabel{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
+font-family: var(--abctools-font-fallback-ui);
 padding-top: 12px;
-margin-left:0px;
+margin-left: 0;
 margin-right:8px;
 }
 
@@ -597,9 +598,9 @@ margin-left: -11px;
 }
 
 #urltextbox{
-font-family: var(--abctools-code-font-fallbacks);
+font-family: var(--abctools-font-fallback-code);
 margin-top:8px;
-font-size:11pt;
+font-size: var(--abctools-font-size-label-s-11);
 resize: none;
 -webkit-appearance: none;
 -moz-appearance: none;
@@ -623,27 +624,27 @@ display:inline;
 
 #generateqrcode{
 display:inline;
-margin-right: 0px;
+margin-right: 0;
 }
 
 #statuspdfname{
 margin-top:22px;
-font-family: var(--abctools-ui-font-fallbacks);
-font-size:12pt;
-line-height: 18pt;
+font-family: var(--abctools-font-fallback-ui);
+font-size: var(--abctools-font-size-label-m-12);
+line-height: 1.5;
 }
 
 #statustunecount{
 margin-top:13px;
-font-family: var(--abctools-ui-font-fallbacks);
-font-size:12pt;
+font-family: var(--abctools-font-fallback-ui);
+font-size: var(--abctools-font-size-label-m-12);
 }
 
 #pagestatustext{
 margin-top:12px;
 margin-bottom:12px;	
-font-family: var(--abctools-ui-font-fallbacks);
-font-size:12pt;
+font-family: var(--abctools-font-fallback-ui);
+font-size: var(--abctools-font-size-label-m-12);
 }
 
 #toggleannotations, #toggletext,#togglechords,#toggletab{
@@ -868,7 +869,7 @@ margin-right:30px;
 #abcplayer_mp3reverbbutton{
 height:42px;
 padding:12px;
-margin-right:0px;
+margin-right: 0;
 }
 
 @media (hover: hover) {
@@ -1076,32 +1077,28 @@ padding:12px;
 }
 
 .export_all_text{
-	font-size:12pt;
-	line-height:16px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1;
+	font-family: var(--abctools-font-fallback-ui);
 	margin-top:36px;
 	text-align: center;
 }
 
 .export_all_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
+	font-family: var(--abctools-font-fallback-ui);
 	margin-left:8px;
 	width: 85px;
 	margin-top:-7px;
 }
 
 .export_single_text{
-	font-size:12pt;
-	line-height:16px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1.33;
+	font-family: var(--abctools-font-fallback-ui);
 	margin-top:36px;
 	text-align: center;
 }
 
 .export_single_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
+	font-family: var(--abctools-font-fallback-ui);
 	margin-left:8px;
 	width: 90px;
 	margin-top:-7px;
@@ -1142,14 +1139,14 @@ padding:12px;
 }
 
 #exportaudioimage_help{
-font-size:24pt;
+font-size: var(--abctools-font-size-header-xl-24);
 position:absolute;
 left:20px;
 top:20px;
 }
 
 #exportall_help{
-font-size:24pt;
+font-size: var(--abctools-font-size-header-xl-24);
 position:absolute;
 left:20px;
 top:20px;
@@ -1182,7 +1179,7 @@ margin-left:24px;
 height:42px;
 padding:12px;
 margin-left:24px;
-margin-right:0px;
+margin-right: 0;
 width:auto !important;
 }
 
@@ -1205,7 +1202,7 @@ padding:12px;
 
 
 #abcplayer_help{
-font-size:24pt;
+font-size: var(--abctools-font-size-header-xl-24);
 position:absolute;
 left:20px;
 top:20px;
@@ -1215,7 +1212,7 @@ top:20px;
 height:42px;
 padding:12px;
 width:auto;
-margin-left:0px;
+margin-left: 0;
 }
 
 @media (hover: hover) {
@@ -1228,7 +1225,7 @@ margin-left:0px;
 height:42px;
 padding:12px;
 width:auto;
-margin-left:0px;
+margin-left: 0;
 }
 
 @media (hover: hover) {
@@ -1241,7 +1238,7 @@ margin-left:0px;
 height:42px;
 padding:12px;
 width:auto;
-margin-left:0px;
+margin-left: 0;
 }
 
 @media (hover: hover) {
@@ -1251,7 +1248,7 @@ margin-left:0px;
 }
 
 #notationspacingexplorer_help{
-font-size:24pt;
+font-size: var(--abctools-font-size-header-xl-24);
 position:absolute;
 left:9px;
 top:5px;
@@ -1272,7 +1269,7 @@ margin-right:36px;
 }
 
 #swingexplorerhelp{
-font-size:24pt;
+font-size: var(--abctools-font-size-header-xl-24);
 position:absolute;
 left:20px;
 top:20px;
@@ -1282,7 +1279,7 @@ top:20px;
 height:42px;
 padding:12px;
 width:auto;
-margin-left:0px;
+margin-left: 0;
 }
 
 @media (hover: hover) {
@@ -1305,7 +1302,7 @@ margin-right:36px;
 }
 
 #graceexplorerhelp{
-font-size:24pt;
+font-size: var(--abctools-font-size-header-xl-24);
 position:absolute;
 left:20px;
 top:20px;
@@ -1315,7 +1312,7 @@ top:20px;
 height:42px;
 padding:12px;
 width:auto;
-margin-left:0px;
+margin-left: 0;
 margin-right:20px;
 margin-right:20px;
 }
@@ -1330,7 +1327,7 @@ margin-right:20px;
 height:42px;
 padding:12px;
 width:auto;
-margin-left:0px;
+margin-left: 0;
 margin-right:20px;
 }
 
@@ -1344,7 +1341,7 @@ margin-right:20px;
 height:42px;
 padding:12px;
 width:auto;
-margin-left:0px;
+margin-left: 0;
 }
 
 @media (hover: hover) {
@@ -1368,7 +1365,7 @@ margin-right:20px;
 }
 
 #rollexplorerhelp{
-font-size:24pt;
+font-size: var(--abctools-font-size-header-xl-24);
 position:absolute;
 left:20px;
 top:20px;
@@ -1400,14 +1397,14 @@ width:auto;
 }
 
 #looperhelp{
-font-size:24pt;
+font-size: var(--abctools-font-size-header-xl-24);
 position:absolute;
 left:20px;
 top:20px;
 }
 
 #looperstatus {
-font-size:13pt;
+font-size: var(--abctools-font-size-code-13);
 position:absolute;
 left:50px;
 bottom:34px;
@@ -1419,7 +1416,7 @@ background-color:green;
 left:52px;
 bottom:23px;
 height:20px;
-width:0px;
+width: 0;
 display:none;
 }
 
@@ -1467,7 +1464,7 @@ height: 100%;
 
 .looper-modal-text {
 text-align: center;
-font-family: var(--abctools-ui-font-fallbacks);
+font-family: var(--abctools-font-fallback-ui);
 font-size:100pt;
 color: #fff;
 margin-bottom:100px;
@@ -1512,7 +1509,7 @@ width:auto;
 }
 
 #instrumentexplorerhelp{
-font-size:24pt;
+font-size: var(--abctools-font-size-header-xl-24);
 position:absolute;
 left:20px;
 top:20px;
@@ -1553,7 +1550,7 @@ margin-right:20px;
 height:42px;
 padding:12px;
 width:auto;
-margin-right:0px;
+margin-right: 0;
 }
 
 .loadimpulsebutton:hover{
@@ -1568,7 +1565,7 @@ margin-right:0px;
 height:42px;
 padding:12px;
 width:auto;
-margin-right:0px;
+margin-right: 0;
 margin-left:20px;
 }
 
@@ -1612,7 +1609,7 @@ width:auto;
 height:42px;
 padding:12px;
 width:auto;
-margin-right:0px;
+margin-right: 0;
 margin-left:12px;
 }
 
@@ -1628,7 +1625,7 @@ margin-left:12px;
 height:42px;
 padding:12px;
 width:auto;
-margin-right:0px;
+margin-right: 0;
 }
 
 .managedownloadall:hover{
@@ -1691,7 +1688,7 @@ margin-right:20px;
 height:42px;
 padding:12px;
 width:auto;
-margin-right:0px;
+margin-right: 0;
 }
 
 .managesearch:hover{
@@ -1703,7 +1700,7 @@ height:32px;
 padding:8px;
 width:auto;
 margin-left:18px;
-margin-right:0px;
+margin-right: 0;
 }
 
 @media (hover: hover) {
@@ -1717,7 +1714,7 @@ height:32px;
 padding:8px;
 width:auto;
 margin-left:18px;
-margin-right:0px;
+margin-right: 0;
 }
 
 @media (hover: hover) {
@@ -1731,7 +1728,7 @@ height:32px;
 padding:8px;
 width:auto;
 margin-left:18px;
-margin-right:0px;
+margin-right: 0;
 }
 
 @media (hover: hover) {
@@ -1745,7 +1742,7 @@ height:32px;
 padding:8px;
 width:auto;
 margin-left:18px;
-margin-right:0px;
+margin-right: 0;
 }
 
 @media (hover: hover) {
@@ -1759,23 +1756,23 @@ margin-top:8px;
 }
 
 .saveabcfile{
-margin-left:0px;
+margin-left: 0;
 opacity:1.0;
 }
 
 .saveabcfiledisabled{
-margin-left:0px;
+margin-left: 0;
 opacity:0.4;
 }
 
 .toggleallcontrols{
-margin-left:0px;
+margin-left: 0;
 margin-right:12px;
 opacity:1.0;
 }
 
 .toggleallcontrolsdisabled{
-margin-left:0px;
+margin-left: 0;
 margin-right:12px;
 opacity:0.4;
 }
@@ -1787,12 +1784,12 @@ opacity:0.4;
 }
 
 .copybutton{
-margin-left:0px;
+margin-left: 0;
 opacity:1.0;
 }
 
 .copybuttondisabled{
-margin-left:0px;
+margin-left: 0;
 opacity:0.4;
 }
 
@@ -1803,13 +1800,13 @@ opacity:0.4;
 }
 
 .trainerbutton{
-margin-left:0px;
+margin-left: 0;
 margin-right:12px;
 opacity:1.0;
 }
 
 .trainerbuttondisabled{
-margin-left:0px;
+margin-left: 0;
 margin-right:12px;
 opacity:0.4;
 }
@@ -1821,12 +1818,12 @@ opacity:0.4;
 }
 
 .rawmodebutton{
-margin-left:0px;
+margin-left: 0;
 opacity:1.0;
 }
 
 .rawmodebuttondisabled{
-margin-left:0px;
+margin-left: 0;
 opacity:0.4;
 }
 
@@ -1837,12 +1834,12 @@ opacity:0.4;
 }
 
 .playbutton{
-margin-left:0px;
+margin-left: 0;
 opacity:1.0;
 }
 
 .playbuttondisabled{
-margin-left:0px;
+margin-left: 0;
 opacity:0.4;
 }
 
@@ -1853,7 +1850,7 @@ opacity:0.4;
 }
 
 .newabcfile{
-margin-left:0px;
+margin-left: 0;
 opacity:1.0;
 }
 
@@ -1864,8 +1861,8 @@ opacity:1.0;
 }
 
 .toggletopbar{
-margin-left:0px;
-margin-right:0px;
+margin-left: 0;
+margin-right: 0;
 opacity:1.0;
 }
 
@@ -1952,7 +1949,7 @@ opacity:.25;
 .noscroller{
 background-color: #FAFAFF;
 position:fixed;
-top: 0px;
+top: 0;
 left: calc(50% - 850px / 2);
 width:850px;
 z-index: 100;
@@ -2073,8 +2070,8 @@ display:block;
 
 
 .notation-placeholder {
-font-family: var(--abctools-ui-font-fallbacks);
-font-size:12pt;
+font-family: var(--abctools-font-fallback-ui);
+font-size: var(--abctools-font-size-label-m-12);
 display:none;
 width:850px;
 background-color:white;
@@ -2082,26 +2079,26 @@ background-color:white;
 
 .notation-placeholder-text {
 margin-top: 64px;
-font-family: var(--abctools-ui-font-fallbacks);
-font-size:12pt;
+font-family: var(--abctools-font-fallback-ui);
+font-size: var(--abctools-font-size-label-m-12);
 }
 
 .notation-placeholder-text-2 {
 margin-top: 40px;
-font-family: var(--abctools-ui-font-fallbacks);
-font-size:12pt;
+font-family: var(--abctools-font-fallback-ui);
+font-size: var(--abctools-font-size-label-m-12);
 }
 
 .desktop_use_message {
 margin-top: 40px;
-font-family: var(--abctools-ui-font-fallbacks);
-font-size:12pt;
+font-family: var(--abctools-font-fallback-ui);
+font-size: var(--abctools-font-size-label-m-12);
 }
 
 .notation-placeholder-button {
 margin-top:40px;
-margin-left:0px;
-margin-right:0px;
+margin-left: 0;
+margin-right: 0;
 opacity:1.0;
 }
 
@@ -2131,12 +2128,12 @@ opacity:1.0;
 
 /* Label above spinner */
 .spinnerLabel {
-  margin-bottom: 20px;
-  font-size: 28px;
+  margin-bottom: 1.25rem;
+  font-size: 1.75rem;
   font-weight: bold;
   color: #00FFC4; 
   font-family: sans-serif;
-  text-shadow: 0 0 8px rgba(0,0,0,0.8); /* optional glow for readability */
+  text-shadow: 0 0 0.5rem rgba(0,0,0,0.8); /* optional glow for readability */
 }
 
 .loading-bar-spinner {
@@ -2196,8 +2193,8 @@ width: 600px;
 }
 
 .cancelpdf {
-font-family: var(--abctools-ui-font-fallbacks);
-font-size:11pt;
+font-family: var(--abctools-font-fallback-ui);
+font-size: var(--abctools-font-size-label-s-11);
 margin-top: 12px;
 margin-bottom: 12px;
 }
@@ -2277,7 +2274,7 @@ body.noui .hidden-print {
 
 body.noui .app-container {
 		width: 100% !important;
-		padding: 0px !important;
+		padding: 0 !important;
 		margin-left: 0% !important;
 		margin-right: 0% !important;
 	}
@@ -2290,7 +2287,7 @@ body.noui .notation-container {
 body.noui .notation-holder{
 		display: inline-block !important;
 		text-align: center !important;
-		margin-bottom:0px !important;
+		margin-bottom: 0 !important;
 		width:97% !important;
 		margin-left: 3% !important;
 		margin-right: 0% !important;
@@ -2350,7 +2347,7 @@ body.noui svg {
 
 	.app-container {
 		width: 100% !important;
-		padding: 0px !important;
+		padding: 0 !important;
 		margin-left: 0% !important;
 		margin-right: 0% !important;
 	}
@@ -2363,7 +2360,7 @@ body.noui svg {
 	.notation-holder{
 		display: inline-block !important;
 		text-align: center !important;
-		margin-bottom:0px !important;
+		margin-bottom: 0 !important;
 		margin-left: 3% !important;
 		margin-right: 0% !important;
 		position:static !important;
@@ -2408,32 +2405,32 @@ body.noui svg {
 
 /* For modal dialog prompt replacement */
 .modal_flat_background { background-color: #000; opacity: 0.4; }
-.modal_flat_main { border: 1px solid #333; box-shadow: 0px 0px 15px -2px rgba(0,0,0,0.75);  }
+.modal_flat_main { border: 1px solid #333; box-shadow: 0 0px 15px -2px rgba(0,0,0,0.75);  }
 
-/* font size only */
-.modal_flat_main, .modal_flat_main input, .modal_flat_main button {  font-size: 16px; }
+/* font size only - Lite: Customized */
+/* .modal_flat_main, .modal_flat_main input, .modal_flat_main button {  font-size: 16px; } */
 
 .modal_flat_main input, .modal_flat_main button {  padding: 5px; box-sizing: border-box; }
 .modal_flat_inner { padding: 10px 30px 30px 30px; background: #fff; color: #000; }
-.modal_flat_content { font-family: var(--abctools-ui-font-fallbacks); margin: 20px 0px;}
+.modal_flat_content { font-family: var(--abctools-font-fallback-ui); margin: 20px 0px;}
 .modal_flat_input { margin: 20px 0px;}
 .modal_flat_buttons { text-align:center;margin-top: 40px; }
-.modal_flat_main button { background-color: #ccc; color: #000; padding: 10px 20px; border: 0px; cursor: pointer; outline: none; width: 100px;  }
+.modal_flat_main button { background-color: #ccc; color: #000; padding: 10px 20px; border: 0; cursor: pointer; outline: none; width: 100px;  }
 .modal_flat_cancel {margin-left: 5px;}
 
 /* For modal dialog prompt replacement */
 .modal_flat_wide_background { background-color: #000; opacity: 0.4; }
-.modal_flat_wide_main { border: 1px solid #333; box-shadow: 0px 0px 15px -2px rgba(0,0,0,0.75);  }
+.modal_flat_wide_main { border: 1px solid #333; box-shadow: 0 0px 15px -2px rgba(0,0,0,0.75);  }
 
-/* font size only */
-.modal_flat_wide_main, .modal_flat_wide_main input, .modal_flat_wide_main button {  font-size: 16px; }
+/* font size only - Lite: Customized */
+/* .modal_flat_wide_main, .modal_flat_wide_main input, .modal_flat_wide_main button {  font-size: 16px; } */
 
 .modal_flat_wide_main input, .modal_flat_wide_main button {  padding: 5px; box-sizing: border-box; }
 .modal_flat_wide_inner { padding: 10px 30px 30px 30px; background: #fff; color: #000; }
-.modal_flat_wide_content { font-family: var(--abctools-ui-font-fallbacks); margin: 20px 0px;}
+.modal_flat_wide_content { font-family: var(--abctools-font-fallback-ui); margin: 20px 0px;}
 .modal_flat_wide_input { margin: 20px 0px;}
 .modal_flat_wide_buttons { text-align:center;margin-top: 40px; }
-.modal_flat_wide_main button { background-color: #ccc; color: #000; padding: 10px 20px; border: 0px; cursor: pointer; outline: none; width: 125px;  }
+.modal_flat_wide_main button { background-color: #ccc; color: #000; padding: 10px 20px; border: 0; cursor: pointer; outline: none; width: 125px;  }
 .modal_flat_wide_cancel {margin-left: 5px;}
 
 
@@ -2649,24 +2646,18 @@ body.noui svg {
 }
 
 .configure_settings_form_text_checkbox{
-	font-size:12pt;
-	line-height:11px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 0.69;
 	margin-top:9px;
 	display:flex;
 }
 
 .configure_settings_form_text{
-	font-size:12pt;
-	line-height:11px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 0.69;
 	margin-top:16px;
 	display:flex;
 }
 
 .configure_settings_form_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left:12px;
 	width: 60px;
 	margin-top:-9px;
@@ -2674,33 +2665,25 @@ body.noui svg {
 }
 
 .configure_settings_form_text_checkbox_fs{
-	font-size:12pt;
-	line-height:11px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 0.69;
 	margin-top:9px;
 	display:flex;
 }
 
 .configure_settings_form_text_checkbox_fs2{
-	font-size:12pt;
-	line-height:11px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 0.69;
 	margin-top:9px;
 	margin-bottom:24px;
 	display:flex;
 }
 
 .configure_settings_form_text_fs{
-	font-size:12pt;
-	line-height:20px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1.25;
 	margin-top:16px;
 	display:flex;
 }
 
 .configure_settings_form_text_fs>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left:12px;
 	width: 60px;
 	margin-top:-4px;
@@ -2708,8 +2691,7 @@ body.noui svg {
 }
 
 .configure_midi_program_form_select_fs{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:20px;
@@ -2726,8 +2708,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:220px;
 margin-left:10px;
@@ -2736,8 +2716,7 @@ margin-top:-7px;
 }
 
 .configure_settings_select_fs{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:20px;
@@ -2754,8 +2733,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:150px;
 margin-left:10px;
@@ -2764,119 +2741,90 @@ margin-top:-7px;
 }
 
 .advanced_settings2_form_text{
-	font-size:12pt;
-	line-height:10px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 0.625;
 	margin-top:14px;
 	display:flex;
 }
 
 .advanced_settings2_form_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left:12px;
 	width: 100px;
 	margin-top:-11px;
 }
 
 .advanced_settings2_roll_text{
-	font-size:12pt;
-	line-height:16px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1;
 	margin-top:14px;
 	display:flex;
 }
 
 .advanced_settings2_roll_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 12px;
 	width: 460px;
 	margin-top:-8px;
 }
 
 .advanced_settings2_tinyurl_text{
-	font-size:12pt;
-	line-height:16px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1;
 	margin-top:14px;
 	display:flex;
 }
 
 .advanced_settings2_tinyurl_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 12px;
 	width: 500px;
 	margin-top:-8px;
 }
 .advanced_settings2_reverb_text{
-	font-size:12pt;
-	line-height:16px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1;
 	margin-top:14px;
 	display:flex;
 }
 
 .advanced_settings2_reverb_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 12px;
 	width: 215px;
 	margin-top:-8px;
 }
 
 .advanced_settings2_form_text_checkbox{
-	font-size:12pt;
-	line-height:11px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 0.69;
 	margin-top:7px;
 	display:flex;
 }
 
 .configure_pdf_settings_form_text{
-	font-size:12pt;
-	line-height:16px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1;
 	margin-top:14px;
 	display:flex;
 }
 
 .configure_pdf_settings_form_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 12px;
 	width: 60px;
 	margin-top:-7px;
 }
 
 .configure_pdfquality{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 12px;
 	width: 60px;
 	margin-top:-7px;
 }
 
 .configure_injectheaderstring_form_text{
-	font-size:12pt;
-	line-height:16px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1;
 	margin-top:36px;
 	display:flex;
 }
 
 .configure_injectheaderstring_form_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 12px;
 	width:400px;
 	margin-top:-7px;
 }
 
 .configure_injectheaderstring_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:36px;
@@ -2893,8 +2841,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:100px;
 margin-left:10px;
@@ -2903,40 +2849,31 @@ margin-top:-7px;
 }
 
 .configure_transposetokey_text{
-	font-size:12pt;
-	line-height:16px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1;
 	margin-top:30px;
 	display:flex;
 }
 
 .configure_xmlroundtrip_text{
-	font-size:12pt;
-	line-height:16px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1;
 	margin-top:30px;
 	display:flex;
 }
 
 .configure_resetsettings_text{
-	font-size:12pt;
-	line-height:16px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1;
 	margin-top:30px;
 	display:flex;
 }
 
 .configure_injectdrones_form_text{
-	font-size:12pt;
-	line-height:16px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1;
 	margin-top:18px;
 	display:flex;
 }
 
 .configure_drones_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:24px;
@@ -2953,8 +2890,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:425px;
 margin-left:10px;
@@ -2963,9 +2898,7 @@ margin-top:-7px;
 }
 
 .configure_injectfontstring_form_text{
-	font-size:12pt;
-	line-height:16px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1;
 	margin-top:12px;
 	display:flex;
 }
@@ -2976,72 +2909,55 @@ margin-top:-7px;
 }
 
 .configure_repeats_form_text{
-	font-size:12pt;
-	line-height:24px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1.5;
 	margin-top:18px;
 	display:flex;
 }
 
 .configure_repeats_form_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 12px;
 	width: 60px;
 	margin-top:-4px;
 }
 
 .configure_phrase_length{
-	font-size:12pt;
-	line-height:24px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1.5;
 	margin-top:18px;
 	display:flex;
 }
 
 .configure_phrase_length>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 12px;
 	width: 60px;
 	margin-top:-4px;
 }
 
 .configure_midi_program_form_text{
-	font-size:12pt;
-	line-height:12px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 0.75;
 	margin-top:18px;
 	display:flex;
 }
 
 .configure_midi_program_form_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 12px;
 	width: 200px;
 	margin-top:-4px;
 }
 
 .configure_midi_program_form_number_input{
-	font-size:12pt;
-	line-height:24px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1.5;
 	margin-top:18px;
 	display:flex;
 }
 
 .configure_midi_program_form_number_input>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 12px;
 	width: 60px;
 	margin-top:-4px;
 }
 
 .configure_midi_program_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:24px;
@@ -3058,8 +2974,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:220px;
 margin-left:10px;
@@ -3068,8 +2982,7 @@ margin-top:-7px;
 }
 
 .configure_midi_program_form_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:18px;
@@ -3086,8 +2999,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:220px;
 margin-left:10px;
@@ -3096,8 +3007,7 @@ margin-top:-7px;
 }
 
 .configure_setuppdftunebook_midi_program_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:14px;
@@ -3114,8 +3024,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:220px;
 margin-left:10px;
@@ -3124,8 +3032,7 @@ margin-top:-7px;
 }
 
 .configure_setuppdftunebook_midi_program_select_play{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:20px;
@@ -3142,8 +3049,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:220px;
 margin-left:10px;
@@ -3152,24 +3057,19 @@ margin-top:-7px;
 }
 
 .configure_soundfont_form_text{
-	font-size:12pt;
-	line-height:24px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1.5;
 	margin-top:24px;
 	display:flex;
 }
 
 .configure_soundfont_form_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 12px;
 	width: 60px;
 	margin-top:-4px;
 }
 
 .configure_soundfont_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:24px;
@@ -3186,8 +3086,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:150px;
 margin-left:10px;
@@ -3196,128 +3094,97 @@ margin-top:-7px;
 }
 
 .configure_metronome_form_text{
-	font-size:12pt;
-	line-height:24px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1.5;
 	margin-top:18px;
 	display:flex;
 }
 
 .configure_metronome_form_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 12px;
 	width: 60px;
 	margin-top:-4px;
 }
 
 .configure_staffwidth_form_text{
-	font-size:12pt;
-	line-height:24px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1.5;
 	margin-top:18px;
 	display:flex;
 }
 
 .configure_staffwidth_form_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 12px;
 	width: 60px;
 	margin-top:-4px;
 }
 
 .configure_customstring_form_text{
-	font-size:12pt;
-	line-height:24px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1.5;
 	margin-top:16px;
 	display:flex;
 }
 
 .configure_customstring_form_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 12px;
 	width: 60px;
 	margin-top:-4px;
 }
 
 .configure_customstring_form_text_wide{
-	font-size:12pt;
-	line-height:24px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1.5;
 	margin-top:16px;
 	display:flex;
 }
 
 .configure_customstring_form_text_wide>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 12px;
 	width: 300px;
 	margin-top:-4px;
 }
 
 .configure_customstring_form_text_checkbox{
-	font-size:12pt;
-	line-height:24px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1.5;
 	margin-top:24px;
 	display:flex;
 }
 
 .configure_sectionheader_form_text{
-	font-size:12pt;
-	line-height:24px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1.5;
 	margin-top:18px;
 	display:flex;
 }
 
 .configure_sectionheader_form_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 12px;
 	width: 300px;
 	margin-top:-4px;
 }
 
 .configure_tab_settings_form_text{
-	font-size:12pt;
-	line-height:32px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 2;
 	margin-top:6px;
 	display:flex;
 }
 
 .configure_tab_settings_form_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 12px;
 	width: 60px;
-	margin-top:0px;
+	margin-top: 0;
 }
 
 .configure_tab_settings_form_text_wide{
-	font-size:12pt;
-	line-height:32px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 2;
 	margin-top:10px;
 	display:flex;
 }
 
 .configure_tab_settings_form_text_wide>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 12px;
 	width: 200px;
-	margin-top:0px;
+	margin-top: 0;
 }
 
 .configure_tab_settings_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:24px;
@@ -3334,8 +3201,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:130px;
 margin-left:10px;
@@ -3344,8 +3209,7 @@ margin-top:-7px;
 }
 
 .configure_concertina_tunings_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:24px;
@@ -3362,8 +3226,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:180px;
 margin-left:10px;
@@ -3372,8 +3234,7 @@ margin-top:-7px;
 }
 
 .configure_tab_settings_select_box_style{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:24px;
@@ -3390,8 +3251,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:510px;
 margin-left:10px;
@@ -3401,24 +3260,19 @@ margin-bottom:8px;
 }
 
 .configure_md_settings_form_text{
-	font-size:12pt;
-	line-height:14px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 0.875;
 	margin-top:20px;
 	display:flex;
 }
 
 .configure_sn_settings_form_text{
-	font-size:12pt;
-	line-height:48px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 3;
 	margin-top:6px;
 	display:flex;
 }
 
 .configure_sn_settings_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:36px;
@@ -3435,8 +3289,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:410px;
 margin-left:10px;
@@ -3445,32 +3297,24 @@ margin-top:-7px;
 }
 
 .configure_box_settings_form_text{
-	font-size:12pt;
-	line-height:18px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1.125;
 	margin-top:6px;
 	display:flex;
 }
 
 .configure_box_settings_form_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 12px;
 	width: 60px;
 	margin-top:-5px;
 }
 
 .configure_box_settings_form_text_wide{
-	font-size:12pt;
-	line-height:18px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1.125;
 	margin-top:10px;
 	display:flex;
 }
 
 .configure_box_settings_form_text_wide>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 12px;
 	width: 200px;
 	margin-top:-5px;
@@ -3491,70 +3335,52 @@ margin-top:-7px;
 }
 
 .configure_swingexplorer_text{
-	font-size:13pt;
-	font-family: var(--abctools-ui-font-fallbacks);
-	margin-top:0px;
+	font-size: var(--abctools-font-size-code-13);
+	margin-top: 0;
 }
 
 .configure_swingexplorer_text>input{
-	font-size:13pt;
-	font-family: var(--abctools-ui-font-fallbacks);
+	font-size: var(--abctools-font-size-code-13);
 	margin-left: 2px;
 	width: 60px;
 	margin-right:10px;
 }
 
 .configure_swingexplorer_text_mobile{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
-	margin-top:0px;
+	margin-top: 0;
 }
 
 .configure_swingexplorer_text_mobile>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 2px;
 	width: 60px;
 	margin-right:10px;
 }
 
 .configure_graceexplorer_text{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
-	margin-top:0px;
+	margin-top: 0;
 }
 
 .configure_graceexplorer_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 2px;
 	width: 60px;
 	margin-right:10px;
 }
 
 .configure_rollexplorer_text{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
-	margin-top:0px;
+	margin-top: 0;
 }
 
 .configure_rollexplorer_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 2px;
 	width: 60px;
 	margin-right:10px;
 }
 
 .configure_instrumentexplorer_text{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-top:24px;
 }
 
 .configure_instrumentexplorer_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 2px;
 	width: 60px;
 	margin-right:10px;
@@ -3571,8 +3397,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:220px;
 margin-left:8px;
@@ -3581,14 +3405,12 @@ margin-top:-7px;
 }
 
 .configure_instrumentexplorer_text_mobile{
-	font-size:10pt;
-	font-family: var(--abctools-ui-font-fallbacks);
+	font-size: var(--abctools-font-size-label-xs-10);
 	margin-top:24px;
 }
 
 .configure_instrumentexplorer_text_mobile>input{
-	font-size:11pt;
-	font-family: var(--abctools-ui-font-fallbacks);
+	font-size: var(--abctools-font-size-label-s-11);
 	margin-left: 2px;
 	width: 60px;
 	margin-right:10px;
@@ -3605,8 +3427,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:220px;
 margin-left:4px;
@@ -3615,14 +3435,12 @@ margin-top:-7px;
 }
 
 .configure_looper_text{
-	font-size:13pt;
-	font-family: var(--abctools-ui-font-fallbacks);
-	margin-top:0px;
+	font-size: var(--abctools-font-size-code-13);
+	margin-top: 0;
 }
 
 .configure_looper_text>input{
-	font-size:13pt;
-	font-family: var(--abctools-ui-font-fallbacks);
+	font-size: var(--abctools-font-size-code-13);
 	margin-left: 2px;
 	width: 60px;
 	margin-right:10px;
@@ -3634,14 +3452,10 @@ margin-top:-7px;
 }
 
 .configure_layout_text, .configure_layout_text{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
-	margin-top:0px;
+	margin-top: 0;
 }
 
 .configure_layout_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 2px;
 	width: 60px;
 	margin-right:10px;
@@ -3686,26 +3500,20 @@ margin-top:-7px;
 }
 
 .configure_font_settings_form_text_wide{
-	font-size:12pt;
-	line-height:33px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 2;
 	margin-top:10px;
 	display:flex;
 }
 
 .configure_font_settings_form_text_wide>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	width: 200px;
-	margin-top:0px;
+	margin-top: 0;
 	position:absolute;
 	left:360px;
 }
 
 .configure_ui_options_form_text{
-	font-size:12pt;
-	line-height:24px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1.5;
 	margin-top:24px;
 	display:flex;
 }
@@ -3793,7 +3601,7 @@ margin-top:-7px;
 
 #configure_anglo_fingerings{
 	height:42px;
-	margin-top: 0px;
+	margin-top: 0;
 	padding:12px;
 }
 
@@ -3891,7 +3699,7 @@ margin-top:-7px;
 
 #configure_harmonica_custom{
 	height:42px;
-	margin-top: 0px;
+	margin-top: 0;
 	padding:12px;
 }
 
@@ -4044,8 +3852,7 @@ margin-top:-7px;
 }
 
 .configure_transpose_settings_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:24px;
@@ -4062,8 +3869,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:90px;
 margin-left:10px;
@@ -4072,8 +3877,7 @@ margin-top:-7px;
 }
 
 .configure_sort_settings_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:24px;
@@ -4090,8 +3894,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:300px;
 margin-left:10px;
@@ -4100,8 +3902,7 @@ margin-top:-7px;
 }
 
 .configure_harmonica_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:32px;
@@ -4118,8 +3919,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:75px;
 margin-left:10px;
@@ -4128,8 +3927,7 @@ margin-top:-7px;
 }
 
 .configure_harmonica_tuning_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:32px;
@@ -4146,8 +3944,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:250px;
 margin-left:10px;
@@ -4156,8 +3952,7 @@ margin-top:-7px;
 }
 
 .configure_custom_tab_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:32px;
@@ -4174,8 +3969,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:75px;
 margin-left:10px;
@@ -4185,40 +3978,31 @@ margin-top:-7px;
 
 
 .configure_box_settings_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:24px;
 }
 
 .configure_harmonica_settings_form_text{
-	font-size:12pt;
-	line-height:42px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 2.625;
 	margin-top:24px;
 	display:flex;
 }
 
 .configure_harmonica_settings_form_text2{
-	font-size:12pt;
-	line-height:42px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 2.625;
 	display:flex;
 }
 
 .configure_custom_tab_settings_form_text{
-	font-size:12pt;
-	line-height:42px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 2.625;
 	margin-top:24px;
 	display:flex;
 }
 
 .configure_custom_tab_settings_form_text2{
-	font-size:12pt;
-	line-height:42px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 2.625;
 	display:flex;
 }
 
@@ -4233,8 +4017,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:130px;
 margin-left:10px;
@@ -4243,8 +4025,7 @@ margin-top:-7px;
 }
 
 .configure_md_settings_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:24px;
@@ -4261,8 +4042,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:230px;
 margin-left:10px;
@@ -4271,8 +4050,7 @@ margin-top:-7px;
 }
 
 .configure_settings_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:18px;
@@ -4289,8 +4067,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:150px;
 margin-left:10px;
@@ -4299,8 +4075,7 @@ margin-top:-7px;
 }
 
 .configure_pdf_papersize_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:36px;
@@ -4317,8 +4092,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:100px;
 margin-left:10px;
@@ -4327,8 +4100,7 @@ margin-top:-7px;
 }
 
 .configure_pdf_orientation_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:30px;
@@ -4345,8 +4117,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:130px;
 margin-left:10px;
@@ -4355,8 +4125,7 @@ margin-top:-7px;
 }
 
 .configure_pdf_tunelayout_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:30px;
@@ -4373,8 +4142,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:345px;
 margin-left:10px;
@@ -4383,8 +4150,7 @@ margin-top:-7px;
 }
 
 .configure_pdf_incipitscolumns_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:30px;
@@ -4401,8 +4167,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:150px;
 margin-left:10px;
@@ -4410,8 +4174,7 @@ padding-left:10px;
 margin-top:-7px;
 }
 .configure_pdf_pagenumber_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:30px;
@@ -4428,8 +4191,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:245px;
 margin-left:10px;
@@ -4438,8 +4199,7 @@ margin-top:-7px;
 }
 
 .configure_pdf_fontname_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:30px;
@@ -4456,8 +4216,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:185px;
 margin-left:10px;
@@ -4466,8 +4224,7 @@ margin-top:-7px;
 }
 
 .configure_pdf_fontstyle_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:30px;
@@ -4484,8 +4241,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:145px;
 margin-left:10px;
@@ -4494,8 +4249,6 @@ margin-top:-7px;
 }
 
 .configure_pdfquality_select{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 display:flex;
 margin-right:12px;
 margin-top:24px;
@@ -4512,8 +4265,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:150px;
 margin-left:10px;
@@ -4522,32 +4273,24 @@ margin-top:-7px;
 }
 
 .configure_setuppdftunebook_form_text{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:10px;
 display:flex;
 }
 
 .configure_setuppdftunebook_form_text>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 40px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_setuppdftunebook_form_text_play{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:24px;
 display:flex;
 }
 
 .configure_setuppdftunebook_form_text_play>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 40px;
 margin-top:-9px;
 margin-left:12px;
@@ -4555,48 +4298,36 @@ margin-left:12px;
 
 
 .configure_setuppdftunebook_form_text2{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:24px;
 display:flex;
 }
 
 .configure_setuppdftunebook_form_text2>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 40px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_setuppdftunebook_form_text3{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:16px;
 display:flex;
 }
 
 .configure_setuppdftunebook_form_text3>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 40px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_setuppdftunebook_form_text_wide{
-font-size:12pt;
-line-height:8px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.5;
 margin-top:28px;
 display:flex;
 }
 
 .configure_setuppdftunebook_form_text_wide>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 450px;
 margin-top:-9px;
 position:absolute;
@@ -4604,23 +4335,18 @@ left:200px;
 }
 
 .configure_setuppdftunebook_form_text_wide2{
-font-size:12pt;
-line-height:8px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.5;
 margin-top:16px;
 display:flex;
 }
 
 .configure_setuppdftunebook_form_text_wide2>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 450px;
 margin-top:-9px;
 position:absolute;
 left:200px;
 }
 .modal_flat_form_item_label{
-font-size: 12pt;
 }
 
 .indrag{ 
@@ -4632,10 +4358,8 @@ display:none;
 }
 
 #zoombanner>p{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
-margin-top:0px;
-margin-bottom:0px;
+margin-top: 0;
+margin-bottom: 0;
 background-color:#b80000;
 cursor: pointer;
 padding: 3px;
@@ -4665,9 +4389,7 @@ padding-bottom:7px;
 }
 
 #playerstatus {
-font-family: var(--abctools-ui-font-fallbacks);
-font-size:12pt;
-line-height:36pt;
+line-height: 3;
 position:absolute;
 right:30px;
 bottom:-12px;
@@ -4675,9 +4397,7 @@ text-align:right;
 }
 
 #playerstatus_left {
-font-family: var(--abctools-ui-font-fallbacks);
-font-size:12pt;
-line-height:36pt;
+line-height: 3;
 position:absolute;
 left:30px;
 bottom:-12px;
@@ -4694,18 +4414,15 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:300px;
-margin-left:0px;
+margin-left: 0;
 padding-left:10px;
 margin-top:4px;
 }
 
 .switchtunedatabase{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:36px;
@@ -4722,26 +4439,20 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:415px;
 margin-left:10px;
 padding-left:10px;
-margin-top:0px;
+margin-top: 0;
 }
 
 .tunesearchoptions{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 margin-top:20px;
 vertical-align: middle;
 cursor: pointer;
 }
 
 .tunesearchoptionsmax{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 margin-top:20px;
 vertical-align: middle;
 cursor: pointer;
@@ -4758,8 +4469,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:85px;
 margin-left:10px;
@@ -4767,7 +4476,7 @@ padding-left:10px;
 }
 
 .abcupload {
-	margin-left:0px;
+	margin-left: 0;
 	margin-right:12px;
 }
 
@@ -4794,8 +4503,7 @@ margin: 5px;
 padding: 10px;
 border: 1px solid #ddd;
 background-color: #f9f9f9;
-font-family: var(--abctools-ui-font-fallbacks);
-font-size:16px;
+font-size: var(--abctools-font-size-label-m-12);
 }
 
 .draggable_tune_mobile{
@@ -4805,8 +4513,7 @@ margin: 5px;
 padding: 10px;
 border: 1px solid #ddd;
 background-color: #f9f9f9;
-font-family: var(--abctools-ui-font-fallbacks);
-font-size:16px;
+font-size: var(--abctools-font-size-label-m-12);
 }
 
 .draggable_tune_selected {
@@ -4824,8 +4531,7 @@ margin: 5px;
 padding: 10px;
 border: 1px solid #ddd;
 background-color: #f9f9f9;
-font-family: var(--abctools-ui-font-fallbacks);
-font-size:16px;
+font-size: var(--abctools-font-size-label-m-12);
 }
 
 .cull_selected {
@@ -4839,8 +4545,7 @@ margin: 5px;
 padding: 10px;
 border: 1px solid #ddd;
 background-color: #f9f9f9;
-font-family: var(--abctools-ui-font-fallbacks);
-font-size:16px;
+font-size: var(--abctools-font-size-label-m-12);
 }
 
 .tuneset_selected {
@@ -4854,8 +4559,7 @@ margin: 5px;
 padding: 10px;
 border: 1px solid #ddd;
 background-color: #f9f9f9;
-font-family: var(--abctools-ui-font-fallbacks);
-font-size:16px;
+font-size: var(--abctools-font-size-label-m-12);
 }
 
 .jumpto_selected {
@@ -4863,16 +4567,12 @@ font-size:16px;
 }
 
 .smartdraw_export_all_text{
-	font-size:12pt;
-	line-height:16px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 1;
 	margin-top:36px;
 	text-align: center;
 }
 
 .smartdraw_export_all_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left:4px;
 	width: 75px;
 	margin-top:-7px;
@@ -4889,8 +4589,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:155px;
 margin-left:4px;
@@ -4899,24 +4597,18 @@ margin-top:-7px;
 }
 
 .incipits_builder_form_text_checkbox{
-	font-size:12pt;
-	line-height:11px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 0.69;
 	margin-top:20px;
 	display:flex;
 }
 
 .incipits_builder_form_text{
-	font-size:12pt;
-	line-height:11px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 0.69;
 	margin-top:20px;
 	display:flex;
 }
 
 .incipits_builder_form_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 12px;
 	width: 60px;
 	margin-top:-10px;
@@ -4924,8 +4616,7 @@ margin-top:-7px;
 }
 
 .configure_mp3_before_tune_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:18px;
@@ -4942,8 +4633,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:350px;
 margin-left:10px;
@@ -4963,22 +4652,17 @@ padding:12px;
 }
 
 .diagnostics_message{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
-line-height: 16pt;
-margin-top:0px;
+font-size: var(--abctools-font-size-label-s-11);
+line-height: 1.45;
+margin-top: 0;
 margin-bottom:4px;
 }
 
 .configure_reverbexplorer_text{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-top:24px;
 }
 
 .configure_reverbexplorer_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	margin-left: 2px;
 	width: 60px;
 	margin-right:10px;
@@ -4995,8 +4679,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:120px;
 margin-left:8px;
@@ -5005,14 +4687,12 @@ margin-top:-7px;
 }
 
 .configure_reverbexplorer_text_mobile{
-	font-size:10pt;
-	font-family: var(--abctools-ui-font-fallbacks);
+	font-size: var(--abctools-font-size-label-xs-10);
 	margin-top:24px;
 }
 
 .configure_reverbexplorer_text_mobile>input{
-	font-size:11pt;
-	font-family: var(--abctools-ui-font-fallbacks);
+	font-size: var(--abctools-font-size-label-s-11);
 	margin-left: 2px;
 	width: 60px;
 	margin-right:10px;
@@ -5029,8 +4709,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:120px;
 margin-left:4px;
@@ -5055,7 +4733,7 @@ margin-right:24px;
 height:42px;
 padding:12px;
 width:auto;
-margin-left:0px;
+margin-left: 0;
 }
 
 @media (hover: hover) {
@@ -5065,7 +4743,7 @@ margin-left:0px;
 }
 
 #reverbexplorerhelp{
-font-size:24pt;
+font-size: var(--abctools-font-size-header-xl-24);
 position:absolute;
 left:20px;
 top:20px;
@@ -5133,7 +4811,6 @@ top:20px;
   border: 1px solid rgba(0, 0, 0, 0.2);
   -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-  font-family: var(--abctools-ui-font-fallbacks);
   font-size: 15px;
   outline: 0;
   padding: 2px 0;
@@ -5189,91 +4866,71 @@ top:20px;
 }
 
 #searchText,#replacementText {
-font-family: var(--abctools-code-font-fallbacks);
-font-size: 13pt;
-line-height: 16pt;
+font-family: var(--abctools-font-fallback-code);
+font-size: var(--abctools-font-size-code-13);
+line-height: 1.23;
 padding: 6px;
-margin-top: 0px;
-margin-bottom: 0px;
+margin-top: 0;
+margin-bottom: 0;
 -webkit-appearance: none;
 -moz-appearance: none;
 }
 
 .splitlongtextandtags{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:10px;
 display:flex;
 }
 
 .splitlongtextandtags>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 50px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .splitlongtextandtags_text{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:24px;
 display:flex;
 }
 
 .splitlongtextandtags_text>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 300px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .incipits_striptags_text{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:24px;
 display:flex;
 }
 
 .incipits_striptags_text>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 200px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_website_form_text{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:18px;
 display:flex;
 }
 
 .configure_website_form_text>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 100px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_website_form_text_wide{
-font-size:12pt;
-line-height:8px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.5;
 margin-top:22px;
 display:flex;
 }
 
 .configure_website_form_text_wide>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 530px;
 margin-top:-9px;
 position:absolute;
@@ -5281,16 +4938,12 @@ left:170px;
 }
 
 .configure_website_form_text_wide2{
-font-size:12pt;
-line-height:8px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.5;
 margin-top:28px;
 display:flex;
 }
 
 .configure_website_form_text_wide2>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 530px;
 margin-top:-9px;
 position:absolute;
@@ -5298,116 +4951,88 @@ left:170px;
 }
 
 .configure_website_form_text2{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:10px;
 margin-bottom:9px;
 display:flex;
 }
 
 .configure_website_form_text2>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 100px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_website_form_text3{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:18px;
 display:flex;
 }
 
 .configure_website_form_text3>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 100px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_website_form_text4{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:24px;
 margin-bottom:12px;
 display:flex;
 }
 
 .configure_website_form_text4>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 100px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_website_form_text_wide5{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:16px;
 margin-bottom:14px;
 display:flex;
 }
 
 .configure_website_form_text_wide5>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 495px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_website_form_text6{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:12px;
 margin-bottom:24px;
 display:flex;
 }
 
 .configure_website_form_text6>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 100px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_website_form_text_simple{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:18px;
 display:flex;
 }
 
 .configure_website_form_text_simple>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 100px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_website_form_text_wide_simple{
-font-size:12pt;
-line-height:16px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 1;
 margin-top:22px;
 display:flex;
 }
 
 .configure_website_form_text_wide_simple>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 530px;
 margin-top:-9px;
 position:absolute;
@@ -5415,16 +5040,12 @@ left:170px;
 }
 
 .configure_website_form_text_wide2_simple{
-font-size:12pt;
-line-height:16px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 1;
 margin-top:24px;
 display:flex;
 }
 
 .configure_website_form_text_wide2_simple>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 530px;
 margin-top:-9px;
 position:absolute;
@@ -5432,116 +5053,88 @@ left:170px;
 }
 
 .configure_website_form_text2_simple{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:14px;
 margin-bottom:6px;
 display:flex;
 }
 
 .configure_website_form_text2_simple>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 100px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_website_form_text3_simple{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:18px;
 display:flex;
 }
 
 .configure_website_form_text3_simple>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 100px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_website_form_text4_simple{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:24px;
 margin-bottom:12px;
 display:flex;
 }
 
 .configure_website_form_text4_simple>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 100px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_website_form_text_wide5_simple{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:16px;
 margin-bottom:16px;
 display:flex;
 }
 
 .configure_website_form_text_wide5_simple>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 495px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_website_form_text6_simple{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:12px;
 margin-bottom:12px;
 display:flex;
 }
 
 .configure_website_form_text6_simple>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 100px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_website_form_text_gallery{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:12px;
 display:flex;
 }
 
 .configure_website_form_text_gallery>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 100px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_website_form_text_wide_gallery{
-font-size:12pt;
-line-height:16px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 1;
 margin-top:16px;
 display:flex;
 }
 
 .configure_website_form_text_wide_gallery>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 530px;
 margin-top:-9px;
 position:absolute;
@@ -5549,16 +5142,12 @@ left:170px;
 }
 
 .configure_website_form_text_wide2_gallery{
-font-size:12pt;
-line-height:16px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 1;
 margin-top:22px;
 display:flex;
 }
 
 .configure_website_form_text_wide2_gallery>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 530px;
 margin-top:-9px;
 position:absolute;
@@ -5566,116 +5155,88 @@ left:170px;
 }
 
 .configure_website_form_text2_gallery{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:10px;
 margin-bottom:10px;
 display:flex;
 }
 
 .configure_website_form_text2_gallery>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 100px;
 margin-top:-10px;
 margin-left:12px;
 }
 
 .configure_website_form_text3_gallery{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:12px;
 display:flex;
 }
 
 .configure_website_form_text3_gallery>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 100px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_website_form_text4_gallery{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:24px;
 margin-bottom:12px;
 display:flex;
 }
 
 .configure_website_form_text4_gallery>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 100px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_website_form_text_wide5_gallery{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:18px;
 margin-bottom:16px;
 display:flex;
 }
 
 .configure_website_form_text_wide5_gallery>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 495px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_website_form_text6_gallery{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:12px;
 margin-bottom:24px;
 display:flex;
 }
 
 .configure_website_form_text6_gallery>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 100px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_website_form_text_lightbox{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:12px;
 display:flex;
 }
 
 .configure_website_form_text_lightbox>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 100px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_website_form_text_wide_lightbox{
-font-size:12pt;
-line-height:16px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 1;
 margin-top:16px;
 display:flex;
 }
 
 .configure_website_form_text_wide_lightbox>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 530px;
 margin-top:-9px;
 position:absolute;
@@ -5683,16 +5244,12 @@ left:170px;
 }
 
 .configure_website_form_text_wide2_lightbox{
-font-size:12pt;
-line-height:16px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 1;
 margin-top:22px;
 display:flex;
 }
 
 .configure_website_form_text_wide2_lightbox>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 530px;
 margin-top:-9px;
 position:absolute;
@@ -5700,110 +5257,84 @@ left:170px;
 }
 
 .configure_website_form_text2_lightbox{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:14px;
 margin-bottom:10px;
 display:flex;
 }
 
 .configure_website_form_text2_lightbox>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 100px;
 margin-top:-10px;
 margin-left:12px;
 }
 
 .configure_website_form_text3_lightbox{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:12px;
 display:flex;
 }
 
 .configure_website_form_text3_lightbox>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 100px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_website_form_text4_lightbox{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:24px;
 margin-bottom:12px;
 display:flex;
 }
 
 .configure_website_form_text4_lightbox>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 100px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_website_form_text_wide5_lightbox{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:18px;
 margin-bottom:16px;
 display:flex;
 }
 
 .configure_website_form_text_wide5_lightbox>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 495px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_website_form_text6_lightbox{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:12px;
 margin-bottom:24px;
 display:flex;
 }
 
 .configure_website_form_text6_lightbox>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 100px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .configure_website_form_text7_lightbox{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:18px;
 margin-bottom:24px;
 display:flex;
 }
 
 .inject_gchord_templates_form_text{
-	font-size:12pt;
-	line-height:11px;
-	font-family: var(--abctools-ui-font-fallbacks);
+	line-height: 0.69;
 	margin-top:16px;
 	display:flex;
 
 }
 
 .inject_gchord_templates_form_text>input{
-	font-size:12pt;
-	font-family: var(--abctools-ui-font-fallbacks);
 	position:absolute;
 	left:265px;
 	width: 285px;
@@ -5812,8 +5343,7 @@ display:flex;
 }
 
 .configure_nativepdftunebook_midi_program_select{
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
 margin-top:22px;
@@ -5830,8 +5360,6 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
 height:32px;
 width:220px;
 margin-left:10px;
@@ -5840,50 +5368,38 @@ margin-top:-7px;
 }
 
 .configure_nativepdftunebook_form_text{
-font-size:12pt;
-line-height:12px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.75;
 margin-top:22px;
 display:flex;
 }
 
 .configure_nativepdftunebook_form_text>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 40px;
 margin-top:-9px;
 margin-left:12px;
 }
 
 .create_tune_set_text{
-font-size:12pt;
-line-height:11px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.69;
 margin-top:18px;
 margin-left:36px;
 display:flex;
 }
 
 .create_tune_set_text_checkbox{
-font-size:12pt;
-line-height:11px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.69;
 margin-top:12px;
 display:flex;
 }
 
 .create_tune_set_text_checkbox_2{
-font-size:12pt;
-line-height:11px;
-font-family: var(--abctools-ui-font-fallbacks);
+line-height: 0.69;
 margin-top:12px;
 margin-left:32px;
 display:flex;
 }
 
 .create_tune_set_text>input{
-font-size:12pt;
-font-family: var(--abctools-ui-font-fallbacks);
 width: 50px;
 margin-top:-9px;
 margin-left:12px;
@@ -5892,16 +5408,16 @@ margin-left:12px;
 .tuneset-selection-number {
 position: absolute;
 top: 50%;
-right: 8px;
+right: 0.5rem;
 transform: translateY(-50%);
 background-color: blue;
 color: white;
 border-radius: 50%;
-width: 24px;
-height: 24px;
-font-size: 14px;
+width: 1.5rem;
+height: 1.5rem;
+font-size: 0.875rem;
 text-align: center;
-line-height: 24px;
+line-height: 1.7;
 font-family: sans-serif;
 }
 
@@ -6010,8 +5526,8 @@ background-position: calc(100% - 10px) center;
 background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
-font-size:11pt;
-font-family: var(--abctools-ui-font-fallbacks);
+font-size: var(--abctools-font-size-label-s-11);
+font-family: var(--abctools-font-fallback-ui);
 height:32px;
 width:280px;
 margin-left:4px;
@@ -6095,7 +5611,7 @@ display:block;
   flex: 0 0 auto;               /* do not shrink in flex container */
 
   /* Typography */
-  font-family: var(--abctools-ui-font-fallbacks), sans-serif;
+  font-family: var(--abctools-font-fallback-ui), sans-serif;
   font-size: 11.5pt;
   line-height: 1.1;
   font-weight: 400;
@@ -6183,15 +5699,15 @@ display:block;
   --background-color: var(--abctools-ui-btn-bgcolor);
   --border-color: var(--abctools-ui-btn-bordercolor);
   color: var(--color);
-  font-family: var(--abctools-ui-font-fallbacks) !important;
-  font-size: 11pt !important;
+  font-family: var(--abctools-font-fallback-ui) !important;
+  font-size: var(--abctools-font-size-label-s-11) !important;
   background-color: var(--background-color);
   padding: 0.7rem 0.7rem;
   padding-top: 0.8rem;
   border: solid 1px var(--border-color);
   outline: none;
   position: relative;
-  border-radius: 0.5rem;
+  border-radius: 0.55em;
   user-select: none;
   box-shadow: var(--abctools-ui-btn-boxshadow);
   -webkit-appearance:none;

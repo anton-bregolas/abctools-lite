@@ -2,7 +2,7 @@
 
 .CodeMirror {
   /* Set height, width, borders, and global font properties here */
-  font-family: var(--abctools-code-font-fallbacks);
+  font-family: var(--abctools-font-fallback-code);
   height: 300px;
   color: black;
   direction: ltr;

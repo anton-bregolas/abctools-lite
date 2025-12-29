@@ -116,8 +116,8 @@ async function updateAppScripts() {
   const appJsData = await readFileData(abcToolsScripts);
   const defaultUiFonts = /font-family:[\s]*[Hh]elvetica/g;
   const defaultCodeFonts = /font-family:[\s]*[Cc]ourier/g;
-  const customUiFonts = `font-family:var(--abctools-ui-font-fallbacks)`;
-  const customCodeFonts = `font-family:var(--abctools-code-font-fallbacks)`;
+  const customUiFonts = `font-family:var(--abctools-font-fallback-ui)`;
+  const customCodeFonts = `font-family:var(--abctools-font-fallback-code)`;
   const updatedAppJs = 
     appJsData
       .replace(defaultUiFonts, customUiFonts)
@@ -129,8 +129,8 @@ async function updateAppStyles() {
   const appCssData = await readFileData(abcToolsStyles);
   const defaultUiFonts = /font-family:[\s]*[Hh]elvetica/g;
   const defaultCodeFonts = /font-family:[\s]*[Cc]ourier/g;
-  const customUiFonts = `font-family: var(--abctools-ui-font-fallbacks)`;
-  const customCodeFonts = `font-family: var(--abctools-code-font-fallbacks)`;
+  const customUiFonts = `font-family: var(--abctools-font-fallback-ui)`;
+  const customCodeFonts = `font-family: var(--abctools-font-fallback-code)`;
   const updatedAppCss = 
     appCssData
       .replace(defaultUiFonts, customUiFonts)
