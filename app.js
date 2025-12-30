@@ -59255,8 +59255,10 @@ async function DoVersionCheck() {
 
 //
 // Setup context menu
-// Lite: Customized (handle bottom button bars separately)
-
+// Lite: Customized
+// Handle Bottom Button Bar and Title Bar separately
+// Remove Maximize button (TO DO: Convert to toggle & make it stretch to screen width & usable for mobile?)
+//
 function SetupContextMenu(showUpdateItem) {
 
   // For context menu screenshots
@@ -59334,11 +59336,11 @@ function SetupContextMenu(showUpdateItem) {
             fn: function(target) {
               ToggleBottomBar();
             }
-          }, {
-            name: 'Maximize Editor',
-            fn: function(target) {
-              MaximizeEditor();
-            }
+          // }, {
+          //   name: 'Maximize Editor',
+          //   fn: function(target) {
+          //     MaximizeEditor();
+          //   }
           }, {}, {
             name: 'Settings',
             fn: function(target) {
@@ -59511,11 +59513,11 @@ function SetupContextMenu(showUpdateItem) {
           fn: function(target) {
             ToggleBottomBar();
           }
-        }, {
-          name: 'Maximize Editor',
-          fn: function(target) {
-            MaximizeEditor();
-          }
+        // }, {
+        //   name: 'Maximize Editor',
+        //   fn: function(target) {
+        //     MaximizeEditor();
+        //   }
         }, {}, {
           name: 'Settings',
           fn: function(target) {
@@ -59626,11 +59628,11 @@ function SetupContextMenu(showUpdateItem) {
             fn: function(target) {
               ToggleBottomBar();
             }
-          }, {
-            name: 'Maximize Editor',
-            fn: function(target) {
-              MaximizeEditor();
-            }
+          // }, {
+          //   name: 'Maximize Editor',
+          //   fn: function(target) {
+          //     MaximizeEditor();
+          //   }
           }, {}, {
             name: 'Settings',
             fn: function(target) {
@@ -59797,11 +59799,11 @@ function SetupContextMenu(showUpdateItem) {
           fn: function(target) {
             ToggleBottomBar();
           }
-        }, {
-          name: 'Maximize Editor',
-          fn: function(target) {
-            MaximizeEditor();
-          }
+        // }, {
+        //   name: 'Maximize Editor',
+        //   fn: function(target) {
+        //     MaximizeEditor();
+        //   }
         }, {}, {
           name: 'Settings',
           fn: function(target) {
