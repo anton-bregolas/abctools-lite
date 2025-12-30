@@ -20353,6 +20353,10 @@ function AddBodhranHornpipeTemplate() {
 
 }
 
+// Lite: Customized
+// Remove custom MIDI settings not optimal for offline mode (player will fall back to defaults)
+// TO DO: Add more sample tunes with clear indication of custom commands & need to be online
+
 function AppendSampleReel() {
 
   // Keep track of actions
@@ -20375,22 +20379,22 @@ function AppendSampleReel() {
   theValue += "L: 1/8\n";
   theValue += "Q: 1/2=90\n";
   theValue += "K: Edor\n";
-  theValue += "%\n";
-  theValue += "% Use the fluid soundfont:\n";
-  theValue += '%soundfont fluid\n';
-  theValue += "%\n";
-  theValue += "% Use an Acoustic Grand Piano sound for the melody:\n";
-  theValue += "%%MIDI program 0\n";
-  theValue += "%\n";
-  theValue += "% Use an Acoustic Grand Piano sound for the chords:\n";
-  theValue += "%%MIDI chordprog 0\n";
-  theValue += "%\n";
-  theValue += "% Use an Synth Bass sound for the bass:\n";
-  theValue += "%%MIDI bassprog 38\n";
-  theValue += "%\n";
-  theValue += "% Set a specific amount of swing:\n";
+  // theValue += "%\n";
+  // theValue += "% Use the fluid soundfont:\n";
+  // theValue += '%soundfont fluid\n';
+  // theValue += "%\n";
+  // theValue += "% Use an Acoustic Grand Piano sound for the melody:\n";
+  // theValue += "%%MIDI program 0\n";
+  // theValue += "%\n";
+  // theValue += "% Use an Acoustic Grand Piano sound for the chords:\n";
+  // theValue += "%%MIDI chordprog 0\n";
+  // theValue += "%\n";
+  // theValue += "% Use an Synth Bass sound for the bass:\n";
+  // theValue += "%%MIDI bassprog 38\n";
+  // theValue += "%\n";
+  // theValue += "% Set a specific amount of swing:\n";
   theValue += '%swing 0.15\n';
-  theValue += "%\n";
+  // theValue += "%\n";
   theValue += '|:"Em"EBBA B2 EB|B2 AB dBAG|"D"F/E/D AD BDAD|F/E/D AD BAGF|\n';
   theValue += '"Em"EBBA B2 EB|B2 AB defg|"D"afge dBAF|1 DEFD "Em"E3D:|2 DEFD "Em"E2gf||\n';
   theValue += '|:"Em"eB (3BBB eBgf|eBB2 gedB|"D"A/A/A FA DAFA|A/A/A FA defg|\n';
@@ -20400,6 +20404,10 @@ function AppendSampleReel() {
   ProcessAddTune(theValue);
 
 }
+
+// Lite: Customized
+// Remove custom MIDI settings not optimal for offline mode
+// TO DO: Add more sample tunes with clear indication of custom voices & need to be online
 
 function AppendSampleJig() {
 
@@ -20423,22 +20431,22 @@ function AppendSampleJig() {
   theValue += "L: 1/8\n";
   theValue += "Q: 3/8=120\n";
   theValue += "K: Gmaj\n";
-  theValue += "%\n";
-  theValue += "% Use the fluid soundfont:\n";
-  theValue += '%soundfont fluid\n';
-  theValue += "%\n";
-  theValue += "% Use an Acoustic Grand Piano sound for the melody:\n";
-  theValue += "%%MIDI program 0\n";
-  theValue += "%\n";
-  theValue += "% Use an Acoustic Grand Piano for the chords:\n";
-  theValue += "%%MIDI chordprog 0\n";
-  theValue += "%\n";
-  theValue += "% Use an Synth Bass sound for the bass:\n";
-  theValue += "%%MIDI bassprog 38\n";
-  theValue += "%\n";
-  theValue += "% Set a specific amount of swing:\n";
+  // theValue += "%\n";
+  // theValue += "% Use the fluid soundfont:\n";
+  // theValue += '%soundfont fluid\n';
+  // theValue += "%\n";
+  // theValue += "% Use an Acoustic Grand Piano sound for the melody:\n";
+  // theValue += "%%MIDI program 0\n";
+  // theValue += "%\n";
+  // theValue += "% Use an Acoustic Grand Piano for the chords:\n";
+  // theValue += "%%MIDI chordprog 0\n";
+  // theValue += "%\n";
+  // theValue += "% Use an Synth Bass sound for the bass:\n";
+  // theValue += "%%MIDI bassprog 38\n";
+  // theValue += "%\n";
+  // theValue += "% Set a specific amount of swing:\n";
   theValue += '%swing 0.25\n';
-  theValue += "%\n";
+  // theValue += "%\n";
   theValue += '|:"G"GAG GAB|"D"ABA ABd|"G"edd gdd|"C"edB "D"dBA|\n';
   theValue += '"G"GAG GAB|"D"ABA ABd|"G"edd gdB|"D"AGF "G"G3:|\n';
   theValue += '|:"G"BAB dBd|"C"ege "D"dBA|"G"BAB dBG|"D"ABA AGA|\n';
@@ -20448,6 +20456,11 @@ function AppendSampleJig() {
   ProcessAddTune(theValue);
 
 }
+
+// Lite: Customized
+// Remove custom MIDI settings not optimal for offline mode
+// Basic sample tunes now do not require d/l of extra instruments and will fit into editor box
+// TO DO: Add more sample tunes with clear indication of custom voices & need to be online
 
 function AppendSampleHornpipe() {
 
@@ -20471,22 +20484,22 @@ function AppendSampleHornpipe() {
   theValue += 'L: 1/8\n';
   theValue += 'Q: 1/2=80\n';
   theValue += 'K: Dmaj\n';
-  theValue += "%\n";
-  theValue += "% Use the fluid soundfont:\n";
-  theValue += '%soundfont fluid\n';
-  theValue += "%\n";
-  theValue += "% Use an Acoustic Grand Piano sound for the melody:\n";
-  theValue += "%%MIDI program 0\n";
-  theValue += "%\n";
-  theValue += "% Use an Acoustic Grand Piano for the chords:\n";
-  theValue += "%%MIDI chordprog 0\n";
-  theValue += "%\n";
-  theValue += "% Use an Synth Bass sound for the bass:\n";
-  theValue += "%%MIDI bassprog 38\n";
-  theValue += "%\n";
-  theValue += "% Set a specific amount of swing:\n";
+  // theValue += "%\n";
+  // theValue += "% Use the fluid soundfont:\n";
+  // theValue += '%soundfont fluid\n';
+  // theValue += "%\n";
+  // theValue += "% Use an Acoustic Grand Piano sound for the melody:\n";
+  // theValue += "%%MIDI program 0\n";
+  // theValue += "%\n";
+  // theValue += "% Use an Acoustic Grand Piano for the chords:\n";
+  // theValue += "%%MIDI chordprog 0\n";
+  // theValue += "%\n";
+  // theValue += "% Use an Synth Bass sound for the bass:\n";
+  // theValue += "%%MIDI bassprog 38\n";
+  // theValue += "%\n";
+  // theValue += "% Set a specific amount of swing:\n";
   theValue += '%swing 0.25\n';
-  theValue += "%\n";
+  // theValue += "%\n";
   theValue += '|:(3gfe|"D"dAFA DFAd|fdcd Adef|"G"g2 ge "D"fdcd|"A"(3efe (3dcB A2 (3gfe|\n';
   theValue += '"D"dAFA DFAd|fdcd Adef|"G"g2 ge "D"fdcd|"A"(3efe dc"D"d2:|\n';
   theValue += '|:AG|"D"FAdA FAdA|"G"GBdB GBdB|"A"Acec Acec|"D"dfaf "A"(3gfe (3dAG|\n';
