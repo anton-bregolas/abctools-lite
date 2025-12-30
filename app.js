@@ -56174,6 +56174,8 @@ function inlinePlayback() {
 
       if (gRawMode) {
         theRenderDivID = "offscreenrenderquickedit";
+        // Lite: Customized (invisible block with width=100% screws up the QE layout)
+        abcOptions.responsive = false;
       }
 
       var visualObj = ABCJS.renderAbc(theRenderDivID, theABC, abcOptions)[0];
