@@ -4845,8 +4845,7 @@ top:20px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  /* color: #CC0000; */
-  color: forestgreen;
+  color: var(--abctools-color-update);
 }
 
 .ContextMenu-divider {
@@ -5424,7 +5423,7 @@ padding-right: 30px; /* space for badge */
 /* Attention style */
 .attention {
 	color: #202e06 !important;
-	background-color: #8ac716 !important;
+	background-color: var(--abctools-color-attention) !important;
 	/* animation: pulse 1.25s 1; */
 }
 
@@ -5439,7 +5438,7 @@ padding-right: 30px; /* space for badge */
 .apply_attention {
   color: black !important;
   opacity: 1.0 !important;
-  background-color:#8ac716 !important;
+  background-color:var(--abctools-color-attention) !important;
   /* animation: apply_pulse 1.25s infinite; */
 }
 

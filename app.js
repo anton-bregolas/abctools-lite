@@ -52616,7 +52616,7 @@ function ConfigureToolSettings() {
           '<input id="configure_musicxml_import" class="btn btn-subdialog configure_musicxml_import" onclick="ConfigureMusicXMLImport()" type="button" value="MusicXML/MIDI Settings" title="Configure MusicXML/MIDI import settings">' +
           '<input id="configure_developer_settings" class="btn btn-subdialog configure_developer_settings" onclick="AdvancedSettings()" type="button" value="Advanced Settings" title="Configure low level tool settings">' +
         '</p>' +
-        '<p style="font-size:10pt;line-height:14pt;color:red;position:absolute;left:20px;bottom:20px;margin:0px;cursor:pointer;" title="Click to update to the latest version of the tool" onclick="UpdateToLatestVersion();">' +
+        '<p class="modal-text-updateinfo" title="Click to update to the latest version of the tool" onclick="UpdateToLatestVersion();">' +
           'Click here to update to the latest version<br/>' +
           'Latest fork version: ' + gUpdateVersion + '<br/>' +
           'Installed version: ' + gLiteVersionNumber +

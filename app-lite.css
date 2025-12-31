@@ -27,6 +27,9 @@ body {																											/* vanilla abc tools settings */
 	--abctools-ui-float-btn-padding: 0.25rem;									/* 4px */
 	--abctools-ui-float-btn-filter: drop-shadow(1px 1px 7px white);
   --abctools-notation-fullscreen-scaling: 50%;              /* 50% */
+
+  --abctools-color-attention: #8ac716;                    /* red */
+  --abctools-color-update: #1c741c;                       /* red */
 }
 
 /*//////////////////////////////////////////
@@ -224,6 +227,17 @@ div.modal_flat_form_item_label {
   position: absolute;
   left: 20px;
   top: 20px
+}
+
+.modal-text-updateinfo {
+  font-size: 0.833rem;
+  line-height: 1.4;
+  color: var(--abctools-color-update);
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  margin: 0;
+  cursor: pointer;
 }
 
 .modal-textgroup-explanation.modal-header {
