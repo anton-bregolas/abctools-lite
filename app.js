@@ -31,7 +31,7 @@
  **/
 
 // Version number for the settings dialog
-var gVersionNumber = "3115_122625_1300";
+var gVersionNumber = "3128_123025_1400";
 
 var gMIDIInitStillWaiting = false;
 
@@ -18147,7 +18147,7 @@ function AddFromSearch(e, callback) {
     if (callback) {
       callback();
     }
-  })
+  });
 
   // Default initial max results to 25
   document.getElementById("maxtunesearchresults").value = "25";
@@ -18254,6 +18254,25 @@ function AddFromSearch(e, callback) {
   document.getElementById("tuneNameToSearch").value = gLastTuneSearchValue;
 
   SwitchTuneDatabase();
+
+  // Focus/select after modal is fully present
+  setTimeout(function () {
+
+    var input = document.getElementById("tuneNameToSearch");
+    if (!input) return;
+
+    input.focus({ preventScroll: true });
+
+    // More reliable than input.select() on iOS
+    var len = input.value.length;
+    
+    try {
+      input.setSelectionRange(0, len);
+    } catch (e) {
+      // fallback
+      input.select();
+    }
+  }, 50);
 
 }
 
@@ -24941,7 +24960,7 @@ function NotationSpacingExplorer() {
   modal_msg +=   '</select>';
   modal_msg +=   '<span id="layout_scale_wrap" style="display:none">';
   modal_msg +=     '<span>Scale:</span> ';
-  modal_msg +=     '<input style="width:80px;margin-right:14px;" id="layout_scale" type="number" min="0.125" max="1.00" step="0.01" title="Scale" autocomplete="off"/>';
+  modal_msg +=     '<input style="width:80px;margin-right:14px;" id="layout_scale" type="number" min="0.125" max="1.00" step="0.001" title="Scale" autocomplete="off"/>';
   modal_msg +=   '</span>';
   modal_msg += '</p>';
 
@@ -40012,7 +40031,6 @@ function SwingExplorerInject() {
 }
 
 
-
 // 
 // Swing Explorer Dialog
 //
@@ -40027,6 +40045,35 @@ function SwingExplorerDialog(theOriginalABC, theProcessedABC, swing_explorer_sta
 
   gMIDIbuffer = null;
   gTheOKButton = null;
+
+  // --- NEW: snapshot of initial settings for dirty checking ---
+  // NOTE: these are dialog-instance scoped.
+  var gSwingExplorerInitialSettings = null;
+
+  // --- NEW: helper to set/reset the Reload button to red when settings changed ---
+  function updateSwingExplorerDirtyState() {
+
+    if (!gSwingExplorerInitialSettings) return;
+
+    var factorEl = document.getElementById("swing_explorer_factor");
+    var offsetEl = document.getElementById("swing_explorer_offset");
+
+    if (!factorEl || !offsetEl) return;
+
+    var isDirty =
+      (factorEl.value !== gSwingExplorerInitialSettings.factor) ||
+      (offsetEl.value !== gSwingExplorerInitialSettings.offset);
+
+    // Only color the Reload button
+    var btnReload = document.getElementById("swingexplorertest");
+    if (!btnReload) return;
+
+    if (isDirty) {
+      btnReload.classList.add("apply_attention");
+    } else {
+      btnReload.classList.remove("apply_attention");
+    }
+  }
 
   // We came in because of a swing change, don't init the tune cache
   if (!swing_explorer_state) {
@@ -40065,7 +40112,6 @@ function SwingExplorerDialog(theOriginalABC, theProcessedABC, swing_explorer_sta
     }
   }
 
-
   function setTune(userAction) {
 
     synthControl.disable(true);
@@ -40085,8 +40131,6 @@ function SwingExplorerDialog(theOriginalABC, theProcessedABC, swing_explorer_sta
     midiBuffer.init({
       visualObj: visualObj
     }).then(function(response) {
-
-      //console.log(response);
 
       if (synthControl) {
 
@@ -40112,8 +40156,6 @@ function SwingExplorerDialog(theOriginalABC, theProcessedABC, swing_explorer_sta
           // Are we using the trainer touch controls
           if (gTrainerTouchControls) {
 
-            //debugger;
-
             var elems1 = document.getElementsByClassName("abcjs-midi-clock");
             var elems2 = document.getElementsByClassName("abcjs-midi-current-tempo-wrapper");
 
@@ -40127,7 +40169,6 @@ function SwingExplorerDialog(theOriginalABC, theProcessedABC, swing_explorer_sta
             }
 
           }
-
 
         }).catch(function(error) {
 
@@ -40271,12 +40312,26 @@ function SwingExplorerDialog(theOriginalABC, theProcessedABC, swing_explorer_sta
     // Set the initial swing offset 
     document.getElementById("swing_explorer_offset").value = gSwingOffset;
 
+    // --- NEW: snapshot initial values AFTER controls are populated ---
+    gSwingExplorerInitialSettings = {
+      factor: document.getElementById("swing_explorer_factor").value,
+      offset: document.getElementById("swing_explorer_offset").value
+    };
+
+    // --- NEW: hook listeners to update dirty/clean UI ---
+    // Use input so arrow stepper + typing both trigger immediately
+    var el = document.getElementById("swing_explorer_factor");
+    if (el) el.addEventListener("input", updateSwingExplorerDirtyState);
+
+    el = document.getElementById("swing_explorer_offset");
+    if (el) el.addEventListener("input", updateSwingExplorerDirtyState);
+
+    // Ensure correct initial state
+    updateSwingExplorerDirtyState();
+
     var theOKButtons = document.getElementsByClassName("modal_flat_ok");
 
     // Find the button that says "Close" and hook its click handler to make sure music stops on close
-    // Need to search through the modals since there may be a first time share dialog also present
-    // the first time someone plays a linked PDF tune
-
     var theOKButton = null;
 
     for (var i = 0; i < theOKButtons.length; ++i) {
@@ -40325,7 +40380,6 @@ function SwingExplorerDialog(theOriginalABC, theProcessedABC, swing_explorer_sta
         displayWarp: true
       });
 
-
     } else {
 
       document.querySelector("#playback-audio").innerHTML = "<div class='audio-error'>Audio is not supported in this browser.</div>";
@@ -40352,16 +40406,14 @@ function SwingExplorerDialog(theOriginalABC, theProcessedABC, swing_explorer_sta
 
     // Pass it to unmute if the context exists... ie WebAudio is supported
     if (context) {
-      // If you need to be able to disable unmute at a later time, you can use the returned handle's dispose() method
-      // if you don't need to do that (most folks won't) then you can simply ignore the return value
       gTheMuteHandle = unmute(context, allowBackgroundPlayback, forceIOSBehavior);
-
     }
   }
 
   initPlay();
 
 }
+
 
 //
 // Reverb Explorer
@@ -40419,7 +40471,7 @@ function ReverbExplorerRegenerate() {
 }
 
 //
-// Scan tune for swing annotation for the swing explorer
+// Scan tune for reverb annotation for the reverb explorer
 //
 function ScanTuneForReverbExplorer(theTune) {
 
@@ -40823,6 +40875,42 @@ function ReverbExplorerDialog(theOriginalABC, theProcessedABC, reverb_explorer_s
   gMIDIbuffer = null;
   gTheOKButton = null;
 
+  // --- NEW: snapshot of initial settings for dirty checking ---
+  // dialog-instance scoped
+  var gReverbExplorerInitialSettings = null;
+
+  // --- NEW: track whether user clicked "Load Custom Reverb Impulse" ---
+  // This should light up the reload/apply button even if other values haven't changed.
+  var gReverbExplorerImpulseTouched = false;
+
+  // --- NEW: helper to set/reset the Reload button to red when settings changed ---
+  function updateReverbExplorerDirtyState() {
+
+    if (!gReverbExplorerInitialSettings) return;
+
+    var dryEl = document.getElementById("reverb_explorer_dry");
+    var wetEl = document.getElementById("reverb_explorer_wet");
+    var styleEl = document.getElementById("reverb_explorer_settings");
+
+    if (!dryEl || !wetEl || !styleEl) return;
+
+    var isDirty =
+      (dryEl.value !== gReverbExplorerInitialSettings.dry) ||
+      (wetEl.value !== gReverbExplorerInitialSettings.wet) ||
+      (styleEl.value !== gReverbExplorerInitialSettings.style) ||
+      (gReverbExplorerImpulseTouched === true); // <-- NEW
+
+    // Only color the Reload button
+    var btnReload = document.getElementById("reverbexplorertest");
+    if (!btnReload) return;
+
+    if (isDirty) {
+      btnReload.classList.add("apply_attention");
+    } else {
+      btnReload.classList.remove("apply_attention");
+    }
+  }
+
   // We came in because of a reverb change, don't init the tune cache
   if (!reverb_explorer_state) {
 
@@ -40932,7 +41020,6 @@ function ReverbExplorerDialog(theOriginalABC, theProcessedABC, reverb_explorer_s
 
           }
 
-
         }).catch(function(error) {
 
           // MAE 10 Jul 2024 - Hide the spinner
@@ -41023,7 +41110,6 @@ function ReverbExplorerDialog(theOriginalABC, theProcessedABC, reverb_explorer_s
       modal_msg += '<a id="reverbexplorerhelp" href="https://michaeleskin.com/abctools/userguide.html#reverb_explorer" target="_blank" style="text-decoration:none;" title="Learn more about the Reverb Explorer" class="dialogcornerbutton">?</a>';
     } else {
 
-
       modal_msg += '<p class="configure_reverbexplorer_text" style="text-align:center;margin:0px;margin-top:22px">';
 
       modal_msg += "Reverb style:" + gReverbExplorerSettings;
@@ -41090,6 +41176,37 @@ function ReverbExplorerDialog(theOriginalABC, theProcessedABC, reverb_explorer_s
     document.getElementById("reverb_explorer_wet").value = gReverbExplorerWet;
     document.getElementById("reverb_explorer_settings").value = gReverbExplorerStyle;
 
+    // --- NEW: snapshot initial values AFTER controls are populated ---
+    gReverbExplorerInitialSettings = {
+      dry: document.getElementById("reverb_explorer_dry").value,
+      wet: document.getElementById("reverb_explorer_wet").value,
+      style: document.getElementById("reverb_explorer_settings").value
+    };
+
+    // --- NEW: hook listeners for dirty/clean UI ---
+    // Use input so typing + steppers trigger immediately
+    var el = document.getElementById("reverb_explorer_dry");
+    if (el) el.addEventListener("input", updateReverbExplorerDirtyState);
+
+    el = document.getElementById("reverb_explorer_wet");
+    if (el) el.addEventListener("input", updateReverbExplorerDirtyState);
+
+    // Style dropdown should use change
+    el = document.getElementById("reverb_explorer_settings");
+    if (el) el.addEventListener("change", updateReverbExplorerDirtyState);
+
+    // --- NEW: clicking "Load Custom Reverb Impulse" should also light up Reload/Apply ---
+    el = document.getElementById("loadimpulsebutton");
+    if (el) {
+      el.addEventListener("change", function() {
+        gReverbExplorerImpulseTouched = true;
+        updateReverbExplorerDirtyState();
+      });
+    }
+
+    // Ensure correct initial state
+    updateReverbExplorerDirtyState();
+
     var theOKButtons = document.getElementsByClassName("modal_flat_ok");
 
     // Find the button that says "Close" and hook its click handler to make sure music stops on close
@@ -41144,7 +41261,6 @@ function ReverbExplorerDialog(theOriginalABC, theProcessedABC, reverb_explorer_s
         displayWarp: true
       });
 
-
     } else {
 
       document.querySelector("#playback-audio").innerHTML = "<div class='audio-error'>Audio is not supported in this browser.</div>";
@@ -41171,16 +41287,15 @@ function ReverbExplorerDialog(theOriginalABC, theProcessedABC, reverb_explorer_s
 
     // Pass it to unmute if the context exists... ie WebAudio is supported
     if (context) {
-      // If you need to be able to disable unmute at a later time, you can use the returned handle's dispose() method
-      // if you don't need to do that (most folks won't) then you can simply ignore the return value
       gTheMuteHandle = unmute(context, allowBackgroundPlayback, forceIOSBehavior);
-
     }
   }
 
   initPlay();
 
 }
+
+
 
 //
 // MIDI Instrument Explorer
@@ -42194,6 +42309,43 @@ function InstrumentExplorerDialog(theOriginalABC, theProcessedABC, instrument_ex
   gMIDIbuffer = null;
   gTheOKButton = null;
 
+  // --- NEW: snapshot of initial settings for dirty checking (EXCLUDES inject_all) ---
+  var gInstrumentExplorerInitialSettings = null;
+
+  // --- NEW: helper to set/reset the Reload button to red when settings changed ---
+  function updateInstrumentExplorerDirtyState() {
+
+    if (!gInstrumentExplorerInitialSettings) return;
+
+    var sf = document.getElementById("instrument_explorer_soundfont");
+    var mel = document.getElementById("instrument_explorer_melody_program");
+    var bass = document.getElementById("instrument_explorer_bass_program");
+    var chord = document.getElementById("instrument_explorer_chord_program");
+    var bassVol = document.getElementById("instrument_explorer_bass_volume");
+    var chordVol = document.getElementById("instrument_explorer_chord_volume");
+
+    if (!sf || !mel || !bass || !chord || !bassVol || !chordVol) return;
+
+    var isDirty =
+      (sf.value !== gInstrumentExplorerInitialSettings.soundfont) ||
+      (mel.value !== gInstrumentExplorerInitialSettings.melody) ||
+      (bass.value !== gInstrumentExplorerInitialSettings.bass) ||
+      (chord.value !== gInstrumentExplorerInitialSettings.chords) ||
+      (bassVol.value !== gInstrumentExplorerInitialSettings.bassVol) ||
+      (chordVol.value !== gInstrumentExplorerInitialSettings.chordVol);
+
+    // Only color the Reload button
+    var btnReload = document.getElementById("instrumentexplorertest");
+    if (!btnReload) return;
+
+    if (isDirty) {
+      btnReload.classList.add("apply_attention");
+    } else {
+      btnReload.classList.remove("apply_attention");
+    }
+
+  }
+
   // We came in because of an instrument change, don't init the tune cache
   if (!instrument_explorer_state) {
 
@@ -42226,7 +42378,6 @@ function InstrumentExplorerDialog(theOriginalABC, theProcessedABC, instrument_ex
   if (!PlayerSetupCommon(theProcessedABC)) {
     return;
   }
-
 
   var instrument = GetRadioValue("notenodertab");
 
@@ -42309,7 +42460,6 @@ function InstrumentExplorerDialog(theOriginalABC, theProcessedABC, instrument_ex
             }
 
           }
-
 
         }).catch(function(error) {
 
@@ -42402,7 +42552,6 @@ function InstrumentExplorerDialog(theOriginalABC, theProcessedABC, instrument_ex
 
     modal_msg += '<a id="instrumentexplorerhelp" href="https://michaeleskin.com/abctools/userguide.html#midi_instrument_explorer" target="_blank" style="text-decoration:none;" title="Learn more about the MIDI Instrument Explorer" class="dialogcornerbutton">?</a>';
 
-
     // Scale the player for larger screens
     var windowWidth = window.innerWidth;
 
@@ -42447,6 +42596,36 @@ function InstrumentExplorerDialog(theOriginalABC, theProcessedABC, instrument_ex
     document.getElementById("instrument_explorer_chord_program").value = gInstrumentExplorerChordInstrument;
     document.getElementById("instrument_explorer_bass_volume").value = gInstrumentExplorerBassVolume;
     document.getElementById("instrument_explorer_chord_volume").value = gInstrumentExplorerChordVolume;
+
+    // --- NEW: snapshot initial values AFTER controls populated (EXCLUDES inject_all) ---
+    gInstrumentExplorerInitialSettings = {
+      soundfont: document.getElementById("instrument_explorer_soundfont").value,
+      melody: document.getElementById("instrument_explorer_melody_program").value,
+      bass: document.getElementById("instrument_explorer_bass_program").value,
+      chords: document.getElementById("instrument_explorer_chord_program").value,
+      bassVol: document.getElementById("instrument_explorer_bass_volume").value,
+      chordVol: document.getElementById("instrument_explorer_chord_volume").value
+    };
+
+    // --- NEW: hook listeners for dirty/clean UI (EXCLUDES inject_all) ---
+    ["instrument_explorer_soundfont",
+     "instrument_explorer_melody_program",
+     "instrument_explorer_bass_program",
+     "instrument_explorer_chord_program"
+    ].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener("change", updateInstrumentExplorerDirtyState);
+    });
+
+    ["instrument_explorer_bass_volume",
+     "instrument_explorer_chord_volume"
+    ].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener("input", updateInstrumentExplorerDirtyState);
+    });
+
+    // Ensure correct initial state
+    updateInstrumentExplorerDirtyState();
 
     var theOKButtons = document.getElementsByClassName("modal_flat_ok");
 
@@ -42501,7 +42680,6 @@ function InstrumentExplorerDialog(theOriginalABC, theProcessedABC, instrument_ex
         displayProgress: true,
         displayWarp: true
       });
-
 
     } else {
 
@@ -42653,7 +42831,7 @@ function ScanTuneForGraceExplorer(theTune) {
 }
 
 //
-// Inject the tune with the Swing Explorer values
+// Inject the tune with the Grace Explorer values
 //
 
 function GraceExplorerInject() {
@@ -42899,6 +43077,30 @@ function GraceExplorerDialog(theOriginalABC, theProcessedABC, grace_explorer_sta
   gMIDIbuffer = null;
   gTheOKButton = null;
 
+  // --- NEW: snapshot of initial settings for dirty checking ---
+  var gGraceExplorerInitialSettings = null;
+
+  // --- NEW: helper to set/reset the Reload button to red when settings changed ---
+  function updateGraceExplorerDirtyState() {
+
+    if (!gGraceExplorerInitialSettings) return;
+
+    var durEl = document.getElementById("grace_explorer_duration");
+    if (!durEl) return;
+
+    var isDirty = (durEl.value !== gGraceExplorerInitialSettings.duration);
+
+    // Only color the Reload button
+    var btnReload = document.getElementById("graceexplorertest");
+    if (!btnReload) return;
+
+    if (isDirty) {
+      btnReload.classList.add("apply_attention");
+    } else {
+      btnReload.classList.remove("apply_attention");
+    }
+  }
+
   // We came in because of a grace duration change, don't init the tune cache
   if (!grace_explorer_state) {
 
@@ -42995,7 +43197,6 @@ function GraceExplorerDialog(theOriginalABC, theProcessedABC, grace_explorer_sta
             }
 
           }
-
 
         }).catch(function(error) {
 
@@ -43108,7 +43309,6 @@ function GraceExplorerDialog(theOriginalABC, theProcessedABC, grace_explorer_sta
 
     }
 
-
     DayPilot.Modal.alert(modal_msg, {
       theme: "modal_flat",
       top: theTop,
@@ -43119,6 +43319,19 @@ function GraceExplorerDialog(theOriginalABC, theProcessedABC, grace_explorer_sta
 
     // Set the initial grace duration
     document.getElementById("grace_explorer_duration").value = gGraceDuration / .001;
+
+    // --- NEW: snapshot initial values AFTER control is populated ---
+    gGraceExplorerInitialSettings = {
+      duration: document.getElementById("grace_explorer_duration").value
+    };
+
+    // --- NEW: hook listener to update dirty/clean UI ---
+    // Use input so arrow stepper + typing both trigger immediately
+    var el = document.getElementById("grace_explorer_duration");
+    if (el) el.addEventListener("input", updateGraceExplorerDirtyState);
+
+    // Ensure correct initial state
+    updateGraceExplorerDirtyState();
 
     var theOKButtons = document.getElementsByClassName("modal_flat_ok");
 
@@ -43174,7 +43387,6 @@ function GraceExplorerDialog(theOriginalABC, theProcessedABC, grace_explorer_sta
         displayWarp: true
       });
 
-
     } else {
 
       document.querySelector("#playback-audio").innerHTML = "<div class='audio-error'>Audio is not supported in this browser.</div>";
@@ -43211,6 +43423,7 @@ function GraceExplorerDialog(theOriginalABC, theProcessedABC, grace_explorer_sta
   initPlay();
 
 }
+
 
 //
 // Roll Explorer
@@ -43727,6 +43940,61 @@ function RollExplorerDialog(theOriginalABC, theProcessedABC, roll_explorer_state
   gMIDIbuffer = null;
   gTheOKButton = null;
 
+  // --- NEW: snapshot of initial settings for dirty checking ---
+  var gRollExplorerInitialSettings = null;
+
+  // --- NEW: helper to set/reset the Reload button to red when settings changed ---
+  function updateRollExplorerDirtyState() {
+
+    if (!gRollExplorerInitialSettings) return;
+
+    // List of all roll parameter input IDs we want to monitor
+    var ids = [
+      // Quarter note roll
+      "roll_2_slot_1",
+      "roll_2_slot_2",
+      "roll_2_fraction_1",
+      "roll_2_fraction_2",
+      "roll_2_fraction_3",
+      "roll_2_volume_1",
+      "roll_2_volume_2",
+      "roll_2_volume_3",
+
+      // Dotted quarter note roll
+      "roll_3_slot_1",
+      "roll_3_slot_2",
+      "roll_3_fraction_1",
+      "roll_3_fraction_2",
+      "roll_3_fraction_3",
+      "roll_3_volume_1",
+      "roll_3_volume_2",
+      "roll_3_volume_3"
+    ];
+
+    var isDirty = false;
+
+    for (var i = 0; i < ids.length; i++) {
+      var el = document.getElementById(ids[i]);
+      if (!el) continue; // if something doesn't exist, ignore it
+
+      if (el.value !== gRollExplorerInitialSettings[ids[i]]) {
+        isDirty = true;
+        break;
+      }
+    }
+
+    // Only color the Reload button
+    var btnReload = document.getElementById("rollexplorertest");
+    if (!btnReload) return;
+
+    if (isDirty) {
+      btnReload.classList.add("apply_attention");
+    } else {
+      btnReload.classList.remove("apply_attention");
+    }
+
+  }
+
   // We came in because of a grace duration change, don't init the tune cache
   if (!roll_explorer_state) {
 
@@ -43928,8 +44196,8 @@ function RollExplorerDialog(theOriginalABC, theProcessedABC, roll_explorer_state
     modal_msg += 'Volume 3: <input style="width:85px;" id="roll_3_volume_3" title="Dotted quarter note volume 3" autocomplete="off" type="number" min="0" step="0.05" max="2"/>';
     modal_msg += '</p>';
     modal_msg += '<p class="configure_rollexplorer_text" style="text-align:center;margin:0px;margin-top:24px">';
-    modal_msg += '<input id="rollexplorertest" class="rollexplorertest button btn btn-rollexplorertest" onclick="RollExplorerRegenerate();" type="button" value="Reload Tune with Parameters" title="Reloads the tune into the player with the entered roll parameters">';
-    modal_msg += '<input id="rollexplorerinject" class="rollexplorerinject button btn btn-rollexplorerinject" onclick="RollExplorerInject();" type="button" value="Inject Parameters into ABC" title="Injects the current roll parameters and roll transformations into the tune ABC">';
+    modal_msg += '<input id="rollexplorertest" class="rollexplorertest button btn btn-rollexplorertest" onclick="RollExplorerRegenerate();" type="button" value="Reload Tune with Changes" title="Reloads the tune into the player with the entered roll parameters">';
+    modal_msg += '<input id="rollexplorerinject" class="rollexplorerinject button btn btn-rollexplorerinject" onclick="RollExplorerInject();" type="button" value="Inject Roll Parameters into ABC" title="Injects the current roll parameters and roll transformations into the tune ABC">';
     modal_msg += '<input id="rollexplorertransform" class="rollexplorertransform button btn btn-rollexplorertransform" onclick="RollExplorerTransformReel(false);" type="button" value="~G3 → G~G2" title="Transforms ~G3 style rolls to G~G2 style, may be useful for creating a better sounding roll for reels">';
     modal_msg += '<input id="rollexplorertransform2" style="margin-right:0px" class="rollexplorertransform2 button btn btn-rollexplorertransform" onclick="RollExplorerTransformReel(true);" type="button" value="~G3 → ~G2G" title="Transforms ~G3 style rolls to ~G2G style, may be useful for creating a better sounding roll for reels">';
     modal_msg += '</p>';
@@ -43974,6 +44242,47 @@ function RollExplorerDialog(theOriginalABC, theProcessedABC, roll_explorer_state
 
     // Set the initial roll parameters
     idleRollExplorer();
+
+    // --- NEW: snapshot initial values AFTER idleRollExplorer populates controls ---
+    (function snapshotRollExplorerInitialValuesAndHook() {
+
+      var ids = [
+        // Quarter note roll
+        "roll_2_slot_1",
+        "roll_2_slot_2",
+        "roll_2_fraction_1",
+        "roll_2_fraction_2",
+        "roll_2_fraction_3",
+        "roll_2_volume_1",
+        "roll_2_volume_2",
+        "roll_2_volume_3",
+
+        // Dotted quarter note roll
+        "roll_3_slot_1",
+        "roll_3_slot_2",
+        "roll_3_fraction_1",
+        "roll_3_fraction_2",
+        "roll_3_fraction_3",
+        "roll_3_volume_1",
+        "roll_3_volume_2",
+        "roll_3_volume_3"
+      ];
+
+      gRollExplorerInitialSettings = {};
+
+      for (var i = 0; i < ids.length; i++) {
+        var el = document.getElementById(ids[i]);
+        if (!el) continue;
+        gRollExplorerInitialSettings[ids[i]] = el.value;
+
+        // Hook input listener so typing + steppers update immediately
+        el.addEventListener("input", updateRollExplorerDirtyState);
+      }
+
+      // Ensure correct initial state
+      updateRollExplorerDirtyState();
+
+    })();
 
     var theOKButtons = document.getElementsByClassName("modal_flat_ok");
 
@@ -44066,6 +44375,7 @@ function RollExplorerDialog(theOriginalABC, theProcessedABC, roll_explorer_state
   initPlay();
 
 }
+
 
 
 //
@@ -44190,6 +44500,14 @@ function TuneTrainerReset() {
 
   //console.log("TuneTrainerReset");
 
+  // --- NEW: clear dirty styling immediately on click ---
+  // (Dialog is about to close/reopen; this prevents "red flash" during reload)
+  var btn = document.getElementById("looperreset");
+  if (btn) {
+    btn.style.background = "";
+    btn.style.color = "";
+  }
+
   var bDoReload = false;
 
   // Set the initial loop parameters
@@ -44198,10 +44516,17 @@ function TuneTrainerReset() {
   var looperSpeedIncrement = document.getElementById("looper_increment").value;
   var looperCount = document.getElementById("looper_count").value;
 
+  // --- NEW: also capture the other controls you listed ---
+  var looperDoCountdown = document.getElementById("looper_docountdown").checked;
+  var looperCountdown = document.getElementById("looper_countdown").value;
+  var looperAddMeasure = document.getElementById("looper_addmeasure").checked;
+
   looperSpeedStart = parseFloat(looperSpeedStart);
   looperSpeedEnd = parseFloat(looperSpeedEnd);
   looperSpeedIncrement = parseFloat(looperSpeedIncrement);
   looperCount = parseFloat(looperCount);
+
+  looperCountdown = parseInt(looperCountdown, 10);
 
   if ((!isNaN(looperSpeedStart)) && (!isNaN(looperSpeedEnd)) && (!isNaN(looperSpeedIncrement)) && (!isNaN(looperCount))) {
 
@@ -44213,6 +44538,16 @@ function TuneTrainerReset() {
       gLooperCount = looperCount;
       gLooperCurrent = gLooperSpeedStart;
       gLooperLoopCount = gLooperCount;
+
+      // --- NEW: apply the other settings to globals too ---
+      gLooperDoCountdown = !!looperDoCountdown;
+
+      if (isNaN(looperCountdown) || looperCountdown < 1) {
+        looperCountdown = 5;
+      }
+      gLooperCountdown = looperCountdown;
+
+      gLooperAddMeasure = !!looperAddMeasure;
 
       bDoReload = true;
 
@@ -44251,6 +44586,7 @@ function TuneTrainerReset() {
 
   }
 }
+
 
 //
 // Toggle the metronome version of the tune;
@@ -44397,6 +44733,33 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
   gMIDIbuffer = null;
   gTheOKButton = null;
 
+  // --- NEW: keep initial settings snapshot for "dirty" checking ---
+  var gTuneTrainerInitialSettings = null;
+
+  // --- NEW: helper to set/reset Apply button to red when settings changed ---
+  function updateApplyButtonDirtyState() {
+
+    if (!gTuneTrainerInitialSettings) return;
+
+    var isDirty =
+      document.getElementById("looper_start_percent").value !== gTuneTrainerInitialSettings.start ||
+      document.getElementById("looper_end_percent").value !== gTuneTrainerInitialSettings.end ||
+      document.getElementById("looper_increment").value !== gTuneTrainerInitialSettings.increment ||
+      document.getElementById("looper_count").value !== gTuneTrainerInitialSettings.count ||
+      document.getElementById("looper_docountdown").checked !== gTuneTrainerInitialSettings.doCountdown ||
+      document.getElementById("looper_countdown").value !== gTuneTrainerInitialSettings.countdownSecs ||
+      document.getElementById("looper_addmeasure").checked !== gTuneTrainerInitialSettings.addMeasure;
+
+    var applyBtn = document.getElementById("looperreset");
+    if (!applyBtn) return;
+
+    if (isDirty) {
+      applyBtn.classList.add("apply_attention");
+    } else {
+      applyBtn.classList.remove("apply_attention");
+    }
+  }
+
   // We came in because of a looper param change, don't init the tune cache
   if (!looperState) {
 
@@ -44501,8 +44864,6 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
           // Check if there are any custom instruments requested but not loaded
           verifyCustomInstrumentsLoaded(theProcessedABC);
 
-          //console.log("Tune is loaded, setting initial warp and loop callback");
-
           // Stuff in the initial warp
           synthControl.forceWarp(gLooperCurrent);
 
@@ -44524,13 +44885,10 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
           // Are we using the trainer touch controls
           if (gTrainerTouchControls) {
 
-            //debugger;
-
             var elems1 = document.getElementsByClassName("abcjs-midi-clock");
             var elems2 = document.getElementsByClassName("abcjs-midi-current-tempo-wrapper");
 
             if (elems1 && elems2 && (elems1.length > 0) && (elems2.length > 0)) {
-
 
               var elem = elems1[0];
               elem.onclick = DecrementTempo;
@@ -44577,12 +44935,8 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
   //
   function UpdateProgressBar() {
 
-    //debugger;
-
     if (loopCount > totalLoops) {
-
       return;
-
     }
 
     if ((gLooperSpeedStart == gLooperSpeedEnd) || (gLooperSpeedIncrement == 0)) {
@@ -44625,9 +44979,7 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
   function CalcTotalLoops() {
 
     if ((gLooperSpeedStart == gLooperSpeedEnd) || (gLooperSpeedIncrement == 0)) {
-
       return 1;
-
     }
 
     var count = 0;
@@ -44644,17 +44996,11 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
       start += looperSpeedIncrement;
     }
 
-    //console.log("count = "+count);
-
     return count;
   }
 
   // Callback at end of each loop
   function LoopCallback() {
-
-    //console.log("LoopCallback");
-
-    //console.log("gPlayerInPause "+gPlayerInPause);
 
     if (!gPlayerInPause) {
 
@@ -44706,7 +45052,6 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
             }
           } else {
             elem.innerHTML = "Tempo:&nbsp;" + gLooperCurrent + "%";
-
           }
 
           // Update the progress bar
@@ -44743,8 +45088,6 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
 
   // Called once when the user first clicks play before the play starts
   function PreStartPlayCallback(callback) {
-
-    //console.log("PreStartPlayCallback");
 
     gLooperDoCountdown = document.getElementById("looper_docountdown").checked;
     gLooperCountdown = document.getElementById("looper_countdown").value;
@@ -44806,34 +45149,24 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
   //
   function IncrementDecrementControlValue(event) {
 
-    //debugger;
-
-    //console.log("IncrementDecrementControlValue this ="+this);
-
-    //console.log("Control text = "+this.innerHTML);
-
     var theText = this.innerHTML;
 
     var theControl = null;
     var theControlIndex = 0;
 
     if (theText.indexOf("Starting") == 0) {
-      //console.log("Start control");
       theControl = document.getElementById("looper_start_percent");
       theControlIndex = 0;
     } else
     if (theText.indexOf("Ending") == 0) {
-      //console.log("End control");
       theControl = document.getElementById("looper_end_percent");
       theControlIndex = 1;
     } else
     if (theText.indexOf("Tempo") == 0) {
-      //console.log("Increment control");
       theControl = document.getElementById("looper_increment");
       theControlIndex = 2;
     } else
     if (theText.indexOf("Increment") == 0) {
-      //console.log("Count control");
       theControl = document.getElementById("looper_count");
       theControlIndex = 3;
     }
@@ -44850,7 +45183,6 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
       isDecrement = false;
 
       if (theControlIndex != 3) {
-
         if (gTouchIncrementFive) {
           delta = 5;
         }
@@ -44859,23 +45191,18 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
     } else {
 
       if (theControlIndex != 3) {
-
         if (gTouchIncrementFive) {
           delta = 5;
         }
-
       }
 
     }
-
-    //console.log("isDecrement = "+isDecrement);
 
     var theValue = theControl.value;
 
     switch (theControlIndex) {
 
-      // Start
-      // End
+      // Start / End
       case 0:
       case 1:
         theValue = parseFloat(theValue);
@@ -44892,7 +45219,7 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
         }
         break;
 
-        // Increment
+      // Increment
       case 2:
         theValue = parseFloat(theValue);
         if (isDecrement) {
@@ -44908,8 +45235,7 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
         }
         break;
 
-
-        // Count
+      // Count
       case 3:
         theValue = parseInt(theValue);
         if (isDecrement) {
@@ -44927,6 +45253,9 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
     }
 
     theControl.value = theValue;
+
+    // --- NEW: touch-controls modify values programmatically; update dirty state ---
+    updateApplyButtonDirtyState();
   }
 
   //
@@ -44998,12 +45327,12 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
     modal_msg += '<span id="looper_text_4">Increment tempo after how many loops:</span> <input style="width:60px;margin-right:14px;" id="looper_count" type="number" min="1" step="1" max="100" title="Increment tempo after this many times through the tune" autocomplete="off"/><span id="looper_text_5">Countdown?</span><input style="width:18px;margin-left:8px;margin-right:14px;" id="looper_docountdown" type="checkbox" onchange="ToggleLoopCountdown();"/><span id="looper_text_6">Countdown secs:</span><input style="width:60px;margin-left:8px;" id="looper_countdown" type="number" min="1" step="1" max="30" title="Countdown secs" autocomplete="off" onchange="SaveLoopCountdown();"/>';
     modal_msg += '</p>';
     modal_msg += '<p class="configure_looper_text" style="text-align:center;margin:0px;margin-top:20px">';
-    modal_msg += '<input id="looperreset" class="looperreset button btn btn-looperreset" onclick="TuneTrainerReset();" type="button" value="Apply Settings and Reload" title="Applies the entered tune trainer settings and reloads the player">';
+    modal_msg += '<input id="looperreset" class="looperreset button btn btn-looperreset" onclick="TuneTrainerReset();" type="button" value="Apply Changes and Reload" title="Applies the changed Tune Trainer settings and reloads the trainer">';
 
     if (gPlayMetronome) {
-      modal_msg += '<input id="looper_metronomebutton" class="looper_metronome button btn btn-metronome" onclick="ToggleTuneTrainerMetronome();" type="button" value="Disable Metronome" title="Disables the metronome">';
+      modal_msg += '<input id="looper_metronomebutton" class="looper_metronomebutton button btn btn-metronome" onclick="ToggleTuneTrainerMetronome();" type="button" value="Disable Metronome" title="Disables the metronome">';
     } else {
-      modal_msg += '<input id="looper_metronomebutton" class="looper_metronome button btn btn-metronome" onclick="ToggleTuneTrainerMetronome();" type="button" value="Enable Metronome" title="Enables the metronome">';
+      modal_msg += '<input id="looper_metronomebutton" class="looper_metronomebutton button btn btn-metronome" onclick="ToggleTuneTrainerMetronome();" type="button" value="Enable Metronome" title="Enables the metronome">';
     }
 
     modal_msg += '<input id="trainer_phrase_builder" class="trainer_phrase_builder button btn btn-phrasebuilder" onclick="TrainerPhraseBuilder(event);" type="button" value="Phrase Builder" title="Builds phrases of specified measure length for the tune and then reloads the Tune Trainer.&nbsp;&nbsp;This does not change the original tune ABC.&nbsp;&nbsp;Shift-click to restore the original tune.">';
@@ -45084,6 +45413,32 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
     document.getElementById("looper_countdown").value = gLooperCountdown;
 
     document.getElementById("looper_addmeasure").checked = gLooperAddMeasure;
+
+    // --- NEW: snapshot initial values now that controls are populated ---
+    gTuneTrainerInitialSettings = {
+      start: document.getElementById("looper_start_percent").value,
+      end: document.getElementById("looper_end_percent").value,
+      increment: document.getElementById("looper_increment").value,
+      count: document.getElementById("looper_count").value,
+      doCountdown: document.getElementById("looper_docountdown").checked,
+      countdownSecs: document.getElementById("looper_countdown").value,
+      addMeasure: document.getElementById("looper_addmeasure").checked
+    };
+
+    // --- NEW: hook listeners to mark Apply button dirty/clean ---
+    ["looper_start_percent","looper_end_percent","looper_increment","looper_count","looper_countdown"].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener("input", updateApplyButtonDirtyState);
+    });
+
+    var el = document.getElementById("looper_docountdown");
+    if (el) el.addEventListener("change", updateApplyButtonDirtyState);
+
+    el = document.getElementById("looper_addmeasure");
+    if (el) el.addEventListener("change", updateApplyButtonDirtyState);
+
+    // Ensure correct initial state
+    updateApplyButtonDirtyState();
 
     // Are we using the trainer touch controls
     if (gTrainerTouchControls) {
@@ -45208,6 +45563,7 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
   initPlay();
 
 }
+
 
 // Used by the IncrementTempo and DecrementTempo functions
 var gSynthControl = null;
@@ -50792,7 +51148,447 @@ function ShowBrowserInfo() {
 
 }
 
+function LoadLastTab(storageKey, fallbackTabId) {
+  try {
+    if (gLocalStorageAvailable && localStorage[storageKey]) return localStorage[storageKey];
+  } catch (e) {}
+  return fallbackTabId;
+}
+
+function SaveLastTab(storageKey, tabId) {
+  try {
+    if (gLocalStorageAvailable) localStorage[storageKey] = tabId;
+  } catch (e) {}
+}
+
+function ActivateAdvTabs(rootId, storageKey, tabId) {
+  var root = document.getElementById(rootId);
+  if (!root) return;
+
+  var btns = root.querySelectorAll(".adv-tab-btn");
+  var panels = root.querySelectorAll(".adv-tab-panel");
+
+  btns.forEach(function(b) {
+    b.classList.toggle("active", b.getAttribute("data-tab") === tabId);
+  });
+
+  panels.forEach(function(p) {
+    p.classList.toggle("active", p.id === tabId);
+  });
+
+  SaveLastTab(storageKey, tabId);
+}
+
+function InitAdvTabs(rootId, storageKey, fallbackTabId) {
+  var root = document.getElementById(rootId);
+  if (!root) return;
+
+  // hook clicks
+  root.querySelectorAll(".adv-tab-btn").forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      ActivateAdvTabs(rootId, storageKey, btn.getAttribute("data-tab"));
+    });
+  });
+
+  // select last
+  var desired = LoadLastTab(storageKey, fallbackTabId);
+  if (!root.querySelector("#" + desired)) {
+    var first = root.querySelector(".adv-tab-btn");
+    desired = first ? first.getAttribute("data-tab") : fallbackTabId;
+  }
+
+  ActivateAdvTabs(rootId, storageKey, desired);
+}
+
+// Theme-aware mover: moves a full modal_flat_form_item row by input name
+function MoveModalFieldRowByName(modalRoot, fieldName, destId) {
+  var dest = document.getElementById(destId);
+  if (!dest) return false;
+
+  var q = 'input[name="' + fieldName + '"], select[name="' + fieldName + '"], textarea[name="' + fieldName + '"]';
+  var el = modalRoot.querySelector(q);
+  if (!el) return false;
+
+  var row = el.closest(".modal_flat_form_item") || el.closest("div") || el;
+  dest.appendChild(row);
+  return true;
+}
+
+var gAdvancedSettingsLastTab = "adv_tab_general";
+
 function AdvancedSettings() {
+
+  // Keep track of dialogs
+  sendGoogleAnalytics("dialog", "AdvancedSettings");
+
+    // Flash reduction
+  document.body.classList.add("dp-tabs-building");
+
+  var oldHighlightColor = gRawHighlightColor;
+  var oldDiagnostics = gShowDiagnostics;
+  var oldForceAndroid = gForceAndroid;
+  var oldDisableAndroid = gDisableAndroid;
+
+  // Setup initial values
+  const theData = {
+    configure_fullscreen_scaling: gFullScreenScaling,
+    configure_highlight_color: gRawHighlightColor,
+    configure_player_status_on_left: gPlayerStatusOnLeft,
+    configure_large_player_controls: gLargePlayerControls,
+    configure_autoscrollplayer: gAutoscrollPlayer,
+    configure_autoscrollsmooth: gAutoscrollSmooth,
+    configure_autoscrolltarget: gAutoscrollTarget,
+    configure_trainer_touch_controls: gTrainerTouchControls,
+    configure_mp3_bitrate: gMP3Bitrate,
+    configure_export_delayms: gBatchExportDelayMS,
+    configure_mp3export_delayms: gBatchMP3ExportDelayMS,
+    configure_DisableRendering: gDisableNotationRendering,
+    configure_disable_selected_play: gDisableSelectedPlay,
+    configure_show_diagnostics: gShowDiagnostics,
+    configure_reverb: gReverbString,
+    configure_tinyurl: gTinyURLAPIKeyOverride,
+    configure_confirm_clear: gConfirmClear,
+    configure_show_render_progress: gShowABCJSRenderProgress,
+    configure_clean_smartquotes: gCleanSmartQuotes,
+    configure_jumptotune_autoscroll: gJumpToTuneAutoscroll,
+    configure_force_android: gForceAndroid,
+    configure_disable_android: gDisableAndroid,
+    configure_looper_add_measure_count: gLooperAddMeasureCount
+  };
+
+  var form = [{
+    html: '<p style="text-align:center;font-size:16pt;font-family:var(--abctools-font-fallback-ui);margin-bottom:24px;margin-left:15px;">Advanced Settings&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#advanced_settings" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+  }, {
+    html: '<p style="font-size:12pt;line-height:12px;font-family:var(--abctools-font-fallback-ui);"><strong>Only change these values if you know what you are doing!</strong></p>'
+  }];
+
+  // --- Tabs scaffold (panels empty; we'll move rows in after render) ---
+  form.push({
+    html:
+      '<div id="advanced_settings_tabs_root" class="adv-tabs">' +
+        '<div class="adv-tab-bar">' +
+          '<button type="button" class="adv-tab-btn" data-tab="adv_tab_general">General</button>' +
+          '<button type="button" class="adv-tab-btn" data-tab="adv_tab_player">Player</button>' +
+          '<button type="button" class="adv-tab-btn" data-tab="adv_tab_export">Export</button>' +
+          '<button type="button" class="adv-tab-btn" data-tab="adv_tab_system">System</button>' +
+        '</div>' +
+        '<div class="adv-tab-panels" style="height:405px; overflow-y:auto;">' +
+          '<div id="adv_tab_general" class="adv-tab-panel"><div id="adv_tab_general_fields"></div></div>' +
+          '<div id="adv_tab_player" class="adv-tab-panel"><div id="adv_tab_player_fields"></div></div>' +
+          '<div id="adv_tab_export" class="adv-tab-panel"><div id="adv_tab_export_fields"></div></div>' +
+          '<div id="adv_tab_system" class="adv-tab-panel"><div id="adv_tab_system_fields"></div></div>' +
+        '</div>' +
+      '</div>'
+  });
+
+  // ---- Original fields (unchanged) ----
+  form = form.concat([
+    { name: "          Always confirm before deletion when clicking Clear", id: "configure_confirm_clear", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox" },
+    { name: "          Always replace curly single and double quotes with standard versions on Open or Paste", id: "configure_clean_smartquotes", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox" },
+    { name: "          Show ABC syntax validation panel", id: "configure_show_diagnostics", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox" },
+    { name: "          Show tune rendering progress in Javascript console", id: "configure_show_render_progress", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox" },
+    { name: "    Disable abcjs notation rendering", id: "configure_DisableRendering", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox" },
+    { name: "    Jump to Tune always scrolls to the last selected tune", id: "configure_jumptotune_autoscroll", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox" },
+    { name: "    Autoscroll player when playing", id: "configure_autoscrollplayer", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox" },
+    { name: "    Smooth autoscroll when playing (when Autoscroll player is enabled)", id: "configure_autoscrollsmooth", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox" },
+    { name: "    Player autoscroll vertical position target percentage (default is 66):", id: "configure_autoscrolltarget", type: "text", cssClass: "advanced_settings2_form_text" },
+    { name: "    Player/Tune Trainer always plays full tune even if there is a selection region", id: "configure_disable_selected_play", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox" },
+    { name: "    Player uses large controls (easier to touch on phone/tablet)", id: "configure_large_player_controls", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox" },
+    { name: "    Player tunebook navigation controls on left side", id: "configure_player_status_on_left", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox" },
+    { name: "    Player/Tune Trainer uses label L/R side click to decrement/increment values", id: "configure_trainer_touch_controls", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox" },
+    { name: "Tune Trainer add extra measure count:", id: "configure_looper_add_measure_count", type: "text", cssClass: "advanced_settings2_form_text" }
+  ]);
+
+  // Lite: Customized (show only if auto-scaling enabled & current mode does not force scaling)
+  if (gAutoScaleNotation && !gAlwaysTwoColumns) {
+    form = form.concat([
+      { name: "Full screen tune display width scaling (percentage, default is 50):", id: "configure_fullscreen_scaling", type: "number", cssClass: "advanced_settings2_form_text lite-custom-setting" }
+    ]);
+  }
+
+  if (isPureDesktopBrowser()) {
+    form = form.concat([
+      { name: "Highlighting color (HTML format) (default is #F00000):", id: "configure_highlight_color", type: "text", cssClass: "advanced_settings2_form_text" }
+    ]);
+  }
+
+  form = form.concat([
+    { name: "Default %reverb annotation (blank = no reverb):", id: "configure_reverb", type: "text", cssClass: "advanced_settings2_reverb_text" },
+    { name: "MP3 audio export bitrate (kbit/sec) (default is 224):", id: "configure_mp3_bitrate", type: "number", cssClass: "advanced_settings2_form_text" }
+  ]);
+
+  if (isPureDesktopBrowser()) {
+    form = form.concat([
+      { name: "Image/ABC Batch Export Delay in milliseconds (default is 200):", id: "configure_export_delayms", type: "text", cssClass: "advanced_settings2_form_text" },
+      { name: "MP3 Batch Export Delay in milliseconds (default is 250):", id: "configure_mp3export_delayms", type: "text", cssClass: "advanced_settings2_form_text" }
+    ]);
+  }
+
+  if ((!gIsIOS) && (!gIsIPad)) {
+    form.push({ name: "    Force Android phone UI (If mobile browser doesn't identify as Android)", id: "configure_force_android", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox" });
+    form.push({ name: "    Disable Android phone UI (If mobile browser does identify as Android)", id: "configure_disable_android", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox" });
+  }
+
+  // NOTE: keep your bottom buttons + version message OUTSIDE tabs (unchanged)
+  form = form.concat([{
+      name: "Private TinyURL API Token:",
+      id: "configure_tinyurl",
+      type: "text",
+      cssClass: "advanced_settings2_tinyurl_text"
+    },
+    {
+      html: '<p style="text-align:center;margin-top:18px;margin-bottom:6px"><input id="customthemeeditor" class="btn btn-subdialog" onclick="customThemeEditor()" type="button" value="ABC Syntax Highlighting Theme Editor" title="Opens the ABC Syntax Highlighting Theme Editor"><label class="loadimpulsebutton btn btn-subdialog " for="loadimpulsebutton" title="Load a custom reverb convolution impulse .wav file">Load Custom Reverb Impulse <input type="file" id="loadimpulsebutton"  accept=".wav,.WAV" hidden/></label><input id="resetsettings" class="btn btn-resetsettings resetsettings" onclick="ResetSettingsDialog()" type="button" value="Reset Settings" title="Opens a dialog where you can reset all tool settings to the default and/or clear the instrument notes, reverb settings, and tune search engine collection databases"></p><p style="font-size:10pt;line-height:14pt;font-family:var(--abctools-font-fallback-ui);color:grey;position:absolute;left:20px;bottom:30px;margin:0px;cursor:pointer;" onclick="ShowBrowserInfo();" title="Click to show browser information">Click to show browser info<br/>Installed version: ' + gVersionNumber + '</p>'
+    }
+  ]);
+
+  // Set up the reverb impulse load callback
+  setTimeout(function() { idleAdvancedSettings(); }, 25);
+
+  const modal = DayPilot.Modal.form(form, theData, {
+    theme: "modal_flat",
+    top: 10,
+    width: 800,
+    scrollWithPage: (AllowDialogsToScroll()),
+    autoFocus: false
+  });
+
+  // After DayPilot builds DOM, move the modal_flat_form_item rows into tab panels
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+
+      var tabsRoot = document.getElementById("advanced_settings_tabs_root");
+      if (tabsRoot) {
+
+        var modalRoot =
+          tabsRoot.closest(".modal_flat") ||
+          tabsRoot.closest(".dpmodal") ||
+          document;
+
+        // General
+        MoveModalFieldRowByName(modalRoot, "configure_confirm_clear", "adv_tab_general_fields");
+        MoveModalFieldRowByName(modalRoot, "configure_clean_smartquotes", "adv_tab_general_fields");
+        MoveModalFieldRowByName(modalRoot, "configure_show_diagnostics", "adv_tab_general_fields");
+        MoveModalFieldRowByName(modalRoot, "configure_show_render_progress", "adv_tab_general_fields");
+        MoveModalFieldRowByName(modalRoot, "configure_DisableRendering", "adv_tab_general_fields");
+        MoveModalFieldRowByName(modalRoot, "configure_jumptotune_autoscroll", "adv_tab_general_fields");
+
+        // Player
+        MoveModalFieldRowByName(modalRoot, "configure_autoscrollplayer", "adv_tab_player_fields");
+        MoveModalFieldRowByName(modalRoot, "configure_autoscrollsmooth", "adv_tab_player_fields");
+        MoveModalFieldRowByName(modalRoot, "configure_autoscrolltarget", "adv_tab_player_fields");
+        MoveModalFieldRowByName(modalRoot, "configure_highlight_color", "adv_tab_player_fields");
+        MoveModalFieldRowByName(modalRoot, "configure_disable_selected_play", "adv_tab_player_fields");
+        MoveModalFieldRowByName(modalRoot, "configure_large_player_controls", "adv_tab_player_fields");
+        MoveModalFieldRowByName(modalRoot, "configure_player_status_on_left", "adv_tab_player_fields");
+        MoveModalFieldRowByName(modalRoot, "configure_trainer_touch_controls", "adv_tab_player_fields");
+        MoveModalFieldRowByName(modalRoot, "configure_looper_add_measure_count", "adv_tab_player_fields");
+        // Lite: Customized (show only if auto-scaling enabled & current mode does not force scaling)
+        if (gAutoScaleNotation && !gAlwaysTwoColumns) {
+          MoveModalFieldRowByName(modalRoot, "configure_fullscreen_scaling", "adv_tab_player_fields");
+        }
+        MoveModalFieldRowByName(modalRoot, "configure_reverb", "adv_tab_player_fields");
+
+        // Export
+        MoveModalFieldRowByName(modalRoot, "configure_mp3_bitrate", "adv_tab_export_fields");
+
+        if (isPureDesktopBrowser()) {
+          MoveModalFieldRowByName(modalRoot, "configure_mp3export_delayms", "adv_tab_export_fields");
+          MoveModalFieldRowByName(modalRoot, "configure_export_delayms", "adv_tab_export_fields");
+        }
+
+        // System
+        if ((!gIsIOS) && (!gIsIPad)) {
+          MoveModalFieldRowByName(modalRoot, "configure_force_android", "adv_tab_system_fields");
+          MoveModalFieldRowByName(modalRoot, "configure_disable_android", "adv_tab_system_fields");
+        }
+
+        MoveModalFieldRowByName(modalRoot, "configure_tinyurl", "adv_tab_system_fields");
+        
+      }
+
+      // init tabs + remember last
+      InitAdvTabs("advanced_settings_tabs_root", "AdvancedSettingsLastTab", "adv_tab_general");
+
+      // Flash reduction
+      document.body.classList.remove("dp-tabs-building");
+
+    });
+  });
+
+  modal.then(function(args) {
+
+    // Get the results and store them in the global configuration
+    if (!args.canceled) {
+
+      gJumpToTuneAutoscroll = args.result.configure_jumptotune_autoscroll;
+
+      gConfirmClear = args.result.configure_confirm_clear;
+      gCleanSmartQuotes = args.result.configure_clean_smartquotes;
+
+      gShowDiagnostics = args.result.configure_show_diagnostics;
+      updateDiagnostics();
+
+      if (!gIsIOS) {
+        gForceAndroid = args.result.configure_force_android;
+        gDisableAndroid = args.result.configure_disable_android;
+      }
+
+      gDisableNotationRendering = args.result.configure_DisableRendering;
+
+      if (gDisableNotationRendering) {
+
+        sendGoogleAnalytics("action", "RenderDisable");
+
+        var notationHolder = gTheNotation;
+        notationHolder.innerHTML = "";
+
+        var elem = document.getElementById("rawmodebutton");
+        gRawLastIndex = -1;
+
+        elem.value = "Highlighting";
+        elem.classList.add("btn-rawmode-off");
+        elem.classList.remove("btn-rawmode-on");
+
+        if (gEnableSyntax){
+          setCMDarkMode(gDarkModeColor,gLightModeColor);
+          gTheCM.refresh();
+        } else {
+          gTheABC.style.backgroundColor = gLightModeColor;
+        }
+
+        gRawMode = false;
+      }
+
+      gShowABCJSRenderProgress = args.result.configure_show_render_progress;
+
+      gFullScreenScaling = args.result.configure_fullscreen_scaling || 50;
+
+      // Lite: Customized
+      // Reset auto-scaling of maximized notation if allowed
+      if (gAutoScaleNotation && !gAlwaysTwoColumns) {
+
+        gFullScreenScaling = gFullScreenScaling.replace("%", "");
+
+        if (isNaN(parseInt(gFullScreenScaling))) gFullScreenScaling = 50;
+        else gFullScreenScaling = parseInt(gFullScreenScaling);
+
+        if (gFullScreenScaling < 25) gFullScreenScaling = 25;
+        if (gFullScreenScaling > 100) gFullScreenScaling = 100;
+
+        setAutoScaleNotation();
+      }
+
+      gPlayerStatusOnLeft = args.result.configure_player_status_on_left;
+      gLargePlayerControls = args.result.configure_large_player_controls;
+
+      gAutoscrollPlayer = args.result.configure_autoscrollplayer;
+      gAutoscrollSmooth = args.result.configure_autoscrollsmooth;
+
+      var val = parseFloat(args.result.configure_autoscrolltarget);
+      if (!isNaN(val)) {
+        if ((gAutoscrollTarget >= 0) && (gAutoscrollTarget <= 100)) {
+          gAutoscrollTarget = val;
+        }
+      }
+
+      gTrainerTouchControls = args.result.configure_trainer_touch_controls;
+      gDisableSelectedPlay = args.result.configure_disable_selected_play;
+
+      gReverbString = args.result.configure_reverb;
+
+      var testMP3Bitrate = parseInt(args.result.configure_mp3_bitrate);
+      if (!isNaN(testMP3Bitrate)) {
+        gMP3Bitrate = testMP3Bitrate;
+        if (gMP3Bitrate < 96) gMP3Bitrate = 96;
+        if (gMP3Bitrate > 384) gMP3Bitrate = 384;
+      }
+
+      val = parseInt(args.result.configure_looper_add_measure_count);
+      if (!isNaN(val)) {
+        if ((gLooperAddMeasureCount > 0) && (gLooperAddMeasureCount <= 16)) {
+          gLooperAddMeasureCount = val;
+        }
+      }
+
+      var theTinyURLKey = args.result.configure_tinyurl;
+      if (theTinyURLKey) theTinyURLKey = theTinyURLKey.trim();
+
+      if (theTinyURLKey && (theTinyURLKey != "")) {
+        if (!gDoTinyURLAPIKeyOverride) {
+          sendGoogleAnalytics("sharing", "custom_tinyurl_token_entered");
+        }
+        gTinyURLAPIKeyOverride = theTinyURLKey;
+        gDoTinyURLAPIKeyOverride = true;
+      } else {
+        gTinyURLAPIKeyOverride = "";
+        gDoTinyURLAPIKeyOverride = false;
+      }
+
+      IdleAllowShowTabNames();
+
+      if (isPureDesktopBrowser()) {
+
+        gRawHighlightColor = args.result.configure_highlight_color;
+
+        val = parseInt(args.result.configure_export_delayms);
+        if (!isNaN(val)) { if (val >= 0) gBatchExportDelayMS = val; }
+
+        val = parseInt(args.result.configure_mp3export_delayms);
+        if (!isNaN(val)) { if (val >= 0) gBatchMP3ExportDelayMS = val; }
+
+        if (gRawMode && (gRawHighlightColor != oldHighlightColor)) {
+          RenderAsync(true, null);
+        }
+      }
+
+      if (oldDiagnostics != gShowDiagnostics) {
+        HandleWindowResize();
+      }
+
+      SaveConfigurationSettings();
+
+      if (!gIsIOS) {
+
+        if (oldForceAndroid != gForceAndroid) {
+
+          var thePrompt = "The tool will restart since the forcing Android setting changed.";
+          thePrompt = makeCenteredPromptString(thePrompt);
+
+          DayPilot.Modal.alert(thePrompt, {
+            theme: "modal_flat",
+            top: 200,
+            scrollWithPage: (AllowDialogsToScroll())
+          }).then(function(args) {
+            window.location.reload();
+          });
+
+          return;
+        }
+
+        if (oldDisableAndroid != gDisableAndroid) {
+
+          var thePrompt2 = "The tool will restart since the disabling Android setting changed.";
+          thePrompt2 = makeCenteredPromptString(thePrompt2);
+
+          DayPilot.Modal.alert(thePrompt2, {
+            theme: "modal_flat",
+            top: 200,
+            scrollWithPage: (AllowDialogsToScroll())
+          }).then(function(args) {
+            window.location.reload();
+          });
+
+          return;
+        }
+      }
+    }
+
+  });
+
+}
+
+
+function xAdvancedSettings() {
 
   // Keep track of dialogs
   sendGoogleAnalytics("dialog", "AdvancedSettings");
@@ -50911,13 +51707,17 @@ function AdvancedSettings() {
     id: "configure_looper_add_measure_count",
     type: "text",
     cssClass: "advanced_settings2_form_text"
-  }, 
-  {
-    name: "Full screen tune display width scaling (percentage) (default is 50):",
-    id: "configure_fullscreen_scaling",
-    type: "number",
-    cssClass: "advanced_settings2_form_text"
   } ]);
+
+  // Lite: Customized (show only if auto-scaling enabled & current mode does not force scaling)
+  if (gAutoScaleNotation && !gAlwaysTwoColumns) {
+    form = form.concat([{
+      name: "Full screen tune display width scaling (percentage, default is 50):",
+      id: "configure_fullscreen_scaling",
+      type: "number",
+      cssClass: "advanced_settings2_form_text lite-custom-setting"
+    }]);
+  }
 
   // Only show batch export delays on desktop
   if (isPureDesktopBrowser()) {
@@ -51065,24 +51865,32 @@ function AdvancedSettings() {
       // Show render progress in the Javascript console? (not persistent)
       gShowABCJSRenderProgress = args.result.configure_show_render_progress;
 
-      // Sanity check the full screen scaling setting
-      gFullScreenScaling = args.result.configure_fullscreen_scaling;
+      gFullScreenScaling = args.result.configure_fullscreen_scaling || 50;
 
-      gFullScreenScaling = gFullScreenScaling.replace("%", "");
+      // Lite: Customized
+      // Reset auto-scaling of maximized notation if allowed
+      if (gAutoScaleNotation && !gAlwaysTwoColumns) {
 
-      if (isNaN(parseInt(gFullScreenScaling))) {
-        gFullScreenScaling = 50;
-      } else {
-        gFullScreenScaling = parseInt(gFullScreenScaling);
-      }
+        // Sanity check the full screen scaling setting
 
-      if (gFullScreenScaling < 25) {
-        gFullScreenScaling = 25;
+        gFullScreenScaling = gFullScreenScaling.replace("%", "");
 
-      }
+        if (isNaN(parseInt(gFullScreenScaling))) {
+          gFullScreenScaling = 50;
+        } else {
+          gFullScreenScaling = parseInt(gFullScreenScaling);
+        }
 
-      if (gFullScreenScaling > 100) {
-        gFullScreenScaling = 100;
+        if (gFullScreenScaling < 25) {
+          gFullScreenScaling = 25;
+
+        }
+
+        if (gFullScreenScaling > 100) {
+          gFullScreenScaling = 100;
+        }
+
+        setAutoScaleNotation();
       }
 
       gPlayerStatusOnLeft = args.result.configure_player_status_on_left;
@@ -51835,6 +52643,73 @@ function ConfigurePlayerSettings(player_callback) {
 
 }
 
+// Remember last-opened tab for the Configure Settings dialog
+var gConfigureSettingsLastTab = "tab_editor";
+
+// Load from localStorage if available
+function LoadConfigureSettingsLastTab() {
+  try {
+    if (gLocalStorageAvailable && localStorage.ConfigureSettingsLastTab) {
+      gConfigureSettingsLastTab = localStorage.ConfigureSettingsLastTab;
+    }
+  } catch (e) {}
+}
+
+// Save to localStorage
+function SaveConfigureSettingsLastTab(tabId) {
+  gConfigureSettingsLastTab = tabId;
+  try {
+    if (gLocalStorageAvailable) {
+      localStorage.ConfigureSettingsLastTab = tabId;
+    }
+  } catch (e) {}
+}
+
+// Activate a tab inside the Configure Settings dialog
+function ConfigureSettingsActivateTab(containerId, tabId) {
+  var root = document.getElementById(containerId);
+  if (!root) return;
+
+  var btns = root.querySelectorAll(".adv-tab-btn");
+  var panels = root.querySelectorAll(".adv-tab-panel");
+
+  btns.forEach(function(b) {
+    b.classList.toggle("active", b.getAttribute("data-tab") === tabId);
+  });
+
+  panels.forEach(function(p) {
+    p.classList.toggle("active", p.id === tabId);
+  });
+
+  SaveConfigureSettingsLastTab(tabId);
+}
+
+// Wire up tab buttons
+function InitConfigureSettingsTabs() {
+  var containerId = "configure_settings_tabs_root";
+
+  var root = document.getElementById(containerId);
+  if (!root) return;
+
+  // Hook tab clicks
+  var btns = root.querySelectorAll(".adv-tab-btn");
+  btns.forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      var tabId = btn.getAttribute("data-tab");
+      ConfigureSettingsActivateTab(containerId, tabId);
+    });
+  });
+
+  // Select last tab (fallback to first)
+  var desired = gConfigureSettingsLastTab || "tab_editor";
+  var exists = root.querySelector("#" + desired);
+  if (!exists && btns.length) {
+    desired = btns[0].getAttribute("data-tab");
+  }
+
+  ConfigureSettingsActivateTab(containerId, desired);
+}
+
 //
 // Configuration settings dialog
 // Lite: Customized
@@ -51844,32 +52719,26 @@ function ConfigureToolSettings() {
   // Keep track of advanced controls dialog
   sendGoogleAnalytics("dialog", "ConfigureToolSettings");
 
+  // Flash reduction
+  document.body.classList.add("dp-tabs-building");
+
+  LoadConfigureSettingsLastTab();
+
   var theOldSaveLastAutoSnapShot = gSaveLastAutoSnapShot;
-
   var theOldStaffSpacing = gStaffSpacing - STAFFSPACEOFFSET;
-
   var theOldShowTabNames = gShowTabNames;
-
   var theOldCapo = gCapo;
-
   var theOldUseCustomGMSounds = gUseCustomGMSounds;
-
   var theOldAllowMIDIInput = gAllowMIDIInput;
-
   var theOldFeaturesShowTabButtons = gFeaturesShowTabButtons;
-
   var theOldComhaltas = gUseComhaltasABC;
-
   var theOldForceComhaltas = gForceComhaltasABC;
 
   var oldAlwaysTwoColumns = gAlwaysTwoColumns;
 
   var oldRecorderTab = gShowRecorderTab;
-
   var oldTabSelected = GetRadioValue("notenodertab");
-
   var oldRecorderFingeringGerman = gRecorderFingeringGerman;
-
   var oldEnableSyntax = gEnableSyntax;
   var oldSyntaxDarkMode = gSyntaxDarkMode;
 
@@ -51897,29 +52766,82 @@ function ConfigureToolSettings() {
     configure_allow_offline_instruments: gAllowOfflineInstruments,
     configure_always_two_columns: gAlwaysTwoColumns, // Lite: Customized (formerly giPadTwoColumn)
     configure_player_scaling: gPlayerScaling,
-    configure_syntax_highlighting:gEnableSyntax,
-    configure_syntax_highlighting_dark:gSyntaxDarkMode,
+    configure_syntax_highlighting: gEnableSyntax,
+    configure_syntax_highlighting_dark: gSyntaxDarkMode,
   };
 
-  var form = [{
-    html: '<p style="text-align:center;font-size:16pt;margin-left:15px;">ABC Transcription Tools Settings&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#settings_dialog" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
-  }, ];
+  var form = [];
 
-  // Only show batch export delays on desktop
+  // Title/header
+  form.push({
+    html:
+      '<p style="text-align:center;font-size:16pt;font-family:var(--abctools-font-fallback-ui);margin-left:15px;">' +
+      'ABC Tools Lite Settings&nbsp;&nbsp;' +
+      '<span style="font-size:24pt;" title="View documentation in new tab">' +
+      '<a href="https://michaeleskin.com/abctools/userguide.html#settings_dialog" target="_blank" ' +
+      'style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a>' +
+      '</span>' +
+      '</p>'
+  });
+
+  if (browserSupportsMIDI()){
+
+    // --- Tabs scaffold (NOT including bottom buttons/version text) ---
+    form.push({
+      html:
+        '<div id="configure_settings_tabs_root" style="padding-top:0px" class="adv-tabs">' +
+          '<div class="adv-tab-bar">' +
+            '<button type="button" class="adv-tab-btn" data-tab="tab_editor">Editor</button>' +
+            '<button type="button" class="adv-tab-btn" data-tab="tab_tabs">Tabs &amp; Layout</button>' +
+            '<button type="button" class="adv-tab-btn" data-tab="tab_playback">Playback</button>' +
+            '<button type="button" class="adv-tab-btn" data-tab="tab_midi">MIDI Input</button>' +
+          '</div>' +
+          '<div class="adv-tab-panels configure-settings-tab-panels">' +
+            '<div id="tab_editor" class="adv-tab-panel"><div id="tab_editor_fields"></div></div>' +
+            '<div id="tab_tabs" class="adv-tab-panel"><div id="tab_tabs_fields"></div></div>' +
+            '<div id="tab_playback" class="adv-tab-panel"><div id="tab_playback_fields"></div></div>' +
+            '<div id="tab_midi" class="adv-tab-panel"><div id="tab_midi_fields"></div></div>' +
+          '</div>' +
+        '</div>'
+    });
+  }
+  else{
+
+    // --- Tabs scaffold (NOT including bottom buttons/version text) ---
+    form.push({
+      html:
+        '<div id="configure_settings_tabs_root" style="padding-top:0px" class="adv-tabs">' +
+          '<div class="adv-tab-bar">' +
+            '<button type="button" class="adv-tab-btn" data-tab="tab_editor">Editor</button>' +
+            '<button type="button" class="adv-tab-btn" data-tab="tab_tabs">Tabs &amp; Layout</button>' +
+            '<button type="button" class="adv-tab-btn" data-tab="tab_playback">Playback</button>' +
+          '</div>' +
+          '<div class="adv-tab-panels configure-settings-tab-panels">' +
+            '<div id="tab_editor" class="adv-tab-panel"><div id="tab_editor_fields"></div></div>' +
+            '<div id="tab_tabs" class="adv-tab-panel"><div id="tab_tabs_fields"></div></div>' +
+            '<div id="tab_playback" class="adv-tab-panel"><div id="tab_playback_fields"></div></div>' +
+          '</div>' +
+        '</div>'
+    });
+
+  }
+
+  // =============== TAB: Editor ===============
+  form.push({ html: '<div id="tab_editor" class="adv-tab-panel">' });
 
   // Lite: Customized
-  // Allow using two column display mode for all devices
+  // Allow using two column display mode for all mobile devices
   // if (gIsIPad) {
   if (!isPureDesktopBrowser()) {
     form.push({
-      name: "    Use fixed two-column view (formerly iPad Side-by-Side – best suits tablets)",
+      name: "    Use fixed two-column view (formerly iPad Side-by-Side, best suits tablets)",
       id: "configure_always_two_columns",
       type: "checkbox",
-      cssClass: "configure_settings_form_text_checkbox"
+      cssClass: "configure_settings_form_text_checkbox lite-custom-setting"
     });
   }
 
-  // Expose syntax highlighting overrides
+  // Syntax highlighting enable (desktop vs mobile label)
   if (isPureDesktopBrowser()){
     form.push({
       name: "          Enable ABC syntax highlighting (change requires restart)",
@@ -51927,8 +52849,7 @@ function ConfigureToolSettings() {
       type: "checkbox",
       cssClass: "configure_settings_form_text_checkbox"
     });
-  }
-  else{
+  } else {
     form.push({
       name: "          Enable ABC syntax highlighting (change requires restart, some issues on mobile browsers)",
       id: "configure_syntax_highlighting",
@@ -51941,27 +52862,20 @@ function ConfigureToolSettings() {
     name: "          Use Dark Mode for the editor when syntax highlighting is enabled",
     id: "configure_syntax_highlighting_dark",
     type: "checkbox",
-    cssClass: "advanced_settings2_form_text_checkbox"
-  });  
-
-  form = form.concat([{
-    name: "Player screen width (percentage) (min is 50, max is 100):",
-    id: "configure_player_scaling",
-    type: "number",
-    cssClass: "configure_settings_form_text"
-  }, {
-    name: "          Show instrument tablature button bar below ABC editor",
-    id: "configure_show_tab_buttons",
-    type: "checkbox",
     cssClass: "configure_settings_form_text_checkbox"
-  }, {
-    name: "          Allow auto-scaling of maximized notation (prevents manual zooming)",
-    id: "configure_auto_scale_notation",
-    type: "checkbox",
-    cssClass: "configure_settings_form_text_checkbox"
-  }, ]);
+  });
 
-  // Disallowing auto snapshots on mobile
+  // Editor font size only on desktop
+  // if (isDesktopBrowser()) { // Lite: Customized (testing: allow on mobile browsers)
+    form.push({
+      name: "ABC Editor Font Size (default is 13):",
+      id: "configure_editor_fontsize",
+      type: "number",
+      cssClass: "configure_settings_form_text"
+    });
+  // }
+
+  // Auto-snapshot only on pure desktop
   if (isPureDesktopBrowser()) {
     form.push({
       name: "   Save an Auto-Snapshot on browser tab close or reload (Restore it from the Add dialog)",
@@ -51971,113 +52885,202 @@ function ConfigureToolSettings() {
     });
   }
 
-  if (isDesktopBrowser()) {
+  form.push({ html: '</div>' }); // end tab_editor
+
+  // =============== TAB: Tabs & Layout ===============
+  form.push({ html: '<div id="tab_tabs" class="adv-tab-panel">' });
+
+  if (!gAlwaysTwoColumns) { // Lite: Customized (new setting, off by default, don't show in modes with auto-scaling)
     form.push({
-      name: "ABC Editor Font Size (default is 13):",
-      id: "configure_editor_fontsize",
-      type: "number",
-      cssClass: "configure_settings_form_text"
+      name: "          Allow auto-scaling of maximized notation (adjust value in Advanced Settings > Player)",
+      id: "configure_auto_scale_notation",
+      type: "checkbox",
+      cssClass: "configure_settings_form_text_checkbox lite-custom-setting"
     });
   }
 
-  form = form.concat([{
-    name: "Space between the staves (default is 10, minimum is -40):",
-    id: "configure_staff_spacing",
-    type: "number",
-    cssClass: "configure_settings_form_text"
-  }, {
+  form.push({
+    name: "          Show instrument tablature button bar below ABC editor",
+    id: "configure_show_tab_buttons",
+    type: "checkbox",
+    cssClass: "configure_settings_form_text_checkbox lite-custom-setting"
+  });
+
+  form.push({
     name: "    Note name tablature uses Comhaltas style ABC (D' E' F' instead of d e f for octave notes)",
     id: "configure_comhaltas",
     type: "checkbox",
     cssClass: "configure_settings_form_text_checkbox"
-  }, {
+  });
+
+  form.push({
     name: "          Show CGDA as the 4-string tab option (default is GDAD)",
     id: "configure_show_cgda",
     type: "checkbox",
     cssClass: "configure_settings_form_text_checkbox"
-  }, {
+  });
+
+  form.push({
     name: "          Show DGDAE as the 5-string tab option (default is CGDAE)",
     id: "configure_show_dgdae",
     type: "checkbox",
     cssClass: "configure_settings_form_text_checkbox"
-  }, {
+  });
+
+  form.push({
     name: "Stringed instrument capo fret position:",
     id: "configure_capo",
     type: "number",
     cssClass: "configure_settings_form_text"
-  }, {
+  });
+
+  form.push({
     name: "    Show stringed instrument names on tablature (single-voice tunes only, not shown in the Player)",
     id: "configure_show_tab_names",
     type: "checkbox",
     cssClass: "configure_settings_form_text_checkbox"
-  }, {
+  });
+
+  form.push({
     name: "          Show Recorder tab button instead of the Whistle tab button",
     id: "configure_show_recorder",
     type: "checkbox",
     cssClass: "configure_settings_form_text_checkbox"
-  }, {
+  });
+
+  form.push({
     name: "          Use German Recorder fingerings (default is Baroque Recorder fingerings)",
     id: "configure_recorder_german",
     type: "checkbox",
     cssClass: "configure_settings_form_text_checkbox"
-  }, {
-    html: '<p style="text-align:center;"><input id="abcplayer_settingsbutton" style="margin-left:0px" class="abcplayer_settingsbutton btn btn-configuresettingsfromhelp" onclick="ConfigurePlayerSettings(null);" type="button" value="Select Default Player Instruments and Volumes" title="Brings up the Player Settings dialog where you can select the default MIDI soundfont, MIDI instruments, and MIDI volumes to use when playing tunes.&nbsp;&nbsp;You can also load and manage custom instruments from this dialog."><input id="managedatabases" class="btn btn-managedatabases managedatabases" onclick="ManageDatabasesDialog()" type="button" value="Manage Notes, Reverb, and Tune Search Databases" title="Opens a dialog where you can manage the instrument notes, reverb settings, and tune search engine collection databases"></p>'
-  }, {
+  });
+
+  form.push({
+    name: "Default space between the staves (default is 10, minimum is -40):",
+    id: "configure_staff_spacing",
+    type: "number",
+    cssClass: "configure_settings_form_text"
+  });
+
+  form.push({
+    name: "Player screen width (percentage) (min is 50, max is 100):",
+    id: "configure_player_scaling",
+    type: "number",
+    cssClass: "configure_settings_form_text"
+  });
+
+  form.push({
+    html: '<p style="text-align:center;"><input id="abcplayer_settingsbutton_d" class="abcplayer_settingsbutton_d btn btn-configuresettingsfromhelp" onclick="ConfigurePlayerSettings(null);" type="button" value="Select Default Player Instruments and Volumes" title="Brings up the Player Settings dialog where you can select the default MIDI soundfont, MIDI instruments, and MIDI volumes to use when playing tunes.&nbsp;&nbsp;You can also load and manage custom instruments from this dialog."></p><p style="text-align:center;"><input id="managedatabases" class="btn btn-managedatabases managedatabases" onclick="ManageDatabasesDialog()" type="button" value="Manage Notes, Reverb, and Tune Search Databases" title="Opens a dialog where you can manage the instrument notes, reverb settings, and tune search engine collection databases"></p>'
+  });
+
+  form.push({ html: '</div>' }); // end tab_tabs
+
+  // =============== TAB: Playback ===============
+  form.push({ html: '<div id="tab_playback" class="adv-tab-panel">' });
+
+  form.push({
     name: "    Allow instrument notes and reverb settings database to be used offline",
     id: "configure_allow_offline_instruments",
     type: "checkbox",
     cssClass: "configure_settings_form_text_checkbox"
-  }, {
+  });
+
+  form.push({
     name: "    Use custom sounds for Dulcimer, Accordion, Flute, Whistle, Banjo, Bagpipe, Fiddle, and Bodhran",
     id: "configure_use_custom_gm_sounds",
     type: "checkbox",
     cssClass: "configure_settings_form_text_checkbox"
-  }, {
+  });
+
+  form.push({
     name: "            Automatically swing Hornpipes when playing (enabled if R:Hornpipe is found in the tune)",
     id: "configure_auto_swing_hornpipes",
     type: "checkbox",
     cssClass: "configure_settings_form_text_checkbox"
-  }, {
+  });
+
+  form.push({
     name: "Auto-swing scale factor (range is -0.9 to 0.9, default for Hornpipes is 0.25):",
     id: "configure_auto_swing_factor",
     type: "number",
     cssClass: "configure_settings_form_text"
-  }, {
+  });
+
+  form.push({
     name: "    Rolls indicated in the ABC with ~ use the custom abcjs roll playback solution",
     id: "configure_RollUseRollForIrishRoll",
     type: "checkbox",
     cssClass: "configure_settings_form_text_checkbox"
-  }, {
+  });
+
+  form.push({
     name: "            Open exported PDF and Website play links in the Tune Trainer",
     id: "configure_open_links_in_trainer",
     type: "checkbox",
     cssClass: "configure_settings_form_text_checkbox"
-  }, ]);
+  });
+
+  form.push({ html: '</div>' }); // end tab_playback
 
   if (browserSupportsMIDI()) {
+
+    // =============== TAB: MIDI ===============
+    form.push({ html: '<div id="tab_midi" class="adv-tab-panel">' });
+
     form.push({
       name: "    Allow MIDI input for ABC text entry",
       id: "configure_allow_midi_input",
       type: "checkbox",
       cssClass: "configure_settings_form_text_checkbox"
     });
+
     form.push({
       name: "    MIDI input is key and mode aware (if unchecked, enters note names with no accidentals)",
       id: "configure_midi_chromatic",
       type: "checkbox",
       cssClass: "configure_settings_form_text_checkbox"
     });
-  };
 
+    form.push({ html: '</div>' }); // end tab_midi
+
+  }
+
+  // Close tab panels + tabs wrapper
+  form.push({ html: '</div></div>' });
+
+  // --- Bottom area (NOT in a tab) ---
+  // Keep your existing sub-dialog buttons + version/update message (absolute positioned)
   if (gUpdateAvailable) {
     // Lite: Customized
     form.push({
-      html: '<p style="text-align:center;"><input id="configure_fonts" class="btn btn-subdialog configure_fonts" onclick="ConfigureFonts()" type="button" value="Font Settings" title="Configure the fonts used for rendering the ABC"><input id="configure_box" class="btn btn-subdialog configure_box" onclick="ConfigureTablatureSettings()" type="button" value="Tablature Injection Settings" title="Configure the tablature injection settings"><input id="configure_musicxml_import" class="btn btn-subdialog configure_musicxml_import" onclick="ConfigureMusicXMLImport()" type="button" value="MusicXML/MIDI Settings" title="Configure MusicXML/MIDI import settings"><input id="configure_developer_settings" class="btn btn-subdialog configure_developer_settings" onclick="AdvancedSettings()" type="button" value="Advanced Settings" title="Configure low level tool settings"></p><p style="font-size:10pt;line-height:14pt;color:forestgreen;position:absolute;left:20px;bottom:20px;margin:0px;cursor:pointer;" title="Click to update to the latest version of the tool" onclick="UpdateToLatestVersion();">Click here to update to the latest version<br/>Latest fork version: ' + gUpdateVersion + '<br/>Installed version: ' + gLiteVersionNumber + '</p>'
+      html:
+        '<p style="text-align:center;">' +
+          '<input id="configure_fonts" class="btn btn-subdialog configure_fonts" onclick="ConfigureFonts()" type="button" value="Font Settings" title="Configure the fonts used for rendering the ABC">' +
+          '<input id="configure_box" class="btn btn-subdialog configure_box" onclick="ConfigureTablatureSettings()" type="button" value="Tablature Injection Settings" title="Configure the tablature injection settings">' +
+          '<input id="configure_musicxml_import" class="btn btn-subdialog configure_musicxml_import" onclick="ConfigureMusicXMLImport()" type="button" value="MusicXML/MIDI Settings" title="Configure MusicXML/MIDI import settings">' +
+          '<input id="configure_developer_settings" class="btn btn-subdialog configure_developer_settings" onclick="AdvancedSettings()" type="button" value="Advanced Settings" title="Configure low level tool settings">' +
+        '</p>' +
+        '<p style="font-size:10pt;font-family:var(--abctools-font-fallback-ui);line-height:14pt;color:red;position:absolute;left:20px;bottom:20px;margin:0px;cursor:pointer;" title="Click to update to the latest version of the tool" onclick="UpdateToLatestVersion();">' +
+          'Click here to update to the latest version<br/>' +
+          'Latest fork version: ' + gUpdateVersion + '<br/>' +
+          'Installed version: ' + gLiteVersionNumber +
+        '</p>'
     });
   } else {
     // Lite: Customized
     form.push({
-      html: '<p style="text-align:center;"><input id="configure_fonts" class="btn btn-subdialog configure_fonts" onclick="ConfigureFonts()" type="button" value="Font Settings" title="Configure the fonts used for rendering the ABC"><input id="configure_box" class="btn btn-subdialog configure_box" onclick="ConfigureTablatureSettings()" type="button" value="Tablature Injection Settings" title="Configure the tablature injection settings"><input id="configure_musicxml_import" class="btn btn-subdialog configure_musicxml_import" onclick="ConfigureMusicXMLImport()" type="button" value="MusicXML/MIDI Settings" title="Configure MusicXML/MIDI import settings"><input id="configure_developer_settings" class="btn btn-subdialog configure_developer_settings" onclick="AdvancedSettings()" type="button" value="Advanced Settings" title="Configure low level tool settings"></p><p style="font-size:10pt;line-height:14pt;color:grey;position:absolute;left:20px;bottom:20px;margin:0px;cursor:pointer;" title="Click to update to the latest version" onclick="UpdateToLatestVersion();">You have the latest version<br/>Installed version: ' + gLiteVersionNumber + '<br>Click here to force an update</p>'
+      html:
+        '<p style="text-align:center;">' +
+          '<input id="configure_fonts" class="btn btn-subdialog configure_fonts" onclick="ConfigureFonts()" type="button" value="Font Settings" title="Configure the fonts used for rendering the ABC">' +
+          '<input id="configure_box" class="btn btn-subdialog configure_box" onclick="ConfigureTablatureSettings()" type="button" value="Tablature Injection Settings" title="Configure the tablature injection settings">' +
+          '<input id="configure_musicxml_import" class="btn btn-subdialog configure_musicxml_import" onclick="ConfigureMusicXMLImport()" type="button" value="MusicXML/MIDI Settings" title="Configure MusicXML/MIDI import settings">' +
+          '<input id="configure_developer_settings" class="btn btn-subdialog configure_developer_settings" onclick="AdvancedSettings()" type="button" value="Advanced Settings" title="Configure low level tool settings">' +
+        '</p>' +
+        '<p style="font-size:10pt;font-family:var(--abctools-font-fallback-ui);line-height:14pt;color:grey;position:absolute;left:20px;bottom:20px;margin:0px;cursor:pointer;" title="Click to update to the latest version" onclick="UpdateToLatestVersion();">' +
+          'You have the latest version<br/>' +
+          'Version: ' + gLiteVersionNumber + '<br>' +
+          'Click here to force an update' +
+        '</p>'
     });
   }
 
@@ -52106,31 +53109,23 @@ function ConfigureToolSettings() {
         if (!gSaveLastAutoSnapShot) {
 
           if (gLocalStorageAvailable) {
-
             localStorage.LastAutoSnapShot = "";
-
           }
 
           // Was on before, now is off
           if (theOldSaveLastAutoSnapShot != gSaveLastAutoSnapShot) {
-
             RemoveTabCloseListener();
-
           }
 
         } else {
           // Was off, now is on
           if (theOldSaveLastAutoSnapShot != gSaveLastAutoSnapShot) {
-
             AddTabCloseListener();
-
           }
         }
 
       } else {
-
         gSaveLastAutoSnapShot = false;
-
       }
 
       // Lite: Customized
@@ -52146,7 +53141,7 @@ function ConfigureToolSettings() {
 
       gAutoScaleNotation = args.result.configure_auto_scale_notation;
 
-      if (gAutoScaleNotation) {
+      if (gAutoScaleNotation && !gAlwaysTwoColumns) {
         setAutoScaleNotation();
       } else if (isAutoScaleNotationApplied()) {
         resetAutoScaleNotation();
@@ -52154,7 +53149,6 @@ function ConfigureToolSettings() {
 
       // Sanity check the player scaling
       gPlayerScaling = args.result.configure_player_scaling;
-
       gPlayerScaling = gPlayerScaling.replace("%", "");
 
       if (isNaN(parseInt(gPlayerScaling))) {
@@ -52167,14 +53161,8 @@ function ConfigureToolSettings() {
         gPlayerScaling = parseInt(gPlayerScaling);
       }
 
-      if (gPlayerScaling < 50) {
-        gPlayerScaling = 50;
-
-      }
-
-      if (gPlayerScaling > 100) {
-        gPlayerScaling = 100;
-      }
+      if (gPlayerScaling < 50) gPlayerScaling = 50;
+      if (gPlayerScaling > 100) gPlayerScaling = 100;
 
       // Allow offline instruments?
       gAllowOfflineInstruments = args.result.configure_allow_offline_instruments;
@@ -52185,18 +53173,15 @@ function ConfigureToolSettings() {
       if ((theOldFeaturesShowTabButtons == true) && (gFeaturesShowTabButtons == false)) {
         sendGoogleAnalytics("action", "HidingTabButtonBar");
       }
-
       if ((theOldFeaturesShowTabButtons == false) && (gFeaturesShowTabButtons == true)) {
         sendGoogleAnalytics("action", "ShowingTabButtonBar");
       }
 
       // Validate the staff spacing value
       var testStaffSpacing = args.result.configure_staff_spacing;
-
       testStaffSpacing = parseInt(testStaffSpacing);
 
       if (!((isNaN(testStaffSpacing)) || (testStaffSpacing == undefined))) {
-
         // Limit is the negative staffsep offset
         if (testStaffSpacing < (-1 * STAFFSPACEOFFSET)) {
           testStaffSpacing = (-1 * STAFFSPACEOFFSET);
@@ -52206,25 +53191,17 @@ function ConfigureToolSettings() {
       }
 
       if (!isNaN(testStaffSpacing)) {
-
         if (testStaffSpacing != theOldStaffSpacing) {
-
           gStaffSpacing = testStaffSpacing + STAFFSPACEOFFSET;
-
         }
-
       }
 
       // Sanity check the new capo value
       var testCapo = args.result.configure_capo;
-
       if (!isNaN(parseInt(testCapo))) {
-
         var theCapo = parseInt(testCapo);
         if ((theCapo >= 0) && (theCapo <= 12)) {
-
           gCapo = parseInt(testCapo);
-
         }
       }
 
@@ -52234,26 +53211,19 @@ function ConfigureToolSettings() {
 
       // If changing the custom GM sounds setting, clear the abcjs sample cache
       if (gUseCustomGMSounds != theOldUseCustomGMSounds) {
-
         // Reset the abcjs sounds cache
         gSoundsCacheABCJS = {};
       }
 
       gOpenLinksInTrainer = args.result.configure_open_links_in_trainer;
-
       gAutoSwingHornpipes = args.result.configure_auto_swing_hornpipes;
 
       // Sanity check the autoswing factor value
       var testSwing = args.result.configure_auto_swing_factor;
-
       if (!isNaN(parseFloat(testSwing))) {
-
         var theSwing = parseFloat(testSwing);
-
         if ((theSwing >= -0.9) && (theSwing <= 0.9)) {
-
           gAutoSwingFactor = theSwing;
-
         }
       }
 
@@ -52355,11 +53325,10 @@ function ConfigureToolSettings() {
       IdleAllowShowTabNames();
 
       if (!isEnableSyntaxChanged){
-
-        if (isDesktopBrowser()) {
+        // Lite: Customized (testing: allow on mobile browsers)
+        // if (isDesktopBrowser()) {
 
           var testEditorFontSize = args.result.configure_editor_fontsize;
-
           testEditorFontSize = parseInt(testEditorFontSize);
 
           if (!isNaN(testEditorFontSize)) {
@@ -52377,15 +53346,13 @@ function ConfigureToolSettings() {
             }
 
           }
-        }
+        // }
       }
 
       // Force change of saved staff spacing if user modifies it in the dialog
       // Related to avoiding resetting of saved staff spacing if changed by a shared file
       if (gLocalStorageAvailable) {
-
         localStorage.abcStaffSpacing = testStaffSpacing;
-
       }
 
       // Lite: Customized
@@ -52522,7 +53489,123 @@ function ConfigureToolSettings() {
 
   });
 
+  // Initialize tabs after the modal DOM is present
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+
+      MoveConfigureSettingsFieldsToTabs();
+      
+      InitConfigureSettingsTabs();
+
+      // Flash reduction
+      document.body.classList.remove("dp-tabs-building");
+
+    });
+  });
+
 }
+
+function MoveConfigureSettingsFieldsToTabs() {
+
+  var tabsRoot = document.getElementById("configure_settings_tabs_root");
+  if (!tabsRoot) return;
+
+  // find the modal container that holds this dialog
+  var modalRoot =
+    tabsRoot.closest(".modal_flat") ||          // some builds
+    tabsRoot.closest(".dpmodal") ||             // others
+    document;
+
+  function moveByName(fieldName, destId) {
+    var dest = document.getElementById(destId);
+    if (!dest) return false;
+
+    var input = modalRoot.querySelector('input[name="' + fieldName + '"], select[name="' + fieldName + '"], textarea[name="' + fieldName + '"]');
+    if (!input) return false;
+
+    // Your theme uses modal_flat_form_item as the row wrapper
+    var row = input.closest(".modal_flat_form_item") ||
+              input.closest(".modal_flat_form_item_checkbox") ||
+              input.closest("div");   // last resort
+
+    if (!row) return false;
+
+    dest.appendChild(row);
+    return true;
+  }
+
+  function moveByElementId(elemId, destId) {
+    var dest = document.getElementById(destId);
+    if (!dest) return false;
+
+    var el = document.getElementById(elemId);
+    if (!el) return false;
+
+    // move the button row/container if it exists, else move the element itself
+    var row = el.closest(".modal_flat_form_item") || el.closest("div") || el;
+    dest.appendChild(row);
+    return true;
+  }
+
+  function moveButtonByValueContains(textNeedle, destId) {
+    var dest = document.getElementById(destId);
+    if (!dest) return false;
+
+    // find buttons rendered inside this modal
+    var btns = modalRoot.querySelectorAll('input[type="button"], button');
+    textNeedle = textNeedle.trim();
+
+    for (var i = 0; i < btns.length; i++) {
+      var t = (btns[i].value || btns[i].textContent || "").replace(/\s+/g, " ").trim();
+      if (t.indexOf(textNeedle) !== -1) {
+        var row = btns[i].closest(".modal_flat_form_item") || btns[i].closest("div") || btns[i];
+        dest.appendChild(row);
+        return true;
+      }
+    }
+    return false;
+  }
+
+
+  // ---- Editor tab ----
+  if (!isPureDesktopBrowser()) moveByName("configure_always_two_columns", "tab_editor_fields");  // Lite: Customized (allow for all mobile browsers)
+  moveByName("configure_editor_fontsize", "tab_editor_fields"); // Lite: Customized (allow for all browsers)
+  moveByName("configure_syntax_highlighting", "tab_editor_fields");
+  moveByName("configure_syntax_highlighting_dark", "tab_editor_fields");
+  if (isPureDesktopBrowser()) moveByName("configure_save_exit_snapshot", "tab_editor_fields");
+
+  // ---- Tabs & Layout tab ----
+  // Lite: Customized (new setting, off by default, don't show in modes with auto-scaling)
+  if (!gAlwaysTwoColumns) moveByName("configure_auto_scale_notation", "tab_tabs_fields");
+  moveByName("configure_show_tab_buttons", "tab_tabs_fields");
+  moveByName("configure_comhaltas", "tab_tabs_fields");
+  moveByName("configure_show_cgda", "tab_tabs_fields");
+  moveByName("configure_show_dgdae", "tab_tabs_fields");
+  moveByName("configure_capo", "tab_tabs_fields");
+  moveByName("configure_show_tab_names", "tab_tabs_fields");
+  moveByName("configure_show_recorder", "tab_tabs_fields");
+  moveByName("configure_recorder_german", "tab_tabs_fields");
+  moveByName("configure_staff_spacing", "tab_tabs_fields");
+
+  // ---- Playback tab ----
+  moveByName("configure_player_scaling", "tab_playback_fields");
+  moveByName("configure_allow_offline_instruments", "tab_playback_fields");
+  moveByName("configure_use_custom_gm_sounds", "tab_playback_fields");
+  moveByName("configure_auto_swing_hornpipes", "tab_playback_fields");
+  moveByName("configure_auto_swing_factor", "tab_playback_fields");
+  moveByName("configure_RollUseRollForIrishRoll", "tab_playback_fields");
+  moveByName("configure_open_links_in_trainer", "tab_playback_fields");
+  moveButtonByValueContains("Select Default Player Instruments and Volumes", "tab_playback_fields");
+  moveButtonByValueContains("Manage Notes, Reverb, and Tune Search Databases", "tab_playback_fields");
+
+  // ---- MIDI tab ----
+  if (browserSupportsMIDI()) {
+    moveByName("configure_allow_midi_input", "tab_midi_fields");
+    moveByName("configure_midi_chromatic", "tab_midi_fields");
+  }
+}
+
+
 
 // 
 // Is a file XML data
@@ -54328,7 +55411,7 @@ function HandleWindowResize() {
           }
         }
 
-        if (isDesktopUser) {
+        // if (isDesktopUser) { // Lite: Customized (testing: allow for all browsers)
           // We should have more room, resize the editor
           var windowHeight = window.innerHeight;
 
@@ -54374,7 +55457,7 @@ function HandleWindowResize() {
 
           elem = document.getElementById("notation-placeholder-text");
           elem.style.marginTop = "136px";
-        }
+        // }
       }
 
       if (gAlwaysTwoColumns) {
@@ -59216,7 +60299,6 @@ async function DoVersionCheck() {
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-          console.warn("FAILED")
       throw new Error(`Failed to fetch version JSON: ${response.status}`);
     }
 
@@ -60953,7 +62035,7 @@ function DoStartup() {
 
   // Lite: Customized
   // Add notation auto-scaling data if setting enabled
-  if (gAutoScaleNotation) {
+  if (gAutoScaleNotation && !gAlwaysTwoColumns) {
 
     setAutoScaleNotation();
   }

@@ -802,6 +802,30 @@ margin-left:20px;
 	}
 }
 
+#abcplayer_settingsbutton_d{
+height:42px;
+padding:12px;
+margin-top:10px;
+}
+
+@media (hover: hover) {
+	.abcplayer_settingsbutton_d:hover{
+	background: var(--abctools-ui-btn-hovercolor);
+	}
+}
+
+#abcplayer_settingsbutton_d{
+height:42px;
+padding:12px;
+margin-top:10px;
+}
+
+@media (hover: hover) {
+	.abcplayer_settingsbutton_d:hover{
+	background: palegreen;
+	}
+}
+
 #abcplayer_trainer{
 	height:42px;
 	margin-top: 9px;
@@ -1254,18 +1278,12 @@ left:9px;
 top:5px;
 }
 
-
 #swingexplorertest{
 height:42px;
 padding:12px;
 width:auto;
 margin-right:36px;
-}
-
-@media (hover: hover) {
-	.swingexplorertest:hover{
-	background: var(--abctools-ui-btn-hovercolor);
-	}
+opacity: 0.4;
 }
 
 #swingexplorerhelp{
@@ -1293,12 +1311,7 @@ height:42px;
 padding:12px;
 width:auto;
 margin-right:36px;
-}
-
-@media (hover: hover) {
-	.graceexplorertest:hover{
-	background: var(--abctools-ui-btn-hovercolor);
-	}
+opacity: 0.4;
 }
 
 #graceexplorerhelp{
@@ -1350,18 +1363,12 @@ margin-left: 0;
 	}
 }
 
-
 #rollexplorertest{
 height:42px;
 padding:12px;
 width:auto;
 margin-right:20px;
-}
-
-@media (hover: hover) {
-	.rollexplorertest:hover{
-	background: var(--abctools-ui-btn-hovercolor);
-	}
+opacity: 0.4;
 }
 
 #rollexplorerhelp{
@@ -1376,12 +1383,7 @@ height:42px;
 padding:12px;
 width:auto;
 margin-right:18px;
-}
-
-@media (hover: hover) {
-	.looperreset:hover{
-	background: var(--abctools-ui-btn-hovercolor);
-	}
+opacity: 0.4;
 }
 
 #trainer_phrase_builder{
@@ -1487,14 +1489,8 @@ height:42px;
 padding:12px;
 width:auto;
 margin-right:36px;
+opacity: 0.4;
 }
-
-@media (hover: hover) {
-	.instrumentexplorertest:hover{
-	background: var(--abctools-ui-btn-hovercolor);
-	}
-}
-
 
 #instrumentexplorerinject{
 height:42px;
@@ -1601,16 +1597,11 @@ margin-left:14px;
 width:auto;
 }
 
-.managedatabases {
-	display: inline-block;
-}
-
 #managedatabases{
 height:42px;
 padding:12px;
 width:auto;
-margin-right: 0;
-margin-left:12px;
+margin-top:10px;
 }
 
 .managedatabases:hover{
@@ -1852,6 +1843,8 @@ opacity:0.4;
 .newabcfile{
 margin-left: 0;
 opacity:1.0;
+padding:0.7rem 0.85rem !important;
+padding-top:0.8rem !important;
 }
 
 @media (hover: hover) {
@@ -2646,13 +2639,13 @@ body.noui svg {
 }
 
 .configure_settings_form_text_checkbox{
-	line-height: 0.69;
+	line-height: 1.5;
 	margin-top:9px;
 	display:flex;
 }
 
 .configure_settings_form_text{
-	line-height: 0.69;
+	line-height: 1.25;
 	margin-top:16px;
 	display:flex;
 }
@@ -2660,7 +2653,7 @@ body.noui svg {
 .configure_settings_form_text>input{
 	margin-left:12px;
 	width: 60px;
-	margin-top:-9px;
+	margin-top:-5px;
 	padding:4px;
 }
 
@@ -2741,7 +2734,7 @@ margin-top:-7px;
 }
 
 .advanced_settings2_form_text{
-	line-height: 0.625;
+	line-height: 1.25;
 	margin-top:14px;
 	display:flex;
 }
@@ -2749,11 +2742,11 @@ margin-top:-7px;
 .advanced_settings2_form_text>input{
 	margin-left:12px;
 	width: 100px;
-	margin-top:-11px;
+	margin-top:-5px;
 }
 
 .advanced_settings2_roll_text{
-	line-height: 1;
+	line-height: 1.5;
 	margin-top:14px;
 	display:flex;
 }
@@ -2765,7 +2758,7 @@ margin-top:-7px;
 }
 
 .advanced_settings2_tinyurl_text{
-	line-height: 1;
+	line-height: 1.5;
 	margin-top:14px;
 	display:flex;
 }
@@ -2773,10 +2766,10 @@ margin-top:-7px;
 .advanced_settings2_tinyurl_text>input{
 	margin-left: 12px;
 	width: 500px;
-	margin-top:-8px;
+	margin-top:-4px;
 }
 .advanced_settings2_reverb_text{
-	line-height: 1;
+	line-height: 1.5;
 	margin-top:14px;
 	display:flex;
 }
@@ -2784,11 +2777,11 @@ margin-top:-7px;
 .advanced_settings2_reverb_text>input{
 	margin-left: 12px;
 	width: 215px;
-	margin-top:-8px;
+	margin-top:-4px;
 }
 
 .advanced_settings2_form_text_checkbox{
-	line-height: 0.69;
+	line-height: 1.5;
 	margin-top:7px;
 	display:flex;
 }
@@ -4721,12 +4714,7 @@ height:42px;
 padding:12px;
 width:auto;
 margin-right:24px;
-}
-
-@media (hover: hover) {
-	.reverbexplorertest:hover{
-	background: var(--abctools-ui-btn-hovercolor);
-	}
+opacity: 0.4;
 }
 
 #reverbexplorerinject{
@@ -5440,11 +5428,26 @@ padding-right: 30px; /* space for badge */
 }
 
 /* Pulsing animation */
-@keyframes pulse {
+/* @keyframes pulse {
   0% { transform: scale(1); }
   50% { transform: scale(1.08);  }
   100% { transform: scale(1); }
+} */
+
+/* Tune trainer attention style */
+.apply_attention {
+  color: black !important;
+  opacity: 1.0 !important;
+  background-color:#8ac716 !important;
+  /* animation: apply_pulse 1.25s infinite; */
 }
+
+/* Pulsing animation */
+/* @keyframes apply_pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.06);  }
+  100% { transform: scale(1); }
+} */
 
 /* Custom ABC per-tune line number gutter */
 .CodeMirror-gutters {
@@ -5607,7 +5610,7 @@ cursor: pointer;
 
   /* Typography */
   font-family: var(--abctools-font-fallback-ui), sans-serif;
-  font-size: 11.5pt;
+  font-size: 0.958rem;
   line-height: 1.1;
   font-weight: 400;
   text-align: center;
@@ -5685,6 +5688,22 @@ cursor: pointer;
 /* Optional: reduces paint jitter on some browsers */
 #add-new-tune-dialog { contain: layout paint; }
 
+/* Configure Settings: fixed-height tab content area */
+.configure-settings-tab-panels{
+  height: 450px;           /* adjust if you want taller/shorter */
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* Optional: tighten spacing a bit inside panels for DayPilot form rows */
+.configure-settings-tab-panels .dpmodal_form_item{
+  margin-top: 2px;
+}
+
+/* While building tabbed modals, hide DayPilot modal_flat form rows globally */
+body.dp-tabs-building .modal_flat_main {
+  visibility: hidden;
+}
 
 /******************************************************************************/
 /* STYLES RELATED TO BUTTONS                                                  */
@@ -6060,7 +6079,7 @@ cursor: pointer;
 
 .btn-swingexplorertest{
   --color: black;
-  --background-color: #C8ECFE;
+  --background-color: #F0F0F0;
 }
 
 .btn-swingexplorerinject{
@@ -6075,7 +6094,7 @@ cursor: pointer;
 
 .btn-graceexplorertest{
   --color: black;
-  --background-color: #C8ECFE;
+  --background-color: #F0F0F0;
 }
 
 .btn-graceexplorerinject{
@@ -6090,7 +6109,7 @@ cursor: pointer;
 
 .btn-rollexplorertest{
   --color: black;
-  --background-color: #C8ECFE;
+  --background-color: #F0F0F0;
 }
 
 .btn-rollexplorerinject{
@@ -6120,7 +6139,7 @@ cursor: pointer;
 
 .btn-instrumentexplorertest{
   --color: black;
-  --background-color: #C8ECFE;
+  --background-color: #F0F0F0;
 }
 
 .btn-instrumentexplorerinject{
@@ -6135,7 +6154,7 @@ cursor: pointer;
 
 .btn-looperreset{
   --color: black;
-  --background-color: #C8ECFE;
+  --background-color: #F0F0F0;
 }
 
 .btn-metronome{
@@ -6300,7 +6319,7 @@ cursor: pointer;
 
 .btn-reverbexplorertest{
   --color: black;
-  --background-color: #C8ECFE;
+  --background-color: #F0F0F0;
 }
 
 .btn-reverbexplorerinject{

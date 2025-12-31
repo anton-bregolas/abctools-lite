@@ -229,6 +229,14 @@ div.modal_flat_form_item_label {
 }
 
 /*//////////////////////////////////////////
+// APP LITE: SETTINGS MENU
+/////////////////////////////////////////*/
+
+.lite-custom-setting {
+  font-weight: bold;
+}
+
+/*//////////////////////////////////////////
 // APP LITE: EDITOR SHELL COMPONENTS
 /////////////////////////////////////////*/
 
@@ -303,8 +311,8 @@ select {
 	cursor: pointer;
 }
 
-.btn:is(:focus, :focus-visible),
-.btn-uioverlay:is(:focus, :focus-visible) {
+.btn:focus-visible,
+.btn-uioverlay:focus-visible {
   outline: 0.17rem solid var(--abctools-ui-btn-outlinecolor);
 }
 
@@ -339,10 +347,6 @@ select {
 	}
 
   /* Notation Maximized :: Viewport >= 1798px */
-
-	[data-notation-scaling="smart"][data-notation="maximized"] .notation-holder {
-		width: var(--abctools-notation-fullscreen-scaling);
-	}
 
 	#notation-spacer {
 		margin-right: 24px;
