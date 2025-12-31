@@ -51345,8 +51345,10 @@ function AdvancedSettings() {
     },
     // Lite: Customized
     {
-      html: '<p style="text-align:center;margin-top:18px;margin-bottom:6px"><input id="customthemeeditor" class="btn btn-subdialog" onclick="customThemeEditor()" type="button" value="ABC Syntax Highlighting Theme Editor" title="Opens the ABC Syntax Highlighting Theme Editor"><label class="loadimpulsebutton btn btn-subdialog " for="loadimpulsebutton" title="Load a custom reverb convolution impulse .wav file">Load Custom Reverb Impulse <input type="file" id="loadimpulsebutton"  accept=".wav,.WAV" hidden/></label><input id="resetsettings" class="btn btn-resetsettings resetsettings" onclick="ResetSettingsDialog()" type="button" value="Reset Settings" title="Opens a dialog where you can reset all tool settings to the default and/or clear the instrument notes, reverb settings, and tune search engine collection databases"></p><p style="font-size:10pt;line-height:14pt;color:grey;position:absolute;left:20px;bottom:30px;margin:0px;cursor:pointer;" onclick="ShowBrowserInfo();" title="Click to show browser information">Click to show browser info<br/>' +
-      'Installed version: ' + gLiteVersionNumber + '</p>'
+      html:
+        '<p style="text-align:center;margin-top:18px;margin-bottom:6px"><input id="customthemeeditor" class="btn btn-subdialog" onclick="customThemeEditor()" type="button" value="ABC Syntax Highlighting Theme Editor" title="Opens the ABC Syntax Highlighting Theme Editor"><label class="loadimpulsebutton btn btn-subdialog " for="loadimpulsebutton" title="Load a custom reverb convolution impulse .wav file">Load Custom Reverb Impulse <input type="file" id="loadimpulsebutton"  accept=".wav,.WAV" hidden/></label><input id="resetsettings" class="btn btn-resetsettings resetsettings" onclick="ResetSettingsDialog()" type="button" value="Reset Settings" title="Opens a dialog where you can reset all tool settings to the default and/or clear the instrument notes, reverb settings, and tune search engine collection databases"></p>' + 
+        '<p class="modal-text-updateinfo" onclick="ShowBrowserInfo();" title="Click to show browser information">Click to show browser info<br/>' +
+        'Installed version: ' + gLiteVersionNumber + '</p>'
     }
   ]);
 
@@ -52616,7 +52618,7 @@ function ConfigureToolSettings() {
           '<input id="configure_musicxml_import" class="btn btn-subdialog configure_musicxml_import" onclick="ConfigureMusicXMLImport()" type="button" value="MusicXML/MIDI Settings" title="Configure MusicXML/MIDI import settings">' +
           '<input id="configure_developer_settings" class="btn btn-subdialog configure_developer_settings" onclick="AdvancedSettings()" type="button" value="Advanced Settings" title="Configure low level tool settings">' +
         '</p>' +
-        '<p class="modal-text-updateinfo" title="Click to update to the latest version of the tool" onclick="UpdateToLatestVersion();">' +
+        '<p class="modal-text-updateinfo modal-text-updated" title="Click to update to the latest version of the tool" onclick="UpdateToLatestVersion();">' +
           'Click here to update to the latest version<br/>' +
           'Latest fork version: ' + gUpdateVersion + '<br/>' +
           'Installed version: ' + gLiteVersionNumber +
@@ -52632,7 +52634,7 @@ function ConfigureToolSettings() {
           '<input id="configure_musicxml_import" class="btn btn-subdialog configure_musicxml_import" onclick="ConfigureMusicXMLImport()" type="button" value="MusicXML/MIDI Settings" title="Configure MusicXML/MIDI import settings">' +
           '<input id="configure_developer_settings" class="btn btn-subdialog configure_developer_settings" onclick="AdvancedSettings()" type="button" value="Advanced Settings" title="Configure low level tool settings">' +
         '</p>' +
-        '<p style="font-size:10pt;line-height:14pt;color:grey;position:absolute;left:20px;bottom:20px;margin:0px;cursor:pointer;" title="Click to update to the latest version" onclick="UpdateToLatestVersion();">' +
+        '<p class="modal-text-updateinfo" title="Click to update to the latest version" onclick="UpdateToLatestVersion();">' +
           'You have the latest version<br/>' +
           'Version: ' + gLiteVersionNumber + '<br>' +
           'Click here to force an update' +

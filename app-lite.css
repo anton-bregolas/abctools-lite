@@ -229,13 +229,17 @@ div.modal_flat_form_item_label {
   top: 20px
 }
 
-.modal-text-updateinfo {
-  font-size: 0.833rem;
-  line-height: 1.4;
+.modal-text-updated {
   color: var(--abctools-color-update);
+}
+
+.modal-text-updateinfo {
+  font-size: 0.845rem;
+  line-height: 1.4;
+  color: dimgray;
   position: absolute;
-  left: 20px;
-  bottom: 20px;
+  left: 30px;
+  bottom: 30px;
   margin: 0;
   cursor: pointer;
 }
