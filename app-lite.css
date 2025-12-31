@@ -212,6 +212,20 @@ div.modal_flat_form_item_label {
   margin: 1em 0;
 }
 
+.modal-header-settings {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-left: 15px;
+}
+
+.modal-link-help {
+  font-size: 2rem;
+  text-decoration: none;
+  position: absolute;
+  left: 20px;
+  top: 20px
+}
+
 .modal-textgroup-explanation.modal-header {
   font-size: var(--abctools-font-size-header-m-18);
 }
