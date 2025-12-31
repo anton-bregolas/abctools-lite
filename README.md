@@ -19,7 +19,7 @@ Feature | ABC Transcription Tools | ABC Tools Lite
 | Assets Cached on Startup | Main app assets, default offline instruments,<br> ABC docs, MIDI docs, PDF fonts, User Guide page | Main app assets, default offline instruments,<br> custom UI fonts |
 | Progressive Web App? | Yes | Yes (Customized) |
 | Offline Functionality? | Full on startup + additional tune & instrument databases cached on demand | Most on startup + additional PDF fonts, tune & instrument databases cached on demand |
-| Updates? | Frequent feature updates and improvements by Michael Eskin | ~Weekly updates merging original updates by Michael Eskin and additional features |
+| Updates? | Frequent feature updates and improvements by Michael Eskin | ~Bi-weekly updates merging custom features with original updates by Michael Eskin |
 
 ## Lite UI & Features (Roadmap)
 
@@ -35,12 +35,11 @@ UI Improvement | Status | Details
 | *Move ABC Tools links toolbar to context menu, convert items to buttons* | IN PROGRESS | Make links to external pages and tools available via modal menu while making them more mobile-friendly |
 | *Customize app buttons* | IN PROGRESS | New flat look of app buttons<br>Color bottom bar buttons for quicker recognition|
 | *Customize app icons* | IN PROGRESS | TO DO: Add Bootstrap icons, use icons from the same set, use svg/symbol for icons |
+| *Add basic accessibility features* | IN PROGRESS | Add outline & cursor styles to basic buttons<br>TO DO: Make Editor & overlay buttons fully tabbable<br>TO DO: Where possible, replace divs with semantic elements|
 | *Customize app menus* | TO DO | --- |
 | *Add color themes for ABC Tools UI* | TO DO | --- |
 | *Add user-customizable UI color theme option* | TO DO | --- |
 | *Add user-customizable UI font option* | TO DO | --- |
-| *Add basic accessibility features* | TO DO | --- |
-
 
 <details>
   <summary><b>Original ABC Transcription Tools README & CREDITS</b></summary>
