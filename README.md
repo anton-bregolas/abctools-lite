@@ -2,14 +2,13 @@
 
 **ABC Tools Lite** is a lightweight fork of ABC Transcription Tools developed by [Anton Zille](https://github.com/anton-bregolas/). This version of the Tools aims to improve cross-platform experience for mobile, tablet and desktop users and minimize the device storage space taken up on startup while retaining key offline functionality of the original Michael Eskin app. It features a custom work-in-progress restyle of the Tools' user interface.
 
-ABC Tools Lite is the default notation editor of the [NS Session Setlist](https://ns.tunebook.app/) app at the Novi Sad Irish traditional music session ([GitHub Source](https://github.com/anton-bregolas/NS-Session-Setlist)).
-
 🎵 [**LITE APP LINK**](https://abc.tunebook.app/) 🎻 [**LITE BACKUP LINK**](https://anton-bregolas.github.io/abctools-lite/abctools.html) 🎵 https://abc.tunebook.app/
 
+ABC Tools Lite is the default notation editor of the [NS Session Setlist](https://ns.tunebook.app/) app at the Novi Sad Irish traditional music session ([GitHub Source](https://github.com/anton-bregolas/NS-Session-Setlist)). To see more sources of music in ABC notation see the updated [ABC Sources](https://abc.tunebook.app/tunesources.html) page.
 
-ABC Transcription Tools is a tunes-to-notation converter developed by <a href="https://michaeleskin.com" target="_blank">Michael Eskin</a>. Both ABC Tools Lite and ABC Transcription Tools are distributed under the terms of the MIT open source license.
+ABC Tools Lite includes GPLv3-licensed libraries and is thus distributed under the terms of the GNU General Public License version 3.0. To see licensing terms for individual components used by the Tools visit [Credits](https://abc.tunebook.app/credits.html) page or see LICENSE-LIB.
 
-Check out the outline of technical and functional differences to see whether Lite fits your use case. Note that this fork may include some experimental features and alternative UI logic as compared to Michael Eskin's ABC Transcription Tools. For full original functionality make sure to visit [ABC Transcription Tools GitHub](https://github.com/seisiuneer/abctools).
+ABC Tools Lite is based on ABC Transcription Tools, a tunes-to-notation converter developed by <a href="https://michaeleskin.com" target="_blank">Michael Eskin</a>. Check out the outline of technical and functional differences to see whether Lite fits your use case. Note that this fork may include some experimental features and alternative UI logic as compared to Michael Eskin's ABC Transcription Tools. For full original functionality make sure to visit [ABC Transcription Tools GitHub](https://github.com/seisiuneer/abctools).
 
 ## Key Differences (Assets Used)
 

@@ -2,15 +2,13 @@
 <html>
 <head>
   
-  <title>ABC Transcription Tools Credits and Thanks</title>
+  <title>ABC Tools Lite: Credits and Thanks</title>
   
   <meta charset="UTF-8">
   <meta http-equiv="Content-Type" content="text/html">
-  <meta content="ABC transposer ABCtransposer transpose jig reel folk" name="keywords">
   <meta content="A simple-to-use ABC to standard music notation converter featuring transposition, tab generation, and PDF export." name="description">
-  <meta content="A simple-to-use ABC to standard music notation converter featuring transposition, tab generation, and PDF export." name="abstract">
   <meta property="og:locale" content="en_US" />
-  <meta name="description" content="A simple-to-use ABC to standard music notation converter" />
+  <meta name="description" content="ABC Tools Lite: A Fork of Michael Eskin's ABC Transcription Tools" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="ABC Tools Lite: A Fork of Michael Eskin's ABC Transcription Tools" />
   <meta property="og:description" content="A simple-to-use ABC to standard music notation converter featuring transposition, tab generation, and PDF export." />
@@ -20,164 +18,86 @@
   <meta name="theme-color" content="#181818">  
   <meta name="apple-mobile-web-app-title" content="ABC Tools">
   <meta name="application-name" content="ABC Tools">
-  <meta name="viewport" content="width=860">
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="./img/apple-touch-icon.png">
-  <link href="app.css" media="all" rel="stylesheet" type="text/css">
   <link rel="manifest" href="img/abc-manifest.json">
-  <style>
-    p {
-    font-size:14pt;
-    font-family:"Helvetica";
-    line-height: 28px;
-    }
-
-    h1 {
-    font-size:16pt;
-    font-family:"Helvetica";
-    margin-bottom:32px;
-    }
-
-    hr {
-    margin-top:24px;
-    margin-bottom:24px;
-    }
-
-    body {
-    padding:10px;
-    text-align: center;
-    }
-
-    #maindiv{
-    position: absolute;
-    left: 50%;
-    margin-right: -50%;
-    transform: translate(-50%, 0%);
-    text-align: left;
-    width: 800px;
-    background-color: white;
-    }
-
-    .image_holder{
-      text-align: center;
-  }
-
-</style>
-
+  <link rel="stylesheet" href="tools-common.css">
+  <link rel="stylesheet" href="apply-user-settings.css">
+  <script type="text/javascript" src="apply-user-settings.js"></script>
 </head>
 <body style="padding:0;">
 <div id="maindiv">
   <div style="text-align: center;">
-  <h1 id="pagetitle">ABC Transcription Tools Credits and Thanks</h1><br>
-  <p>This ABC to notation converter was developed by <a href="https://michaeleskin.com" target="_blank">Michael Eskin</a>.</p>
-  <p>Full project source may be found on: <a href="https://github.com/seisiuneer/abctools" target="_blank">GitHub</a>.</p>
-  <p>Try it out here: <a href="https://michaeleskin.com/abc" target="_blank">ABC Transcription Tools</a>.</p>
+  <h1 id="pagetitle">ABC Tools Lite Credits and Thanks</h1><br>
+    <h2>Updated January 2026</h2>
+    <hr>
+    <h2>About ABC Tools Lite</h2>
+    <p>This fork of ABC Transcription Tools is being developed by <a href="https://github.com/anton-bregolas/" target="_blank">Anton Zille</a></p>
+    <p>Full project source may be found on: <a href="https://github.com/anton-bregolas/abctools-lite" target="_blank">GitHub</a></p>
+    <p>Try it out here: <a href="https://abc.tunebook.app/abctools.html" target="_blank">ABC Tools Lite</a> | <a href="https://anton-bregolas.github.io/abctools-lite/abctools.html" target="_blank">Lite Backup Link</a></p>
+    <hr>
+    <h2>About ABC Transcription Tools</h2>
+    <p>The original ABC to notation converter was developed by <a href="https://michaeleskin.com" target="_blank">Michael Eskin</a></p>
+    <p>Full project source may be found on: <a href="https://github.com/seisiuneer/abctools" target="_blank">GitHub</a></p>
+    <p>Try it out here: <a href="https://michaeleskin.com/abc" target="_blank">ABC Transcription Tools</a></p>
   </div>
   <hr>
-  <p><strong>Open Source Info:</strong></p>
+  <p style="text-align: center;"><strong>ABC Tools Lite: Open Source Info</strong></p>
+  <p>Additional third-party assets and libraries used in the project:</p>
+  <p><a href="https://github.com/mozilla/Fira" target="_blank">Mozilla's Fira Fonts</a> are <a href="https://openfontlicense.org/" title="The SIL Open Font License" target="_blank">OFL-licensed</a> fonts optimized for high legibility on screens of any size. Fira Sans and Fira Code have a wide range of glyphs, supporting 1025 languages.</p>
+  <p><a href="https://icons.getbootstrap.com/" target="_blank">Bootstrap Icons</a> is a popular open-source SVG icon library with over 1800 glyphs designed to go well together (<a href="https://opensource.org/license/mit" title="MIT License" target="_blank">MIT License</a>).</p>
+  <p><a href="https://github.com/Download/storage-available" target="_blank">storage-available</a> by Stijn de Witt is a short reliable script ensuring that localStorage is available and user customization data stored there can be safely applied (<a href="https://opensource.org/license/mit" title="MIT License" target="_blank">MIT License</a>).</p>
+  <hr>
+  <p style="text-align: center;"><strong>ABC Transcription Tools: Open Source Info</strong></p>
   <p>The converter uses open source Javascript libraries and forks of other projects:</p>
-  <p><a href="https://www.abctransposer.de/" target="_blank">Jens Wollschlager's ABC Transposer</a> was the initial inspiration for the development of this tool.</p> 
-  <p><a href="https://www.abcjs.net/" target="_blank">abcjs</a> by Paul Rosen and Gregory Dyke to convert abc to sheet music.</p>
-  <p><a href="https://www.npmjs.com/package/html-to-image" target="_blank">html-to-image</a> is used to prepare the html sheet music for PDF conversion.</p>
-  <p><a href="https://github.com/parallax/jsPDF" target="_blank">jsPDF</a> is used to create the PDF.</p>
-  <p><a href="https://github.com/Hopding/pdf-lib" target="_blank">pdf-lib</a> is used to split PDF tunebooks into individual PDF files.</p>
-  <p><a href="https://github.com/OMerkel/tin_whistle/tree/master/res/font" target="_blank">Tin Whistle Fingering Font</a> by Paul Merke is used to generate the whistle tabs.</p> 
-  <p><a href="https://davidshimjs.github.io/qrcodejs" target="_blank">qrcode.js</a> is used to generate the QR codes.</p> 
-  <p><a href="https://github.com/pieroxy/lz-string" target="_blank">lz-string.js</a> is used to for LZW compression of the tunes for share links.</p> 
-  <p><a href="https://github.com/nodeca/pako" target="_blank">pako.js</a> is used to for Deflate compression of the tunes for share links.</p> 
+  <p><a href="https://www.abctransposer.de/" target="_blank">Jens Wollschläger's ABC Transposer</a> was the initial inspiration for the development of this tool.</p> 
+  <p><a href="https://www.abcjs.net/" target="_blank">abcjs</a> by Paul Rosen and Gregory Dyke to convert abc to sheet music (<a href="https://opensource.org/license/mit" title="MIT License" target="_blank">MIT License</a>).</p>
+  <p><a href="https://www.npmjs.com/package/html-to-image" target="_blank">html-to-image</a> is used to prepare the html sheet music for PDF conversion (<a href="https://opensource.org/license/mit" title="MIT License" target="_blank">MIT License</a>).</p>
+  <p><a href="https://github.com/parallax/jsPDF" target="_blank">jsPDF</a> is used to create the PDF (<a href="https://opensource.org/license/mit" title="MIT License" target="_blank">MIT License</a>).</p>
+  <p><a href="https://github.com/Hopding/pdf-lib" target="_blank">pdf-lib</a> is used to split PDF tunebooks into individual PDF files (<a href="https://opensource.org/license/mit" title="MIT License" target="_blank">MIT License</a>).</p>
+  <p><a href="https://github.com/OMerkel/tin_whistle/tree/master/res/font" target="_blank">Tin Whistle Fingering Font</a> by Paul Merke is used to generate the whistle tabs (CC BY-NC-SA 4.0 License).</p> 
+  <p><a href="https://davidshimjs.github.io/qrcodejs" target="_blank">qrcode.js</a> is used to generate the QR codes (<a href="https://opensource.org/license/mit" title="MIT License" target="_blank">MIT License</a>).</p> 
+  <p><a href="https://github.com/pieroxy/lz-string" target="_blank">lz-string.js</a> is used to for LZW compression of the tunes for share links (<a href="https://opensource.org/license/mit" title="MIT License" target="_blank">MIT License</a>).</p> 
+  <p><a href="https://github.com/nodeca/pako" target="_blank">pako.js</a> is used to for Deflate compression of the tunes for share links (<a href="https://opensource.org/license/mit" title="MIT License" target="_blank">MIT License</a>).</p> 
   <p><a href="https://wim.vree.org/js/xml2abc-js_index.html" target="_blank">xml2abc.js</a> is used to for converting MusicXML format to ABC.</p> 
   <p><a href="https://wim.vree.org/svgParse/abc2xml.html" target="_blank">abc2xml</a> is used for the ABC format to MusicXML transcoding Python web service.</p> 
-  <p><a href="https://github.com/cuthbertLab/music21" target="_blank">Music21</a> is used for the MIDI to MusicXML transcoding Python web service.</p> 
-  <p><a href="https://stuk.github.io/jszip/" target="_blank">jszip.js</a> is used to unzip compressed .mxl files.</p>
-  <p><a href="https://github.com/zhuker/lamejs" target="_blank">lame.js</a> is used to for converting .wav format to .mp3.</p> 
-  <p><a href="https://github.com/swevans/unmute" target="_blank">umute.js</a> is used to for fixing the iOS tab switch audio mute issue.</p> 
-  <p><a href="https://musescore.org/en/handbook/3/soundfonts-and-sfz-files" target="_blank">MuseScore General</a> is the basis for the rendered MuseScore soundfont.</p> 
-  <p><a href="https://github.com/marmooo/midi2abc" target="_blank">midi2abc</a> is used for the standalone MIDI to ABC transcoding.</p> 
-  <p><a href="http://moinejf.free.fr/bww2abc" title="bww2abc" target="_blank">bww2abc</a> by Jean-Francois Moine is used for BWW to ABC conversion under a <a href="https://abc.tunebook.app/gpl3.txt" target="_blank">GPL3+</a> license.</p>
-  <p><a href="https://johnresig.com/files/titleCaps.js" target="_blank">Title Caps</a> by John Resig is used for MusicXML title generation.</p> 
-  <p><a href="https://modal.daypilot.org" target="_blank">DayPilot Modal</a> is used for modal dialog replacements.</p> 
-  <p><a href="https://github.com/mturco/context-menu" target="_blank">context-menu</a> is used for dropdown menus.</p>
-  <p><a href="https://github.com/panzi/ocarina_tabs" target="_blank">ocarina_tabs</a> by panzi was the starting point for the 12-Hole Ocarina Tab Creator tool.</p>
+  <p><a href="https://github.com/cuthbertLab/music21" target="_blank">Music21</a> (<a href="https://opensource.org/license/bsd-3-clause" title="BSD 3-Clause License" target="_blank">BSD 3-Clause License</a>) is used for the MIDI to MusicXML transcoding Python web service.</p> 
+  <p><a href="https://stuk.github.io/jszip/" target="_blank">jszip.js</a> is used to unzip compressed .mxl files (<a href="https://opensource.org/license/mit" title="MIT License" target="_blank">MIT License</a>).</p>
+  <p><a href="https://github.com/zhuker/lamejs" target="_blank">lame.js</a> is used to for converting .wav format to .mp3 (LGPLv2.1 License).</p> 
+  <p><a href="https://github.com/swevans/unmute" target="_blank">unmute.js</a> is used to for fixing the iOS tab switch audio mute issue (<a href="https://opensource.org/license/mit" title="MIT License" target="_blank">MIT License</a>).</p> 
+  <p><a href="https://musescore.org/en/handbook/3/soundfonts-and-sfz-files" target="_blank">MuseScore General</a> is the basis for the rendered MuseScore soundfont (<a href="https://opensource.org/license/mit" title="MIT License" target="_blank">MIT License</a>).</p> 
+  <p><a href="https://github.com/marmooo/midi2abc" target="_blank">midi2abc</a> is used for the standalone MIDI to ABC transcoding (<a href="https://opensource.org/license/mit" title="MIT License" target="_blank">MIT License</a>).</p> 
+  <p><a href="http://moinejf.free.fr/bww2abc" title="bww2abc" target="_blank">bww2abc</a> by Jean-Francois Moine is used for BWW to ABC conversion (<a href="https://www.gnu.org/licenses/gpl-3.0.txt" title="The GNU General Public License v3.0" target="_blank">GPLv3+ License</a>).</p>
+  <p><a href="https://johnresig.com/files/titleCaps.js" target="_blank">Title Caps</a> by John Resig is used for MusicXML title generation (<a href="https://opensource.org/license/mit" title="MIT License" target="_blank">MIT License</a>).</p> 
+  <p><a href="https://modal.daypilot.org" target="_blank">DayPilot Modal</a> is used for modal dialog replacements (<a href="http://www.apache.org/licenses/LICENSE-2.0" title="Apache License, Version 2.0" target="_blank">Apache License 2.0</a>).</p> 
+  <p><a href="https://github.com/mturco/context-menu" target="_blank">context-menu</a> is used for dropdown menus (<a href="https://opensource.org/license/mit" title="MIT License" target="_blank">MIT License</a>).</p>
+  <p><a href="https://github.com/panzi/ocarina_tabs" target="_blank">ocarina_tabs</a> by panzi  (<a href="https://openfontlicense.org/" title="The SIL Open Font License" target="_blank">OFL License</a>) was the starting point for the 12-Hole Ocarina Tab Creator tool.</p>
   <p><a href="https://www.fontspace.com/recorders-font-f18231" target="_blank">Hiawatha's Recorder Fingering Font</a> is used for Baroque Recorder fingering tablature.</p>
-  <p><a href="https://versilian-studios.com/vcsl/" target="_blank">Versilian Community Sample Library</a> CC0 Baroque Recorder samples were the starting point for the SATB Recorder instruments.</p>
+  <p><a href="https://versilian-studios.com/vcsl/" target="_blank">Versilian Community Sample Library</a> Baroque Recorder (<a href="https://creativecommons.org/public-domain/cc0/" title="CC0 - No Rights Reserved" target="_blank">CC0</a>) samples were the starting point for the SATB Recorder instruments.</p>
   <p>Ui icons created by <a href="https://www.flaticon.com/free-icons/ui" title="ui icons" target="_blank"> PDF and Karacis - Flaticon</a>.</p>
-  <p>Options icon by Marie Van den Broeck from <a href="https://thenounproject.com/browse/icons/term/options/" target="_blank" title="options Icons">Noun Project</a> (CC BY 3.0)</p>
+  <p>Options icon by Marie Van den Broeck from <a href="https://thenounproject.com/browse/icons/term/options/" target="_blank" title="options Icons">Noun Project</a> (<a href="https://creativecommons.org/licenses/by/3.0/deed.en" title="CC BY 3.0 - Attribution 3.0 Unported" target="_blank">CC BY 3.0</a>)</p>
   <p>Anglo Concertina fingering solution and ABC parsing methods used by the tab injectors originally developed by <a href="https://jvandonsel.github.io/fingering/fingering.html" target="_blank">Jim Van Donsel</a>.</p>
   <p>Diatonic harmonica mapping algorithm derived from: <a href="https://welltemperedstudio.wordpress.com/code/abc2harp/" target="_blank">abc2harp</a> by Gek Siong Low.</p>       
-  <p><a href="https://github.com/TomWyllie/folkfriend" title="FolkFriend" target="_blank">FolkFriend.app Tune Collection</a> by Tom Wyllie, used for the search engine, used under <a href="https://abc.tunebook.app/gpl3.txt" title="GPL3" target="_blank">GPL3</a> licensing.</p>
-  <p><a href="https://freesound.org/people/bosone/packs/4209/" title="Bodhran Samples by Bosone" target="_blank">Bodhran Samples by Bosone</a> used under <a href="https://creativecommons.org/licenses/by-nc/4.0/" title="by-nc" target="_blank">CC BY-NC 4.0</a> licensing.</p>
+  <p><a href="https://github.com/TomWyllie/folkfriend" title="FolkFriend" target="_blank">FolkFriend.app Tune Collection</a> by Tom Wyllie, used for the search engine, used under <a href="https://www.gnu.org/licenses/gpl-3.0.txt" title="The GNU General Public License v3.0" target="_blank">GPLv3</a> licensing.</p>
+  <p><a href="https://freesound.org/people/bosone/packs/4209/" title="Bodhran Samples by Bosone" target="_blank">Bodhran Samples by Bosone</a> used under <a href="https://creativecommons.org/licenses/by-nc/4.0/" title="CC BY-NC 4.0" target="_blank">CC BY-NC 4.0</a> licensing.</p>
   <p><a href="https://ko-fi.com/s/573c321432" title="Irish Bouzouki (Kontakt Sample Instrument)" target="_blank">Irish Bouzouki (Kontakt Sample Instrument)</a> by Eamon Coughlan (sampled from an instrument built by Daniel Hoban) used as the basis for the Irish Bouzouki 2 instrument.</p>
   <p><a href="https://musical-artifacts.com/artifacts/2181" title="Mountain Dulcimer" target="_blank">Mountain Dulcimer</a> by Jeff Rocchio is used as the basis for the Mountain Dulcimer (Solo) and Mountain Dulcimer (DAD) instruments.</p>
   <p>The first 30 seconds of each of the bodhran backing track YouTube videos from <a href="https://santigaitero.com/" title="Santiago Molino" target="_blank">Santiago Molino</a> are used as the basis for bodhran backing track custom instrument.</p>
-  <p><a href="https://ultraabox.github.io/sample_extractor.html" title="UltraBox Sample Extractor" target="_blank">UltraBox Sample Extractor</a> is the .sf2 soundfont .wav sample extractor referenced in the User Guide and cloned to Michael Eskin’s web hosting.</p>
+  <p><a href="https://ultraabox.github.io/sample_extractor.html" title="UltraBox Sample Extractor" target="_blank">UltraBox Sample Extractor</a> is the .sf2 soundfont .wav sample extractor referenced in the User Guide and cloned to Michael Eskin’s web hosting (<a href="https://opensource.org/license/mit" title="MIT License" target="_blank">MIT License</a>).</p>
   <p><a href="https://www.arachnosoft.com/main/soundfont.php?documentation=fullscreen#copyright" title="Arachno Soundfont Licenses" target="_blank">Arachno Soundfont</a> used under a variety of non-commercial use licenses.</p>
   <p>Google Noto Sans Traditional Chinese and Noto Serif Traditional Chinese Fonts for PDF export used under the <a href="https://openfontlicense.org/open-font-license-official-text/" title="SIL Open Font License Version 1.1" target="_blank">SIL OPEN FONT LICENSE Version 1.1</a>.</p>
-  <p><a href="https://codemirror.net/5/" title="CodeMirror 5" target="_blank">CodeMirror 5</a> is used for the textarea replacement with line numbers and ABC syntax highlighting.</p>
+  <p><a href="https://codemirror.net/5/" title="CodeMirror 5" target="_blank">CodeMirror 5</a> is used for the textarea replacement with line numbers and ABC syntax highlighting (<a href="https://opensource.org/license/mit" title="MIT License" target="_blank">MIT License</a>).</p>
   <p>Without these free open-source resources this project would not have been possible.</p>
   <p></p>
   <hr>
-  <p><strong>Project Contributors:</strong></p>
+  <p style="text-align: center;"><strong>ABC Transcription Tools: Project Contributors</strong></p>
   <p>Thank you to Philip McGarvey for the share link export feature addition!</p>
-  <p>Thank you to Gavin Heneghan for allowing me to use his 20,000+ tune database for the tune search page.</p>
+  <p>Thank you to Gavin Heneghan for allowing to use his 20,000+ tune database for the tune search page.</p>
   <p>Thank you to Matteo Brusa for prototyping work on the key/mode aware MIDI input system.</p>
   <p>Thank you to <a href="https://www.youtube.com/@BenjaminHockenberry" target="_blank">Ben Hockenberry</a> for contributing to the Bodhran backing track templates</p>
   <hr>
 </div>
+</main>
 </body>
-
-<script>
-
-    //
-    // Are we on iOS?
-    //
-    function isIOS() {
-
-        if (/iPad|iPhone|iPod/.test(navigator.platform)) {
-            return true;
-        } else {
-            return navigator.maxTouchPoints &&
-                navigator.maxTouchPoints > 2 &&
-                /MacIntel/.test(navigator.platform);
-        }
-    }
-
-    function DoStartup() {
-
-        // 
-        // iOS Styling adaptation
-        //
-
-        var gIsIOS = isIOS();
-
-        if (gIsIOS) {
-            // Fix the title font
-            var elem = document.getElementById("pagetitle");
-            elem.size = 5;
-            elem.style.fontFamily = "Helvetica";
-        }
-
-    }
-
-    //
-    // Wait for the document to be ready, then fire a function
-    //
-
-    function WaitForReady(fn) {
-      if (document.readyState !== 'loading') {
-        fn();
-        return;
-      }
-
-      document.addEventListener('DOMContentLoaded', fn);
-
-    }
-
-    //
-    // Wait for the document to be ready, then startup
-    //
-
-    WaitForReady(DoStartup);  
-
-</script>
 </html>

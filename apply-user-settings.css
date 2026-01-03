@@ -1,0 +1,77 @@
+/*//////////////////////////////////////////
+// LITE USER SETTINGS: COLOR THEMES
+/////////////////////////////////////////*/
+
+/* Light theme on (default) */
+
+body {
+  background-color: white;
+  color: black;
+  & a { color: darkblue; }
+  & a:hover { color: darkgreen; }
+}
+
+/* Dark theme on */
+
+body[data-theme="dark"] {
+  background-color: #181818;
+  color: #fafafa;
+  & a { color: lightsalmon; }
+  & a:hover { color: springgreen; }
+}
+
+/* Subdued theme on */
+
+body[data-theme="subdued"] {
+  background-color: #363636;
+  color: white;
+  & a { color: coral; }
+  & a:hover { color: palegreen; }
+}
+
+/*//////////////////////////////////////////
+// LITE USER SETTINGS: FONTS
+/////////////////////////////////////////*/
+
+@font-face {
+  font-family: 'Fira Sans';
+  font-weight: 400;
+  font-style: normal;
+  src: url('./fonts/FiraSans-Regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Fira Sans';
+  font-weight: 400;
+  font-style: italic;
+  src: url('./fonts/FiraSans-Italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Fira Sans';
+  font-weight: 600;
+  font-style: normal;
+  src: url('./fonts/FiraSans-SemiBold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Fira Sans';
+  font-weight: 600;
+  font-style: italic;
+  src: url('./fonts/FiraSans-SemiBoldItalic.woff2') format('woff2');
+}
+
+body {
+  --abctools-font-fallback-code: var(--abctools-font-code), 'Fira Mono', Courier, monospace;
+	--abctools-font-fallback-ui: var(--abctools-font-ui), 'Fira Sans', Helvetica, sans-serif;
+	--abctools-font-code: 'Fira Mono';
+	--abctools-font-ui: 'Fira Sans';
+}
+
+body * {
+  font-family: var(--abctools-font-ui);
+}
+
+body .abc {
+  font-family: var(--abctools-font-code);
+}

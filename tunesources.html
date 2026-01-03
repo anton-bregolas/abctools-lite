@@ -2,32 +2,29 @@
 <html>
 <head>
   
-  <title>ABC Transcription Tools ABC, MusicXML, and BWW Tune Sources</title>
+  <title>ABC Tools Lite: ABC, MusicXML, and BWW Tune Sources</title>
   
   <meta charset="UTF-8">
   <meta http-equiv="Content-Type" content="text/html">
-  <meta content="ABC transposer ABCtransposer transpose jig reel folk" name="keywords">
-  <meta content="A simple-to-use ABC to standard music notation converter featuring transposition, tab generation, and PDF export." name="description">
   <meta content="A simple-to-use ABC to standard music notation converter featuring transposition, tab generation, and PDF export." name="abstract">
   <meta property="og:locale" content="en_US" />
-  <meta name="description" content="A simple-to-use ABC to standard music notation converter" />
+  <meta name="description" content="ABC Tools Lite: A Fork of Michael Eskin's ABC Transcription Tools" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="ABC Transcription Tools ABC, MusicXML, and BWW Tune Sources" />
-  <meta property="og:description" content="A simple-to-use ABC to standard music notation converter featuring transposition, tab generation, and PDF export." />
+  <meta property="og:title" content="ABC Tools Lite: ABC, MusicXML, and BWW Tune Sources" />
+  <meta property="og:description" content="ABC Tools Lite: A Fork of Michael Eskin's ABC Transcription Tools" />
   <meta property="og:url" content="https://abc.tunebook.app/tunesources.html" />
-  <meta property="og:site_name" content="ABC Transcription Tools ABC, MusicXML, and BWW Tune Sources" />
+  <meta property="og:site_name" content="ABC, MusicXML, and BWW Tune Sources" />
   <meta property="og:image" content="./img/abclite-icon-512x512.png" />  
   <meta name="theme-color" content="#181818">  
   <meta name="apple-mobile-web-app-title" content="Tune Sources">
-  <meta name="viewport" content="width=860">
   <meta name="application-name" content="ABC Tools">
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="./img/apple-touch-icon.png">
   <link rel="manifest" href="img/abc-manifest.json">
-
-  <link rel="stylesheet" href="tunesources.css?v=17"/>
-
+  <link rel="stylesheet" href="tools-common.css">
+  <link rel="stylesheet" href="apply-user-settings.css">
+  <script type="text/javascript" src="apply-user-settings.js"></script>
   </head>
 
   <body>
@@ -36,13 +33,14 @@
       
       <div>
         <div style="text-align: center;">
-        <font face="Comic Sans MS" size="5" id="pagetitle">ABC Transcription Tools ABC, MusicXML, and BWW Tune Sources</font><br>
-        <p>This ABC to notation converter was developed by <a href="https://michaeleskin.com" target="_blank">Michael Eskin</a>.</p>
-        <p>Full project source may be found on: <a href="https://github.com/seisiuneer/abctools" target="_blank">GitHub</a>.</p>
-        <p>Try it out here: <a href="https://michaeleskin.com/abc" target="_blank">ABC Transcription Tools</a>.</p>
+        <h1 id="pagetitle">ABC, MusicXML, and BWW Tune Sources</h1><br>
+        <h2>Updated January 2026</h2>
         </div>
       </div>
-            
+      <hr>
+      <h4 style="text-align:center">ABC-based Tunebook Examples</h4>
+      <p><a href="https://michaeleskin.com/tunebooks.html#websites_irish" target="_blank">Michael Eskin's Tunebook Websites</a> - Tunebooks created by Michael Eskin using his original ABC Transcription Tools Export Website feature. Full-featured tunebooks include readily editable ABC notation, others contain links that open ABC Transcription Tools in a new tab.</a></p>
+      <p><a href="https://ns.tunebook.app/" target="_blank">Novi Sad Session Setlist</a> - A fully responsive session tunebook web app developed by Anton Zille. Originally inspired by Michael Eskin's Export Website feature, it aims to make the local session repertoire accessible from desktop and mobile devices of any make and size.</a></p>
       <hr>
       <h4 style="text-align:center">Getting Started with ABC</h4>
       <p><a href="https://abcnotation.com/learn" target="_blank">ABC Notation</a> - Has links to many tutorials and videos on getting started with using ABC notation.</a></p>
@@ -54,6 +52,14 @@
       <p><a href="https://abcnotation.com/tunes" target="_blank">ABC Notation</a> - Has a vast number of linked sites with collections of ABC files. It also has a <a href="https://abcnotation.com/search" target="_blank">tune search engine.</a></p>
       <p><a href="http://www.norbeck.nu/abc/index2.asp" target="_blank">Henrik Norbeck's ABC Tunes</a> - A massive collection of tunes for traditional Irish and Swedish music.</p>
       <p><a href="http://www.campin.me.uk/" target="_blank">Jack Campin's Home Page</a> - Many large collections of mostly Scottish and Irish tunes.</p>
+      <p><a href="https://trillian.mit.edu/~jc/music/book/" target="_blank">John Chamber's Online Music Books</a> - A veritable source of historical Irish music collections transcribed to ABC. Try using <a href="https://trillian.mit.edu/~jc/cgi/abc/tunefind" target="_blank">JC's ABC Tune Finder</a> to search for individual titles.</p>
+      <p><a href="http://www.capeirish.com/ittl/index.html" target="_blank">Bill Black's Irish Traditional Tune Library</a> - A large private ABC vault. Includes transcriptions from music collections such as Ceol Rince na hÉireann & Johnny O’Leary of Sliabh Luachra.</p>
+      <p><a href="https://tunearch.org/wiki/TTA" target="_blank">The Traditional Tune Archive</a> - Widely known for its excellent annotations, the wiki-based continuation of the Fiddler's Companion also includes community-sourced ABCs.</p>
+      <hr>
+      <h4 style="text-align:center">Tune Search Apps</h4>
+      <p><a href="https://tunepal.org/index.html" target="_blank">Tunepal</a> - The first-ever search-by-playing engine for traditional tunes led by Bryan Duggan includes many Irish & Scottish collections in its database. Results can be shown as ABCs.</p>
+      <p><a href="https://folkfriend.app/" target="_blank">FolkFriend</a> - A fast and reliable search-by-playing engine developed by Tom Wyllie that uses The Session.org database and works offline. "Source" button links to original ABC.</p>
+      <p><a href="https://sliabhluachra.github.io/ProjectDenis/" target="_blank">#ProjectDenis</a> - Anton Zille's pilot app project focused on the repertoire of the Sliabh Luachra fiddle player Denis Murphy. Includes links to ABC tunes and music sources.</p>
       <hr>
       <h4 style="text-align:center">Sources for Tunes in MusicXML Format</h4>
       <p><a href="https://www.musicxml.com/music-in-musicxml/" target="_blank">Music in MusicXML</a> - Links to several large collections of music in MusicXML format.</p>
@@ -69,67 +75,23 @@
         <h4 style="text-align:center">ABC 2.1 Quick Reference Card</strong></h4>
         <p>Download this handy ABC 2.1 Quick Reference Card put together by Stephen Merrony: </p>
         <p><a href="https://michaeleskin.com/documents/ABCquickRefv0_6.pdf" target="_blank">ABC Quick Reference Card</a></p>
+        <hr>
       </div>
-      
-      <hr style="margin-bottom:50px">
+      <div style="text-align:center"> 
+        <h2>About ABC Tools Lite</h2>
+        <p>This fork of ABC Transcription Tools is being developed by <a href="https://github.com/anton-bregolas/" target="_blank">Anton Zille</a></p>
+        <p>Full project source may be found on: <a href="https://github.com/anton-bregolas/abctools-lite" target="_blank">GitHub</a></p>
+        <p>Try it out here: <a href="https://abc.tunebook.app/abctools.html" target="_blank">ABC Tools Lite</a> | <a href="https://anton-bregolas.github.io/abctools-lite/abctools.html" target="_blank">Lite Backup Link</a></p>
+        <hr>
+        <h2>About ABC Transcription Tools</h2>
+        <p>The original ABC to notation converter was developed by <a href="https://michaeleskin.com" target="_blank">Michael Eskin</a></p>
+        <p>Full project source may be found on: <a href="https://github.com/seisiuneer/abctools" target="_blank">GitHub</a></p>
+        <p>Try it out here: <a href="https://michaeleskin.com/abc" target="_blank">ABC Transcription Tools</a></p>
+      </div>
+        <hr style="margin-bottom:50px">
       
     </div>
     
   </body>
-
-  <script>
-
-    //
-    // Are we on iOS?
-    //
-    function isIOS() {
-
-        if (/iPad|iPhone|iPod/.test(navigator.platform)) {
-            return true;
-        } else {
-            return navigator.maxTouchPoints &&
-                navigator.maxTouchPoints > 2 &&
-                /MacIntel/.test(navigator.platform);
-        }
-    }
-
-    function DoStartup() {
-
-        // 
-        // iOS Styling adaptation
-        //
-
-        var gIsIOS = isIOS();
-
-        if (gIsIOS) {
-            // Fix the title font
-            var elem = document.getElementById("pagetitle");
-            elem.size = 5;
-            elem.style.fontFamily = "Helvetica";
-        }
-
-    }
-
-    //
-    // Wait for the document to be ready, then fire a function
-    //
-
-    function WaitForReady(fn) {
-      if (document.readyState !== 'loading') {
-        fn();
-        return;
-      }
-
-      document.addEventListener('DOMContentLoaded', fn);
-
-    }
-
-    //
-    // Wait for the document to be ready, then startup
-    //
-
-    WaitForReady(DoStartup);  
-
-</script>
     
 </html>

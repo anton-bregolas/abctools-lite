@@ -2,18 +2,16 @@
 <html>
 	<head>
 		
-		<title>ABC Tools Lite Uninstaller</title>
+		<title>ABC Tools Lite: Uninstaller</title>
 		
 		<meta charset="UTF-8">
 		<meta http-equiv="Content-Type" content="text/html">
-		<meta content="ABC player transpose jig reel folk folktab folktab.com" name="keywords">
 		<meta content="A simple-to-use ABC to standard music notation converter featuring tune play, transposition, tab generation, PDF export, and much more!" name="description">
-		<meta content="A simple-to-use ABC to standard music notation converter featuring tune play, transposition, tab generation, PDF export, and much more!" name="abstract">
 		<meta property="og:locale" content="en_US" />
-		<meta name="description" content="A simple-to-use ABC to standard music notation converter featuring tune play, transposition, tab generation, PDF export and much more!" />
+		<meta name="description" content="ABC Tools Lite: A Fork of Michael Eskin's ABC Transcription Tools" />
 		<meta property="og:type" content="website" />
 		<meta property="og:title" content="Uninstall ABC Tools Lite" />
-		<meta property="og:description" content="A simple-to-use ABC to standard music notation converter featuring tune play, transposition, tab generation, PDF export and much more!" />
+		<meta property="og:description" content="ABC Tools Lite: A Fork of Michael Eskin's ABC Transcription Tools" />
 		<meta property="og:url" content="https://anton-bregolas.github.io/abctools-lite/uninstall.html" />
 		<meta property="og:site_name" content="Uninstall ABC Tools Lite" />
 		<meta property="og:image" content="./img/abclite-icon-512x512.png" />
@@ -23,65 +21,11 @@
     <link rel="icon" href="favicon.ico" sizes="any">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="./img/apple-touch-icon.png">
-
-		<style>
-		.btn {
-		  --color: #000000;
-		  --background-color: #d8d8d8;
-		  /* --border-color: darken(#d8d8d8, 7.5%); */
-		  --border-color: gray;
-		  color: var(--color);
-		  font-family: helvetica !important;
-		  font-size: 11pt !important;
-			font-weight: bold;
-		  background-color: var(--background-color);
-		  padding: 0.7rem 0.7rem;
-		  padding-top: 0.8rem;
-		  border: solid 1px var(--border-color);
-		  outline: none;
-		  position: relative;
-		  border-radius: 0.5rem;
-		  user-select: none;
-		  /* box-shadow: 0 0.1rem 0.1rem rgba(0, 0, 0, 0.25), 0 -0.1rem 0.5rem rgba(0, 0, 0, 0.1) inset; */
-		  -webkit-appearance:none;
-		}
-		.btn:after {
-		  content: "";
-		  background-color: #ffffff;
-		  width: 75%;
-		  height: 12.5%;
-		  position: absolute;
-		  top: 0.15rem;
-		  left: 12.5%;
-		  border-radius: 50%;
-		  filter: blur(0.15rem);
-		}
-		.btn:active {
-		  /* box-shadow: 0 0 0 rgba(0, 0, 0, 0.4), 0 0.4rem 1rem rgba(0, 0, 0, 0.3) inset; */
-			color: tomato;
-		}
-		.btn:active:after {
-		  opacity: 0;
-		}
-
-		.btn-info {
-		  --color: black;
-		  --background-color: #FFDDDD;
-		}
-		.btn-info:active {
-		  --color: #ececec;
-		}	
-
-		@media (hover: hover) {
-			.unregistersw:hover{
-			background: palegreen;
-			}
-		}
-
-		</style>
-			
+		<link rel="stylesheet" href="tools-common.css">
+		<link rel="stylesheet" href="apply-user-settings.css">
+		<script type="text/javascript" src="apply-user-settings.js"></script>
 		<script>
-		
+
 		//
 		// Delete all the databases
 		//
@@ -202,12 +146,17 @@
 
 	<body>
 
-		<h1 style="text-align:center;font-size:18pt;font-family:helvetica;margin-top:36px">Uninstall ABC Tools Lite</h1>
+		<main id="maindiv" style="text-align: center;">
 
-		<p style="text-align:center;font-size:14pt;font-family:helvetica;margin-top:48px">Click the button below to uninstall the tools from your browser and delete all cached resources.</p>
+		<h1>Uninstall ABC Tools Lite</h1>
+		<hr>
+		<p>Click the button below to uninstall the tools from your browser.</p>
+		
+		<p>This will delete all cached resources and indexed databases.</p>
 
-		<p style="text-align:center;font-size:14pt;font-family:helvetica;margin-top:48px"><input id="unregistersw" class="btn btn-info unregistersw" onclick="doUninstall();" type="button" value="Click here to Uninstall ABC Tools Lite" title="Click here to Uninstall ABC Tools Lite from your Browser">
-
+		<p><input id="unregistersw" class="btn btn-delete unregistersw" onclick="doUninstall();" type="button" value="Uninstall ABC Tools Lite" title="Click here to Uninstall ABC Tools Lite from your Browser">
+		<hr>
+		</main>
 	</body>
 
 

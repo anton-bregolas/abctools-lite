@@ -1,0 +1,366 @@
+body {
+  font-size: 1.2rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+textarea {
+  width: 600px;
+  height: 300px
+}
+
+select {
+  margin-left: 24px;
+}
+
+textarea#input {
+  width: 100%;
+  margin-bottom: 0px;
+}
+
+textarea#output {
+  width: 100%;
+}
+
+p {
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+label {
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+h1 {
+  font-size: 1.5rem;
+  margin-bottom: 0;
+}
+
+h2 {
+  font-size: 1.17rem;
+  line-height: 1.714;
+  margin-bottom: 0;
+}
+
+h4 {
+  font-size: 1.17rem;
+  margin-bottom: 8px;
+}
+
+hr {
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.image_holder {
+  text-align: center;
+  width: 240px;
+  height: 240px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#maindiv {
+  margin: 0 auto;
+  text-align: left;
+  max-width: 800px;
+  padding: 20px;
+}
+
+.inputbox {
+  position: absolute;
+  left: 170px;
+}
+
+.recommended {
+  position: absolute;
+  left: 300px;
+}
+
+.inputboxglyph {
+  position: absolute;
+  left: 230px;
+}
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%238C98F2'><polygon points='0,0 100,0 50,50'/></svg>") no-repeat;
+  background-size: 12px;
+  background-position: calc(100% - 10px) center;
+  background-repeat: no-repeat;
+  background-color: #efefef;
+  color: black;
+}
+
+#layout {
+  font-size: 0.9167rem;
+  height: 32px;
+  width: 85px;
+  margin-left: 0;
+  margin-right: 24px;
+}
+
+#tab_location {
+  font-size: 0.9167rem;
+  height: 32px;
+  width: 130px;
+  margin-left: 0;
+}
+
+.toc {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.accordion {
+  font-size: 1.17rem !important;
+  background-color: #eee;
+  color: #000 !important;
+  cursor: pointer !important;
+  padding: 14px !important;
+  width: 100% !important;
+  text-align: center !important;
+  border: none !important;
+  outline: none !important;
+  margin-bottom: 5px;
+}
+
+.active {
+  background-color: #eee;
+}
+
+@media not all and (pointer: coarse) {
+  .accordion:hover {
+    background-color: #9f9;
+  }
+}
+
+.expandall {
+  font-size: 0.9167rem !important;
+  width: 120px !important;
+  height: 40px !important;
+  padding: 7px !important;
+  border-radius: 4px !important;
+  border: 0 !important;
+  color: black !important;
+  background-color: #eee;
+}
+
+@media not all and (pointer: coarse) {
+  .expandall:hover {
+    background-color: #9f9;
+  }
+}
+
+.tocpanel {
+  padding: 12px !important;
+  padding-left: 60px !important;
+  background-color: white !important;
+  display: none;
+  overflow: hidden !important;
+}
+
+.attention-box {
+  text-align: center;
+  padding: 30px 10px 5px 10px;
+  background-color: honeydew;
+}
+
+[data-theme="dark"] .attention-box {
+  background-color: #2b362b;
+}
+
+[data-theme="subdued"] .attention-box {
+  background-color: #4c5c4c;
+}
+
+.btn {
+  --btn-text-color: #000000;
+  --btn-bg-color: #d8d8d8;
+  --btn-border-color: gray;
+  color: var(--btn-text-color);
+  font-size: 1rem;
+  background-color: var(--btn-bg-color);
+  padding: 0.7rem 0.7rem;
+  padding-top: 0.8rem;
+  border: solid 1px var(--btn-border-color);
+  outline: none;
+  position: relative;
+  border-radius: 0.5em;
+  user-select: none;
+  box-shadow: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.btn:after {
+  content: "";
+  background-color: transparent;
+  width: 75%;
+  height: 12.5%;
+  position: absolute;
+  top: 0.15rem;
+  left: 12.5%;
+  border-radius: 50%;
+  filter: blur(0.15rem);
+  transition: opacity 64ms ease-out;
+}
+
+.btn:active {
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0.4), 0 0.4rem 1rem rgba(0, 0, 0, 0.3) inset;
+}
+
+.btn:active:after {
+  opacity: 0;
+}
+
+.btn-info {
+  --btn-text-color: #ffffff;
+  --btn-bg-color: #0091ea;
+  --btn-border-color: #0079c4;
+}
+
+.btn-info:active {
+  --btn-text-color: #ececec;
+}
+
+.btn-success {
+  --btn-text-color: #ffffff;
+  --btn-bg-color: #00c853;
+  --btn-border-color: #00a243;
+}
+
+.btn-success:active {
+  --btn-text-color: #ececec;
+}
+
+.btn-warning {
+  --btn-text-color: #3e2723;
+  --btn-bg-color: #ffc400;
+  --btn-border-color: #d9a700;
+}
+
+.btn-warning:active {
+  --btn-text-color: #261815;
+}
+
+.btn-error {
+  --btn-text-color: #ffffff;
+  --btn-bg-color: #d50000;
+  --btn-border-color: #af0000;
+}
+
+.btn-error:active {
+  --btn-text-color: #ececec;
+}
+
+.btn-dark {
+  --btn-text-color: #ffffff;
+  --btn-bg-color: #303030;
+  --btn-border-color: #1d1d1d;
+}
+
+.btn-dark:active {
+  --btn-text-color: #ececec;
+}
+
+.btn-controls {
+  --btn-text-color: black;
+  --btn-bg-color: lavender;
+}
+
+.btn-generate {
+  --btn-text-color: black;
+  --btn-bg-color: #BBFFBB;
+}
+
+.btn.btn-delete {
+  font-size: 1.2rem;
+  --btn-text-color: black;
+  --btn-bg-color: #FFDDDD;
+  --btn-border-color: gray;
+}
+
+[data-theme="dark"] .btn-delete {
+  --btn-bg-color: lightsalmon;
+  --btn-border-color: #fafafa;
+}
+
+[data-theme="subdued"] .btn-delete {
+  --btn-bg-color: coral;
+  --btn-border-color: white;
+}
+
+@media (hover: hover) {
+  .btn-delete:hover{
+    background-color: #a5fb98;
+  }
+  [data-theme="dark"] .btn-delete:hover{
+    background-color: springgreen;
+  }
+}
+
+.btn.btn-delete:active {
+  background-color: tomato;
+}
+
+/* For modal dialog prompt replacement */
+.modal_flat_background {
+  background-color: #000;
+  opacity: 0.4;
+}
+
+.modal_flat_main {
+  border: 1px solid #333;
+  box-shadow: 0px 0px 15px -2px rgba(0, 0, 0, 0.75);
+}
+
+.modal_flat_main,
+.modal_flat_main input,
+.modal_flat_main button {
+  font-size: 1rem;
+}
+
+.modal_flat_main input,
+.modal_flat_main button {
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+.modal_flat_inner {
+  padding: 30px;
+  background: #fff;
+  color: #000;
+}
+
+.modal_flat_content {
+  margin: 20px 0px;
+}
+
+.modal_flat_input {
+  margin: 20px 0px;
+}
+
+.modal_flat_buttons {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.modal_flat_main button {
+  background-color: #ccc;
+  color: #000;
+  padding: 10px 20px;
+  border: 0px;
+  cursor: pointer;
+  outline: none;
+  width: 100px;
+}
+
+.modal_flat_cancel {
+  margin-left: 5px;
+}

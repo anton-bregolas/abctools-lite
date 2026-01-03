@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="refresh" content="0; url=./abctools.html">
   <link rel="canonical" href="./abctools.html" />
+  <link rel="stylesheet" href="apply-user-settings.css">
+  <script type="text/javascript" src="apply-user-settings.js"></script>
   <title>Redirecting to ABC Tools Lite Editor...</title>
 </head>
 <body>
@@ -16,19 +18,9 @@
 <style>
 
   body {
-    background-color: white;
-    font-family: 'Fira Sans', Helvetica, 'Droid Sans', sans-serif;
     font-weight: 500;
     font-size: 1.45rem;
-    color: #000;
     margin: 0 auto;
-  }
-
-  body[data-theme="dark"] {
-    background-color: #181818;
-    color: #fafafa;
-    & a { color: coral; }
-    & a:hover { color: limegreen; }
   }
 
   .container {
@@ -41,14 +33,6 @@
     text-align: center;
   }
 
-  a {
-    color: darkgreen;
-  }
-
-  a:hover {
-    color: darkblue;
-  }
-
   p {
     padding: 0.5rem;
   }
@@ -58,28 +42,4 @@
   }
 
 </style>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    if (!storageAvailable('localStorage')) {
-      return;
-    }
-    if (localStorage.abcLitePrefersColorTheme === "dark" ||
-      (!localStorage.abcLitePrefersColorTheme && window.matchMedia &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.body.dataset.theme = "dark";
-    }
-  });
-  function storageAvailable(type) {
-    try {
-      var storage = window[type],
-        x = '__storage_test__';
-      storage.setItem(x, x);
-      storage.removeItem(x);
-      return true;
-    }
-    catch(e) {
-      return false;
-    }
-  }
-</script>
 </html>
