@@ -2,74 +2,34 @@
 <html>
     <head>
         
-        <title>ABC Transcription Tools Tip Jars</title>
+        <title>ABC Tools Lite: Tip Jars</title>
         
         <meta charset="UTF-8">
         <meta http-equiv="Content-Type" content="text/html">
-        <meta content="ABC transposer ABCtransposer transpose jig reel folk" name="keywords">
         <meta content="A simple-to-use ABC to standard music notation converter featuring transposition, tab generation, and PDF export." name="description">
-        <meta content="A simple-to-use ABC to standard music notation converter featuring transposition, tab generation, and PDF export." name="abstract">
         <meta property="og:locale" content="en_US" />
-        <meta name="description" content="A simple-to-use ABC to standard music notation converter" />
+        <meta name="description" content="ABC Tools Lite: A Fork of Michael Eskin's ABC Transcription Tools" />
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="Michael Eskin's ABC Transcription Tools Tip Jars" />
+        <meta property="og:title" content="ABC Transcription Tools Tip Jars" />
         <meta property="og:description" content="A Tip-Supported Open-Source tool for generating standard notation from ABC and MusicXML files." />
         <meta property="og:url" content="https://anton-bregolas.github.io/abctools-lite/tipjars.html" />
-        <meta property="og:site_name" content="Michael Eskin's ABC Transcription Tools Tip Jars" />
+        <meta property="og:site_name" content="ABC Transcription Tools Tip Jars" />
         <meta property="og:image" content="./img/abclite-icon-512x512.png" />
         <meta name="theme-color" content="#181818">
         <meta name="apple-mobile-web-app-title" content="ABC Tools Tip Jars">
         <meta name="application-name" content="ABC Tools Tip Jars">
-        <meta name="viewport" content="width=860">
         <link rel="icon" href="favicon.ico" sizes="any">
         <link rel="icon" href="favicon.svg" type="image/svg+xml">
         <link rel="apple-touch-icon" href="./img/apple-touch-icon.png">
         <link rel="manifest" href="./img/abc-manifest.json">
-        <style>
-
-        p {
-        font-size:14pt;
-        font-family:"Helvetica";
-        line-height: 28px;
-        }
-        
-        h1 {
-        font-size:16pt;
-        font-family:"Helvetica";
-        margin-bottom:32px;
-        }
-        
-        hr {
-        margin-top:24px;
-        margin-bottom:24px;
-        }
-        
-        body {
-        padding:10px;
-        text-align: center;
-        }
-        
-        #maindiv{
-        position: absolute;
-        left: 50%;
-        margin-right: -50%;
-        transform: translate(-50%, 0%);
-        text-align: left;
-        width: 800px;
-        background-color: white;
-        }
-        
-        .image_holder{
-        text-align: center;
-        }
-        
-        </style>
-        
+        <link rel="stylesheet" href="tools-common.css">
+        <link rel="stylesheet" href="apply-user-settings.css">
+        <script type="text/javascript" src="apply-user-settings.js"></script>
     </head>
     <body>
-        <div id="maindiv">
+        <main id="maindiv">
             <div style="text-align: center;">
-                <font face="Comic Sans MS" size="5" id="pagetitle">ABC Transcription Tools Tip Jars</font><br>
+                <h1 id="pagetitle">ABC Tools Lite: Tip Jars</h1><br>
                 <div style="text-align: center;margin-top:24px;">
                     <a href="https://michaeleskin.com" target="_blank">
                         <img src="img/michael240.jpg" class=" size-full wp-image-22" style="margin-top:0px;" alt="Michael Eskin, headshot photo" style="margin-top: 20px" width="240" height="240" title="Click to visit Michael's Home Page">
@@ -80,67 +40,13 @@
                 <p>Try it out here: <a href="https://michaeleskin.com/abc" target="_blank">ABC Transcription Tools</a>.</p>
             </div>
             <hr>
-            <div style="text-align:center;padding:30px 10px 5px 10px;background-color:honeydew">
+            <div class="attention-box">
                 <p>Michael Eskin’s <a href="https://michaeleskin.com/abc" target="_blank">ABC Transcription Tools</a> are completely free to use.</p>
                 <p>If you find Michael Eskin’s ABC Transcription Tools useful, please support his ongoing<br/>development efforts by tossing a few bucks into one of the virtual tip jars:</p>
                 <p class="notranslate"><strong>PayPal</strong></br><a href="https://paypal.me/MichaelEskin" target="_blank">https://paypal.me/MichaelEskin</a></p>
                 <p class="notranslate"><strong>Venmo</strong></br>@MichaelEskin</p>
             </div>
             <hr>
-        </div>
+        </main>
     </body>
-    <script>
-    
-    //
-    // Are we on iOS?
-    //
-    function isIOS() {
-    
-    if (/iPad|iPhone|iPod/.test(navigator.platform)) {
-    return true;
-    } else {
-    return navigator.maxTouchPoints &&
-    navigator.maxTouchPoints > 2 &&
-    /MacIntel/.test(navigator.platform);
-    }
-    }
-    
-    function DoStartup() {
-    
-    //
-    // iOS Styling adaptation
-    //
-    
-    var gIsIOS = isIOS();
-    
-    if (gIsIOS) {
-    // Fix the title font
-    var elem = document.getElementById("pagetitle");
-    elem.size = 5;
-    elem.style.fontFamily = "Helvetica";
-    }
-    
-    }
-    
-    //
-    // Wait for the document to be ready, then fire a function
-    //
-    
-    function WaitForReady(fn) {
-    if (document.readyState !== 'loading') {
-    fn();
-    return;
-    }
-    
-    document.addEventListener('DOMContentLoaded', fn);
-    
-    }
-    
-    //
-    // Wait for the document to be ready, then startup
-    //
-    
-    WaitForReady(DoStartup);
-    
-    </script>
 </html>

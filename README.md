@@ -8,9 +8,9 @@ ABC Tools Lite is the default notation editor of the [NS Session Setlist](https:
 
 ABC Tools Lite includes GPLv3-licensed libraries and is thus distributed under the terms of the GNU General Public License version 3.0. To see licensing terms for individual components used by the Tools visit [Credits](https://abc.tunebook.app/credits.html) page or see LICENSE-LIB.
 
-ABC Tools Lite is based on ABC Transcription Tools, a tunes-to-notation converter developed by <a href="https://michaeleskin.com" target="_blank">Michael Eskin</a>. Check out the outline of technical and functional differences to see whether Lite fits your use case. Note that this fork may include some experimental features and alternative UI logic as compared to Michael Eskin's ABC Transcription Tools. For full original functionality make sure to visit [ABC Transcription Tools GitHub](https://github.com/seisiuneer/abctools).
+ABC Tools Lite is based on ABC Transcription Tools, a tunes-to-notation converter developed by <a href="https://michaeleskin.com" target="_blank">Michael Eskin</a>. Check out the outline of technical and functional differences below to see whether Lite fits your use case. Note that this fork may include some experimental features and alternative UI logic as compared to Michael Eskin's ABC Transcription Tools (for full original functionality make sure to visit [ABC Transcription Tools GitHub](https://github.com/seisiuneer/abctools)).
 
-## Key Differences (Assets Used)
+## Tools vs. Tools Lite: Assets Used
 
 Feature | ABC Transcription Tools | ABC Tools Lite 
 | --- | --- | --- |
@@ -18,27 +18,43 @@ Feature | ABC Transcription Tools | ABC Tools Lite
 | Assets Cached on Startup | Main app assets, default offline instruments,<br> ABC docs, MIDI docs, PDF fonts, User Guide page | Main app assets, default offline instruments,<br> custom UI fonts |
 | Progressive Web App? | Yes | Yes (Customized) |
 | Offline Functionality? | Full on startup + additional tune & instrument databases cached on demand | Most on startup + additional PDF fonts, tune & instrument databases cached on demand |
-| Updates? | Frequent feature updates and improvements by Michael Eskin | ~Bi-weekly updates merging custom features with original updates by Michael Eskin |
+| Updates? | Frequent feature updates and improvements by Michael Eskin | Weekly or bi-weekly updates merging custom features with original updates by Michael Eskin |
 
-## Lite UI & Features (Roadmap)
+## Tools Lite: New Customization Features
+
+Feature Name | Feature Description |
+| --- | --- |
+| ☑️ **Customize display of Editor toolbars independently** | Hide or show the bottom buttons bar and the title bar independently of each other if you need to save more screen space. Hiding the title bar now triggers the compact mode. Tablature buttons are hidden by default (enable in Settings). Title bar links have been moved to Context Menu |
+| ☑️ **Customize Export PDF font style** | Select new multilingual fonts in PDF Export menu (Fira Sans, EB Garamond) and pick between regular / bold / italic / bold italic versions when adding title page & index |
+| ☑️ **Customize notation scaling behavior** | Turn auto-scaling of notation on or off in Settings (off by default; useful for mobile and troublesome for desktop: prevents zooming when maximized) |
+| ☑️ **Select ABC Tools two-column mode on any device** | Experimental: Try the fixed two-column mode (formerly iPad Side-by-Side) on any Android or iOS device (best suits tablets) |
+| ⏱️ **Customize ABC Editor font style** | TO DO: Choose thickness level for the new default code font Fira Code for increased legibility |
+| ⏱️ **Customize ABC Tools color theme** | TO DO: Choose between Light, Dark, Subdued and Antique color themes or create your own using new customization menu |
+| ⏱️ **Customize ABC Tools UI font** | TO DO: Select custom font-family for all ABC Tools UI menus, including the Editor and Modals |
+| ⏱️ **Customize ABC Tools UI layout** | TO DO: Select between desktop mode and custom mobile mode with fully responsive design, uniform large buttons and larger menu fonts |
+
+
+## Work in Progress: UI & Features Roadmap
 
 UI Improvement | Status | Details
 | --- | --- | --- |
-| *Migrate hardcoded styles to CSS to make ABC Tools UI easier to maintain and customize* | STAGE THREE | Editor shell uses CSS flexbox instead of JS for centering (fixes long-standing tablet issues for mobile users & embedded ABC Tools)<br>Add media breakpoint to apply editor two-column mode styles<br>Add data-attributes to apply notation and abc input area states<br>Clean up hardcoded styles & leave comments in app.js|
+| *Migrate hardcoded styles to CSS to make ABC Tools UI easier to maintain and customize* | STAGE FOUR ⏱️ | **i:** Use CSS flexbox instead of JS for centering Editor shell (fixes long-standing tablet issues for mobile users & embedded ABC Tools);<br>Add media breakpoint to apply editor two-column mode styles<br>**ii:** Add data-attributes to apply notation and abc input area states;<br>Clean up hardcoded styles & leave comments in app.js<br>**iii:** Add common reusable styles for Tools pages / sections;<br>Replace inline styles in modal headers with reusable classes<br>**iv:** TO DO: Replace inline px/pt with responsive rem/em units; apply Editor font style using CSS variables|
 | *Add custom UI fonts for better cross-platform experience* | DONE☑️ | New UI font: Fira Sans<br>New ABC font: Fira Code |
 | *Add custom font fallbacks to app styles & scripts* | DONE☑️ | app.js & app.css updated |
 | *Add on-demand PDF fonts for wider selection and multilingual support* | DONE☑️ | New PDF fonts: Fira Sans (Regular, Semibold, Italic, Semibold Italic) with extended Cyrillic character set (supports 1025 languages) |
 | *Enable optional Two Column editor mode for all mobile devices* | DONE☑️ | Previously limited to iPad, now available on all iOS and Android devices (experimental) |
 | *Enable separate show/hide context menu options for Title Bar and Bottom Bar UI* | DONE☑️ | Toggle Bottom Bar now hides/shows Bottom Bar (when available)<br>Toggle Compact Mode now hides/shows Title Bar only (use to save space)<br>TO DO: rearrange UI for compact mode |
 | *Make auto-scaling optional to fix unexpected zoom-blocking behavior* | DONE☑️ | Auto-scale maximized notation available as Settings option (false by default, forced in Two Column mode) |
-| *Move ABC Tools links toolbar to context menu, convert items to buttons* | IN PROGRESS | Make links to external pages and tools available via modal menu while making them more mobile-friendly |
-| *Customize app buttons* | IN PROGRESS | New flat look of app buttons<br>Color bottom bar buttons for quicker recognition|
-| *Customize app icons* | IN PROGRESS | TO DO: Add Bootstrap icons, use icons from the same set, use svg/symbol for icons |
-| *Add basic accessibility features* | IN PROGRESS | Add outline & cursor styles to basic buttons<br>TO DO: Make Editor & overlay buttons fully tabbable<br>TO DO: Where possible, replace divs with semantic elements|
-| *Customize app menus* | TO DO | --- |
-| *Add color themes for ABC Tools UI* | TO DO | --- |
-| *Add user-customizable UI color theme option* | TO DO | --- |
-| *Add user-customizable UI font option* | TO DO | --- |
+| *Customize app pages* | DONE☑️ | Update ABC Sources, Credits and Uninstall pages; add reusable common styles, replace px/pt with responsive rem units (for fonts)<br>Apply basic user color theme settings for pages on DOM load<br>TO DO: Add breakpoints enabling responsive behavior |
+| *Add basic accessibility features* | ⏱️ IN PROGRESS | Add outline & cursor styles to basic buttons<br>Add focus-visible styles to all inputs & textarea<br>Make Editor & Modal buttons fully tabbable<br>Add & remove disable attribute to visually disabled elements<br>Fix hidden inputs inaccessible in tabbing order<br>Refactor Modal header elements to use semantic HTML<br>Add forced prefers-reduced-motion styles disabling animation<br>TO DO: Make overlay buttons fully tabbable<br>TO DO: Fix unexpected key-capturing and tabbing order interruptions <br>TO DO: Where possible, replace divs with semantic elements|
+| *Move ABC Tools links toolbar to context menu, convert items to buttons* | ⏱️ IN PROGRESS | TO DO: Make links to external pages and tools available via modal menu while making them more mobile-friendly |
+| *Customize app buttons* | ⏱️ IN PROGRESS | New flat look of app buttons<br>Color bottom bar buttons for quicker recognition<br>TO DO: New animations |
+| *Customize app icons* | ⏱️ IN PROGRESS | TO DO: Add Bootstrap icons, use icons from the same set, use svg/symbol for icons |
+| *Add color themes for ABC Tools UI* | ⏱️ IN PROGRESS | TO DO: Add basic dark and light color themes<br>TO DO: Add color theme customization menu |
+| *Add user-customizable UI color theme option* | ⏱️ IN PROGRESS | TO DO: Replace hardcoded color settings with CSS variables |
+| *Add user-customizable UI font option* | ⏱️ IN PROGRESS | TO DO: Replace hardcoded font settings with CSS variables<br>TO DO: Refactor inline fonts to use responsive rem units |
+| *Customize app menus* | TO DO | TO DO: Refactor Context Menu, add adaptive styles; use modern anchor positioning |
+| *Customize app modals* | TO DO | TO DO: Refactor modals, add basic templates with auto-focused close header button, fixed position, in-modal scrolling and no background scroll |
 
 <details>
   <summary><b>Original ABC Transcription Tools README & CREDITS</b></summary>

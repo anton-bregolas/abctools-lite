@@ -21,11 +21,13 @@ body {																											/* vanilla abc tools settings */
 	--abctools-ui-btn-boxshadow: none; 												/* 0 0.1rem 0.1rem rgba(0, 0, 0, 0.25), 0 -0.1rem 0.5rem rgba(0, 0, 0, 0.1) inset */
   --abctools-ui-btn-flarecolor: transparent;								/* #ffffff */
   --abctools-ui-btn-hovercolor: #a5fb98;									 /* palegreen */
-  --abctools-ui-btn-outlinecolor: slateblue;                   /* none */
+  --abctools-ui-btn-outlinecolor: slateblue;              /* none */
 	--abctools-ui-btn-textcolor: #000000;									 /* #000000 */
+  --abctools-ui-input-bordercolor: #767676;               /* #767676 */
 	--abctools-ui-float-btn-height: 3rem;											/* 48px */
 	--abctools-ui-float-btn-padding: 0.25rem;									/* 4px */
 	--abctools-ui-float-btn-filter: drop-shadow(1px 1px 7px white);
+  --abctools-ui-tab-btn-bgcolor: #d5ebfdba;               /* #ffffff */
   --abctools-notation-fullscreen-scaling: 50%;              /* 50% */
 
   --abctools-color-attention: #8ac716;                    /* red */
@@ -221,12 +223,42 @@ div.modal_flat_form_item_label {
   margin-left: 15px;
 }
 
-.modal-link-help {
+.modal-header-spaced {
+  margin-bottom: 2.25em;
+}
+
+.modal-header-ui {
+  position: absolute;
+  width: 2.2rem;
+  height: 2.2rem;
   font-size: 2rem;
   text-decoration: none;
-  position: absolute;
-  left: 20px;
-  top: 20px
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-link-help {
+  left: 0.75rem;
+  top: 0.75rem;
+}
+
+.modal-link-help-player {
+  left: 0.3rem;
+  top: 0.3rem;
+}
+
+.modal-btn-share-player {
+  right: 0.3rem;
+  top: 0.3rem;
+}
+
+.modal-subheader {
+  font-size: 1.125rem;
+  font-weight: 400;
+  text-align: center;
+  margin: 0 0 1em;
 }
 
 .modal-text-updated {
@@ -269,8 +301,109 @@ div.modal_flat_form_item_label {
 }
 
 /*//////////////////////////////////////////
-// APP LITE: SETTINGS MENU
+// APP LITE: UI ELEMENTS
 /////////////////////////////////////////*/
+
+/* UI: Common Elements */
+
+.btn,
+.btn-lite,
+.btn-uioverlay,
+.ContextMenu,
+input[type="button"],
+input[type="checkbox"],
+select {
+	cursor: pointer;
+}
+
+input[type="text"],
+input[type="number"],
+select,
+textarea:not(.abc) {
+  border: none;
+  outline: 1px solid var(--abctools-ui-input-bordercolor);
+  border-radius: 0.17rem;
+}
+
+button:focus-visible,
+button[type="button"]:focus-visible,
+label:has(input[type="file"]):focus-within,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.btn:focus-visible,
+.btn-uioverlay:focus-visible,
+.modal-header-ui:focus-visible {
+  outline: 0.17rem solid var(--abctools-ui-btn-outlinecolor);
+}
+
+input[type="checkbox"]:focus-visible {
+  outline-style: auto;
+  outline-width: 0.2rem;
+  border-radius: 0.17rem;
+}
+
+.abc:focus-visible {
+  outline-width: 0.15rem;
+}
+
+.abc:focus-visible,
+.abcjs-btn:focus-visible {
+  border-radius: 0.17rem;
+}
+
+.btn-lite {
+  appearance: none;
+  border: none;
+  box-shadow: none;
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+  cursor: pointer;
+}
+
+.adv-tab-bar .adv-tab-btn.active {
+  background: var(--abctools-ui-tab-btn-bgcolor);
+}
+
+.abc-btn:focus-visible,
+.abcjs_custom_css-btn:focus-visible,
+.adv-tab-bar .adv-tab-btn:focus-visible,
+.modal_flat_buttons .modal_flat_cancel:focus-visible,
+.modal_flat_wide_buttons .modal_flat_wide_cancel:focus-visible {
+  outline: 0.185rem solid var(--abctools-ui-btn-outlinecolor);
+}
+
+.abc-btn.primary:focus-visible,
+.abcjs_custom_css-btn.primary:focus-visible,
+.modal_flat_buttons .modal_flat_ok:focus-visible,
+.modal_flat_wide_buttons .modal_flat_wide_ok:focus-visible {
+  outline: 0.185rem solid green;
+}
+
+.modal-header-ui:focus-visible {
+  outline-width: 0.19rem;
+}
+
+@supports (-webkit-tap-highlight-color: rgba(0,0,0,0)) {
+  .btn, .btn-lite, .btn-uioverlay, .ContextMenu,
+  a, input, label, select {
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+  }
+}
+
+/* UI: Bottom Button Bar */
+
+[data-abctools-ui-bottom-bar="show"][data-notation="minimized"] .notenrechts {
+  display: inline-block;
+}
+
+/* UI: Overlay Buttons */
+
+
+
+/* UI: Settings Menu */
 
 .lite-custom-setting {
   font-weight: bold;
@@ -336,34 +469,6 @@ div.modal_flat_form_item_label {
 [data-abc="rendered"][data-mode="mobile"][data-notation="minimized"] .notation-holder {
   display: block;
 }
-
-/*//////////////////////////////////////////
-// APP LITE: EDITOR UI COMPONENTS
-/////////////////////////////////////////*/
-
-/* UI: Common Menu Settings */
-
-.btn,
-.btn-uioverlay,
-.ContextMenu,
-input[type="checkbox"],
-select {
-	cursor: pointer;
-}
-
-.btn:focus-visible,
-.btn-uioverlay:focus-visible {
-  outline: 0.17rem solid var(--abctools-ui-btn-outlinecolor);
-}
-
-/* UI: Bottom Button Bar */
-
-[data-abctools-ui-bottom-bar="show"][data-notation="minimized"] .notenrechts {
-  display: inline-block;
-}
-
-/* UI: Overlay Buttons */
-
 
 /*//////////////////////////////////////////
 // APP LITE: MEDIA RULES / BREAKPOINTS
@@ -441,4 +546,41 @@ select {
 
 [data-mode="always-two-columns"] #notation-spacer {
   margin-right: 0;
+}
+
+/*
+////////////////////////////////////////////
+// APP LITE: USER-PREFERS FORCED STYLES
+////////////////////////////////////////////
+*/
+
+@media (prefers-reduced-motion: reduce) {
+
+  @media (hover: hover) {
+    .btn,
+    .btn-uioverlay,
+    .dialogcornerbutton,
+    .modal_flat_buttons button,
+    .modal_flat_wide_buttons button {
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+}
+
+/*
+////////////////////////////////////////////
+// APP LITE: UTILITY CLASSES
+////////////////////////////////////////////
+*/
+
+.visually-hidden {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
 }

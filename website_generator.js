@@ -3572,9 +3572,17 @@ function generateWebsiteFull(){
         { name: "  Arachno", id: "arachno" },
         { name: "  FluidHQ", id: "fluidhq"}
     ];
-
+    
+    // Lite: Customized
+    // Replace inline styles with reusable classes
     var form = [
-      {html: '<p style="text-align:center;font-size:1.5rem;margin-left:0.9375rem;margin-bottom:1.125rem">Export Full-Featured Tunebook Website&nbsp;&nbsp;<span style="font-size:2rem;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#generate_website" target="_blank" style="text-decoration:none;position:absolute;left:1.25rem;top:1.25rem" class="dialogcornerbutton">?</a></span></p>'},  
+      {html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#generate_website" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Export Full-Featured Tunebook Website&nbsp;&nbsp;' +
+		'</h2>'},  
       {html: '<p style="margin-top:0.625rem;margin-bottom:1.125rem;font-size:1rem;line-height:1.167rem;">Clicking "Export" will export a tunebook player website with the settings you enter below:</p>'},  
       {name: "Website title:", id: "website_title", type:"text", cssClass:"configure_website_form_text_wide"},
       {name: "Website subtitle:", id: "website_subtitle", type:"text", cssClass:"configure_website_form_text_wide2"},
@@ -3787,8 +3795,17 @@ function generateWebsiteSimple(){
         { name: "  Arachno", id: "arachno" },
         { name: "  FluidHQ", id: "fluidhq"}
     ];
+
+    // Lite: Customized
+    // Replace inline styles with reusable classes
     var form = [
-      {html: '<p style="text-align:center;font-size:1.5rem;margin-left:0.9375rem;margin-bottom:1.125rem">Export Basic Tune List Website&nbsp;&nbsp;<span style="font-size:2rem;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#generate_website" target="_blank" style="text-decoration:none;position:absolute;left:1.25rem;top:1.25rem" class="dialogcornerbutton">?</a></span></p>'},  
+      {html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#generate_website" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Export Basic Tune List Website&nbsp;&nbsp;' +
+		'</h2>'},  
       {html: '<p style="margin-top:0.625rem;margin-bottom:1.125rem;font-size:1rem;line-height:1.167rem;">Clicking "Export" will export a tune list hyperlink website with the settings you enter below:</p>'},  
       {name: "Website title:", id: "website_title", type:"text", cssClass:"configure_website_form_text_wide_simple"},
       {name: "Website subtitle:", id: "website_subtitle", type:"text", cssClass:"configure_website_form_text_wide2_simple"},
@@ -3991,9 +4008,17 @@ function generateWebsiteImageGallery(){
         { name: "  Arachno", id: "arachno" },
         { name: "  FluidHQ", id: "fluidhq"}
     ];
-
+    
+    // Lite: Customized
+    // Replace inline styles with reusable classes
     var form = [
-      {html: '<p style="text-align:center;font-size:1.5rem;margin-left:0.9375rem;margin-bottom:1.125rem">Export Tune Image Gallery Website&nbsp;&nbsp;<span style="font-size:2rem;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#generate_website" target="_blank" style="text-decoration:none;position:absolute;left:1.25rem;top:1.25rem" class="dialogcornerbutton">?</a></span></p>'},  
+      {html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#generate_website" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Export Tune Image Gallery Website&nbsp;&nbsp;' +
+		'</h2>'},  
       {html: '<p style="margin-top:0.625rem;margin-bottom:1.125rem;font-size:1rem;line-height:1.167rem;">Clicking "Export" will export a tune image gallery website with the settings you enter below:</p>'},  
       {name: "Website title:", id: "website_title", type:"text", cssClass:"configure_website_form_text_wide_gallery"},
       {name: "Website subtitle:", id: "website_subtitle", type:"text", cssClass:"configure_website_form_text_wide2_gallery"},
@@ -4214,9 +4239,17 @@ function generateWebsiteLightbox(){
         { name: "  Arachno", id: "arachno" },
         { name: "  FluidHQ", id: "fluidhq"}
     ];
-
+    
+    // Lite: Customized
+    // Replace inline styles with reusable classes
     var form = [
-      {html: '<p style="text-align:center;font-size:1.5rem;margin-left:0.9375rem;margin-bottom:1.125rem">Export Tune Image Lightbox Website&nbsp;&nbsp;<span style="font-size:2rem;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#generate_website" target="_blank" style="text-decoration:none;position:absolute;left:1.25rem;top:1.25rem" class="dialogcornerbutton">?</a></span></p>'},  
+      {html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#generate_website" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Export Tune Image Lightbox Website&nbsp;&nbsp;' +
+		'</h2>'},  
       {html: '<p style="margin-top:0.625rem;margin-bottom:1.125rem;font-size:1rem;line-height:1.167rem;">Clicking "Export" will export a tune image lightbox website with the settings you enter below:</p>'},  
       {name: "Website title:", id: "website_title", type:"text", cssClass:"configure_website_form_text_wide_lightbox"},
       {name: "Website subtitle:", id: "website_subtitle", type:"text", cssClass:"configure_website_form_text_wide2_lightbox"},
@@ -4406,7 +4439,15 @@ function generateWebsite(){
 
     var format = GetRadioValue("notenodertab");
 
-    var modal_msg  = '<p style="text-align:center;margin-bottom:2.25rem;font-size:1.5rem;margin-left:0.9375rem;">Export Website&nbsp;&nbsp;<span style="font-size:2rem;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#generate_website" target="_blank" style="text-decoration:none;position:absolute;left:1.25rem;top:1.25rem" class="dialogcornerbutton">?</a></span></p>';
+    // Lite: Customized
+    // Replace inline styles with reusable classes
+    var modal_msg  =
+		'<a href="https://michaeleskin.com/abctools/userguide.html#generate_website" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Export Website&nbsp;&nbsp;' +
+		'</h2>';
     
     modal_msg  += '<p style="font-size:1.125rem;line-height:1.75rem;">For all websites, clicking a tune will open the tune in a new browser tab.</p>';
     modal_msg  += '<p style="font-size:1.125rem;line-height:1.75rem;">Click <strong>Export Basic Tune List Website</strong> to export a technically simple website with a list of all tunes in the ABC vertically down the center of the page. Playback instruments may be optionally specified.</p>';

@@ -209,9 +209,17 @@ function ResetSettingsDialog(){
 	var form;
 
 	if (navigator.onLine){
-
+    
+    // Lite: Customized
+    // Replace inline styles with reusable classes
 		form = [
-		  {html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;font-family:helvetica;margin-left:15px;">Reset All Tool Settings, Clear Databases, Force Update&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#advanced_resetsettings" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'},
+		  {html:
+				'<a href="https://michaeleskin.com/abctools/userguide.html#advanced_resetsettings" target="_blank" ' +
+				'title="View documentation in new tab" ' +
+				'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+				'<h2 class="modal-header">' +
+				'Reset All Tool Settings, Clear Databases, Force Update&nbsp;&nbsp;' +
+				'</h2>'},
 		  {html: '<p style="margin-top:24px;margin-bottom:12px;font-size:12pt;line-height:18pt;font-family:helvetica">Checking <strong>Reset all settings to default</strong> will restore the tool settings to the original first-run state.</p>'},
 		  {html: '<p style="margin-top:24px;margin-bottom:12px;font-size:12pt;line-height:18pt;font-family:helvetica">Checking <strong>Clear all databases</strong> will clear and delete the instrument notes, reverb settings, tune search collections, and custom instrument databases. New databases will be created after the tool is restarted.'},
 		  {html: '<p style="margin-top:24px;margin-bottom:12px;font-size:12pt;line-height:18pt;font-family:helvetica">Checking <strong>Force tool update after restart</strong> will force the version of the tool stored in your browser to be updated to the latest version after the tool is restarted.'},
@@ -223,10 +231,18 @@ function ResetSettingsDialog(){
 		];
 	}
 	else{
-
+    
+    // Lite: Customized
+    // Replace inline styles with reusable classes
 		form = [
 
-		  {html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;font-family:helvetica;margin-left:15px;">Reset All Tool Settings&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#advanced_resetsettings" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'},
+		  {html:
+				'<a href="https://michaeleskin.com/abctools/userguide.html#advanced_resetsettings" target="_blank" ' +
+				'title="View documentation in new tab" ' +
+				'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+				'<h2 class="modal-header">' +
+				'Reset All Tool Settings&nbsp;&nbsp;' +
+				'</h2>'},
 		  {html: '<p style="margin-top:24px;margin-bottom:12px;font-size:12pt;line-height:18pt;font-family:helvetica">Checking <strong>Reset all settings to default</strong> will restore the tool settings to the original first-run state.</p>'},
 		  {html: '<p style="margin-top:24px;margin-bottom:8px;font-size:12pt;line-height:18pt;font-family:helvetica">If you enable this option, the tool will be restarted after the operatation is complete.</p>'},
 		  {html: '<p style="margin-top:24px;margin-bottom:8px;font-size:12pt;line-height:18pt;font-family:helvetica">When online, you also have the option to clear and delete the instrument notes, reverb settings, and tune search collections databases.</p>'},
@@ -355,8 +371,16 @@ function ManageDatabasesDialog(){
 
 	// Keep track of dialogs
 	sendGoogleAnalytics("dialog","ManageDatabasesDialog");
-
-	var modal_msg  = '<p style="text-align:center;margin-bottom:36px;font-size:16pt;font-family:helvetica;margin-left:15px;">Manage Databases&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#manage_databases" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>';
+    
+	// Lite: Customized
+	// Replace inline styles with reusable classes
+	var modal_msg =
+		'<a href="https://michaeleskin.com/abctools/userguide.html#manage_databases" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Manage Databases&nbsp;&nbsp;' +
+		'</h2>';
 
 	// Only make the database management features available when online
 	if (navigator.onLine){
@@ -1139,12 +1163,26 @@ function ManageSamplesDialog(showActionButtons){
 
 	// Keep track of dialogs
 	sendGoogleAnalytics("dialog","ManageSamplesDialog");
-
+    
+	// Lite: Customized
+	// Replace inline styles with reusable classes
 	if (showActionButtons){
-		modal_msg  = '<p style="text-align:center;margin-bottom:24px;font-size:16pt;font-family:helvetica;margin-left:15px;">Manage Instrument Notes Database&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#manage_databases" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>';
+		modal_msg  =
+		'<a href="https://michaeleskin.com/abctools/userguide.html#manage_databases" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Manage Instrument Notes Database&nbsp;&nbsp;' +
+		'</h2>';
 	}
 	else{
-		modal_msg  = '<p style="text-align:center;margin-bottom:24px;font-size:16pt;font-family:helvetica;margin-left:15px;">Manage Instrument Notes Database (Offline Mode)&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#manage_databases" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>';
+		modal_msg  =
+		'<a href="https://michaeleskin.com/abctools/userguide.html#manage_databases" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Manage Instrument Notes Database (Offline Mode)&nbsp;&nbsp;' +
+		'</h2>';
 	}
 	
 	modal_msg += '<p style="margin-top:18px;margin-bottom:12px;font-size:12pt;line-height:18pt;font-family:helvetica">The table below shows all the instrument notes you have played in the past that are stored in the instrument notes database along with the number of notes saved.</p>';
@@ -1387,8 +1425,16 @@ function ManageReverbDialog(){
 
 	// Keep track of dialogs
 	sendGoogleAnalytics("dialog","ManageReverbDialog");
-
-	var modal_msg  = '<p style="text-align:center;margin-bottom:36px;font-size:16pt;font-family:helvetica;margin-left:15px;">Manage Reverb Settings Database&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#manage_databases" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>';
+    
+	// Lite: Customized
+	// Replace inline styles with reusable classes
+	var modal_msg  =
+		'<a href="https://michaeleskin.com/abctools/userguide.html#manage_databases" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Manage Reverb Settings Database&nbsp;&nbsp;' +
+		'</h2>';
 
 	modal_msg+='<p style="margin-top:24px;margin-bottom:12px;font-size:12pt;line-height:18pt;font-family:helvetica;text-align:center">Save any reverb setting for offline use by clicking the buttons below:</p>',
 	modal_msg+='<p style="margin-top:24px;text-align:center">';
@@ -1495,8 +1541,16 @@ function ManageSearchCollectionsDialog(){
 	
 	// Keep track of dialogs
 	sendGoogleAnalytics("dialog","ManageSearchCollectionsDialog");
-
-	var modal_msg  = '<p style="text-align:center;margin-bottom:36px;font-size:16pt;font-family:helvetica;margin-left:15px;">Manage Search Engine Libraries&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#manage_databases" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>';
+    
+	// Lite: Customized
+	// Replace inline styles with reusable classes
+	var modal_msg  =
+		'<a href="https://michaeleskin.com/abctools/userguide.html#manage_databases" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Manage Search Engine Libraries&nbsp;&nbsp;' +
+		'</h2>';
 
 	modal_msg+='<p style="margin-top:24px;margin-bottom:12px;font-size:12pt;line-height:18pt;font-family:helvetica;text-align:center">Save a tune search library for offline use by clicking the buttons below:</p>',
 	modal_msg+='<p style="margin-top:24px;text-align:center">';

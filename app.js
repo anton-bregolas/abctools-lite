@@ -1976,6 +1976,9 @@ function GetAllTuneTitles() {
 //
 // Setup the Raw mode UI elements
 //
+// Lite: Customized
+// Add disabled attribute to visually disabled elements
+//
 function SetupRawModeUI() {
 
   // Clear raw mode
@@ -2000,6 +2003,7 @@ function SetupRawModeUI() {
 
     elem.classList.remove("rawmodebutton");
     elem.classList.add("rawmodebuttondisabled");
+    elem.setAttribute("disabled", '');
 
     elem.classList.add("btn-rawmode-off");
     elem.classList.remove("btn-rawmode-on");
@@ -2013,6 +2017,7 @@ function SetupRawModeUI() {
     // Grey it out
     elem.classList.remove("rawmodebutton");
     elem.classList.add("rawmodebuttondisabled");
+    elem.setAttribute("disabled", '');
 
     elem.classList.add("btn-rawmode-off");
     elem.classList.remove("btn-rawmode-on");
@@ -2158,7 +2163,9 @@ function ToggleRawMode() {
     RenderAsync(true, null);
 
   }
-
+  
+  // Lite: Customized
+  // Add disabled attribute to visually disabled elements
   if (gIsQuickEditor) {
 
     if (gRawMode) {
@@ -2166,18 +2173,22 @@ function ToggleRawMode() {
       // Disable the play and train buttons
       document.getElementById("playbutton").classList.remove("playbutton");
       document.getElementById("playbutton").classList.add("playbuttondisabled");
+      document.getElementById("playbutton").setAttribute("disabled", '');
 
       document.getElementById("tunetrainerbutton").classList.remove("playbutton");
       document.getElementById("tunetrainerbutton").classList.add("playbuttondisabled");
+      document.getElementById("tunetrainerbutton").setAttribute("disabled", '');
 
     } else {
 
       // Enable the play and train button
       document.getElementById("playbutton").classList.remove("playbuttondisabled");
+      document.getElementById("playbutton").removeAttribute("disabled");
       document.getElementById("playbutton").classList.add("playbutton");
 
       // Enable the play button
       document.getElementById("tunetrainerbutton").classList.remove("playbuttondisabled");
+      document.getElementById("tunetrainerbutton").removeAttribute("disabled");
       document.getElementById("tunetrainerbutton").classList.add("playbutton");
 
     }
@@ -2730,8 +2741,16 @@ function TransposeToKeyDialog() {
     transposeall: false
   };
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   const form = [{
-    html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;margin-left:15px;">Transpose to Key&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#advanced_transposetokey" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#advanced_transposetokey" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Transpose to Key&nbsp;&nbsp;' +
+		'</h2>'
   }, {
     html: '<p style="margin-top:36px;margin-bottom:12px;font-size:12pt;line-height:18pt;">This will transpose the current tune or all the tunes to the specified root key.</p>'
   }, {
@@ -4212,8 +4231,16 @@ function SortDialog() {
     configure_sort: gLastSortOrder,
   };
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   const form = [{
-    html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;margin-left:15px;">Sort by Specific Tag&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#sort_dialog" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#sort_dialog" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Sort by Specific Tag&nbsp;&nbsp;' +
+		'</h2>'
   }, {
     html: '<p style="margin-top:36px;margin-bottom:36px;font-size:12pt;line-height:18pt;">This will sort the tunes based on the ABC tag you select:</p>'
   }, {
@@ -4280,6 +4307,9 @@ function SortDialog() {
 //
 // UI Clear command
 //
+// Lite: Customized
+// Add disabled attribute to visually disabled elements
+//
 function Clear() {
 
   function doClear() {
@@ -4297,6 +4327,7 @@ function Clear() {
     // Grey it out
     elem.classList.remove("rawmodebutton");
     elem.classList.add("rawmodebuttondisabled");
+    elem.setAttribute("disabled", '');
 
     elem.classList.add("btn-rawmode-off");
     elem.classList.remove("btn-rawmode-on");
@@ -11008,7 +11039,9 @@ function ShowAcrobatHyperlinkLengthWarning() {
   // Keep track of dialogs
   sendGoogleAnalytics("dialog", "ShowAcrobatHyperlinkLengthWarning");
 
-  var modal_msg = '<p style="text-align:center;font-size:18pt;">Adobe Acrobat Hyperlink Length Warning</p>';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  var modal_msg = '<h2 class="modal-header">Adobe Acrobat Hyperlink Length Warning</h2>';
   modal_msg += '<p style="font-size:12pt;line-height:18pt;margin-top:36px;">Adobe Acrobat limits the length of clicked hyperlinks to 2076 characters.</p>';
   modal_msg += '<p style="font-size:12pt;line-height:18pt;">Some very complex tune Share URLs used in tunebooks generated with this tool may exceed this limit.</p>';
   modal_msg += '<p style="font-size:12pt;line-height:18pt;">If you are using Adobe Acrobat as your PDF reader, and you are seeing this message after clicking a complex tune link, try instead simply dragging the PDF of the tunebook to your browser to read it.</p>';
@@ -13875,7 +13908,9 @@ function RenderTheNotes(tune, instrument, renderAll, tuneNumber) {
     var visualObj = ABCJS.renderAbc(renderDivs, tune, params);
   } catch (err) {
 
-    var modal_msg = '<p style="text-align:center;font-size:18pt;">Tune Rendering Issue</p>';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+    var modal_msg = '<h2 class="modal-header">Tune Rendering Issue</h2>';
 
     modal_msg += '<p style="font-size:12pt;line-height:18pt;margin-top:36px;text-align:center;">During rendering, the following tune caused the tool to crash:</p>';
 
@@ -14925,8 +14960,14 @@ function Render(renderAll, tuneNumber) {
     //   HideBottomBar();
     }
 
+    //
+    // Lite: Customized
+    // Add disabled attribute to visually disabled elements
+    //
+
     // Enable the save button
     document.getElementById("saveabcfile").classList.remove("saveabcfiledisabled");
+    document.getElementById("saveabcfile").removeAttribute("disabled");
     document.getElementById("saveabcfile").classList.add("saveabcfile");
     gAllowSave = true;
 
@@ -14936,32 +14977,39 @@ function Render(renderAll, tuneNumber) {
     if (!gIsQuickEditor) {
       // Enable the PDF generation button
       document.getElementById("saveaspdf").classList.remove("saveaspdfdisabled");
+      document.getElementById("saveaspdf").removeAttribute("disabled");
       document.getElementById("saveaspdf").classList.add("saveaspdf");
       gAllowPDF = true;
     }
 
     // Enable the website generation button
     document.getElementById("saveaswebsite").classList.remove("saveaswebsitedisabled");
+    document.getElementById("saveaswebsite").removeAttribute("disabled");
     document.getElementById("saveaswebsite").classList.add("saveaswebsite");
     gAllowWebExport = true;
 
     // Enable the copy button
     // document.getElementById("copybutton").classList.remove("copybuttondisabled");
+    // document.getElementById("copybutton").removeAttribute("disabled");
     // document.getElementById("copybutton").classList.add("copybutton");
 
     // Enable the play and train buttons
     if (!gIsQuickEditor) {
       document.getElementById("playbutton").classList.remove("playbuttondisabled");
+      document.getElementById("playbutton").removeAttribute("disabled");
       document.getElementById("playbutton").classList.add("playbutton");
       document.getElementById("tunetrainerbutton").classList.remove("playbuttondisabled");
+      document.getElementById("tunetrainerbutton").removeAttribute("disabled");
       document.getElementById("tunetrainerbutton").classList.add("playbutton");
     //  tunetrainerbutton
     } else {
       // Don't enable play or train button on raw mode on the Quick Editor
       if (!gRawMode) {
         document.getElementById("playbutton").classList.remove("playbuttondisabled");
+        document.getElementById("playbutton").removeAttribute("disabled");
         document.getElementById("playbutton").classList.add("playbutton");
         document.getElementById("tunetrainerbutton").classList.remove("playbuttondisabled");
+        document.getElementById("tunetrainerbutton").removeAttribute("disabled");
         document.getElementById("tunetrainerbutton").classList.add("playbutton");
       }
     }
@@ -14969,6 +15017,7 @@ function Render(renderAll, tuneNumber) {
     // Enable the raw mode button (Desktop only)
     if (isPureDesktopBrowser()) {
       document.getElementById("rawmodebutton").classList.remove("rawmodebuttondisabled");
+      document.getElementById("rawmodebutton").removeAttribute("disabled");
       document.getElementById("rawmodebutton").classList.add("rawmodebutton");
     }
 
@@ -15031,6 +15080,7 @@ function Render(renderAll, tuneNumber) {
 
         document.getElementById("rawmodebutton").classList.remove("rawmodebutton");
         document.getElementById("rawmodebutton").classList.add("rawmodebuttondisabled");
+        document.getElementById("rawmodebutton").setAttribute("disabled", '');
 
         document.getElementById("rawmodebutton").classList.add("btn-rawmode-off");
         document.getElementById("rawmodebutton").classList.remove("btn-rawmode-on");
@@ -15100,21 +15150,29 @@ function Render(renderAll, tuneNumber) {
     // gTheNotation.style.display = "none";
     // document.body.removeAttribute("data-share-link");
 
+    //
+    // Lite: Customized
+    // Add disabled attribute to visually disabled elements
+    //
+
     // Disable the save button
     document.getElementById("saveabcfile").classList.remove("saveabcfile");
     document.getElementById("saveabcfile").classList.add("saveabcfiledisabled");
+    document.getElementById("saveabcfile").setAttribute("disabled", '');
     gAllowSave = false;
 
     if (!gIsQuickEditor) {
       // Disable the generate PDF button
       document.getElementById("saveaspdf").classList.remove("saveaspdf");
       document.getElementById("saveaspdf").classList.add("saveaspdfdisabled");
+      document.getElementById("saveaspdf").setAttribute("disabled", '');
       gAllowPDF = false;
     }
 
     // Disable the generate website button
     document.getElementById("saveaswebsite").classList.remove("saveaswebsite");
     document.getElementById("saveaswebsite").classList.add("saveaswebsitedisabled");
+    document.getElementById("saveaswebsite").setAttribute("disabled", '');
     gAllowWebExport = false;
 
     // Disable the control display toggle
@@ -15123,18 +15181,22 @@ function Render(renderAll, tuneNumber) {
     // Disable the copy button
     // document.getElementById("copybutton").classList.remove("copybutton");
     // document.getElementById("copybutton").classList.add("copybuttondisabled");
+    // document.getElementById("copybutton").setAttribute("disabled", '');
 
     // Disable the play button
     document.getElementById("playbutton").classList.remove("playbutton");
     document.getElementById("playbutton").classList.add("playbuttondisabled");
+    document.getElementById("playbutton").setAttribute("disabled", '');
 
     // Disable the tune trainer button
     document.getElementById("tunetrainerbutton").classList.remove("playbutton");
     document.getElementById("tunetrainerbutton").classList.add("playbuttondisabled");
+    document.getElementById("tunetrainerbutton").setAttribute("disabled", '');
 
     // Disable the raw mode button
     document.getElementById("rawmodebutton").classList.remove("rawmodebutton");
     document.getElementById("rawmodebutton").classList.add("rawmodebuttondisabled");
+    document.getElementById("rawmodebutton").setAttribute("disabled", '');
 
     document.getElementById("rawmodebutton").classList.add("btn-rawmode-off");
     document.getElementById("rawmodebutton").classList.remove("btn-rawmode-on");
@@ -15463,6 +15525,10 @@ function IdleAdvancedControls(bUpdateUI) {
   EnableOrnaments = gotMatch;
 
   // Now set the button styling based on the results
+  //
+  // Lite: Customized
+  // Add disabled attribute to visually disabled elements
+  //
   if (EnableAnnotations) {
 
     gAllowFilterAnnotations = true;
@@ -15471,10 +15537,12 @@ function IdleAdvancedControls(bUpdateUI) {
 
       // Enable the Toggle Annotations button
       document.getElementById("toggleannotations").classList.remove("advancedcontrolsdisabled");
+      document.getElementById("toggleannotations").removeAttribute("disabled");
       document.getElementById("toggleannotations").classList.add("advancedcontrols");
 
       // Enable the Strip Annotations button
       document.getElementById("stripannotations").classList.remove("advancedcontrolsdisabled");
+      document.getElementById("stripannotations").removeAttribute("disabled");
       document.getElementById("stripannotations").classList.add("advancedcontrols");
 
     }
@@ -15487,10 +15555,12 @@ function IdleAdvancedControls(bUpdateUI) {
       // Disable the Toggle Annotations button
       document.getElementById("toggleannotations").classList.remove("advancedcontrols");
       document.getElementById("toggleannotations").classList.add("advancedcontrolsdisabled");
+      document.getElementById("toggleannotations").setAttribute("disabled", '');
 
       // Disable the Strip Annotations button
       document.getElementById("stripannotations").classList.remove("advancedcontrols");
       document.getElementById("stripannotations").classList.add("advancedcontrolsdisabled");
+      document.getElementById("stripannotations").setAttribute("disabled", '');
 
     }
   }
@@ -15503,10 +15573,12 @@ function IdleAdvancedControls(bUpdateUI) {
 
       // Enable the Toggle Text button
       document.getElementById("toggletext").classList.remove("advancedcontrolsdisabled");
+      document.getElementById("toggletext").removeAttribute("disabled");
       document.getElementById("toggletext").classList.add("advancedcontrols");
 
       // Enable the Strip Text button
       document.getElementById("striptext").classList.remove("advancedcontrolsdisabled");
+      document.getElementById("striptext").removeAttribute("disabled");
       document.getElementById("striptext").classList.add("advancedcontrols");
 
     }
@@ -15519,10 +15591,12 @@ function IdleAdvancedControls(bUpdateUI) {
       // Disable the Toggle Text button
       document.getElementById("toggletext").classList.remove("advancedcontrols");
       document.getElementById("toggletext").classList.add("advancedcontrolsdisabled");
+      document.getElementById("toggletext").setAttribute("disabled", '');
 
       // Disable the Strip Text button
       document.getElementById("striptext").classList.remove("advancedcontrols");
       document.getElementById("striptext").classList.add("advancedcontrolsdisabled");
+      document.getElementById("striptext").setAttribute("disabled", '');
     }
   }
 
@@ -15534,10 +15608,12 @@ function IdleAdvancedControls(bUpdateUI) {
 
       // Enable the Toggle Chords button
       document.getElementById("togglechords").classList.remove("advancedcontrolsdisabled");
+      document.getElementById("togglechords").removeAttribute("disabled");
       document.getElementById("togglechords").classList.add("advancedcontrols");
 
       // Enable the Strip Chords button
       document.getElementById("stripchords").classList.remove("advancedcontrolsdisabled");
+      document.getElementById("stripchords").removeAttribute("disabled");
       document.getElementById("stripchords").classList.add("advancedcontrols");
 
     }
@@ -15550,10 +15626,12 @@ function IdleAdvancedControls(bUpdateUI) {
       // Disable the Toggle Chords button
       document.getElementById("togglechords").classList.remove("advancedcontrols");
       document.getElementById("togglechords").classList.add("advancedcontrolsdisabled");
+      document.getElementById("togglechords").setAttribute("disabled", '');
 
       // Disable the Strip Chords button
       document.getElementById("stripchords").classList.remove("advancedcontrols");
       document.getElementById("stripchords").classList.add("advancedcontrolsdisabled");
+      document.getElementById("stripchords").setAttribute("disabled", '');
 
     }
   }
@@ -15566,10 +15644,12 @@ function IdleAdvancedControls(bUpdateUI) {
 
       // Enable the Toggle Tab button
       document.getElementById("toggletab").classList.remove("advancedcontrolsdisabled");
+      document.getElementById("toggletab").removeAttribute("disabled");
       document.getElementById("toggletab").classList.add("advancedcontrols");
 
       // Enable the Strip Tab button
       document.getElementById("striptab").classList.remove("advancedcontrolsdisabled");
+      document.getElementById("striptab").removeAttribute("disabled");
       document.getElementById("striptab").classList.add("advancedcontrols");
     }
   } else {
@@ -15581,10 +15661,12 @@ function IdleAdvancedControls(bUpdateUI) {
       // Disable the Toggle Tab button
       document.getElementById("toggletab").classList.remove("advancedcontrols");
       document.getElementById("toggletab").classList.add("advancedcontrolsdisabled");
+      document.getElementById("toggletab").setAttribute("disabled", '');
 
       // Disable the Strip Chords button
       document.getElementById("striptab").classList.remove("advancedcontrols");
       document.getElementById("striptab").classList.add("advancedcontrolsdisabled");
+      document.getElementById("striptab").setAttribute("disabled", '');
 
     }
   }
@@ -15597,10 +15679,12 @@ function IdleAdvancedControls(bUpdateUI) {
 
       // Enable the Toggle Ornaments button
       document.getElementById("toggleornaments").classList.remove("advancedcontrolsdisabled");
+      document.getElementById("toggleornaments").removeAttribute("disabled");
       document.getElementById("toggleornaments").classList.add("advancedcontrols");
 
       // Enable the Strip Ornaments button
       document.getElementById("stripornaments").classList.remove("advancedcontrolsdisabled");
+      document.getElementById("stripornaments").removeAttribute("disabled");
       document.getElementById("stripornaments").classList.add("advancedcontrols");
     }
   } else {
@@ -15612,10 +15696,12 @@ function IdleAdvancedControls(bUpdateUI) {
       // Disable the Toggle Ornaments button
       document.getElementById("toggleornaments").classList.remove("advancedcontrols");
       document.getElementById("toggleornaments").classList.add("advancedcontrolsdisabled");
+      document.getElementById("toggleornaments").setAttribute("disabled", '');
 
       // Disable the Strip Ornaments button
       document.getElementById("stripornaments").classList.remove("advancedcontrols");
       document.getElementById("stripornaments").classList.add("advancedcontrolsdisabled");
+      document.getElementById("stripornaments").setAttribute("disabled", '');
     }
 
   }
@@ -16356,8 +16442,12 @@ function PDFTunebookBuilder() {
     });
   }
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   var form = [{
-    html: '<p style="text-align:center;font-size:18pt;margin-left:15px;margin-bottom:18px">Inject All PDF Tunebook Features&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#inject_pdf_tunebook_features" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html: 
+      '<h2 class="modal-header">Inject All PDF Tunebook Features&nbsp;&nbsp;</h2>' +
+      '<a href="https://michaeleskin.com/abctools/userguide.html#inject_pdf_tunebook_features" target="_blank" title="View documentation in new tab" class="modal-header-ui modal-link-help dialogcornerbutton">?</a>'
   }, {
     html: '<p style="margin-top:12px;margin-bottom:12px;font-size:12pt;line-height:14pt;">Clicking "Inject" will inject PDF tunebook feature commands at the top of your ABC.</p>'
   }, {
@@ -16844,8 +16934,12 @@ function PDFTunebookBuilderPlayOnly() {
     });
   }
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   var form = [{
-    html: '<p style="text-align:center;font-size:18pt;margin-left:15px;margin-bottom:18px">Inject Only PDF Tunebook Play Features&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#inject_pdf_tunebook_features_play" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html: 
+      '<h2 class="modal-header">Inject Only PDF Tunebook Play Features&nbsp;&nbsp;</h2>' +
+      '<a href="https://michaeleskin.com/abctools/userguide.html#inject_pdf_tunebook_features_play" target="_blank" title="View documentation in new tab" class="modal-header-ui modal-link-help dialogcornerbutton">?</a>'
   }, {
     html: '<p style="margin-top:12px;margin-bottom:12px;font-size:12pt;line-height:20pt;">Clicking "Inject" will inject PDF playback enabling commands at the top of your ABC.</p>'
   }, {
@@ -17675,15 +17769,22 @@ function searchForTunes() {
 
   }
 
+  //
+  // Lite: Customized
+  // Add disabled attribute to visually disabled elements
+  //
+
   elem = document.getElementById('add-search-results');
 
   if (theTotal > 0) {
     elem.classList.remove("add-search-results-disabled");
+    elem.removeAttribute("disabled");
     elem.classList.add("add-search-results");
     elem.disabled = false;
   } else {
     elem.classList.remove("add-search-results");
     elem.classList.add("add-search-results-disabled");
+    elem.setAttribute("disabled", '');
     elem.disabled = true;
   }
 
@@ -17803,6 +17904,9 @@ function addSearchResults() {
 //
 // Idle the search result inject button
 //
+// Lite: Customized
+// Add disabled attribute to visually disabled elements
+//
 function idleSearchResults() {
 
   //console.log("idleSearchResults");
@@ -17813,11 +17917,13 @@ function idleSearchResults() {
 
   if (theSearchResults && (theSearchResults.length > 0)) {
     elem.classList.remove("add-search-results-disabled");
+    elem.removeAttribute("disabled");
     elem.classList.add("add-search-results");
     elem.disabled = false;
   } else {
     elem.classList.remove("add-search-results");
     elem.classList.add("add-search-results-disabled");
+    elem.setAttribute("disabled", '');
     elem.disabled = true;
   }
 
@@ -18102,11 +18208,19 @@ function AddFromSearch(e, callback) {
     theHeight = window.innerHeight - 705;
   }
 
-  var modal_msg = '<p style="text-align:center;font-size:18pt;margin-left:15px;">Tune Search Engine&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#tune_search_engine" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  var modal_msg =
+		'<a href="https://michaeleskin.com/abctools/userguide.html#tune_search_engine" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Tune Search Engine&nbsp;&nbsp;' +
+		'</h2>';
 
   modal_msg += '<p style="font-size:12pt;line-height:24pt;margin-top:20px;margin-bottom:12px;" class="switchtunedatabase">Tune Collection to Search: <select id="databaseselect" onchange="SwitchTuneDatabase();" title="Select your tune search database"><option value="0">Gavin Heneghan\'s Collection (20,000+ Tune Settings)</option><option value="1">FolkFriend.app Collection (45,000+ Tune Settings)</option></select></p>';
 
-  modal_msg += '<p style="font-size:12pt;line-height:24pt;margin-top:0px;margin-bottom:18px;">Search for text in the tune name:&nbsp;&nbsp;<input style="width:100%;font-size:12pt;line-height:18px;padding:6px;" id="tuneNameToSearch" title="Enter your search text here" autocomplete="off" autocorrect="off" placeholder="Enter your search text here"/> </p>';
+  modal_msg += '<p style="font-size:12pt;line-height:24pt;margin-top:0px;margin-bottom:18px;">Search for text in the tune name:&nbsp;&nbsp;<input style="width:100%;font-size:12pt;line-height:18px;padding:6px;" id="tuneNameToSearch" type="text" title="Enter your search text here" autocomplete="off" autocorrect="off" placeholder="Enter your search text here"/> </p>';
 
   modal_msg += '<p class="tunesearchoptions">Only return first variation found?&nbsp;<input id="only_first_variation" type="checkbox" style="margin-top:-5px;margin-bottom:0px;" checked/>&nbsp;&nbsp;&nbsp;Match start of title?&nbsp;<input id="match_title_start" type="checkbox" style="margin-top:-5px;margin-bottom:0px;"/>&nbsp;&nbsp;&nbsp;Only return tunes with chords?&nbsp;<input id="chords_only" type="checkbox" style="margin-top:-5px;margin-bottom:0px;"/></p>';
 
@@ -18411,10 +18525,18 @@ function ChangeTuneOrderMobile() {
 
   theSortableDiv += '</div>';
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   var form = [
 
     {
-      html: '<p style="text-align:center;font-size:18pt;margin-left:15px;">Change the Order of the Tunes&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#change_tune_order" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+      html:
+      '<a href="https://michaeleskin.com/abctools/userguide.html#change_tune_order" target="_blank" ' +
+      'title="View documentation in new tab" ' +
+      'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+      '<h2 class="modal-header">' +
+      'Change the Order of the Tunes&nbsp;&nbsp;' +
+      '</h2>'
     }, {
       html: theSortableDiv
     }, {
@@ -18574,10 +18696,18 @@ function ChangeTuneOrder() {
 
   theSortableDiv += '</div>';
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   var form = [
 
     {
-      html: '<p style="text-align:center;font-size:18pt;margin-left:15px;">Change the Order of the Tunes&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#change_tune_order" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+      html:
+      '<a href="https://michaeleskin.com/abctools/userguide.html#change_tune_order" target="_blank" ' +
+      'title="View documentation in new tab" ' +
+      'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+      '<h2 class="modal-header">' +
+      'Change the Order of the Tunes&nbsp;&nbsp;' +
+      '</h2>'
     }, {
       html: '<p style="margin-top:18px;font-size:12pt;">Drag and drop the tune names to change the order of the tunes in the tunebook:</p>'
     }, {
@@ -18834,10 +18964,18 @@ function CullTunes() {
 
   theCullableDiv += '</div>';
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   var form = [
 
     {
-      html: '<p style="text-align:center;font-size:18pt;margin-left:15px;">Delete Selected Tunes&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#delete_selected_tunes" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+      html:
+      '<a href="https://michaeleskin.com/abctools/userguide.html#delete_selected_tunes" target="_blank" ' +
+      'title="View documentation in new tab" ' +
+      'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+      '<h2 class="modal-header">' +
+      'Delete Selected Tunes&nbsp;&nbsp;' +
+      '</h2>'
     }, {
       html: theCullableDiv
     }, {
@@ -19562,10 +19700,18 @@ function BuildTuneSet() {
 
   theTuneSetDiv += '</div>';
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   var form = [
 
     {
-      html: '<p style="text-align:center;font-size:18pt;margin-left:15px;">Create Tune Set&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#hamburger_create_tune_set" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+      html:
+      '<a href="https://michaeleskin.com/abctools/userguide.html#hamburger_create_tune_set" target="_blank" ' +
+      'title="View documentation in new tab" ' +
+      'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+      '<h2 class="modal-header">' +
+      'Create Tune Set&nbsp;&nbsp;' +
+      '</h2>'
     }, {
       html: '<p style="margin-top:8px;margin-bottom:12px;font-size:12pt;line-height:18pt;">Select the tunes you want in a tune set, then choose one of the three actions below:</p>'
     }, {
@@ -19834,11 +19980,22 @@ function AddABC() {
   var snapshotDisplayStyle     = showSnapshotButton ? "inline" : "none";
   var autoSnapshotDisplayStyle = showAutoSnapshotButton ? "inline" : "none";
 
-  var modal_msg = '<p style="text-align:center;font-size:18pt;margin-left:15px;margin-bottom:10px;">Add ABC Tunes, Templates, and PDF Features<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#add_templates_dialog" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  var modal_msg =
+		'<a href="https://michaeleskin.com/abctools/userguide.html#add_templates_dialog" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Add ABC Tunes, Templates, and PDF Features' +
+		'</h2>';
   modal_msg += '<div id="add-new-tune-dialog">';
-  modal_msg += '<p style="text-align:center;font-size:18px;">Add Your Own Tunes from ABC, MusicXML, BWW, or MIDI Files</p>';
+  modal_msg += '<h3 class="modal-subheader">Add Your Own Tunes from ABC, MusicXML, BWW, or MIDI Files</h3>';
   modal_msg += '<p style="text-align:center;margin-top:24px;">';
-  modal_msg += '<label class="abcuploaddialog btn btn-top" for="addabcfilebutton" title="Adds tunes from an existing ABC, MusicXML, BWW, or MIDI file to the end of the ABC">Choose Files to Add <input type="file" id="addabcfilebutton" accept=".abc,.txt,.ABC,.TXT,.xml,.XML,.musicxml,.mxl,.MXL,.mid,.MID,.midi,.MIDI,.bww,.BWW" hidden multiple/></label>';
+
+  // Lite: Customized
+  // Fix input inaccessible for tabbing
+  modal_msg += '<label class="abcuploaddialog btn btn-top" for="addabcfilebutton" title="Adds tunes from an existing ABC, MusicXML, BWW, or MIDI file to the end of the ABC">Choose Files to Add <input type="file" id="addabcfilebutton" accept=".abc,.txt,.ABC,.TXT,.xml,.XML,.musicxml,.mxl,.MXL,.mid,.MID,.midi,.MIDI,.bww,.BWW" class="visually-hidden" multiple/></label>';
 
   modal_msg += '<input class="dialogrestorebutton btn btn-restorebutton" id="dialogrestorebutton" onclick="RestoreSnapshot(event,false,true);" type="button" value="Restore from Snapshot" title="Replaces the contents of the ABC editor with a Snapshot saved in browser storage.&nbsp;&nbsp;Click for Snapshot #1, Shift-click for Snapshot #2, Alt-click for Snapshot #3, Shift-Alt-click for Snapshot #4." style="display:' + snapshotDisplayStyle + ';">';
 
@@ -19940,7 +20097,15 @@ function AddABC() {
 //
 function AddBodhranTemplate() {
 
-  var modal_msg = '<p style="text-align:center;margin-bottom:36px;font-size:16pt;margin-left:15px;">Add Bodhran Backing Track Tune Template&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#bodhran_map" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  var modal_msg =
+		'<a href="https://michaeleskin.com/abctools/userguide.html#bodhran_map" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Add Bodhran Backing Track Tune Template&nbsp;&nbsp;' +
+		'</h2>';
   modal_msg += '<p style="text-align:center;">';
   modal_msg += '<input id="bodhranreel" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AddBodhranReelTemplate()" type="button" value="Add Reel Template" title="Adds a reel bodhran template to the end of the ABC">';
   modal_msg += '<input id="bodhranjig" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AddBodhranJigTemplate()" type="button" value="Add Jig Template" title="Adds a jig bodhran template to the end of the ABC">';
@@ -21849,6 +22014,8 @@ function FillUrlBoxWithAbcInLZWOrDef(ABCtoEncode, bUpdateUI, theFormat, allowDef
 
   }
 
+  // Lite: Customized
+  // Add disabled attribute to visually disabled elements
   if (bUpdateUI) {
 
     urltextbox = document.getElementById("urltextbox");
@@ -21859,43 +22026,54 @@ function FillUrlBoxWithAbcInLZWOrDef(ABCtoEncode, bUpdateUI, theFormat, allowDef
 
       document.getElementById("generateqrcode").classList.remove("urlcontrols");
       document.getElementById("generateqrcode").classList.add("urlcontrolsdisabled");
+      document.getElementById("generateqrcode").setAttribute("disabled", '');
 
       document.getElementById("shortenurl").classList.remove("urlcontrols");
       document.getElementById("shortenurl").classList.add("urlcontrolsdisabled");
+      document.getElementById("shortenurl").setAttribute("disabled", '');
 
       document.getElementById("testurl").classList.remove("urlcontrols");
       document.getElementById("testurl").classList.add("urlcontrolsdisabled");
+      document.getElementById("testurl").setAttribute("disabled", '');
 
       document.getElementById("copyurl").classList.remove("urlcontrols");
       document.getElementById("copyurl").classList.add("urlcontrolsdisabled");
+      document.getElementById("copyurl").setAttribute("disabled", '');
 
       document.getElementById("saveurl").classList.remove("urlcontrols");
       document.getElementById("saveurl").classList.add("urlcontrolsdisabled");
+      document.getElementById("saveurl").setAttribute("disabled", '');
 
 
     } else {
 
       document.getElementById("testurl").classList.remove("urlcontrolsdisabled");
+      document.getElementById("testurl").removeAttribute("disabled");
       document.getElementById("testurl").classList.add("urlcontrols");
 
       document.getElementById("saveurl").classList.remove("urlcontrolsdisabled");
+      document.getElementById("saveurl").removeAttribute("disabled");
       document.getElementById("saveurl").classList.add("urlcontrols");
 
       document.getElementById("copyurl").classList.remove("urlcontrolsdisabled");
+      document.getElementById("copyurl").removeAttribute("disabled");
       document.getElementById("copyurl").classList.add("urlcontrols");
 
       document.getElementById("shortenurl").classList.remove("urlcontrolsdisabled");
+      document.getElementById("shortenurl").removeAttribute("disabled");
       document.getElementById("shortenurl").classList.add("urlcontrols");
 
       if (gAllowQRCodeSave) {
 
         document.getElementById("generateqrcode").classList.remove("urlcontrolsdisabled");
+        document.getElementById("generateqrcode").removeAttribute("disabled");
         document.getElementById("generateqrcode").classList.add("urlcontrols");
 
       } else {
 
         document.getElementById("generateqrcode").classList.remove("urlcontrols");
         document.getElementById("generateqrcode").classList.add("urlcontrolsdisabled");
+        document.getElementById("generateqrcode").setAttribute("disabled", '');
 
       }
     }
@@ -22876,8 +23054,16 @@ function InjectRepeatsAndClickTrackAll() {
     configure_before_each_tune: 0
   };
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   const form = [{
-    html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;margin-left:15px;">Inject Repeats and Two-Bar Silence and/or Click Intros&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#injectrepeatsandtwobarclickintros" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#injectrepeatsandtwobarclickintros" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Inject Repeats and Two-Bar Silence and/or Click Intros&nbsp;&nbsp;' +
+		'</h2>'
   }, {
     html: '<p style="margin-top:24px;margin-bottom:24px;font-size:12pt;line-height:18pt;">This will inject repeats into each tune in the ABC area by  appending the entire ABC for each tune to itself multiple times.</p>'
   }, {
@@ -23232,8 +23418,16 @@ function InjectSectionHeader() {
     configure_sectionheader: "Section Name",
   };
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   var form = [{
-    html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;margin-left:15px;">Inject PDF Tunebook Section Header&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#pdf_section_headers" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#pdf_section_headers" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Inject PDF Tunebook Section Header&nbsp;&nbsp;' +
+		'</h2>'
   }, {
     html: '<p style="margin-top:36px;font-size:12pt;line-height:18pt;">This will inject a PDF section header placeholder tune into the ABC.</p>'
   }, {
@@ -23519,8 +23713,16 @@ function InjectHeaderString() {
     injectalltunes: true
   };
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   var form = [{
-    html: '<p style="text-align:center;font-size:18pt;margin-left:15px;">Inject ABC Header Text&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#advanced_injectabcheader" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#advanced_injectabcheader" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Inject ABC Header Text&nbsp;&nbsp;' +
+		'</h2>'
   }, {
     html: '<p style="margin-top:24px;margin-bottom:36px;font-size:12pt;line-height:18pt;text-align:center">Clicking "Inject" will inject the text into the header of your ABC tune(s).</p>'
   }, {
@@ -23826,8 +24028,16 @@ function InjectCustomStringedInstrumentTab() {
     configure_inject_all: true
   };
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   var form = [{
-    html: '<p style="text-align:center;margin-bottom:32px;font-size:16pt;margin-left:15px;">Inject Custom Stringed Instrument Tab Annotation&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#custom_string_tab" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#custom_string_tab" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Inject Custom Stringed Instrument Tab Annotation&nbsp;&nbsp;' +
+		'</h2>'
   }, {
     html: '<p style="margin-top:20px;margin-bottom:20px;font-size:12pt;line-height:18pt;">This will inject an %abcjs_rendering_params annotation into the ABC tune(s) to generate custom stringed instrument tablature. </p>'
   }, {
@@ -24242,8 +24452,16 @@ function InjectFontSettings() {
 
   var theSelectedTuneIndex = findSelectedTuneIndex();
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   var form = [{
-    html: '<p style="text-align:center;font-size:18pt;margin-left:15px;">Inject Font Settings&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#advanced_inject_font_settings" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#advanced_inject_font_settings" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Inject Font Settings&nbsp;&nbsp;' +
+		'</h2>'
   }, {
     html: '<p style="margin-top:24px;margin-bottom:24px;font-size:12pt;line-height:18pt;text-align:center">Click "Inject" to inject the checked fonts below from your Font Settings into the tunes.</p>'
   }, {
@@ -24950,7 +25168,10 @@ function NotationSpacingExplorer() {
   var modal_msg = '<div id="notationspacingexplorerholder" style="height:' + theHeight + 'px;overflow-y:auto;margin-bottom:15px;padding:4px;">';
   modal_msg +=   '<div id="notationspacingexplorer-paper"></div>';
   modal_msg += '</div>';
-
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  modal_msg += '<a id="notationspacingexplorer_help" href="https://michaeleskin.com/abctools/userguide.html#advanced_notationspacingexplorer" target="_blank" title="Learn more about the Notation Spacing Explorer" class="modal-header-ui modal-link-help-player dialogcornerbutton">?</a>';
+ 
   // New row: Mode + Scale (NO inline handlers)
   modal_msg += '<p class="configure_layout_text" style="text-align:center;margin:0px;margin-top:12px;margin-bottom:20px">';
   modal_msg +=   '<span>Mode:</span> ';
@@ -24979,8 +25200,6 @@ function NotationSpacingExplorer() {
   modal_msg +=   '<span style="font-size:12pt;">Inject all tunes:</span><input style="width:16px;margin-left:8px;margin-right:24px;" id="layout_inject_all" type="checkbox"/>';
   modal_msg +=   '<input id="notationspacingexplorerinject" class="notationspacingexplorerinject button btn btn-notationspacingexplorerinject" type="button" style="margin-right:0px;" value="Inject Spacing into the ABC" title="Injects the spacing values into the ABC">';
   modal_msg += '</p>';
-
-  modal_msg += '<a id="notationspacingexplorer_help" href="https://michaeleskin.com/abctools/userguide.html#advanced_notationspacingexplorer" target="_blank" style="text-decoration:none;" title="Learn more about the Notation Spacing Explorer" class="dialogcornerbutton">?</a>';
 
   // Scale the player for larger screens
   var windowWidth = window.innerWidth;
@@ -25610,8 +25829,16 @@ function InjectAllMIDIParams() {
     configure_inject_all: true
   };
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   var form = [{
-    html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;margin-left:15px;">Inject MIDI Soundfont, Melody, Bass, and Chords&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#selecting_the_instruments_for_playback" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#selecting_the_instruments_for_playback" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Inject MIDI Soundfont, Melody, Bass, and Chords&nbsp;&nbsp;' +
+		'</h2>'
   }, {
     html: '<p style="margin-top:18px;margin-bottom:18px;font-size:12pt;line-height:18pt;">This will inject a %soundfont directive into the ABC:</p>'
   }, {
@@ -26175,8 +26402,16 @@ function InjectMetronome() {
     configure_inject_all: false
   };
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   var form = [{
-    html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;margin-left:15px;">Inject Metronome&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#adding_a_metronome" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#adding_a_metronome" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Inject Metronome&nbsp;&nbsp;' +
+		'</h2>'
   }, {
     html: '<p style="margin-top:36px;margin-bottom:36px;font-size:12pt;line-height:18pt;">This injects a metronome into the ABC using %%MIDI drum and %%MIDI drumon directives.</p>'
   }, {
@@ -26382,45 +26617,50 @@ function CopyABC() {
 
 //
 // Copy the ShareURL to the clipboard and then launch TinyURL
+// Lite: Customized
+// DO NOT USE: Takes user to a third-party website w/o confirmation
+// (some browsers treat this as unwanted popup window)
 //
-function ShortenURLFallback() {
+// function ShortenURLFallback() {
 
-  if (!gAllowURLSave) {
-    return;
-  }
+//   if (!gAllowURLSave) {
+//     return;
+//   }
 
-  var theURL = document.getElementById("urltextbox");
+//   var theURL = document.getElementById("urltextbox");
 
-  var theData = theURL.value;
+//   var theData = theURL.value;
 
-  // Copy the abc to the clipboard
-  CopyToClipboard(theData);
+//   // Copy the abc to the clipboard
+//   CopyToClipboard(theData);
 
-  // Give some feedback
-  document.getElementById("shortenurl").value = "Share URL Copied!";
+//   // Give some feedback
+//   document.getElementById("shortenurl").value = "Share URL Copied!";
 
-  setTimeout(function() {
+//   setTimeout(function() {
 
-    document.getElementById("shortenurl").value = "Launching TinyURL";
+//     document.getElementById("shortenurl").value = "Launching TinyURL";
 
-    setTimeout(function() {
+//     setTimeout(function() {
 
-      var w = window.open("https://tinyurl.com");
+//       var w = window.open("https://tinyurl.com");
 
-      document.getElementById("shortenurl").value = "Shorten URL";
+//       document.getElementById("shortenurl").value = "Shorten URL";
 
-    }, 500);
+//     }, 500);
 
-  }, 250);
+//   }, 250);
 
-}
+// }
 
 //
 // Try calling the TinyURL API directly first
 //
 // If it fails, fall back to the old manual assist system
+// Lite: Customized
+// Only allow private API keys
+// Bring up a warning prompt and do nothing if API key invalid
 //
-
 function ShortenURL(e) {
 
   if (!gAllowURLSave) {
@@ -26446,23 +26686,25 @@ function ShortenURL(e) {
 
   if (!gDoTinyURLAPIKeyOverride) {
 
-    var thePrompt = '<p style="text-align:center;font-size:12pt;line-height:18pt;">I get a very few number of free TinyURL shortening sessions per month that are shared across all users of the tool.</p><p style="text-align:center;font-size:12pt;line-height:18pt;">Do you absolutely need a shortened URL?</p><p style="text-align:center;font-size:12pt;line-height:18pt;">If not, please consider just copy and pasting the full Share URL instead.</p><p style="text-align:center;font-size:12pt;line-height:18pt;">If you need to create many shortened URLs, please get your own TinyURL key and enter it in the <strong>Advanced Settings</strong> dialog to avoid this alert.</p><p style="text-align:center;font-size:12pt;line-height:18pt;">The process for getting your own TinyURL API key is described here:</p><p style="text-align:center;font-size:12pt;line-height:18pt;"><a href="https://michaeleskin.com/abctools/userguide.html#private_tinyurl_token" target="_blank">Private TinyURL API Token</a></p><p style="text-align:center;font-size:12pt;line-height:18pt;">Warning: Do not post TinyURL links from this tool on Facebook!</p><p style="text-align:center;font-size:12pt;line-height:18pt;">Facebook considers shortened URLs as intellectual property theft since they strip away Facebook\'s added URL tracking parameters and have been known to temporarily suspend the accounts of those using them in posts.</p>';
+  // Lite: Customized
+  // Add short TinyURL key instructions
+  // Replace inline styles with reusable classes
+    var thePrompt =
+      '<h2 class="modal-header modal-textgroup-explanation">Shorten URL</h2>' +
+      '<p style="text-align:center;">To use shortened URLs, you need to get a TinyURL key and enter it in <strong>Advanced Settings > System</strong></p>' +
+      '<p style="text-align:center;">Instructions on how to get your own TinyURL API key:</p><p style="text-align:center;"><strong><a href="https://michaeleskin.com/abctools/userguide.html#private_tinyurl_token" target="_blank">Private TinyURL API Token</a></strong></p>';
 
     // Center the string in the prompt
     thePrompt = makeCenteredPromptString(thePrompt);
 
-    DayPilot.Modal.confirm(thePrompt, {
+    DayPilot.Modal.alert(thePrompt, {
       top: 100,
       theme: "modal_flat",
-      okText: "Proceed",
+      okText: "OK",
       scrollWithPage: (AllowDialogsToScroll())
-    }).then(function(args) {
-
-      if (!args.canceled) {
-
-        doShortenURL();
-      }
     });
+
+    return;
 
   } else {
     doShortenURL();
@@ -26493,11 +26735,10 @@ function ShortenURL(e) {
     // Either use my own or the user's TinyURL key
     var theAPIKey = gTinyURLAPIKey;
 
-    if (gDoTinyURLAPIKeyOverride) {
-
-      theAPIKey = "Bearer " + gTinyURLAPIKeyOverride;
-
-    }
+    // Lite: Customized (only allow private API keys)
+    // if (gDoTinyURLAPIKeyOverride) {
+    //   theAPIKey = "Bearer " + gTinyURLAPIKeyOverride;
+    // }
 
     fetch(`https://api.tinyurl.com/create`, {
         method: `POST`,
@@ -26513,16 +26754,28 @@ function ShortenURL(e) {
         // If it fails, go back to the old way
         if (response.status != 200) {
 
-          ShortenURLFallback();
+          // ShortenURLFallback();
+
+          var thePrompt = "Shortening URL failed, please check your private API key";
+
+          // Center the string in the prompt
+          thePrompt = makeCenteredPromptString(thePrompt);
+
+          DayPilot.Modal.alert(thePrompt, {
+            theme: "modal_flat",
+            top: 200,
+            scrollWithPage: (AllowDialogsToScroll())
+          });
 
           return;
-
         };
 
-        return response.json()
+        return response.json() || null;
 
       })
       .then(data => {
+
+        if (!data) return;
 
         // Copy the shortened
         CopyToClipboard(data.data.tiny_url);
@@ -26583,32 +26836,25 @@ function ShortenURL(e) {
           });
         }
 
-        if (!gDoTinyURLAPIKeyOverride) {
+        // Lite: Customized (only allow the use of private tokens)
+        // if (!gDoTinyURLAPIKeyOverride) {
 
-          // Keep track of default TinyURL token use
-          gTinyURLCount++;
+        //   // Keep track of default TinyURL token use
+        //   gTinyURLCount++;
 
-          if (gLocalStorageAvailable) {
-            localStorage.TinyURLCount = gTinyURLCount;
-          }
+        //   if (gLocalStorageAvailable) {
+        //     localStorage.TinyURLCount = gTinyURLCount;
+        //   }
 
-          // Remind them on 5th use about custom TinyURL tokens
-          if ((gTinyURLCount == 5) || (gTinyURLCount == 10)) {
+        //   // Remind them on 5th use about custom TinyURL tokens
+        //   if ((gTinyURLCount == 5) || (gTinyURLCount == 10)) {
 
-            TinyURLReminderDialog();
+        //     TinyURLReminderDialog();
 
-          }
-        }
+        //   }
+        // }
 
       })
-      .catch(
-        error => {
-
-          ShortenURLFallback();
-
-          return;
-
-        });
   }
 }
 
@@ -29459,8 +29705,16 @@ function InjectBagpipeSounds() {
     matchtunekey: false
   };
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   var form = [{
-    html: '<p style="text-align:center;font-size:18pt;margin-left:15px;">Inject Bagpipe Sounds<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#advanced_injectbagpipesounds" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#advanced_injectbagpipesounds" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Inject Bagpipe Sounds' +
+		'</h2>'
   }, {
     html: '<p style="margin-top:18px;margin-bottom:18px;font-size:12pt;line-height:16pt;">Clicking "Inject" will change the melody sound to the selected bagpipe instrument and optionally inject drones as a second voice of the tune(s).</p>'
   }, {
@@ -29722,7 +29976,16 @@ function InjectBagpipeSounds() {
 //
 function DoCeoltasTransformDialog() {
 
-  var modal_msg = '<div id="ceoltasanchor"><p style="text-align:center;margin-bottom:36px;font-size:16pt;margin-left:15px;">Comhaltas ABC Transform&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#advanced_comhaltas" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  var modal_msg =
+		'<div id="ceoltasanchor">' +
+		'<a href="https://michaeleskin.com/abctools/userguide.html#advanced_comhaltas" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Comhaltas ABC Transform&nbsp;&nbsp;' +
+		'</h2>';
 
   modal_msg += '<p style="text-align:center;"><input id="ceoltasdialog" class="advancedcontrols btn btn-injectcontrols" onclick="DoCeoltasTransform(false)" type="button" value="Standard ABC to Comhaltas ABC" title="Transforms the standard ABC format to Comhaltas format">';
 
@@ -29743,7 +30006,16 @@ function DoCeoltasTransformDialog() {
 // Inject/remove Tune title numbers
 //
 function TuneTitlesNumbersDialog() {
-  var modal_msg = '<div id="tunetitlesanchor"><p style="text-align:center;margin-bottom:36px;font-size:16pt;margin-left:15px;">Add/Remove Tune Title Numbers&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#advanced_injecttunetitlenumbers" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  var modal_msg =
+		'<div id="tunetitlesanchor">' +
+		'<a href="https://michaeleskin.com/abctools/userguide.html#advanced_injecttunetitlenumbers" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Add/Remove Tune Title Numbers&nbsp;&nbsp;' +
+		'</h2>';
 
   modal_msg += '<p style="text-align:center;"><input id="addtunetitlenumbers" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AddTuneTitleNumbers()" type="button" value="Add Numbers to Tune Titles" title="Adds incrementing numbers to the tune titles">';
 
@@ -29787,8 +30059,16 @@ function IncipitsBuilderDialog() {
     IncipitsBuilderOwnLines: gIncipitsBuilderOwnLines
   };
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   var form = [{
-    html: '<p style="text-align:center;font-size:16pt;margin-bottom:24px;margin-left:15px;">Notes Incipits Builder&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#incipits_builder_pdf" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#incipits_builder_pdf" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Notes Incipits Builder&nbsp;&nbsp;' +
+		'</h2>'
   }, {
     html: '<p style="font-size:12pt;line-height:18pt;">Clicking "Build" will extensively reformat the ABC, so you may want to grab a Snapshot or save the ABC before using this feature.</p>'
   }, {
@@ -30415,13 +30695,16 @@ function saveCustomHarmonica() {
 //
 // Load the custom harmonica tuning
 //
-function loadCustomHarmonicaClickHandler() {
+// Lite: Customized
+// Redundant: Input wrapped in label to fix unreachable element in tab order
+//
+// function loadCustomHarmonicaClickHandler() {
+//
+//   var elem = document.getElementById("load_custom_harmonica_tuning_fs");
 
-  var elem = document.getElementById("load_custom_harmonica_tuning_fs");
+//   elem.click();
 
-  elem.click();
-
-}
+// }
 
 function loadCustomHarmonica(file) {
 
@@ -30697,7 +30980,16 @@ function EditCustomHarmonica() {
   // Save off the original setting
   var gHarmonicaCustomOriginal = JSON.parse(JSON.stringify(gHarmonicaCustom));
 
-  var modal_msg = '<p style="text-align:center;font-size:16pt;margin-left:15px;margin-bottom:32px">Edit Custom Harmonica Tuning Tab&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#tab_harmonica_custom" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  var modal_msg = '';
+  modal_msg +=
+		'<a href="https://michaeleskin.com/abctools/userguide.html#tab_harmonica_custom" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Edit Custom Harmonica Tuning Tab&nbsp;&nbsp;' +
+		'</h2>';
   modal_msg += '<div id="harmonica-custom-dialog">';
   modal_msg += '<p style="font-size:12pt;"">Custom tuning name:<input class="harmonicacustomlabel" type="text" id="r0c1" onchange="customHarmonicaChangeHandler()"><p>\n';
   modal_msg += '<table style="margin-bottom:24px;text-align:center;">\n';
@@ -30884,7 +31176,9 @@ function EditCustomHarmonica() {
   modal_msg += '</tr>\n';
   modal_msg += '</table>\n';
   modal_msg += '</div>\n';
-  modal_msg += '<p style="text-align:center;margin-top:22px;"><input type="file" id="load_custom_harmonica_tuning_fs" accept=".txt,.TXT" hidden/><input id="save_custom_harmonica_tuning" class="btn btn-subdialog save_custom_harmonica_tuning" onclick="saveCustomHarmonica()" type="button" value="Save Custom Harmonica Tuning" title="Save a custom harmonica tuning file"><input id="load_custom_harmonica_tuning" class="btn btn-subdialog load_custom_harmonica_tuning" onclick="loadCustomHarmonicaClickHandler()" type="button" value="Load Custom Harmonica Tuning" title="Load a custom harmonica tuning file"></p>\n';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  modal_msg += '<p style="text-align:center;margin-top:22px;"><input id="save_custom_harmonica_tuning" class="btn btn-subdialog save_custom_harmonica_tuning" onclick="saveCustomHarmonica()" type="button" value="Save Custom Harmonica Tuning" title="Save a custom harmonica tuning file"><label for="load_custom_harmonica_tuning_fs" id="load_custom_harmonica_tuning" class="btn btn-subdialog load_custom_harmonica_tuning" type="button" title="Load a custom harmonica tuning file">Load Custom Harmonica Tuning<input type="file" id="load_custom_harmonica_tuning_fs" accept=".txt,.TXT" class="visually-hidden"/></label></p>\n';
   modal_msg += '<p style="text-align:center;margin-top:22px;"><input id="default_anglo_fingerings" class="btn btn-clearbutton default_anglo_fingerings" onclick="defaultCustomHarmonica()" type="button" value="Reset to Default (Standard Richter)" title="Resets the custom tuning to Standard Richter"></p>\n';
 
   const form = [{
@@ -31077,8 +31371,16 @@ function DoInjectHarmonicaTab() {
 
   };
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   const form = [{
-    html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;margin-left:15px;">Inject Diatonic Harmonica Tablature&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#tab_harmonica" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#tab_harmonica" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Inject Diatonic Harmonica Tablature&nbsp;&nbsp;' +
+		'</h2>'
   }, {
     html: '<p style="margin-top:36px;margin-bottom:36px;font-size:12pt;line-height:18pt;">This will inject tablature for a 10-hole diatonic harmonica in the harmonica tuning and key selected below into all of the tunes in the ABC text area:</p>'
   }, {
@@ -31219,13 +31521,16 @@ function saveCustomTab() {
 //
 // Load the custom tab
 //
-function loadCustomTabClickHandler() {
+// Lite: Customized
+// Redundant: Input wrapped in label to fix unreachable element in tab order
+//
+// function loadCustomTabClickHandler() {
+//
+//   var elem = document.getElementById("load_custom_tab_fs");
 
-  var elem = document.getElementById("load_custom_tab_fs");
+//   elem.click();
 
-  elem.click();
-
-}
+// }
 
 function loadCustomTab(file) {
 
@@ -31492,7 +31797,16 @@ function EditCustomTab() {
   // Save off the original setting
   var gCustomTabOriginal = JSON.parse(JSON.stringify(gCustomTab));
 
-  var modal_msg = '<p style="text-align:center;font-size:16pt;margin-left:15px;margin-bottom:32px">Edit Custom Tablature Note Names&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#tab_custom_edit" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  var modal_msg = '';
+  modal_msg +=
+		'<a href="https://michaeleskin.com/abctools/userguide.html#tab_custom_edit" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Edit Custom Tablature Note Names&nbsp;&nbsp;' +
+		'</h2>';
   modal_msg += '<div id="tab-custom-dialog">';
   modal_msg += '<p style="font-size:12pt;"">Custom tab name:<input class="customtablabel" type="text" id="r0c1" onchange="customTabChangeHandler()"><p>\n';
   modal_msg += '<table style="margin-bottom:24px;text-align:center;">\n';
@@ -31679,7 +31993,9 @@ function EditCustomTab() {
   modal_msg += '</tr>\n';
   modal_msg += '</table>\n';
   modal_msg += '</div>\n';
-  modal_msg += '<p style="text-align:center;margin-top:22px;"><input type="file" id="load_custom_tab_fs" accept=".txt,.TXT" hidden/><input id="save_custom_tab" class="btn btn-subdialog save_custom_tab" onclick="saveCustomTab()" type="button" value="Save Custom Tab Settings" title="Save a custom tab settings file"><input id="load_custom_tab" class="btn btn-subdialog load_custom_tab" onclick="loadCustomTabClickHandler()" type="button" value="Load Custom Tab Settings" title="Load a custom tab settings file"></p>\n';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  modal_msg += '<p style="text-align:center;margin-top:22px;"><input id="save_custom_tab" class="btn btn-subdialog save_custom_tab" onclick="saveCustomTab()" type="button" value="Save Custom Tab Settings" title="Save a custom tab settings file"><label for="load_custom_tab_fs" id="load_custom_tab" class="btn btn-subdialog load_custom_tab" type="button" title="Load a custom tab settings file">Load Custom Tab Settings<input type="file" id="load_custom_tab_fs" accept=".txt,.TXT" class="visually-hidden"/></label></p>\n';
   modal_msg += '<p style="text-align:center;margin-top:22px;"><input id="default_anglo_fingerings" class="btn btn-clearbutton default_anglo_fingerings" onclick="defaultCustomTab()" type="button" value="Reset to Default (Scale Semitone Numbers)" title="Resets the custom tab setting to scale semitone numbers"></p>\n';
 
   const form = [{
@@ -31859,8 +32175,16 @@ function DoInjectCustomTab() {
     configure_custom_tab_octave: gCustomTabOctave,
   };
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   const form = [{
-    html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;margin-left:15px;">Inject Custom Tablature&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#tab_custom" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#tab_custom" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Inject Custom Tablature&nbsp;&nbsp;' +
+		'</h2>'
   }, {
     html: '<p style="margin-top:36px;margin-bottom:36px;font-size:12pt;line-height:18pt;">This will inject custom tablature offset by the octave and semitone values selected below into all of the tunes in the ABC text area:</p>'
   }, {
@@ -31942,7 +32266,16 @@ function DoInjectCustomTab() {
 //
 function DoInjectBoxTablature() {
 
-  var modal_msg = '<div id="boxtabanchor"><p style="text-align:center;margin-bottom:36px;font-size:16pt;margin-left:15px;">Inject Irish Button Box Tablature&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#tab_irish_box" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  var modal_msg =
+		'<div id="boxtabanchor">' +
+		'<a href="https://michaeleskin.com/abctools/userguide.html#tab_irish_box" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Inject Irish Button Box Tablature&nbsp;&nbsp;' +
+		'</h2>';
 
   modal_msg += '<p style="text-align:center;"><input id="injectbcbox" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectTablature_BC()" type="button" value="Inject B/C Box Tab" title="Injects B/C box tablature into the ABC">';
 
@@ -32134,8 +32467,16 @@ function DoInjectTablature_Anglo() {
     configure_gary_coover: gInjectTab_GaryCoover,
   };
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   const form = [{
-    html: '<p style="text-align:center;margin-bottom:36px;font-size:16pt;margin-left:15px;">Inject Anglo Concertina Tablature&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#tab_concertina" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#tab_concertina" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Inject Anglo Concertina Tablature&nbsp;&nbsp;' +
+		'</h2>'
   }, {
     name: "Concertina tuning:",
     id: "configure_concertina_tuning",
@@ -32424,8 +32765,16 @@ function DoInjectTablature_Bamboo_Flute() {
     configure_bamboo_flute_key: gBambooFluteKey,
   };
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   const form = [{
-      html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;margin-left:15px;">Inject Bamboo Flute Tablature&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://en.m.wikipedia.org/wiki/Numbered_musical_notation" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+      html:
+      '<a href="https://en.m.wikipedia.org/wiki/Numbered_musical_notation" target="_blank" ' +
+      'title="View documentation in new tab" ' +
+      'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+      '<h2 class="modal-header">' +
+      'Inject Bamboo Flute Tablature&nbsp;&nbsp;' +
+      '</h2>'
     }, {
       html: '<p style="margin-top:36px;margin-bottom:36px;font-size:12pt;line-height:18pt;">This will inject numeric notation tablature for a bamboo flute in the key selected below into all of the tunes in the ABC text area:</p>'
     }, {
@@ -32502,7 +32851,16 @@ function DoInjectTablature_Bamboo_Flute() {
 //
 function DoInjectTablature_Fiddle_Fingerings_Dialog() {
 
-  var modal_msg = '<div id="fiddlefingeringsanchor"><p style="text-align:center;margin-bottom:36px;font-size:16pt;margin-left:15px;">Inject Fiddle Fingerings&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#tab_fiddle" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  var modal_msg =
+		'<div id="fiddlefingeringsanchor">' +
+		'<a href="https://michaeleskin.com/abctools/userguide.html#tab_fiddle" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Inject Fiddle Fingerings&nbsp;&nbsp;' +
+		'</h2>';
 
   modal_msg += '<p style="text-align:center;"><input id="fiddlefingeringsdialog0" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectTablature_Fiddle_Fingerings(0)" type="button" value="Finger Number Only (Using !0!, !1!, !2!, !3!, !4! Annotations)" title="Injects finger number (!0!, !1!, !2!, !3!, !4!) only.&nbsp;&nbsp;!0! is an open string."></p>';
 
@@ -32650,8 +33008,16 @@ function DoInjectTablature_MD() {
     strip_bad_tunes: gMDulcimerStripBadTunes
   };
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   const form = [{
-      html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;margin-left:15px;">Inject Mountain Dulcimer Tablature&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#tab_dulcimer" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+      html:
+      '<a href="https://michaeleskin.com/abctools/userguide.html#tab_dulcimer" target="_blank" ' +
+      'title="View documentation in new tab" ' +
+      'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+      '<h2 class="modal-header">' +
+      'Inject Mountain Dulcimer Tablature&nbsp;&nbsp;' +
+      '</h2>'
     }, {
       html: '<p style="margin-top:36px;margin-bottom:36px;font-size:12pt;line-height:18pt;">This will inject tablature for a DAD, DGD, or DAA-tuned Mountain Dulcimer in the style selected below into all of the tunes in the ABC text area:</p>'
     }, {
@@ -32800,8 +33166,16 @@ function DoInjectTablature_ShapeNotes() {
     shape_note_style: gShapeNoteStyle,
   };
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   const form = [{
-    html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;margin-left:15px;">Inject Note Names&nbsp;/&nbsp;Shape Note&nbsp;/&nbsp;Solfège<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#advanced_shapenoteshapes" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#advanced_shapenoteshapes" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Inject Note Names&nbsp;/&nbsp;Shape Note&nbsp;/&nbsp;Solfège' +
+		'</h2>'
   }, {
     html: '<p style="margin-top:36px;margin-bottom:24px;font-size:12pt;line-height:18pt;">This will inject Pitch Names, ABC Note Names (Standard ABC or Comhaltas ABC), Shape Note shapes, or Solfège note names into all the tunes in the ABC text area.</p>'
   }, {
@@ -33662,7 +34036,9 @@ function ExportAll() {
   modal_msg += '<p style="text-align:center;font-size:18pt;">Export All Tunes</p>';
 
   // Help corner button (keep same id & link)
-  modal_msg += '<a id="exportall_help" href="https://michaeleskin.com/abctools/userguide.html#export_all" target="_blank" style="text-decoration:none;" title="Learn more about the audio and image exporter" class="dialogcornerbutton">?</a>';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  modal_msg += '<a id="exportall_help" href="https://michaeleskin.com/abctools/userguide.html#export_all" target="_blank" title="Learn more about the audio and image exporter" class="modal-header-ui modal-link-help-player dialogcornerbutton">?</a>';
 
   // Tabs container (uses your existing adv-* CSS)
   modal_msg += '<div class="adv-tabs">';
@@ -34156,8 +34532,16 @@ function BatchMusicXMLRoundTrip() {
     reformatall: false
   };
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   const form = [{
-    html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;margin-left:15px;">Reformat Using MusicXML&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#reformat_using_musicxml" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#reformat_using_musicxml" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Reformat Using MusicXML&nbsp;&nbsp;' +
+		'</h2>'
   }, {
     html: '<p style="margin-top:36px;margin-bottom:12px;font-size:12pt;line-height:18pt;">Click OK to reformat either the current tune or all the tunes in the ABC by exporting the tune(s) in MusicXML format and then re-import them using the current MusicXML import settings.</p>'
   }, {
@@ -35450,8 +35834,16 @@ function BatchMP3Export() {
     configure_percent_speed: 100
   };
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   const form = [{
-    html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;margin-left:15px;">Export All Tunes as MP3&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#export_all_as_mp3" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#export_all_as_mp3" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Export All Tunes as MP3&nbsp;&nbsp;' +
+		'</h2>'
   }, {
     html: '<p style="margin-top:24px;margin-bottom:24px;font-size:12pt;line-height:18pt;">This will export all the tunes in the ABC area as .MP3 files with one or more repeats.</p>'
   }, {
@@ -36011,7 +36403,11 @@ function ExportAudioOrImage() {
 
   var format = GetRadioValue("notenodertab");
 
-  modal_msg = '<p style="text-align:center;font-size:20pt;">Export Media</p>';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  modal_msg += '<a id="exportaudioimage_help" href="https://michaeleskin.com/abctools/userguide.html#export_audio_image" target="_blank" title="Learn more about the audio and image exporter" class="modal-header-ui modal-link-help-player dialogcornerbutton">?</a>';
+
+  modal_msg += '<h2 class="modal-header">Export Media</h2>';
 
   if (gPlayABCTuneCount > 1) {
     modal_msg += '<p style="text-align:center;font-size:14pt;margin-top:32px;">Export Single Tune Audio</p>';
@@ -36054,8 +36450,6 @@ function ExportAudioOrImage() {
 
     }
   }
-
-  modal_msg += '<a id="exportaudioimage_help" href="https://michaeleskin.com/abctools/userguide.html#export_audio_image" target="_blank" style="text-decoration:none;" title="Learn more about the audio and image exporter" class="dialogcornerbutton">?</a>';
 
   DayPilot.Modal.alert(modal_msg, {
     theme: "modal_flat",
@@ -37861,7 +38255,17 @@ function PlayABCDialog(theABC, callback, val, metronome_state) {
 
     theTop = 20;
 
-    modal_msg = '<div id="playerholder" style="height:' + theHeight + 'px;overflow-y:auto;margin-bottom:15px;">';
+    // Lite: Customized
+    // Replace inline styles with reusable classes
+    modal_msg = '';
+    modal_msg += '<a id="abcplayer_help" href="https://michaeleskin.com/abctools/userguide.html#playing_your_tunes" target="_blank" title="Learn more about the Player" class="modal-header-ui modal-link-help-player dialogcornerbutton">?</a>';
+
+    // Add the share controls
+    if (gPlayerShowExternalToolsIcon){
+      modal_msg += '<img id="external_tools_share" class="external_tools_share modal-header-ui modal-btn-share-player" src="img/external_share.png" title="Open the tune in an external ABC tool.&nbsp;&nbsp;This control can be shown/hidden in the Player by a setting in the Player Settings dialog."/>';
+    }
+
+    modal_msg += '<div id="playerholder" style="height:' + theHeight + 'px;overflow-y:auto;margin-bottom:15px;">';
 
     if (gLargePlayerControls) {
       modal_msg += '<div id="abcplayer" class="abcjs-large">';
@@ -37912,13 +38316,6 @@ function PlayABCDialog(theABC, callback, val, metronome_state) {
 
     // Add a little spacer to give more room for the page controls
     modal_msg += '<p style="text-align:center;font-size:0pt;">&nbsp;</p>';
-
-    modal_msg += '<a id="abcplayer_help" href="https://michaeleskin.com/abctools/userguide.html#playing_your_tunes" target="_blank" style="text-decoration:none;" title="Learn more about the Player" class="dialogcornerbutton">?</a>';
-
-    // Add the share controls
-    if (gPlayerShowExternalToolsIcon){
-      modal_msg += '<img id="external_tools_share" class="external_tools_share" src="img/external_share.png" title="Open the tune in an external ABC tool.&nbsp;&nbsp;This control can be shown/hidden in the Player by a setting in the Player Settings dialog."/>';
-    }
 
     if (gPlayABCTuneCount > 1) {
 
@@ -40220,7 +40617,11 @@ function SwingExplorerDialog(theOriginalABC, theProcessedABC, swing_explorer_sta
 
     var theHeight = window.innerHeight - 400;
 
-    modal_msg = '<div id="playerholder" style="height:' + theHeight + 'px;overflow-y:auto;margin-bottom:15px;">';
+    // Lite: Customized
+    // Replace inline styles with reusable classes
+    modal_msg = '';
+    modal_msg += '<a id="swingexplorerhelp" href="https://michaeleskin.com/abctools/userguide.html#swing_explorer" target="_blank" title="Learn more about the Swing Explorer" class="modal-header-ui modal-link-help-player dialogcornerbutton">?</a>';
+    modal_msg += '<div id="playerholder" style="height:' + theHeight + 'px;overflow-y:auto;margin-bottom:15px;">';
 
     if (gLargePlayerControls) {
       modal_msg += '<div id="abcplayer" class="abcjs-large">';
@@ -40253,19 +40654,17 @@ function SwingExplorerDialog(theOriginalABC, theProcessedABC, swing_explorer_sta
       modal_msg += '<input id="swingexplorertest" class="swingexplorertest button btn btn-swingexplorertest" onclick="SwingExplorerRegenerate();" type="button" value="Reload Tune with Changed Swing Settings" title="Reloads the tune into the player with the entered swing factor">';
       modal_msg += '<input id="swingexplorerinject" class="swingexplorerinject button btn btn-swingexplorerinject" onclick="SwingExplorerInject();" type="button" style="margin-right:0px;" value="Inject Swing into the ABC" title="Injects the current swing factor into the tune ABC">';
       modal_msg += '</p>';
-      modal_msg += '<a id="swingexplorerhelp" href="https://michaeleskin.com/abctools/userguide.html#swing_explorer" target="_blank" style="text-decoration:none;" title="Learn more about the Swing Explorer" class="dialogcornerbutton">?</a>';
     } else {
 
       modal_msg += '<p class="configure_swingexplorer_text" style="text-align:center;margin:0px;margin-top:22px">';
 
-      modal_msg += 'Swing factor (range is -0.9 to 0.9): <input style="width:90px;" id="swing_explorer_factor" type="number" min="-0.9" step="0.05" max=".9" title="Swing factor, range is -0.9 to 0.9" autocomplete="off"/>';
-      modal_msg += '&nbsp;&nbsp;Swing offset in eighth notes (range is 0 to 16): <input style="width:90px;" id="swing_explorer_offset" type="number" min="0" step="1" max="16" title="Swing offset in eighth notes, range is 0 to 16" autocomplete="off"/>';
+      modal_msg += 'Swing factor (-0.9 to 0.9): <input style="width:90px;" id="swing_explorer_factor" type="number" min="-0.9" step="0.05" max=".9" title="Swing factor, range is -0.9 to 0.9" autocomplete="off"/>';
+      modal_msg += '&nbsp;&nbsp;Swing offset in eighth notes (0 to 16): <input style="width:90px;" id="swing_explorer_offset" type="number" min="0" step="1" max="16" title="Swing offset in eighth notes, range is 0 to 16" autocomplete="off"/>';
       modal_msg += '</p>';
       modal_msg += '<p class="configure_swingexplorer_text" style="text-align:center;margin:0px;margin-top:22px">';
       modal_msg += '<input id="swingexplorertest" class="swingexplorertest button btn btn-swingexplorertest" onclick="SwingExplorerRegenerate();" type="button" value="Reload Tune with Changed Swing Settings" title="Reloads the tune into the player with the entered swing factor and offset">';
       modal_msg += '<input id="swingexplorerinject" class="swingexplorerinject button btn btn-swingexplorerinject" onclick="SwingExplorerInject();" type="button" style="margin-right:0px;" value="Inject Swing into the ABC" title="Injects the current swing factor and offset into the tune ABC">';
       modal_msg += '</p>';
-      modal_msg += '<a id="swingexplorerhelp" href="https://michaeleskin.com/abctools/userguide.html#swing_explorer" target="_blank" style="text-decoration:none;" title="Learn more about the Swing Explorer" class="dialogcornerbutton">?</a>';
 
     }
 
@@ -41069,8 +41468,11 @@ function ReverbExplorerDialog(theOriginalABC, theProcessedABC, reverb_explorer_s
     var theTop = 50;
 
     var theHeight = window.innerHeight - 400;
-
-    modal_msg = '<div id="playerholder" style="height:' + theHeight + 'px;overflow-y:auto;margin-bottom:15px;">';
+    // Lite: Customized
+    // Replace inline styles with reusable classes
+    modal_msg = '';
+    modal_msg += '<a id="reverbexplorerhelp" href="https://michaeleskin.com/abctools/userguide.html#reverb_explorer" target="_blank" title="Learn more about the Reverb Explorer" class="modal-header-ui modal-link-help-player dialogcornerbutton">?</a>';
+    modal_msg += '<div id="playerholder" style="height:' + theHeight + 'px;overflow-y:auto;margin-bottom:15px;">';
 
     if (gLargePlayerControls) {
       modal_msg += '<div id="abcplayer" class="abcjs-large">';
@@ -41104,10 +41506,11 @@ function ReverbExplorerDialog(theOriginalABC, theProcessedABC, reverb_explorer_s
       modal_msg += '<p class="configure_reverbexplorer_text_mobile" style="text-align:center;margin:0px;margin-top:22px">';
       modal_msg += '<input id="reverbexplorertest" class="reverbexplorertest button btn btn-reverbexplorertest" onclick="ReverbExplorerRegenerate();" type="button" value="Reload with Changed Reverb Settings" title="Reloads the tune into the player with the entered reverb settings">';
       modal_msg += '<input id="reverbexplorerinject" class="reverbexplorerinject button btn btn-reverbexplorerinject" onclick="ReverbExplorerInject();" type="button" style="margin-right:24px;" value="Inject Reverb into the ABC" title="Injects the current reverb settings into the tune ABC">';
-      modal_msg += '<label class="loadimpulsebutton btn btn-reverbexplorerinject" for="loadimpulsebutton" title="Load a custom reverb convolution impulse .wav file">Load Custom Reverb Impulse <input type="file" id="loadimpulsebutton"  accept=".wav,.WAV" hidden/></label>'
+      // Lite: Customized
+      // Fix input inaccessible for tabbing
+      modal_msg += '<label class="loadimpulsebutton btn btn-reverbexplorerinject" for="loadimpulsebutton" title="Load a custom reverb convolution impulse .wav file">Load Custom Reverb Impulse <input type="file" id="loadimpulsebutton"  accept=".wav,.WAV" class="visually-hidden"/></label>'
 
       modal_msg += '</p>';
-      modal_msg += '<a id="reverbexplorerhelp" href="https://michaeleskin.com/abctools/userguide.html#reverb_explorer" target="_blank" style="text-decoration:none;" title="Learn more about the Reverb Explorer" class="dialogcornerbutton">?</a>';
     } else {
 
       modal_msg += '<p class="configure_reverbexplorer_text" style="text-align:center;margin:0px;margin-top:22px">';
@@ -41121,10 +41524,10 @@ function ReverbExplorerDialog(theOriginalABC, theProcessedABC, reverb_explorer_s
       modal_msg += '<p class="configure_reverbexplorer_text" style="text-align:center;margin:0px;margin-top:22px">';
       modal_msg += '<input id="reverbexplorertest" class="reverbexplorertest button btn btn-reverbexplorertest" onclick="ReverbExplorerRegenerate();" type="button" value="Reload Tune with Changed Reverb Settings" title="Reloads the tune into the player with the entered reverb settings">';
       modal_msg += '<input id="reverbexplorerinject" class="reverbexplorerinject button btn btn-reverbexplorerinject" onclick="ReverbExplorerInject();" type="button" style="margin-right:24px;" value="Inject Reverb into the ABC" title="Injects the current reverb settings into the tune ABC">';
-      modal_msg += '<label class="loadimpulsebutton btn btn-reverbexplorerinject" for="loadimpulsebutton" title="Load a custom reverb convolution impulse .wav file">Load Custom Reverb Impulse <input type="file" id="loadimpulsebutton"  accept=".wav,.WAV" hidden/></label>'
+      // Lite: Customized
+      // Fix input inaccessible for tabbing
+      modal_msg += '<label class="loadimpulsebutton btn btn-reverbexplorerinject" for="loadimpulsebutton" title="Load a custom reverb convolution impulse .wav file">Load Custom Reverb Impulse <input type="file" id="loadimpulsebutton"  accept=".wav,.WAV" class="visually-hidden"/></label>'
       modal_msg += '</p>';
-      modal_msg += '<a id="reverbexplorerhelp" href="https://michaeleskin.com/abctools/userguide.html#reverb_explorer" target="_blank" style="text-decoration:none;" title="Learn more about the Swing Explorer" class="dialogcornerbutton">?</a>';
-
     }
 
     // Scale the player for larger screens
@@ -42510,9 +42913,12 @@ function InstrumentExplorerDialog(theOriginalABC, theProcessedABC, instrument_ex
     var theTop = 50;
 
     var theHeight = window.innerHeight - 515;
-
-    modal_msg = '<div id="playerholder" style="height:' + theHeight + 'px;overflow-y:auto;margin-bottom:15px;">';
-
+    // Lite: Customized
+    // Replace inline styles with reusable classes    
+    modal_msg = '';
+    modal_msg += '<a id="instrumentexplorerhelp" href="https://michaeleskin.com/abctools/userguide.html#midi_instrument_explorer" target="_blank" title="Learn more about the MIDI Instrument Explorer" class="modal-header-ui modal-link-help-player dialogcornerbutton">?</a>';
+    modal_msg += '<div id="playerholder" style="height:' + theHeight + 'px;overflow-y:auto;margin-bottom:15px;">';
+    
     if (gLargePlayerControls) {
       modal_msg += '<div id="abcplayer" class="abcjs-large">';
     } else {
@@ -42549,8 +42955,6 @@ function InstrumentExplorerDialog(theOriginalABC, theProcessedABC, instrument_ex
     modal_msg += '<input id="instrumentexplorerinject" class="instrumentexplorerinject button btn btn-instrumentexplorerinject" onclick="InstrumentExplorerInject();" style="margin-right:0px;" type="button" value="Inject Instruments and Volumes into the ABC" title="Injects the current soundfont, melody instrument, bass instrument, bass volume, chord instrument, and chord volumes into the tune ABC">';
     modal_msg += '</p>';
     modal_msg += '</div>';
-
-    modal_msg += '<a id="instrumentexplorerhelp" href="https://michaeleskin.com/abctools/userguide.html#midi_instrument_explorer" target="_blank" style="text-decoration:none;" title="Learn more about the MIDI Instrument Explorer" class="dialogcornerbutton">?</a>';
 
     // Scale the player for larger screens
     var windowWidth = window.innerWidth;
@@ -43247,8 +43651,11 @@ function GraceExplorerDialog(theOriginalABC, theProcessedABC, grace_explorer_sta
     var theTop = 50;
 
     var theHeight = window.innerHeight - 400;
-
-    modal_msg = '<div id="playerholder" style="height:' + theHeight + 'px;overflow-y:auto;margin-bottom:15px;">';
+    // Lite: Customized
+    // Replace inline styles with reusable classes
+    modal_msg = '';
+    modal_msg += '<a id="graceexplorerhelp" href="https://michaeleskin.com/abctools/userguide.html#grace_duration_explorer" target="_blank" title="Learn more about the Grace Duration Explorer" class="modal-header-ui modal-link-help-player dialogcornerbutton">?</a>';
+    modal_msg += '<div id="playerholder" style="height:' + theHeight + 'px;overflow-y:auto;margin-bottom:15px;">';
 
     if (gLargePlayerControls) {
       modal_msg += '<div id="abcplayer" class="abcjs-large">';
@@ -43278,7 +43685,6 @@ function GraceExplorerDialog(theOriginalABC, theProcessedABC, grace_explorer_sta
     modal_msg += '<input id="graceexplorertest" class="graceexplorertest button btn btn-graceexplorertest" onclick="GraceExplorerRegenerate();" type="button" value="Reload Tune with Changed Grace Duration" title="Reloads the tune into the player with the entered grace duration">';
     modal_msg += '<input id="graceexplorerinject" class="graceexplorerinject button btn btn-graceexplorerinject" onclick="GraceExplorerInject();" type="button" style="margin-right:0px;" value="Inject Grace Duration into the ABC" title="Injects the current grace duration into the tune ABC">';
     modal_msg += '</p>';
-    modal_msg += '<a id="graceexplorerhelp" href="https://michaeleskin.com/abctools/userguide.html#grace_duration_explorer" target="_blank" style="text-decoration:none;" title="Learn more about the Grace Duration Explorer" class="dialogcornerbutton">?</a>';
 
     // Scale the player for larger screens
     var windowWidth = window.innerWidth;
@@ -43463,8 +43869,9 @@ function RollExplorer() {
 // Roll issue dialog
 //
 function RollParameterIssueAlert(callback) {
-
-  var modal_msg = '<p style="text-align:center;font-size:18pt;">Please Check the Roll Parameters</p>';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  var modal_msg = '<h2 class="modal-header">Please Check the Roll Parameters</h2>';
 
   modal_msg += '<p style="font-size:12pt;line-height:18pt;margin-top:36px;text-align:center;">There is an issue with the roll parameters</p>';
   modal_msg += '<p style="font-size:12pt;line-height:18pt;margin-top:20px;text-align:center;">All values must be positive</p>';
@@ -44143,7 +44550,10 @@ function RollExplorerDialog(theOriginalABC, theProcessedABC, roll_explorer_state
     var theTop = 20;
 
     var theHeight = window.innerHeight - 650;
-
+    // Lite: Customized
+    // Replace inline styles with reusable classes
+    modal_msg = '';
+    modal_msg += '<a id="rollexplorerhelp" href="https://michaeleskin.com/abctools/userguide.html#roll_explorer" target="_blank" title="Learn more about the Roll Explorer" class="modal-header-ui modal-link-help-player dialogcornerbutton">?</a>';
     modal_msg = '<div id="playerholder" style="height:' + theHeight + 'px;overflow-y:auto;margin-bottom:15px;">';
 
     if (gLargePlayerControls) {
@@ -44201,7 +44611,6 @@ function RollExplorerDialog(theOriginalABC, theProcessedABC, roll_explorer_state
     modal_msg += '<input id="rollexplorertransform" class="rollexplorertransform button btn btn-rollexplorertransform" onclick="RollExplorerTransformReel(false);" type="button" value="~G3 → G~G2" title="Transforms ~G3 style rolls to G~G2 style, may be useful for creating a better sounding roll for reels">';
     modal_msg += '<input id="rollexplorertransform2" style="margin-right:0px" class="rollexplorertransform2 button btn btn-rollexplorertransform" onclick="RollExplorerTransformReel(true);" type="button" value="~G3 → ~G2G" title="Transforms ~G3 style rolls to ~G2G style, may be useful for creating a better sounding roll for reels">';
     modal_msg += '</p>';
-    modal_msg += '<a id="rollexplorerhelp" href="https://michaeleskin.com/abctools/userguide.html#roll_explorer" target="_blank" style="text-decoration:none;" title="Learn more about the Roll Explorer" class="dialogcornerbutton">?</a>';
 
     // Scale the player for larger screens
     var windowWidth = window.innerWidth;
@@ -45295,8 +45704,17 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
     }
 
     theTop = 20;
+    // Lite: Customized
+    // Replace inline styles with reusable classes
+    modal_msg = '';
+    modal_msg += '<a id="looperhelp" href="https://michaeleskin.com/abctools/userguide.html#tune_trainer" target="_blank" title="Learn more about the Tune Trainer" class="modal-header-ui modal-link-help dialogcornerbutton">?</a>';
 
-    modal_msg = '<div id="playerholder" style="height:' + theHeight + 'px;overflow-y:auto;margin-bottom:15px;">';
+    // Add the share controls
+    if (gPlayerShowExternalToolsIcon){
+      modal_msg += '<img id="external_tools_share" class="external_tools_share modal-header-ui modal-btn-share-player" src="img/external_share.png" title="Open the tune in an external ABC tool.&nbsp;&nbsp;This control can be shown/hidden in the Tune Trainer by a setting in the Player Settings dialog."/>';
+    }
+
+    modal_msg += '<div id="playerholder" style="height:' + theHeight + 'px;overflow-y:auto;margin-bottom:15px;">';
 
     if (gLargePlayerControls) {
       modal_msg += '<div id="abcplayer" class="abcjs-large">';
@@ -45341,16 +45759,10 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
 
     modal_msg += '</p>';
     
-    modal_msg += '<a id="looperhelp" href="https://michaeleskin.com/abctools/userguide.html#tune_trainer" target="_blank" style="text-decoration:none;" title="Learn more about the Tune Trainer" class="dialogcornerbutton">?</a>';
     modal_msg += '<p id="looperstatus"></p>';
     modal_msg += '<div id="looperstatusbar"></div>';
     modal_msg += '<div id="looperstatusbaroverlay"></div>';
     modal_msg += '<div id="loopercountdown" class="looper-modal"><div class="looper-modal-content"><div class="looper-modal-text" id="loopercountdowntext"></div></div></div>';
-
-    // Add the share controls
-    if (gPlayerShowExternalToolsIcon){
-      modal_msg += '<img id="external_tools_share" class="external_tools_share" src="img/external_share.png" title="Open the tune in an external ABC tool.&nbsp;&nbsp;This control can be shown/hidden in the Tune Trainer by a setting in the Player Settings dialog."/>';
-    }
 
     // Scale the player for larger screens
     var windowWidth = window.innerWidth;
@@ -45672,9 +46084,16 @@ function SetPlayerTempo(e) {
   const theData = {
     configure_tempo: theTempo
   };
-
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   var form = [{
-    html: '<p style="text-align:center;margin-bottom:32px;font-size:16pt;margin-left:15px;">Set Tempo Percentage&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#playing_your_tunes" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#playing_your_tunes" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Set Tempo Percentage&nbsp;&nbsp;' +
+		'</h2>'
   }, {
     name: "Tempo percentage:",
     id: "configure_tempo",
@@ -47752,9 +48171,13 @@ function ConfigureMusicXMLImport() {
 
   // Copy the original options object for later possible restore
   var originalMusicXMLImportOptions = JSON.parse(JSON.stringify(gMusicXMLImportOptions));
+  
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  var modal_msg = '';
 
-  var modal_msg = '<p style="text-align:center;font-size:18pt;margin-left:15px;">MusicXML/MIDI Import Settings&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#musicxml" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></p>';
-
+  modal_msg += '<a href="https://michaeleskin.com/abctools/userguide.html#musicxml" target="_blank" title="View documentation in new tab" class="modal-header-ui modal-link-help dialogcornerbutton">?</a>';
+  modal_msg += '<h2 class="modal-header">MusicXML/MIDI Import Settings&nbsp;&nbsp;</h2>';
   modal_msg += '<div style="margin-bottom:12px;"><label style="font-size:12pt;">Bars-per-line:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" style="width:60px;" id="musicxml_bpl" type="text" pattern="\d+" title="Default: 3"/></div>\n';
   modal_msg += '<div style="margin-bottom:12px;"><label style="font-size:12pt;">Characters-per-line:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" style="width:60px;" id="musicxml_cpl" type="text" pattern="\d+" title="Default: 0 - ignore"/></div>\n';
   modal_msg += '<div style="margin-bottom:12px;"><label style="font-size:12pt;">Measure numbers:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" style="width:60px;" id="musicxml_mnum" type="text" pattern="\d+" title="-1: No measure numbers, 1..n: Number every n-th measure, 0: Number every system"/></div>\n';
@@ -47996,13 +48419,16 @@ function saveCustomAngloButtons() {
 //
 // Load the custom Anglo buttons names
 //
-function loadAngloNamesClickHandler() {
+// Lite: Customized
+// Redundant: Input wrapped in label to fix unreachable element in tab order
+//
+// function loadAngloNamesClickHandler() {
+//
+//   var elem = document.getElementById("load_custom_anglo_names_fs");
 
-  var elem = document.getElementById("load_custom_anglo_names_fs");
+//   elem.click();
 
-  elem.click();
-
-}
+// }
 
 function loadCustomAngloButtons(file) {
 
@@ -48135,8 +48561,15 @@ function ConfigureAngloFingerings() {
   var gInjectTab_PushGlyphOriginal = gInjectTab_PushGlyph;
   var gInjectTab_DrawGlyphOriginal = gInjectTab_DrawGlyph;
   var gInjectTab_UseBarForDrawOriginal = gInjectTab_UseBarForDraw;
-
-  var modal_msg = '<p style="text-align:center;font-size:18pt;margin-left:15px;">Configure Anglo Concertina Tablature Button Names&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#injecting_box_or_anglo_concertina_tablature" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  var modal_msg =
+		'<a href="https://michaeleskin.com/abctools/userguide.html#tab_concertina" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Configure Anglo Concertina Tablature Button Names&nbsp;&nbsp;' +
+		'</h2>';
   modal_msg += '<div id="anglo-button-names-dialog">';
   modal_msg += '<table style="margin-bottom:24px;text-align:center;">\n';
   modal_msg += '<tr>\n';
@@ -48177,7 +48610,9 @@ function ConfigureAngloFingerings() {
   modal_msg += '</tr>\n';
   modal_msg += '</table>\n';
   modal_msg += '</div>\n';
-  modal_msg += '<p style="text-align:center;margin-top:22px;"><input type="file" id="load_custom_anglo_names_fs" accept=".txt,.TXT" hidden/><input id="save_custom_anglo_names" class="btn btn-subdialog" onclick="saveCustomAngloButtons()" type="button" value="Save Custom Tab Button Names" title="Save a custom Anglo Concertina button names file"><input id="load_custom_anglo_names" class="btn btn-subdialog load_custom_anglo_names" onclick="loadAngloNamesClickHandler()" type="button" value="Load Custom Tab Button Names" title="Load a custom Anglo Concertina button names file"></p>\n';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  modal_msg += '<p style="text-align:center;margin-top:22px;"><input id="save_custom_anglo_names" class="btn btn-subdialog" onclick="saveCustomAngloButtons()" type="button" value="Save Custom Tab Button Names" title="Save a custom Anglo Concertina button names file"><label for="load_custom_anglo_names_fs" id="load_custom_anglo_names" class="btn btn-subdialog load_custom_anglo_names" type="button" title="Load a custom Anglo Concertina button names file">Load Custom Tab Button Names<input type="file" id="load_custom_anglo_names_fs" accept=".txt,.TXT" class="visually-hidden"/></label></p>\n';
   modal_msg += '<p style="text-align:center;margin-top:22px;"><input id="default_anglo_fingerings" class="btn btn-clearbutton default_anglo_fingerings" onclick="defaultAngloButtonNames()" type="button" value="Reset to Default" title="Reset the Anglo Concertina button names to their default values"></p>\n';
 
   const form = [{
@@ -48269,9 +48704,17 @@ function ConfigureTablatureSettings() {
     configure_box_tab_style: gInjectTab_BoxTabStyle,
     configure_tab_colors: gInjectTab_Colors,
   };
+
   // Lite: Customized
+  // Replace inline styles with reusable classes
   const form = [{
-    html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;margin-left:15px;">Tablature Injection Settings&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#tablature_settings" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#tablature_settings" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Tablature Injection Settings&nbsp;&nbsp;' +
+		'</h2>'
   }, {
     html: '<p style="font-size:12pt;line-height:18pt;"><strong>General Tablature Formatting Settings:</strong></p>'
   }, {
@@ -48744,13 +49187,16 @@ function defaultFontSettings() {
 //
 // Load the font settings
 //
-function loadFontSettingsClickHandler() {
+// Lite: Customized
+// Redundant: Input wrapped in label to fix unreachable element in tab order
+//
+// function loadFontSettingsClickHandler() {
 
-  var elem = document.getElementById("load_rendering_fonts_fs");
+//   var elem = document.getElementById("load_rendering_fonts_fs");
 
-  elem.click();
+//   elem.click();
 
-}
+// }
 // Lite: Customized
 function ConfigureFonts() {
 
@@ -48777,8 +49223,16 @@ function ConfigureFonts() {
     configure_voicefont: gRenderingFonts.voicefont,
   };
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   const form = [{
-    html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;margin-left:15px;">Configure ABC Rendering Fonts&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#configure_fonts" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#configure_fonts" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Configure ABC Rendering Fonts&nbsp;&nbsp;' +
+		'</h2>'
   }, {
     name: "Title font (Default: Fira Sans Semibold 18):",
     id: "configure_titlefont",
@@ -48860,7 +49314,9 @@ function ConfigureFonts() {
     type: "text",
     cssClass: "configure_font_settings_form_text_wide"
   }, {
-    html: '<p style="text-align:center;margin-top:22px;"><input id="save_rendering_fonts" class="btn btn-top save_rendering_fonts" onclick="saveFontSettings()" type="button" value="Save to File" title="Saves the ABC rendering font settings to a file"><input type="file" id="load_rendering_fonts_fs" accept=".txt,.TXT" hidden/><input class="btn btn-top load_rendering_fonts" type="button" id="load_rendering_fonts" title="Loads the ABC rendering font settings from a file" value="Load from File" onclick="loadFontSettingsClickHandler()"/><input id="default_rendering_fonts" class="btn btn-clearbutton default_rendering_fonts" onclick="defaultFontSettings()" type="button" value="Reset to Default" title="Reset the ABC rendering fonts to their default values"></p>'
+    // Lite: Customized
+    // Fix input inaccessible for tabbing
+    html: '<p style="text-align:center;margin-top:22px;"><input id="save_rendering_fonts" class="btn btn-top save_rendering_fonts" onclick="saveFontSettings()" type="button" value="Save to File" title="Saves the ABC rendering font settings to a file"><label for="load_rendering_fonts_fs" class="btn btn-top load_rendering_fonts" type="button" id="load_rendering_fonts" title="Loads the ABC rendering font settings from a file" value="Load from File">Load from File<input type="file" id="load_rendering_fonts_fs" accept=".txt,.TXT" class="visually-hidden"/></label><input id="default_rendering_fonts" class="btn btn-clearbutton default_rendering_fonts" onclick="defaultFontSettings()" type="button" value="Reset to Default" title="Reset the ABC rendering fonts to their default values"></p>'
   }];
 
   setTimeout(function() {
@@ -49046,12 +49502,23 @@ function AddNoUI() {
 
 }
 
+// Lite: Customized
+// Use deflate by default
+
 function SharingControlsDialog() {
 
   // Keep track of dialogs
   sendGoogleAnalytics("dialog", "SharingControlsDialog");
 
-  var modal_msg = '<p style="text-align:center;font-size:18pt;margin-left:15px;">Sharing Controls&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#sharing_controls" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  var modal_msg =
+		'<a href="https://michaeleskin.com/abctools/userguide.html#sharing_controls" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Sharing Controls&nbsp;&nbsp;' +
+		'</h2>';
   modal_msg += '<div id="sharing-controls-dialog">';
   modal_msg += '<p style="margin-top:28px;">';
   modal_msg += '<input id="testurl" class="urlcontrols btn btn-urlcontrols" onclick="TestShareURL()" type="button" value="Test Share URL" title="Opens the Share URL in a new tab">';
@@ -49066,7 +49533,7 @@ function SharingControlsDialog() {
   modal_msg += '</p>';
   modal_msg += '<img id="external_tools_share" class="external_tools_share" src="img/external_share.png" title="Open the ABC in an external ABC tool"/>';
   modal_msg += '<p id="shareurlcaption">Share URL</p>';
-  modal_msg += '<p style="text-align:center;margin-top:36px;"><input id="addautoplay" class="urlcontrols btn btn-urlcontrols" onclick="AddAutoPlay()" type="button" value="Add Auto-Play" title="Adds &play=1 to the ShareURL.&nbsp;&nbsp;Tune will open in the player."><input id="addopenineditor" class="urlcontrols btn btn-urlcontrols" onclick="AddOpenInEditor()" type="button" value="Add Open in Editor" title="Adds &editor=1 to the ShareURL.&nbsp;&nbsp;Share links will load in the editor.&nbsp;&nbsp;This setting overrides Add Auto-Play."><input id="adddisableediting" class="urlcontrols btn btn-urlcontrols" onclick="AddDisableEditing()" type="button" value="Add Disable Editing" title="Adds &dx=1 to the ShareURL.&nbsp;&nbsp;Entering the editor from the full screen tune view will be disabled.&nbsp;&nbsp;Also overrides Add Open in Editor."><input id="addnoui" class="urlcontrolslast btn btn-urlcontrols" onclick="AddNoUI()" type="button" value="Add Hide UI" title="Adds &noui to the ShareURL for responsive iframe embedding.&nbsp;&nbsp;When the link is opened, hides the UI.&nbsp;&nbsp;Overrides Add Open in Editor and Add Auto-Play.">&nbsp;&nbsp;&nbsp;&nbsp;<input id="urlallowdef" type="checkbox" style="margin-top:-5px;margin-bottom:0px;" title="When checked uses Deflate instead of LZW for compressing the ABC in the Share URL resulting in a shorter link"/>&nbsp;Use Deflate</p>';
+  modal_msg += '<p style="text-align:center;margin-top:36px;"><input id="addautoplay" class="urlcontrols btn btn-urlcontrols" onclick="AddAutoPlay()" type="button" value="Add Auto-Play" title="Adds &play=1 to the ShareURL.&nbsp;&nbsp;Tune will open in the player."><input id="addopenineditor" class="urlcontrols btn btn-urlcontrols" onclick="AddOpenInEditor()" type="button" value="Add Open in Editor" title="Adds &editor=1 to the ShareURL.&nbsp;&nbsp;Share links will load in the editor.&nbsp;&nbsp;This setting overrides Add Auto-Play."><input id="adddisableediting" class="urlcontrols btn btn-urlcontrols" onclick="AddDisableEditing()" type="button" value="Add Disable Editing" title="Adds &dx=1 to the ShareURL.&nbsp;&nbsp;Entering the editor from the full screen tune view will be disabled.&nbsp;&nbsp;Also overrides Add Open in Editor."><input id="addnoui" class="urlcontrolslast btn btn-urlcontrols" onclick="AddNoUI()" type="button" value="Add Hide UI" title="Adds &noui to the ShareURL for responsive iframe embedding.&nbsp;&nbsp;When the link is opened, hides the UI.&nbsp;&nbsp;Overrides Add Open in Editor and Add Auto-Play.">&nbsp;&nbsp;&nbsp;&nbsp;<input id="urlallowdef" type="checkbox" checked style="margin-top:-5px;margin-bottom:0px;" title="When checked uses Deflate instead of LZW for compressing the ABC in the Share URL resulting in a shorter link"/>&nbsp;Use Deflate</p>';
 
   modal_msg += '</div>';
 
@@ -49424,8 +49891,16 @@ function PDFExportDialog() {
   if (bShowTopButtons) {
 
     if (isPureDesktopBrowser()) {
+      // Lite: Customized
+      // Replace inline styles with reusable classes
       form = [{
-        html: '<p style="text-align:center;font-size:18pt;margin-left:15px;">Export PDF Tunebook&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#export_pdf_tunebook" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+        html:
+        '<a href="https://michaeleskin.com/abctools/userguide.html#export_pdf_tunebook" target="_blank" ' +
+        'title="View documentation in new tab" ' +
+        'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+        '<h2 class="modal-header">' +
+        'Export PDF Tunebook&nbsp;&nbsp;' +
+        '</h2>'
       }, {
         html: '<p style="text-align:center;margin-top:24px;"><input id="tunebookbuilder-play" class="advancedcontrols btn btn-injectcontrols-tunebookbuilder-play" onclick="PDFTunebookBuilderPlayOnly();" type="button" value="Inject Only PDF Tunebook Play Features" title="Inject only minimal playback-related instrument and volume commands at the top of your tunebook ABC"><input id="tunebookbuilder" class="advancedcontrols btn btn-injectcontrols-tunebookbuilder" onclick="PDFTunebookBuilder();" type="button" value="Inject All PDF Tunebook Features" title="Inject commands at the top of your tunebook ABC for adding a Title Page, Table of Contents, Index, Page Headers, Page Footers, instruments and volumes for Playback Links, and Custom QR Code"></p>'
       }, {
@@ -49491,8 +49966,16 @@ function PDFExportDialog() {
         html: '<p style="text-align:center;margin-top:36px;"><input id="pdfusebrowserprint" class="advancedcontrols btn btn-browser-pdf-export" onclick="Do_Browser_PDF_Export();return;" type="button" value="Browser Native Print-to-PDF with Play Links" title="Quickly export a PDF tunebook using the browser\'s native Print-to-PDF feature with one tune per page and play links when you click the title.&nbsp;&nbsp;Does not include a Title Page, Table of Contents, Index, or QR Code."></p>'
       }, ];
     } else {
+      // Lite: Customized
+      // Replace inline styles with reusable classes
       form = [{
-        html: '<p style="text-align:center;font-size:18pt;margin-left:15px;">Export PDF Tunebook&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#export_pdf_tunebook" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+        html:
+        '<a href="https://michaeleskin.com/abctools/userguide.html#export_pdf_tunebook" target="_blank" ' +
+        'title="View documentation in new tab" ' +
+        'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+        '<h2 class="modal-header">' +
+        'Export PDF Tunebook&nbsp;&nbsp;' +
+        '</h2>'
       }, {
         html: '<p style="text-align:center;margin-top:24px;"><input id="tunebookbuilder-play" class="advancedcontrols btn btn-injectcontrols-tunebookbuilder-play" onclick="PDFTunebookBuilderPlayOnly();" type="button" value="Inject Only PDF Tunebook Play Features" title="Inject only minimal playback-related instrument and volume commands at the top of your tunebook ABC"><input id="tunebookbuilder" class="advancedcontrols btn btn-injectcontrols-tunebookbuilder" onclick="PDFTunebookBuilder();" type="button" value="Inject All PDF Tunebook Features" title="Inject commands at the top of your tunebook ABC for adding a Title Page, Table of Contents, Index, Page Headers, Page Footers, instruments and volumes for Playback Links, and Custom QR Code"></p>'
       }, {
@@ -49559,8 +50042,16 @@ function PDFExportDialog() {
       }];
     }
   } else {
+    // Lite: Customized
+    // Replace inline styles with reusable classes
     form = [{
-      html: '<p style="text-align:center;font-size:18pt;margin-left:15px;">Export PDF Tunebook&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#export_pdf_tunebook" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+      html:
+      '<a href="https://michaeleskin.com/abctools/userguide.html#export_pdf_tunebook" target="_blank" ' +
+      'title="View documentation in new tab" ' +
+      'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+      '<h2 class="modal-header">' +
+      'Export PDF Tunebook&nbsp;&nbsp;' +
+      '</h2>'
     }, {
       name: "Paper Size:",
       id: "configure_papersize",
@@ -50031,8 +50522,12 @@ function Do_Browser_PDF_Export() {
     });
   }
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   var form = [{
-    html: '<p style="text-align:center;font-size:18pt;margin-left:15px;margin-bottom:36px">Browser Native Print-to-PDF with Play Links&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#browser_print_to_pdf" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html: 
+      '<a href="https://michaeleskin.com/abctools/userguide.html#browser_print_to_pdf" target="_blank" title="View documentation in new tab" class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+      '<h2 class="modal-header modal-header-spaced">Browser Native Print-to-PDF with Play Links&nbsp;&nbsp;</h2>'
   }, {
     html: '<p style="margin-top:10px;margin-bottom:30px;font-size:12pt;line-height:18pt;">Clicking "Export" will use the browser\'s native PDF exporter to export a PDF with play links on each tune using the playback instruments and volumes selected below:</p>'
   }, {
@@ -50290,14 +50785,15 @@ function AdvancedControlsDialog() {
   var isPlayersActive     = (initialTab === "adv-tab-players");
   var isOtherToolsActive  = (initialTab === "adv-tab-bagpipes");
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   var modal_msg = '';
-  modal_msg += '<p style="text-align:center;font-size:18pt;">';
-  modal_msg += 'More ABC Tools';
-  modal_msg += '<span style="font-size:24pt;" title="View documentation in new tab">';
   modal_msg += '<a href="https://michaeleskin.com/abctools/userguide.html#more_tools" target="_blank" ';
-  modal_msg += 'style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a>';
-  modal_msg += '</span>';
-  modal_msg += '</p>';
+	modal_msg += 'title="View documentation in new tab" ';
+	modal_msg += 'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>';
+  modal_msg += '<h2 class="modal-header">';
+  modal_msg += 'More ABC Tools';
+  modal_msg += '</h2>';
 
   modal_msg += '<div id="advanced-controls-dialog">';
 
@@ -50537,10 +51033,14 @@ function processCustomInstruments(suppressStatus /* boolean */){
 
       if (gCustomInstrumentShowStatus && !suppressStatus){
         var quant = (totalFiles > 1) ? "Instruments" : "Instrument";
-        var modal_msg = '<p style="text-align:center;font-size:16pt;margin-bottom:24px;margin-left:15px;">'
-          + totalFiles + ' Custom ' + quant + ' Loaded&nbsp;&nbsp;'
-          + '<span style="font-size:24pt;" title="View documentation in new tab">'
-          + '<a href="https://michaeleskin.com/abctools/userguide.html#custom_midi_instrument" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+        // Lite: Customized
+        // Replace inline styles with reusable classes
+        var modal_msg =
+          '<a href="https://michaeleskin.com/abctools/userguide.html#custom_midi_instrument" target="_blank" ' 
+          + 'title="View documentation in new tab"'
+          + 'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>'
+          + '<h2 class="modal-header">'
+          + totalFiles + ' Custom ' + quant + ' Loaded&nbsp;&nbsp;</h2' +
           + '<p style="font-size:12pt;line-height:18pt;">In the following, replace (n) with 1-8 for the custom instrument number.</p>'
           + '<p style="font-size:12pt;line-height:18pt;">To play the custom instrument, add the following to your ABC tunes:</p>'
           + '<p style="font-size:12pt;line-height:18pt;"><strong>%%MIDI program custom(n)</strong></p>'
@@ -50778,7 +51278,7 @@ async function manageCustomInstrumentSlots(files){
 
   // Buttons
   const buttons = el("div", { id: `${UID}-buttons` }, wrap);
-  const btnClear  = el("button", { class: `${UID}-btn danger`,  text: "Clear All" }, buttons);
+  const btnClear  = el("button", { class: `btn ${UID}-btn danger`,  text: "Clear All" }, buttons);
 
   btnClear.addEventListener("click", async () => {
     gCustomInstrumentState.slots.forEach(v => { if (v) gCustomInstrumentState.pool.push(v); });
@@ -51101,7 +51601,9 @@ function idleAdvancedSettings() {
 // Lite: Customized
 //
 function ShowBrowserInfo() {
-  var modal_msg = '<p style="text-align:center;font-size:18pt;">Browser Information</p>';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  var modal_msg = '<h2 class="modal-header">Browser Information</h2>';
 
   // Clickable version number
   modal_msg += '<p style="font-size:12pt;line-height:20pt;">';
@@ -51257,14 +51759,15 @@ function AdvancedSettings() {
   };
 
   // Lite: Customized
+  // Replace inline styles with reusable classes
   var form = [{
     html: 
-      '<a href="https://michaeleskin.com/abctools/userguide.html#advanced_settings" target="_blank" ' +
-      'title="View documentation in new tab"' +
-      'class="modal-link-help dialogcornerbutton">?</a>' +
-      '<h2 class="modal-header modal-header-settings">' +
-      'Advanced Settings&nbsp;&nbsp;' +
-      '</h2>'
+    '<a href="https://michaeleskin.com/abctools/userguide.html#advanced_settings" target="_blank" ' +
+    'title="View documentation in new tab" ' +
+    'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+    '<h2 class="modal-header modal-header-settings">' +
+    'Advanced Settings&nbsp;&nbsp;' +
+    '</h2>'
   }, {
     html: '<p style="text-align:center;font-size:12pt;line-height:12px;"><strong>Only change these values if you know what you are doing!</strong></p>'
   }];
@@ -51343,10 +51846,11 @@ function AdvancedSettings() {
       type: "text",
       cssClass: "advanced_settings2_tinyurl_text"
     },
-    // Lite: Customized
     {
+      // Lite: Customized
+      // Fix input inaccessible for tabbing
       html:
-        '<p style="text-align:center;margin-top:18px;margin-bottom:6px"><input id="customthemeeditor" class="btn btn-subdialog" onclick="customThemeEditor()" type="button" value="ABC Syntax Highlighting Theme Editor" title="Opens the ABC Syntax Highlighting Theme Editor"><label class="loadimpulsebutton btn btn-subdialog " for="loadimpulsebutton" title="Load a custom reverb convolution impulse .wav file">Load Custom Reverb Impulse <input type="file" id="loadimpulsebutton"  accept=".wav,.WAV" hidden/></label><input id="resetsettings" class="btn btn-resetsettings resetsettings" onclick="ResetSettingsDialog()" type="button" value="Reset Settings" title="Opens a dialog where you can reset all tool settings to the default and/or clear the instrument notes, reverb settings, and tune search engine collection databases"></p>' + 
+        '<p style="text-align:center;margin-top:18px;margin-bottom:6px"><input id="customthemeeditor" class="btn btn-subdialog customthemeeditor" onclick="customThemeEditor()" type="button" value="ABC Syntax Highlighting Theme Editor" title="Opens the ABC Syntax Highlighting Theme Editor"><label class="loadimpulsebutton btn btn-subdialog " for="loadimpulsebutton" title="Load a custom reverb convolution impulse .wav file">Load Custom Reverb Impulse <input type="file" id="loadimpulsebutton"  accept=".wav,.WAV" class="visually-hidden"/></label><input id="resetsettings" class="btn btn-resetsettings resetsettings" onclick="ResetSettingsDialog()" type="button" value="Reset Settings" title="Opens a dialog where you can reset all tool settings to the default and/or clear the instrument notes, reverb settings, and tune search engine collection databases"></p>' + 
         '<p class="modal-text-updateinfo" onclick="ShowBrowserInfo();" title="Click to show browser information">Click to show browser info<br/>' +
         'Installed version: ' + gLiteVersionNumber + '</p>'
     }
@@ -51866,14 +52370,15 @@ function ConfigurePlayerSettings(player_callback) {
   }]
 
   // Lite: Customized
+  // Replace inline styles with reusable classes
   var form = [{
     html:
-      '<a href="https://michaeleskin.com/abctools/userguide.html#default_player_settings" target="_blank" ' +
-      'title="View documentation in new tab"' +
-      'class="modal-link-help dialogcornerbutton">?</a>' +
-      '<h2 class="modal-header modal-header-settings">' +
-      'Player Settings&nbsp;&nbsp;' +
-      '</h2>'
+    '<a href="https://michaeleskin.com/abctools/userguide.html#default_player_settings" target="_blank" ' +
+    'title="View documentation in new tab" ' +
+    'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+    '<h2 class="modal-header modal-header-settings">' +
+    'Player Settings&nbsp;&nbsp;' +
+    '</h2>'
   }, {
     html: '<p class="configure_settings_form_text_fs">The following values are used as the instrument and volume defaults if not already specified in a tune:</p>'
   }, {
@@ -51971,8 +52476,9 @@ function ConfigurePlayerSettings(player_callback) {
     type: "checkbox",
     cssClass: "configure_settings_form_text_checkbox_fs"
   }]);
-
-  form = form.concat([{html: '<p style="text-align:center;margin-top:24px"><label class="btn btn-subdialog loadinstrumentbutton" for="loadinstrumentbutton" title="Load one or more Custom Instruments">Load Custom Instruments <input type="file" id="loadinstrumentbutton" accept=".zip" multiple hidden/></label><input id="configurecustominstruments" class="advancedcontrols btn btn-subdialog" onclick="manageCustomInstrumentSlots()" type="button" value="Configure Custom Instruments" title="Brings up the Assign Files to Custom Instruments dialog"><input id="launchcustominstrumentbuilder" class="advancedcontrols btn btn-subdialog" onclick="launchCustomInstrumentBuilder()" type="button" value="Launch Custom Instrument Builder" title="Launches the Custom Instrument Builder utility in a new browser tab"></p>'}]);
+  // Lite: Customized
+  // Fix input inaccessible for tabbing
+  form = form.concat([{html: '<p style="text-align:center;margin-top:24px"><label class="btn btn-subdialog loadinstrumentbutton" for="loadinstrumentbutton" title="Load one or more Custom Instruments">Load Custom Instruments <input type="file" id="loadinstrumentbutton" accept=".zip" multiple class="visually-hidden"/></label><input id="configurecustominstruments" class="advancedcontrols btn btn-subdialog" onclick="manageCustomInstrumentSlots()" type="button" value="Configure Custom Instruments" title="Brings up the Assign Files to Custom Instruments dialog"><input id="launchcustominstrumentbuilder" class="advancedcontrols btn btn-subdialog" onclick="launchCustomInstrumentBuilder()" type="button" value="Launch Custom Instrument Builder" title="Launches the Custom Instrument Builder utility in a new browser tab"></p>'}]);
 
   // Set up the reverb impulse load callback
   setTimeout(function() {
@@ -52331,14 +52837,15 @@ function ConfigureToolSettings() {
 
   // Title/header
   // Lite: Customized
+  // Replace inline styles with reusable classes
   form.push({
     html:
-      '<a href="https://michaeleskin.com/abctools/userguide.html#settings_dialog" target="_blank" ' +
-      'title="View documentation in new tab"' +
-      'class="modal-link-help dialogcornerbutton">?</a>' +
-      '<h2 class="modal-header modal-header-settings">' +
-      'ABC Tools Lite Settings&nbsp;&nbsp;' +
-      '</h2>'
+    '<a href="https://michaeleskin.com/abctools/userguide.html#settings_dialog" target="_blank" ' +
+    'title="View documentation in new tab" ' +
+    'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+    '<h2 class="modal-header modal-header-settings">' +
+    'ABC Tools Lite Settings&nbsp;&nbsp;' +
+    '</h2>'
   });
 
   if (browserSupportsMIDI()){
@@ -52426,7 +52933,7 @@ function ConfigureToolSettings() {
   // Lite: Customized (testing: allow on mobile browsers)
   // if (isDesktopBrowser()) {
     form.push({
-      name: "ABC Editor Font Size (default is 13, experimental on mobile):",
+      name: "ABC Editor Font Size (default is 13, enabled on mobile):",
       id: "configure_editor_fontsize",
       type: "number",
       cssClass: "configure_settings_form_text lite-custom-setting"
@@ -53902,8 +54409,9 @@ function DoFileRead(file, callback) {
 
       // First time MIDI import warning
       if (!gMIDIImportWarned) {
-
-        var modal_msg = '<p style="text-align:center;font-size:16pt;">First Time Use Notes on MIDI Import</p>';
+        // Lite: Customized
+        // Replace inline styles with reusable classes
+        var modal_msg = '<h2 class="modal-header">First Time Use Notes on MIDI Import</h2>';
         modal_msg += '<p style="font-size:12pt;line-height:18pt;">MIDI Import is an experimental feature that depends on an external service.</p>';
         modal_msg += '<p style="font-size:12pt;line-height:18pt;">It may sometimes produce complete garbage, odd results, fail, or even crash or lock up the tool.</p>';
         modal_msg += '<p style="font-size:12pt;line-height:18pt;">If the tool crashes during notation rendering after MIDI import is complete, reload the page to restart.</p>';
@@ -55972,8 +56480,9 @@ function showWelcomeScreen() {
 
   // Keep track of dialogs
   sendGoogleAnalytics("dialog", "showWelcomeScreen");
-
-  var modal_msg = '<p style="text-align:center;font-size:18pt;">Welcome to ABC Tools Lite, an unofficial fork of Michael Eskin’s ABC Transcription Tools</p>';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  var modal_msg = '<h2 class="modal-header">Welcome to ABC Tools Lite, an unofficial fork of Michael Eskin’s ABC Transcription Tools</h2>';
   modal_msg += '<p style="font-size:12pt;line-height:16pt;"><strong>Please visit <a href="https://michaeleskin.com/abctools/userguide.html" target="_blank" title="ABC Transcription Tools User Guide">ABC Transcription Tools User Guide</a> page for complete instructions and demo videos on how to use the tools.</strong></p>';
   if (gIsQuickEditor) {
     modal_msg += '<p style="font-size:12pt;line-height:16pt;">The Quick Editor is optimized for editing and playback of larger tunebooks.</p>';
@@ -56013,8 +56522,9 @@ function showZoomInstructionsScreen() {
 
   // Keep track of dialogs
   sendGoogleAnalytics("dialog", "showZoomInstructionsScreen");
-
-  var modal_msg = '<p style="text-align:center;font-size:18pt;">Welcome to ABC Tools Lite, an unofficial fork of Michael Eskin’s ABC Transcription Tools</p>';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  var modal_msg = '<h2 class="modal-header">Welcome to ABC Tools Lite, an unofficial fork of Michael Eskin’s ABC Transcription Tools</h2>';
   modal_msg += '<p style="font-size:12pt;line-height:16pt;">Since this is your first time using the tools, here is some useful information to help you get started:</p>';
   modal_msg += '<p style="font-size:12pt;line-height:16pt;">In this view, you may scroll through the tune notation.</p>';
 
@@ -56044,25 +56554,27 @@ function showZoomInstructionsScreen() {
 
 //
 // Show the tip jar reminder
+// Lite: Customized
+// TO DO: Find a less intrusive way to remind about tipping
 //
 function TipJarReminderDialog() {
 
   // Keep track of dialogs
-  sendGoogleAnalytics("dialog", "TipJarReminderDialog");
+  // sendGoogleAnalytics("dialog", "TipJarReminderDialog");
 
-  var modal_msg = '<p style="text-align:center;font-size:22pt;">Thank You!</p>';
-  modal_msg += '<p style="font-size:14pt;line-height:18pt;text-align:center;">I hope ABC Transcription Tools have been useful to you!</p>';
-  modal_msg += '<p style="font-size:14pt;line-height:18pt;text-align:center;margin-top:36px;">If so, please consider dropping something in one of Michael Eskin’s </p>';
-  modal_msg += '<p style="font-size:14pt;line-height:18pt;text-align:center;"><strong><a href="tipjars.html" target="_blank" title="Michael Eskin’s Virtual Tip Jars">Virtual Tip Jars</a></strong></p>';
-  modal_msg += '<p style="font-size:14pt;line-height:18pt;text-align:center;margin-top:36px;">Cheers and thanks!</p>';
-  modal_msg += '<div style="text-align:center"><img style="width:150px;" src="img/michael2.jpg"/></div>';
-  modal_msg += '<p style="font-size:14pt;line-height:18pt;text-align:center;">Michael Eskin</p>';
+  // var modal_msg = '<p style="text-align:center;font-size:22pt;">Thank You!</p>';
+  // modal_msg += '<p style="font-size:14pt;line-height:18pt;text-align:center;">I hope ABC Transcription Tools have been useful to you!</p>';
+  // modal_msg += '<p style="font-size:14pt;line-height:18pt;text-align:center;margin-top:36px;">If so, please consider dropping something in one of Michael Eskin’s </p>';
+  // modal_msg += '<p style="font-size:14pt;line-height:18pt;text-align:center;"><strong><a href="tipjars.html" target="_blank" title="Michael Eskin’s Virtual Tip Jars">Virtual Tip Jars</a></strong></p>';
+  // modal_msg += '<p style="font-size:14pt;line-height:18pt;text-align:center;margin-top:36px;">Cheers and thanks!</p>';
+  // modal_msg += '<div style="text-align:center"><img style="width:150px;" src="img/michael2.jpg"/></div>';
+  // modal_msg += '<p style="font-size:14pt;line-height:18pt;text-align:center;">Michael Eskin</p>';
 
-  DayPilot.Modal.alert(modal_msg, {
-    theme: "modal_flat",
-    top: 75,
-    scrollWithPage: (AllowDialogsToScroll())
-  });
+  // DayPilot.Modal.alert(modal_msg, {
+  //   theme: "modal_flat",
+  //   top: 75,
+  //   scrollWithPage: (AllowDialogsToScroll())
+  // });
 
 }
 
@@ -56073,10 +56585,10 @@ function TinyURLReminderDialog() {
 
   // Keep track of dialogs
   sendGoogleAnalytics("dialog", "TinyURLReminderDialog");
-
-  var modal_msg = '<p style="text-align:center;font-size:18pt;">TinyURL Use Request</p>';
-  modal_msg += '<p style="font-size:12pt;line-height:14pt;text-align:center;margin-top:32px;">I get a limited number of free shortened URLs from TinyURL each month.</p>';
-  modal_msg += '<p style="font-size:12pt;line-height:18pt;text-align:center;">If you plan on creating many shortened URLs, please sign up<br/>for your own free or paid TinyURL account at:</p>';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  var modal_msg = '<h2 class="modal-header">TinyURL Use Request</h2>';
+  modal_msg += '<p style="font-size:12pt;line-height:18pt;text-align:center;">To use shortened URLs, you need to sign up<br/>for your own free or paid TinyURL account at:</p>';
   modal_msg += '<p style="font-size:12pt;line-height:14pt;text-align:center;"><strong><a href="https://tinyurl.com" target="_blank" title="TinyURL">TinyURL</a></strong></p>';
   modal_msg += '<p style="font-size:12pt;line-height:14pt;text-align:center;">After signing up, you can obtain a private API token from:</p>';
 
@@ -56104,8 +56616,9 @@ function ShowHelp() {
   sendGoogleAnalytics("dialog", "ShowHelp");
 
   if (gIsMaximized) {
-
-    var modal_msg = '<p style="text-align:center;font-size:16pt;">About the Full Screen Notation View</p>';
+    // Lite: Customized
+    // Replace inline styles with reusable classes
+    var modal_msg = '<h2 class="modal-header">About the Full Screen Notation View</h2>';
 
     modal_msg += '<p style="font-size:12pt;line-height:16pt;">In this view, you may scroll through the tune notation.</p>';
     modal_msg += '<p style="font-size:12pt;line-height:16pt;">Click the Play button at the bottom-right to play or train on the current tune.</p>';
@@ -57495,9 +58008,16 @@ function InjectMIDIGChordTemplates() {
     bDoInjectDuration: gDoInjectMIDIGChordDuration,
     injectDuration: gInjectMIDIGChordDuration
   };
-
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   const form = [{
-    html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;margin-left:15px;">Inject MIDI gchord Templates&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#inject_midigchord" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#inject_midigchord" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Inject MIDI gchord Templates&nbsp;&nbsp;' +
+		'</h2>'
   }, {
     html: '<p style="margin-top:36px;margin-bottom:36px;font-size:12pt;line-height:18pt;">This will inject an inline %%MIDI gchord backup pattern annotation for each measure of the current tune along with optional inline %%MIDI gchordstress and %%MIDI gchordduration vectors:</p>'
   }, {
@@ -57870,12 +58390,20 @@ function JumpToTune() {
 
   theJumpDiv += '</div>';
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   var form = [
 
     {
-      html: '<p style="text-align:center;font-size:18pt;margin-left:15px;">Jump to Tune&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#hamburger_jump_to_tune" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+      html:
+      '<a href="https://michaeleskin.com/abctools/userguide.html#hamburger_jump_to_tune" target="_blank" ' +
+      'title="View documentation in new tab" ' +
+      'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+      '<h2 class="modal-header">' +
+      'Jump to Tune&nbsp;&nbsp;' +
+      '</h2>'
     }, {
-      html: '<input style="width:100%;font-size:12pt;line-height:18px;padding:6px;margin-left:5px;" id="jumpToSearchValue" title="Enter your search text here" autocomplete="off" autocorrect="off" placeholder="Enter your search text here" oninput="JumpToSearch();"/>'
+      html: '<input style="width:100%;font-size:12pt;line-height:18px;padding:6px;margin-left:5px;" id="jumpToSearchValue" type="text" title="Enter your search text here" autocomplete="off" autocorrect="off" placeholder="Enter your search text here" oninput="JumpToSearch();"/>'
     }, {
       html: theJumpDiv
     },
@@ -58486,13 +59014,17 @@ function SR_LoadFindAndReplace(file) {
 
 }
 
-function SR_TriggerLoad() {
+// Lite: Customized
+//
+// Redundant: Input wrapped in label to fix unreachable element in tab order
+//
+// function SR_TriggerLoad() {
 
-  var elem = document.getElementById("load_find_replace_fs");
+//   var elem = document.getElementById("load_find_replace_fs");
 
-  elem.click();
+//   elem.click();
 
-}
+// }
 
 //
 // Save the current Find and Replace state
@@ -58550,7 +59082,15 @@ function FindAndReplace() {
   gSR_currentIndex = -1;
   gSR_matchIndexes = [];
 
-  var modal_msg = '<p style="text-align:center;font-size:18pt;margin-left:15px;margin-bottom:12px;">Find and Replace&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#moretoolsdropdown" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  var modal_msg =
+		'<a href="https://michaeleskin.com/abctools/userguide.html#moretoolsdropdown" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Find and Replace&nbsp;&nbsp;' +
+		'</h2>';
 
   if (isPureDesktopBrowser()){
     modal_msg += '<p style="font-size:12pt;line-height:24pt;margin-top:0px;">Find:<br/><textarea style="width:625px;padding:6px;" id="searchText" title="Enter text to find here" autocomplete="off" autocorrect="off" spellcheck="false" autocapitalize="none" placeholder="Text to find..." rows="7"></textarea></p>';
@@ -58567,8 +59107,9 @@ function FindAndReplace() {
   else{
     modal_msg += '<p style="font-size:12pt;line-height:24pt;margin-top:0px;">Replace with:<br/><textarea style="width:625px;padding:6px;" id="replacementText" title="Enter replacement text here" autocomplete="off" autocorrect="off" spellcheck="false" autocapitalize="none" placeholder="Replace with..." rows="5"></textarea></p>';
   }
-
-  modal_msg += '<p style="font-size:12pt;text-align:center;margin-top:24px;"><input class="btn btn-search-previous search-previous" id="search-previous" onclick="SR_search_previous();" type="button" value="Find Previous" title="Find previous match"/><input class="btn btn-search-next search-next" id="search-next" onclick="SR_search_next();" type="button" value="Find Next" title="Find next match"/><input class="btn btn-search-replace search-replace" id="search-replace" onclick="SR_replaceOne();" type="button" value="Replace" title="Replace one text instance"/><input class="btn btn-search-replace-all search-replace-all" id="search-replace-all" onclick="SR_replaceAll();" type="button" value="Replace All" title="Replace all text instances"/><input type="file" id="load_find_replace_fs" accept=".txt,.TXT" hidden/><input class="btn btn-search-load search-load" id="search-load" onclick="SR_TriggerLoad();" type="button" value="Load" title="Load Find and Replace settings"/><input class="btn btn-search-save search-save" id="search-save" onclick="SR_save();" type="button" value="Save" title="Save Find and Replace settings"/></p>';
+  // Lite: Customized
+  // Fix input inaccessible for tabbing
+  modal_msg += '<p style="font-size:12pt;text-align:center;margin-top:24px;"><input class="btn btn-search-previous search-previous" id="search-previous" onclick="SR_search_previous();" type="button" value="Find Previous" title="Find previous match"/><input class="btn btn-search-next search-next" id="search-next" onclick="SR_search_next();" type="button" value="Find Next" title="Find next match"/><input class="btn btn-search-replace search-replace" id="search-replace" onclick="SR_replaceOne();" type="button" value="Replace" title="Replace one text instance"/><input class="btn btn-search-replace-all search-replace-all" id="search-replace-all" onclick="SR_replaceAll();" type="button" value="Replace All" title="Replace all text instances"/><label for="load_find_replace_fs" class="btn btn-search-load search-load" id="search-load" type="button" title="Load Find and Replace settings">Load<input type="file" id="load_find_replace_fs" accept=".txt,.TXT" class="visually-hidden"/></label><input class="btn btn-search-save search-save" id="search-save" onclick="SR_save();" type="button" value="Save" title="Save Find and Replace settings"/></p>';
 
   DayPilot.Modal.alert(modal_msg, {
     theme: "modal_flat",
@@ -58910,8 +59451,16 @@ function SplitLongTextAndTags() {
     bSplitAllTunes: true
   };
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   const form = [{
-    html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;margin-left:15px;">Split Long Tags and Text&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#hamburger_split" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#hamburger_split" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Split Long Tags and Text&nbsp;&nbsp;' +
+		'</h2>'
   }, {
     html: '<p style="margin-top:36px;margin-bottom:24px;font-size:12pt;line-height:18pt;">This will split long strings in tags and/or text at the specified line length.</p>'
   }, {
@@ -59202,7 +59751,15 @@ function NormalizeDiacriticals() {
     return;
   }
 
-  var modal_msg = '<p style="text-align:center;margin-bottom:20px;font-size:16pt;margin-left:15px;">Normalize Diacriticals&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#hamburger_normalize_diacriticals" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  var modal_msg =
+		'<a href="https://michaeleskin.com/abctools/userguide.html#hamburger_normalize_diacriticals" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Normalize Diacriticals&nbsp;&nbsp;' +
+		'</h2>';
 
   modal_msg += '<p style="margin-top:24px;margin-bottom:12px;font-size:12pt;line-height:18pt;">When sorting the tunes by title or generating a sorted Table of Contents or Index in an exported PDF, for optimal sorting and title display, it is best to normalize the diacriticals if escaped versions were used in the ABC.</p>';
 
@@ -59427,8 +59984,16 @@ function NormalizeTitles() {
   // Setup initial values
   const theData = {};
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   const form = [{
-    html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;margin-left:15px;">Normalize Title Postfixes&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#hamburger_normalize_title_postfixes" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html:
+		'<a href="https://michaeleskin.com/abctools/userguide.html#hamburger_normalize_title_postfixes" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Normalize Title Postfixes&nbsp;&nbsp;' +
+		'</h2>'
   }, {
     html: '<p style="margin-top:24px;margin-bottom:12px;font-size:12pt;line-height:18pt;">Click one of the two actions below to process all title or subtitle T: tag postfix or prefix articles, for example:<br/><br/>"Kesh, The" and "Slockit Light, Da"<br/><br/>to the front of the titles and subtitles resulting in:<br/><br/>"The Kesh" and "Da Slockit Light" or the other way around.</p>'
   }, {
@@ -59841,7 +60406,7 @@ async function DoVersionCheck() {
 
   // Create an AbortController to prevent hanged version checks
   const controller = new AbortController();
-  const timeoutMs = 10000;
+  const timeoutMs = 5000;
 
   // Set up the timeout
   const timeoutId = setTimeout(() => {
@@ -62264,11 +62829,13 @@ function DoStartup() {
   }
 
   // Occasional reminder
-  if ((gTipJarCount == 25) || (gTipJarCount == 75) || (gTipJarCount == 150) || (gTipJarCount == 300)) {
+  // Lite: Customized
+  // TO DO: Find a less intrusive way to remind about tipping
+  // if ((gTipJarCount == 25) || (gTipJarCount == 75) || (gTipJarCount == 150) || (gTipJarCount == 300)) {
 
-    TipJarReminderDialog();
+  //   TipJarReminderDialog();
 
-  }
+  // }
 
   // Setup MIDI inputs
   if (gAllowMIDIInput) {
@@ -63506,8 +64073,16 @@ function PhraseBuilder(theTrainerTune,callback){
     buildPhraseAll: false
   };
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   var form = [{
-     html: '<p style="text-align:center;margin-bottom:20px;font-size:16pt;margin-left:15px;">Phrase-by-Phrase Tune Trainer Builder&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#advanced_phrasebuilder" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>'
+    html:
+    '<a href="https://michaeleskin.com/abctools/userguide.html#advanced_phrasebuilder" target="_blank" ' +
+    'title="View documentation in new tab" ' +
+    'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+    '<h2 class="modal-header">' +
+    'Phrase-by-Phrase Tune Trainer Builder&nbsp;&nbsp;' +
+    '</h2>'
   },{
       html: '<p style="margin-top:24px;margin-bottom:24px;font-size:12pt;line-height:18pt;">This will break the tune(s) into groups of measures of the phrase length specified below followed by the same number of measures of rests.</p>'
   },{
@@ -63930,7 +64505,16 @@ function OpenInABCJSQuickEditor(abcText){
 
 function openInExternalTool(theABC){
 
-  var modal_msg = '<div id="ceoltasanchor"><p style="text-align:center;margin-bottom:36px;font-size:16pt;margin-left:15px;">Open ABC in External Tool&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#external_tools" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>';
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  var modal_msg =
+		'<div id="ceoltasanchor">' +
+		'<a href="https://michaeleskin.com/abctools/userguide.html#external_tools" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+		'Open ABC in External Tool&nbsp;&nbsp;' +
+		'</h2>';
 
   modal_msg += '<p style="text-align:center;"> <span class="external-tool" style="display:inline-block; margin-right:48px;margin-bottom:12px;"> <img id="external_pureocarinas" src="img/pureocarinas.png" title="Open the ABC in the Pure Ocarinas Phrase-by-phrase ABC tune practice tool" alt="Pure Ocarinas Phrase-by-phrase ABC practice tool"><br> <span style="font-size:1.2em;">Phrase-by-phrase ABC practice tool</span> </span> <span class="external-tool" style="display:inline-block;margin-bottom:12px;"> <img id="external_abcjs" src="img/abcjs_logo.png" title="Open the ABC in the abcjs quick editor" alt="abcjs quick editor"><br> <span style="font-size:1.2em;">abcjs quick editor</span> </span> </p>';
 
@@ -64087,10 +64671,6 @@ function buildAbcjsEditorHtml(seed, contentId){
     .abcjs_custom_css-scroll { max-height: 760px; overflow: auto; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff; }
     .abcjs_custom_css-head { font-size: 16px; font-weight: 600; color: #111827; text-align:center; }
 
-    .abcjs_custom_css-help {position:absolute; left:10px; top:10px; display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; font-size:30px; line-height:1; text-decoration:none; color:#111; } 
-    .abcjs_custom_css-help:hover { background:#e5e7eb; }
-    .abcjs_custom_css-help:focus { outline:2px solid #2563eb; outline-offset:2px; }
-
     .abcjs_custom_css-grid-body { padding: 8px; }
     .abcjs_custom_css-cell.key code { color: #111827; , Helvetica, Arial, sans-serif; font-size: 12pt; }
 
@@ -64112,12 +64692,11 @@ function buildAbcjsEditorHtml(seed, contentId){
     }
 
   </style>
+  <header>
+    <a href="https://michaeleskin.com/abctools/userguide.html#advanced_customcssgenerator" title="View documentation in new tab" target="_blank" class="modal-header-ui modal-link-help dialogcornerbutton" aria-label="View documentation in new tab">?</a>
+    <h2 class="abcjs_custom_css-title">abcjs Custom CSS Generator</h2>
+  </header>
   <div class="abcjs_custom_css-theme" id="${contentId}">
-
-    <a class="abcjs_custom_css-help" href="https://michaeleskin.com/abctools/userguide.html#advanced_customcssgenerator" target="_blank" rel="noopener noreferrer" aria-label="ABC Tools User Guide">?</a>
-
-    <div class="abcjs_custom_css-title">abcjs Custom CSS Generator</div>
-
     <div class="abcjs_custom_css-scroll" id="${contentId}-scroll">
       <div class="abcjs_custom_css-grid-head">
         <div class="abcjs_custom_css-head">abcjs CSS Element</div>
@@ -64407,6 +64986,9 @@ window.__abcCancelAlert = function(){
 /* --------------------------
    Editor HTML (with help ?)
 --------------------------- */
+
+// Lite: Customized
+// Replace inline styles with reusable classes (TO DO: Do more)
 function buildEditorHtml(seed, contentId){
   const styleSel = (id, val) =>
     `<select id="${id}" class="abc-sel" onchange="__abcUpdatePreview('${id.replace('_style','')}')">
@@ -64458,15 +65040,6 @@ function buildEditorHtml(seed, contentId){
     .abc-wrap  { width: 740px; margin: 0px -10px; position:relative; }
     .abc-title { text-align:center; font-size: 24px; margin: 6px 0 24px; }
 
-    .abc-help {
-      position:absolute; left:-11px; top:-16px;
-      display:inline-flex; align-items:center; justify-content:center;
-      width:36px; height:36px;
-      font-size:30px; line-height:1; text-decoration:none; color:#111;
-    }
-    .abc-help:hover { background:#e5e7eb; }
-    .abc-help:focus { outline:2px solid #2563eb; outline-offset:2px; }
-
     .abc-grid {display:grid; grid-template-columns: 170px 64px 120px 1fr 1fr; column-gap:10px; align-items:center; }
     .abc-grid-head { margin-bottom: 8px; }
     .abc-head { , system-ui,-apple-system,Segoe UI,Roboto,sans-serif; font-size: 14px;font-weight:600; color:#111827; padding: 0 2px 2px;}
@@ -64506,11 +65079,12 @@ function buildEditorHtml(seed, contentId){
     .modal_flat_buttons .abc-actions, .dp-modal-buttons .abc-actions { margin-top:0; }
   </style>
 
+  <header>
+    <a href="https://michaeleskin.com/abctools/userguide.html#customthemeeditor" title="View documentation in new tab" target="_blank" class="modal-header-ui modal-link-help dialogcornerbutton" aria-label="View documentation in new tab">?</a>
+    <h2 class="abc-title">ABC Syntax Highlighting Theme Editor</h2>
+  </header>
+
   <div class="abc-theme abc-wrap" id="${contentId}">
-    <a class="abc-help" href="https://michaeleskin.com/abctools/userguide.html#customthemeeditor" target="_blank" rel="noopener noreferrer" aria-label="ABC Tools User Guide">?</a>
-
-    <div class="abc-title">ABC Syntax Highlighting Theme Editor</div>
-
     <div class="abc-grid abc-grid-head">
       <div class="abc-head">&nbsp;</div>
       <div class="abc-head">Color</div>

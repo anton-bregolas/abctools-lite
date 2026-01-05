@@ -90,11 +90,11 @@ user-select: none;
 }
 
 @media (hover: hover) {
-	input:hover + label,
+	/* input:hover + label,
 	input:focus + label {
 	background: var(--abctools-ui-btn-hovercolor);
 	user-select: none;
-	}
+	} */
 }
 
 .notation-container {
@@ -1162,19 +1162,19 @@ padding:12px;
 	}
 }
 
-#exportaudioimage_help{
+/* #exportaudioimage_help{
 font-size: var(--abctools-font-size-header-xl-24);
 position:absolute;
 left:20px;
 top:20px;
-}
+} */
 
-#exportall_help{
+/* #exportall_help{
 font-size: var(--abctools-font-size-header-xl-24);
 position:absolute;
 left:20px;
 top:20px;
-}
+} */
 
 #abcplayer_metronomebutton{
 height:42px;
@@ -1225,12 +1225,12 @@ padding:12px;
 }
 
 
-#abcplayer_help{
+/* #abcplayer_help{
 font-size: var(--abctools-font-size-header-xl-24);
 position:absolute;
 left:20px;
 top:20px;
-}
+} */
 
 #swingexplorerinject{
 height:42px;
@@ -1271,12 +1271,12 @@ margin-left: 0;
 	}
 }
 
-#notationspacingexplorer_help{
+/* #notationspacingexplorer_help{
 font-size: var(--abctools-font-size-header-xl-24);
 position:absolute;
 left:9px;
 top:5px;
-}
+} */
 
 #swingexplorertest{
 height:42px;
@@ -1314,12 +1314,12 @@ margin-right:36px;
 opacity: 0.45;
 }
 
-#graceexplorerhelp{
+/* #graceexplorerhelp{
 font-size: var(--abctools-font-size-header-xl-24);
 position:absolute;
 left:20px;
 top:20px;
-}
+} */
 
 #rollexplorerinject{
 height:42px;
@@ -1371,12 +1371,12 @@ margin-right:20px;
 opacity: 0.45;
 }
 
-#rollexplorerhelp{
+/* #rollexplorerhelp{
 font-size: var(--abctools-font-size-header-xl-24);
 position:absolute;
 left:20px;
 top:20px;
-}
+} */
 
 #looperreset{
 height:42px;
@@ -1398,12 +1398,12 @@ width:auto;
 	}
 }
 
-#looperhelp{
+/* #looperhelp{
 font-size: var(--abctools-font-size-header-xl-24);
 position:absolute;
 left:20px;
 top:20px;
-}
+} */
 
 #looperstatus {
 font-size: var(--abctools-font-size-code-13);
@@ -1504,12 +1504,12 @@ width:auto;
 	}
 }
 
-#instrumentexplorerhelp{
+/* #instrumentexplorerhelp{
 font-size: var(--abctools-font-size-header-xl-24);
 position:absolute;
 left:20px;
 top:20px;
-}
+} */
 
 #reset_roll_parameters{
 height:42px;
@@ -1534,7 +1534,7 @@ width:auto;
 margin-right:20px;
 }
 
-.loadimpulsebutton:hover{
+.customthemeeditor:hover{
 	background: var(--abctools-ui-btn-hovercolor);
 }
 
@@ -2274,7 +2274,7 @@ body.noui .app-container {
 
 body.noui .notation-container {
 		display: inline-block !important;
-		width: 95% !important;
+		width: 98% !important;
  }
 
 body.noui .notation-holder{
@@ -2282,12 +2282,12 @@ body.noui .notation-holder{
 		text-align: center !important;
 		margin-bottom: 0 !important;
 		width:97% !important;
-		margin-left: 3% !important;
-		margin-right: 0% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
 		position:static !important;
-		left: 0% !important;
+		/* left: 0% !important;
 		right: 0% !important;
-		flex-flow: unset !important;
+		flex-flow: unset !important; */
 	}
 
 body.noui .relativebox {
@@ -2298,12 +2298,12 @@ body.noui .relativebox {
 
 body.noui .pagebreak { 
 		page-break-after:always !important; 
-		width:97% !important;
-		margin-left: 1% !important;
-		margin-right: 0% !important;
+		/* width:97% !important;
+		margin-left: auto !important;
+		margin-right: auto !important;
 		position:static !important;
 		display: block !important;
-		flex-flow: unset;
+		flex-flow: unset; */
 	} 
 
 body.noui .modal_flat_background{
@@ -4731,12 +4731,12 @@ margin-left: 0;
 	}
 }
 
-#reverbexplorerhelp{
+/* #reverbexplorerhelp{
 font-size: var(--abctools-font-size-header-xl-24);
 position:absolute;
 left:20px;
 top:20px;
-}
+} */
 
 .configuresettingsfromhelp{
 	height:42px;
@@ -5539,16 +5539,19 @@ padding-left:10px;
 margin-top:-7px;
 }
 
-.external_tools_share{
+.external_tools_share {
+z-index:101;
+cursor: pointer;
+}
+
+.external_tools_share:not(.modal-btn-share-player){
 position:absolute;
 width:30px;
 height:40px;
 right:16px;
 top:8px;
 padding:4px;
-z-index:101;
 display:block;
-cursor: pointer;
 }
 
 @media (hover: hover) {
@@ -5611,7 +5614,7 @@ cursor: pointer;
   /* Typography */
   font-family: var(--abctools-font-fallback-ui), sans-serif;
   font-size: 0.958rem;
-  line-height: 1.1;
+  /* line-height: 1.1; */
   font-weight: 400;
   text-align: center;
 
@@ -5645,9 +5648,9 @@ cursor: pointer;
 
 /* Active tab = "connected" to panel */
 .adv-tab-btn.active {
-  background: #ffffff;
+	background: #ffffff;
   border-color: #cfcfcf;
-  border-bottom: 1px solid #ffffff;   /* hides bar line under active tab */
+  /* border-bottom: 1px solid #ffffff; */
   font-weight: 600;
 }
 
@@ -5679,7 +5682,7 @@ cursor: pointer;
   position: absolute;
   left: 10px;
   right: 10px;
-  bottom: -2px;
+  bottom: -1px;
   height: 3px;
   background: #4a90e2;  /* change to match your site */
   border-radius: 2px;
@@ -5807,7 +5810,12 @@ body.dp-tabs-building .modal_flat_main {
 
 .btn-transpose{
   --color: black;
-  --background-color: #F0F0F0;
+  --background-color: #ffeac3;
+}
+
+.transposedown{
+  --color: black;
+  --background-color: #fdffe0;
 }
 
 .btn-sortbutton{
@@ -6395,7 +6403,7 @@ body.dp-tabs-building .modal_flat_main {
 	}
 
 	.btn:hover {
-	    transform: matrix(1.04, 0, 0, 1.04, 0, 0); 
+	  transform: scale(1.04); 
 	}
 
 	.modal_flat_ok
@@ -6404,7 +6412,7 @@ body.dp-tabs-building .modal_flat_main {
 	}
 
 	.modal_flat_ok:hover {
-	    transform: matrix(1.04, 0, 0, 1.04, 0, 0); 
+	  transform: scale(1.04); 
 	}
 
 	.modal_flat_cancel
@@ -6413,7 +6421,7 @@ body.dp-tabs-building .modal_flat_main {
 	}
 
 	.modal_flat_cancel:hover {
-	    transform: matrix(1.04, 0, 0, 1.04, 0, 0); 
+	  transform: scale(1.04); 
 	}
 
 	.modal_flat_wide_ok
@@ -6422,7 +6430,7 @@ body.dp-tabs-building .modal_flat_main {
 	}
 
 	.modal_flat_wide_ok:hover {
-	    transform: matrix(1.04, 0, 0, 1.04, 0, 0); 
+	  transform: scale(1.04); 
 	}
 
 	.modal_flat_wide_cancel
@@ -6431,7 +6439,7 @@ body.dp-tabs-building .modal_flat_main {
 	}
 
 	.modal_flat_wide_cancel:hover {
-	    transform: matrix(1.04, 0, 0, 1.04, 0, 0); 
+	  transform: scale(1.04); 
 	}
 
 	.helpbutton
@@ -6440,7 +6448,7 @@ body.dp-tabs-building .modal_flat_main {
 	}
 
 	.helpbutton:hover {
-	    transform: matrix(1.05, 0, 0, 1.05, 0, 0); 
+	  transform: scale(1.04); 
 	}
 
 	.playbuttonicon
@@ -6449,7 +6457,7 @@ body.dp-tabs-building .modal_flat_main {
 	}
 
 	.playbuttonicon:hover {
-	    transform: matrix(1.05, 0, 0, 1.05, 0, 0); 
+	    transform: scale(1.05); 
 	  	transition: opacity 0s ease 1.25s; 
 	}
 
@@ -6459,7 +6467,7 @@ body.dp-tabs-building .modal_flat_main {
 	}
 
 	.zoombutton:hover {
-	    transform: matrix(1.05, 0, 0, 1.05, 0, 0); 
+	    transform: scale(1.05); 
 	}
 
 	.jumpbutton
@@ -6468,7 +6476,7 @@ body.dp-tabs-building .modal_flat_main {
 	}
 
 	.jumpbutton:hover {
-	    transform: matrix(1.05, 0, 0, 1.05, 0, 0); 
+	    transform: scale(1.05); 
 	}
 
 	.qerewindbutton
@@ -6477,7 +6485,7 @@ body.dp-tabs-building .modal_flat_main {
 	}
 
 	.qerewindbutton:hover {
-	    transform: matrix(1.05, 0, 0, 1.05, 0, 0); 
+	    transform: scale(1.05); 
 	}
 
 	.qetempobutton
@@ -6486,7 +6494,7 @@ body.dp-tabs-building .modal_flat_main {
 	}
 
 	.qetempobutton:hover {
-	    transform: matrix(1.05, 0, 0, 1.05, 0, 0); 
+	    transform: scale(1.05); 
 	}
 
 	.pdfbuttonicon
@@ -6495,7 +6503,7 @@ body.dp-tabs-building .modal_flat_main {
 	}
 
 	.pdfbuttonicon:hover {
-	    transform: matrix(1.05, 0, 0, 1.05, 0, 0); 
+	    transform: scale(1.05); 
 	}
 
 	.dialogcornerbutton
@@ -6504,7 +6512,7 @@ body.dp-tabs-building .modal_flat_main {
 	}
 
 	.dialogcornerbutton:hover {
-	    transform: matrix(1.06, 0, 0, 1.06, 0, 0); 
+	    transform: scale(1.06); 
 	}
 
 	.moresettingsbutton
@@ -6512,11 +6520,11 @@ body.dp-tabs-building .modal_flat_main {
 	  transition: transform .1s ease-in-out 0s; 
 	}
 
-	.moresettingsbutton:hover{
+	.moresettingsbutton:hover {
 		background: var(--abctools-ui-btn-hovercolor);
 	}
 
 	.moresettingsbutton:hover {
-	    transform: matrix(1.06, 0, 0, 1.06, 0, 0); 
+	    transform: scale(1.06); 
 	}
 }

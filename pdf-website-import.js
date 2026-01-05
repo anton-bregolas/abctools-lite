@@ -1002,13 +1002,19 @@ function ImportPDF_CSV_Website(){
 	// Save off the original setting
 	var gCustomTabOriginal = JSON.parse(JSON.stringify(gCustomTab));
 
-	var modal_msg  = '<p style="text-align:center;font-size:16pt;font-family:helvetica;margin-left:15px;margin-bottom:32px">Import Tunes from an Exported PDF, Website, or CSV&nbsp;&nbsp;<span style="font-size:24pt;" title="View documentation in new tab"><a href="https://michaeleskin.com/abctools/userguide.html#hamburger_extracting_pdf_website" target="_blank" style="text-decoration:none;position:absolute;left:20px;top:20px" class="dialogcornerbutton">?</a></span></p>';
+	var modal_msg = '';
 
-	modal_msg += '<p style="margin-top:36px;margin-bottom:24px;font-size:12pt;line-height:18pt;font-family:helvetica">Click the buttons below to import all the tunes from a tunebook .PDF file with play links, a local or remote tunebook .html website, or a CSV file with play links previously exported using this tool or the ABC Tags to CSV Extractor tool.</p>';	
+    modal_msg += '<h2 class="modal-header">Import PDF, Website, or CSV&nbsp;&nbsp;</h2>';
+
+    modal_msg += '<h3 class="modal-subheader">Extract Tunes from an Exported File&nbsp;&nbsp;</h3>';
+    
+    modal_msg += '<a href="https://michaeleskin.com/abctools/userguide.html#hamburger_extracting_pdf_website" target="_blank" title="View documentation in new tab" class="modal-header-ui modal-link-help dialogcornerbutton">?</a>';
+
+	modal_msg += '<p style="margin-bottom:24px;font-size:12pt;line-height:18pt;font-family:helvetica">Click the buttons below to import all the tunes from a tunebook .PDF file with play links, a local or remote tunebook .html website, or a CSV file with play links previously exported using this tool or the ABC Tags to CSV Extractor tool.</p>';	
     
     modal_msg += '<p style="margin-top:24px;margin-bottom:24px;font-size:12pt;line-height:18pt;font-family:helvetica">Tunes will not be extracted from PDF tunebooks created with the <strong>%no_edit_allowed</strong> annotation in the PDF features header.</p>';
 
-    modal_msg += '<p style="margin-top:24px;margin-bottom:48px;font-size:12pt;line-height:18pt;font-family:helvetica">Tunes will not be extracted from tunebook websites created with the <strong>Disable access to editor</strong> option selected.</p>';  
+    modal_msg += '<p style="margin-top:24px;font-size:12pt;line-height:18pt;font-family:helvetica">Tunes will not be extracted from tunebook websites created with the <strong>Disable access to editor</strong> option selected.</p>';  
 
 	modal_msg += '<p style="text-align:center;margin-top:22px;"><input type="file" id="import_pdf_fs" accept=".pdf,.PDF" hidden/><input type="file" id="import_website_fs" accept=".html,.HTML" hidden/><input id="import_pdf" class="btn btn-subdialog import_pdf" onclick="importPDFClickHandler()" type="button" value="Import Tunes from a PDF File" title="Import tunes from a previously exported ABC Transcription Tools PDF file with Play links"></p>';
 
