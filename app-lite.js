@@ -81,3 +81,64 @@ function liteRestoreBottomBar() {
 
   liteShowBottomBar();
 }
+
+////////////////////////////////////////////
+// APP LITE: SHIFT FOCUS / RESET POSITION
+///////////////////////////////////////////
+
+// Shift focus to the currently used ABC text field
+
+function doFocusAbc() {
+
+  if (gEnableSyntax) {
+
+    gTheCM.focus();
+
+  } else {
+
+    gTheABC.focus();
+  }
+}
+
+// Reset ABC text field selection
+
+function resetAbcSelection() {
+
+  if (gEnableSyntax) {
+
+    // Set the selection to the start of the tune
+    gTheCM.selectionStart = 0;
+    gTheCM.selectionEnd = 0;
+
+  } else {
+
+    // Set the selection to the start of the tune
+    gTheABC.selectionStart = 0;
+    gTheABC.selectionEnd = 0; 
+  }
+}
+
+// Reset ABC text field scroll position
+
+function resetAbcScroll() {
+
+  if (gEnableSyntax) {
+
+    // Scroll it to the top
+    gTheCM.getScrollerElement().scrollTo(0, 0);
+
+  } else {
+
+    // Scroll it to the top
+    gTheABC.scrollTo(0, 0);    
+  }
+}
+
+// Shift focus to player controls
+
+function doPlayerFocus() {
+
+  const playButton = document.querySelector('.abcjs-midi-start');
+
+  if (playButton) playButton.focus();
+}

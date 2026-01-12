@@ -3147,15 +3147,15 @@ function DoTransposeToKey(targetKey, transposeAll) {
           } else {
 
             // Set the select point
-            if (gEnableSyntax){
-              gTheCM.selectionStart = 0;
-              gTheCM.selectionEnd = 0;
-            }
-            else{
-              gTheABC.selectionStart = 0;
-              gTheABC.selectionEnd = 0;
-
-            }
+            resetAbcSelection();
+            // if (gEnableSyntax){
+            //   gTheCM.selectionStart = 0;
+            //   gTheCM.selectionEnd = 0;
+            // }
+            // else{
+            //   gTheABC.selectionStart = 0;
+            //   gTheABC.selectionEnd = 0;
+            // }
 
             gCurrentTune = 0;
 
@@ -3427,14 +3427,15 @@ function SortTunesByTag(theTag, doCase) {
   gIsDirty = true;
 
   // Reset the selection
-  if (gEnableSyntax){
-    gTheCM.selectionStart = 0;
-    gTheCM.selectionEnd = 0;
-  }
-  else{
-    gTheABC.selectionStart = 0;
-    gTheABC.selectionEnd = 0;
-  }
+  resetAbcSelection();
+  // if (gEnableSyntax){
+  //   gTheCM.selectionStart = 0;
+  //   gTheCM.selectionEnd = 0;
+  // }
+  // else{
+  //   gTheABC.selectionStart = 0;
+  //   gTheABC.selectionEnd = 0;
+  // }
 
   // Focus after operation
   FocusAfterOperation();
@@ -3688,14 +3689,15 @@ function SortTunes() {
   gIsDirty = true;
 
   // Reset the selection
-  if (gEnableSyntax){
-    gTheCM.selectionStart = 0;
-    gTheCM.selectionEnd = 0;
-  }
-  else{
-    gTheABC.selectionStart = 0;
-    gTheABC.selectionEnd = 0;
-  }
+  resetAbcSelection();
+  // if (gEnableSyntax){
+  //   gTheCM.selectionStart = 0;
+  //   gTheCM.selectionEnd = 0;
+  // }
+  // else{
+  //   gTheABC.selectionStart = 0;
+  //   gTheABC.selectionEnd = 0;
+  // }
 
   // Focus after operation
   FocusAfterOperation();
@@ -4136,14 +4138,15 @@ function RenumberXTags() {
   gIsDirty = true;
 
   // Reset the selection
-  if (gEnableSyntax){
-    gTheCM.selectionStart = 0;
-    gTheCM.selectionEnd = 0;
-  }
-  else{
-    gTheABC.selectionStart = 0;
-    gTheABC.selectionEnd = 0;
-  }
+  resetAbcSelection();
+  // if (gEnableSyntax){
+  //   gTheCM.selectionStart = 0;
+  //   gTheCM.selectionEnd = 0;
+  // }
+  // else{
+  //   gTheABC.selectionStart = 0;
+  //   gTheABC.selectionEnd = 0;
+  // }
 
   // Focus after operation
   FocusAfterOperation();
@@ -4355,12 +4358,13 @@ function Clear() {
     RenderAsync(true, null);
 
     // And set the focus
-    if (gEnableSyntax){
-      gTheCM.focus();
-    }
-    else{
-      gTheABC.focus();
-    }
+    doFocusAbc();
+    // if (gEnableSyntax){
+    //   gTheCM.focus();
+    // }
+    // else{
+    //   gTheABC.focus();
+    // }
 
     // Clear the diagnostics area
     elem = document.getElementById("diagnostics");
@@ -13713,12 +13717,13 @@ function NoteClickListener(abcelem, tuneNumber, classes, analysis, drag, mouseEv
 
     window.scrollTo(0, scrollPos);
 
-    if (gEnableSyntax){
-      gTheCM.focus();
-    }
-    else{
-      gTheABC.focus();
-    }
+    doFocusAbc();
+    // if (gEnableSyntax){
+    //   gTheCM.focus();
+    // }
+    // else{
+    //   gTheABC.focus();
+    // }
 
     var theStart = abcelem.startChar;
 
@@ -18620,20 +18625,22 @@ function ChangeTuneOrderMobile() {
 
           RenderAsync(true, null, function() {
 
-            if (gEnableSyntax){
-              gTheCM.selectionStart = 0;
-              gTheCM.selectionEnd = 0;
+            resetAbcSelection();
+            doFocusAbc();
+            // if (gEnableSyntax){
+            //   gTheCM.selectionStart = 0;
+            //   gTheCM.selectionEnd = 0;
 
-              // And reset the focus
-              gTheCM.focus();
-            }
-            else{
-              gTheABC.selectionStart = 0;
-              gTheABC.selectionEnd = 0;
+            //   // And reset the focus
+            //   gTheCM.focus();
+            // }
+            // else{
+            //   gTheABC.selectionStart = 0;
+            //   gTheABC.selectionEnd = 0;
 
-              // And reset the focus
-              gTheABC.focus();
-            }
+            //   // And reset the focus
+            //   gTheABC.focus();
+            // }
 
             // Scroll to the top
             MakeTuneVisible(true);
@@ -18791,20 +18798,22 @@ function ChangeTuneOrder() {
 
           RenderAsync(true, null, function() {
 
-            if (gEnableSyntax){
-              gTheCM.selectionStart = 0;
-              gTheCM.selectionEnd = 0;
+            resetAbcSelection();
+            doFocusAbc();
+            // if (gEnableSyntax){
+            //   gTheCM.selectionStart = 0;
+            //   gTheCM.selectionEnd = 0;
 
-              // And reset the focus
-              gTheCM.focus();
-            }
-            else{
-              gTheABC.selectionStart = 0;
-              gTheABC.selectionEnd = 0;
+            //   // And reset the focus
+            //   gTheCM.focus();
+            // }
+            // else{
+            //   gTheABC.selectionStart = 0;
+            //   gTheABC.selectionEnd = 0;
 
-              // And reset the focus
-              gTheABC.focus();
-            }
+            //   // And reset the focus
+            //   gTheABC.focus();
+            // }
 
             // Scroll to the top
             MakeTuneVisible(true);
@@ -19053,20 +19062,22 @@ function CullTunes() {
 
             RenderAsync(true, null, function() {
 
-              if (gEnableSyntax){
-                gTheCM.selectionStart = 0;
-                gTheCM.selectionEnd = 0;
+              resetAbcSelection();
+              doFocusAbc();
+              // if (gEnableSyntax){
+              //   gTheCM.selectionStart = 0;
+              //   gTheCM.selectionEnd = 0;
 
-                // And reset the focus
-                gTheCM.focus();
-              }
-              else{
-                gTheABC.selectionStart = 0;
-                gTheABC.selectionEnd = 0;
+              //   // And reset the focus
+              //   gTheCM.focus();
+              // }
+              // else{
+              //   gTheABC.selectionStart = 0;
+              //   gTheABC.selectionEnd = 0;
 
-                // And reset the focus
-                gTheABC.focus();
-              }
+              //   // And reset the focus
+              //   gTheABC.focus();
+              // }
 
               // Scroll to the top
               MakeTuneVisible(true);
@@ -19584,29 +19595,33 @@ function BuildTuneSetAppend() {
               // Scroll the tune ABC into view
               ScrollABCTextIntoView(gTheCM, tuneOffset, tuneOffset, 10);
 
+              gTheCM.getInputField().blur();
+
               if (isMobileBrowser()) {
-                gTheCM.getInputField().blur();
+                // gTheCM.getInputField().blur();
                 return;
               }
 
-              gTheCM.getInputField().blur();
-              gTheCM.focus();
-
+              // gTheCM.getInputField().blur();
+              // gTheCM.focus();
             }
           }
           else{
             // Scroll the tune ABC into view
             ScrollABCTextIntoView(gTheABC, tuneOffset, tuneOffset, 10);
 
+            gTheABC.blur();
+
             if (isMobileBrowser()) {
-              gTheABC.blur();
+              // gTheABC.blur();
               return;
             }
 
-            gTheABC.blur();
-            gTheABC.focus();
-
+            // gTheABC.blur();
+            // gTheABC.focus();
           }
+
+          doFocusAbc();
 
           if (!AllowDialogsToScroll()) {
             // Scroll the tune into view
@@ -21443,29 +21458,33 @@ function ProcessAddTune(theValue) {
       if (gEnableSyntax){
         // Scroll the tune ABC into view
         ScrollABCTextIntoView(gTheCM, tuneOffset, tuneOffset, 10);
+        
+        gTheCM.getInputField().blur();
 
         if (isMobileBrowser()) {
-          gTheCM.getInputField().blur();
+          // gTheCM.getInputField().blur();
           return;
         }
 
-        gTheCM.getInputField().blur();
-        gTheCM.focus();
+        // gTheCM.getInputField().blur();
+        // gTheCM.focus();
       }
       else{
         // Scroll the tune ABC into view
         ScrollABCTextIntoView(gTheABC, tuneOffset, tuneOffset, 10);
 
+        gTheABC.blur();
+
         if (isMobileBrowser()) {
-          gTheABC.blur();
+          // gTheABC.blur();
           return;
         }
 
-        gTheABC.blur();
-        gTheABC.focus();
-
+        // gTheABC.blur();
+        // gTheABC.focus();
       }
 
+      doFocusAbc();
     }
 
     // Scroll the tune into view
@@ -21791,13 +21810,15 @@ function RenderDivClickHandler(e) {
             ScrollABCTextIntoView(gTheCM, tuneOffset, tuneOffset, 10);
           }
 
+          gTheCM.getInputField().blur();
+
           if (isMobileBrowser()) {
-            gTheCM.getInputField().blur();
+            // gTheCM.getInputField().blur();
             return;
           }
 
-          gTheCM.getInputField().blur();
-          gTheCM.focus();
+          // gTheCM.getInputField().blur();
+          // gTheCM.focus();
         }
         else{
           if (!gIsQuickEditor) {
@@ -21805,14 +21826,18 @@ function RenderDivClickHandler(e) {
             ScrollABCTextIntoView(gTheABC, tuneOffset, tuneOffset, 10);
           }
 
+          gTheABC.blur();
+
           if (isMobileBrowser()) {
-            gTheABC.blur();
+            // gTheABC.blur();
             return;
           }
 
-          gTheABC.blur();
-          gTheABC.focus();          
+          // gTheABC.blur();
+          // gTheABC.focus();
         }
+
+        doFocusAbc();
 
       } else {
 
@@ -23193,16 +23218,17 @@ function InjectRepeatsAndClickTrackAll() {
 
           ensureMoreToolsVisible();
 
-          if (gEnableSyntax){
-            // Set the select point
-            gTheCM.selectionStart = 0;
-            gTheCM.selectionEnd = 0;
-          }
-          else{
-            // Set the select point
-            gTheABC.selectionStart = 0;
-            gTheABC.selectionEnd = 0;
-          }
+          resetAbcSelection();
+          // if (gEnableSyntax){
+          //   // Set the select point
+          //   gTheCM.selectionStart = 0;
+          //   gTheCM.selectionEnd = 0;
+          // }
+          // else{
+          //   // Set the select point
+          //   gTheABC.selectionStart = 0;
+          //   gTheABC.selectionEnd = 0;
+          // }
 
           // Focus after operation
           FocusAfterOperation();
@@ -23824,16 +23850,17 @@ function InjectHeaderString() {
 
               ensureMoreToolsVisible();
 
-              if (gEnableSyntax){
-                // Set the select point
-                gTheCM.selectionStart = 0;
-                gTheCM.selectionEnd = 0;
-              }
-              else{
-                // Set the select point
-                gTheABC.selectionStart = 0;
-                gTheABC.selectionEnd = 0;
-              }
+              resetAbcSelection();
+              // if (gEnableSyntax){
+              //   // Set the select point
+              //   gTheCM.selectionStart = 0;
+              //   gTheCM.selectionEnd = 0;
+              // }
+              // else{
+              //   // Set the select point
+              //   gTheABC.selectionStart = 0;
+              //   gTheABC.selectionEnd = 0;
+              // }
 
               // Focus after operation
               FocusAfterOperation();
@@ -24313,16 +24340,17 @@ function InjectCustomStringedInstrumentTab() {
 
             ensureMoreToolsVisible();
 
-            if (gEnableSyntax){
-              // Set the select point
-              gTheCM.selectionStart = 0;
-              gTheCM.selectionEnd = 0;
-            }
-            else{
-              // Set the select point
-              gTheABC.selectionStart = 0;
-              gTheABC.selectionEnd = 0;
-            }
+            resetAbcSelection();
+            // if (gEnableSyntax){
+            //   // Set the select point
+            //   gTheCM.selectionStart = 0;
+            //   gTheCM.selectionEnd = 0;
+            // }
+            // else{
+            //   // Set the select point
+            //   gTheABC.selectionStart = 0;
+            //   gTheABC.selectionEnd = 0;
+            // }
 
             // Focus after operation
             FocusAfterOperation();
@@ -24712,17 +24740,17 @@ function InjectFontSettings() {
 
               ensureMoreToolsVisible();
 
-              if (gEnableSyntax){
-                // Set the select point
-                gTheCM.selectionStart = 0;
-                gTheCM.selectionEnd = 0;
-              }
-              else{
-                // Set the select point
-                gTheABC.selectionStart = 0;
-                gTheABC.selectionEnd = 0;
-
-              }
+              resetAbcSelection();
+              // if (gEnableSyntax){
+              //   // Set the select point
+              //   gTheCM.selectionStart = 0;
+              //   gTheCM.selectionEnd = 0;
+              // }
+              // else{
+              //   // Set the select point
+              //   gTheABC.selectionStart = 0;
+              //   gTheABC.selectionEnd = 0;
+              // }
 
               // Focus after operation
               FocusAfterOperation();
@@ -24896,18 +24924,18 @@ function NotationSpacingInject() {
       }).then(function() {
 
         ensureMoreToolsVisible();
-
-        if (gEnableSyntax){
-          // Set the select point
-          gTheCM.selectionStart = 0;
-          gTheCM.selectionEnd = 0;
-        }
-        else{
-          // Set the select point
-          gTheABC.selectionStart = 0;
-          gTheABC.selectionEnd = 0;
-
-        }
+        
+        resetAbcSelection();
+        // if (gEnableSyntax){
+        //   // Set the select point
+        //   gTheCM.selectionStart = 0;
+        //   gTheCM.selectionEnd = 0;
+        // }
+        // else{
+        //   // Set the select point
+        //   gTheABC.selectionStart = 0;
+        //   gTheABC.selectionEnd = 0;
+        // }
 
         // Focus after operation
         FocusAfterOperation();
@@ -26479,17 +26507,17 @@ function InjectMetronome() {
 
             ensureMoreToolsVisible();
 
-            if (gEnableSyntax){
-              // Set the select point
-              gTheCM.selectionStart = 0;
-              gTheCM.selectionEnd = 0;
-            }
-            else{
-              // Set the select point
-              gTheABC.selectionStart = 0;
-              gTheABC.selectionEnd = 0;
-
-            }
+            resetAbcSelection();
+            // if (gEnableSyntax){
+            //   // Set the select point
+            //   gTheCM.selectionStart = 0;
+            //   gTheCM.selectionEnd = 0;
+            // }
+            // else{
+            //   // Set the select point
+            //   gTheABC.selectionStart = 0;
+            //   gTheABC.selectionEnd = 0;
+            // }
 
             // Focus after operation
             FocusAfterOperation();
@@ -26819,16 +26847,17 @@ function ShortenURL(e) {
           // Force a redraw
           RenderAsync(true, null, function() {
 
-            if (gEnableSyntax){
-              // Set the select point
-              gTheCM.selectionStart = 0;
-              gTheCM.selectionEnd = 0;
-            }
-            else{
-              // Set the select point
-              gTheABC.selectionStart = 0;
-              gTheABC.selectionEnd = 0;
-            }
+            resetAbcSelection();
+            // if (gEnableSyntax){
+            //   // Set the select point
+            //   gTheCM.selectionStart = 0;
+            //   gTheCM.selectionEnd = 0;
+            // }
+            // else{
+            //   // Set the select point
+            //   gTheABC.selectionStart = 0;
+            //   gTheABC.selectionEnd = 0;
+            // }
 
             // Focus after operation
             FocusAfterOperation();
@@ -27129,6 +27158,7 @@ function QE_PlayButton_Handler() {
   const button = document.querySelector('button.abcjs-midi-start');
   if (button){
     button.click();
+    doPlayerFocus();
   }
 }
 
@@ -27144,6 +27174,7 @@ function QE_RewindButton_Handler(e) {
     const button = document.querySelector('button.abcjs-midi-loop');
     if (button){
       button.click();
+      doPlayerFocus();
     }
     return;
 
@@ -27152,6 +27183,7 @@ function QE_RewindButton_Handler(e) {
   const button = document.querySelector('button.abcjs-midi-reset');
   if (button){
     button.click();
+    doPlayerFocus();
   }
 }
 
@@ -27577,7 +27609,7 @@ function DoMinimize() {
           }
 
           gTheCM.getInputField().blur();
-          gTheCM.focus();
+          // gTheCM.focus();
         }
         else{
           // Scroll the tune ABC into view
@@ -27588,10 +27620,10 @@ function DoMinimize() {
           }
 
           gTheABC.blur();
-          gTheABC.focus();
-
+          // gTheABC.focus();
         }
 
+        doFocusAbc();
       }
 
       gGotRenderDivClick = false;
@@ -27808,6 +27840,7 @@ function decompressABC_Deflate(encoded) {
 
 // 
 // Check for a share link and process it
+// Lite: Customized (do not trap focus if notation opened in maximized state)
 //
 function processShareLink() {
 
@@ -27991,7 +28024,7 @@ function processShareLink() {
   if (urlParams.has("dx")) {
     var theNoEdit = urlParams.get("dx");
     if (theNoEdit == "1") {
-      disableEdit = true;;
+      disableEdit = true;
     }
   }
 
@@ -28115,7 +28148,10 @@ function processShareLink() {
     gShowAllControls = false;
 
     // Set the inital focus back to the ABC
-    FocusABC();
+    if (openInEditor) FocusABC();
+
+    // Focus on player controls
+    if (doPlay) doPlayerFocus();
 
     // Render the tune
     RenderAsync(true, null, function() {
@@ -29840,17 +29876,17 @@ function InjectBagpipeSounds() {
 
               gCurrentTune = 0;
 
-              if (gEnableSyntax){
-                // Set the select point
-                gTheCM.selectionStart = 0;
-                gTheCM.selectionEnd = 0;
-              }
-              else{
-                // Set the select point
-                gTheABC.selectionStart = 0;
-                gTheABC.selectionEnd = 0;
-
-              }
+              resetAbcSelection();
+              // if (gEnableSyntax){
+              //   // Set the select point
+              //   gTheCM.selectionStart = 0;
+              //   gTheCM.selectionEnd = 0;
+              // }
+              // else{
+              //   // Set the select point
+              //   gTheABC.selectionStart = 0;
+              //   gTheABC.selectionEnd = 0;
+              // }
 
               // Focus after operation
               FocusAfterOperation();
@@ -30277,21 +30313,22 @@ function IncipitsBuilderDialog() {
 
         RenderAsync(true, null, function() {
 
-          if (gEnableSyntax){
-            gTheCM.selectionStart = 0;
-            gTheCM.selectionEnd = 0;
+          resetAbcSelection();
+          doFocusAbc();
+          // if (gEnableSyntax){
+          //   gTheCM.selectionStart = 0;
+          //   gTheCM.selectionEnd = 0;
 
-            // And reset the focus
-            gTheCM.focus();
-          }
-          else{
-            gTheABC.selectionStart = 0;
-            gTheABC.selectionEnd = 0;
+          //   // And reset the focus
+          //   gTheCM.focus();
+          // }
+          // else{
+          //   gTheABC.selectionStart = 0;
+          //   gTheABC.selectionEnd = 0;
 
-            // And reset the focus
-            gTheABC.focus();
-
-          }
+          //   // And reset the focus
+          //   gTheABC.focus();
+          // }
 
           // Scroll to the top
           MakeTuneVisible(true);
@@ -33318,15 +33355,15 @@ function FocusAfterOperation() {
 
   if (isPureDesktopBrowser()) {
 
-    if (gEnableSyntax){
-      // And reset the focus
-      gTheCM.focus();
-    }
-    else{
-      // And reset the focus
-      gTheABC.focus();
-
-    }
+    doFocusAbc();
+    // if (gEnableSyntax){
+    //   // And reset the focus
+    //   gTheCM.focus();
+    // }
+    // else{
+    //   // And reset the focus
+    //   gTheABC.focus();
+    // }
 
   } else {
 
@@ -33346,31 +33383,35 @@ function FocusAfterOperation() {
 
 //
 // Reset the focus back to the ABC and set an initial selection
+// Lite: Customized (split FocusABC into reusable blocks)
 //
 function FocusABC() {
 
-  if (gEnableSyntax){
-    // Refocus back on the ABC
-    gTheCM.focus();
+  doFocusAbc();
+  resetAbcSelection();
+  resetAbcScroll();
+  // if (gEnableSyntax){
+  //   // Refocus back on the ABC
+  //   gTheCM.focus();
 
-    // Set the selection to the start of the tune
-    gTheCM.selectionStart = 0;
-    gTheCM.selectionEnd = 0;
+  //   // Set the selection to the start of the tune
+  //   gTheCM.selectionStart = 0;
+  //   gTheCM.selectionEnd = 0;
 
-    // Scroll it to the top
-    gTheCM.getScrollerElement().scrollTo(0, 0);
-  }
-  else{
-    // Refocus back on the ABC
-    gTheABC.focus();
+  //   // Scroll it to the top
+  //   gTheCM.getScrollerElement().scrollTo(0, 0);
+  // }
+  // else{
+  //   // Refocus back on the ABC
+  //   gTheABC.focus();
 
-    // Set the selection to the start of the tune
-    gTheABC.selectionStart = 0;
-    gTheABC.selectionEnd = 0;
+  //   // Set the selection to the start of the tune
+  //   gTheABC.selectionStart = 0;
+  //   gTheABC.selectionEnd = 0;
 
-    // Scroll it to the top
-    gTheABC.scrollTo(0, 0);    
-  }
+  //   // Scroll it to the top
+  //   gTheABC.scrollTo(0, 0);    
+  // }
 }
 
 //
@@ -42468,16 +42509,17 @@ function InstrumentExplorerInject() {
           scrollWithPage: (AllowDialogsToScroll())
         }).then(function() {
 
-          if (gEnableSyntax){
-            // Set the select point
-            gTheCM.selectionStart = 0;
-            gTheCM.selectionEnd = 0;
-          }
-          else{
-            // Set the select point
-            gTheABC.selectionStart = 0;
-            gTheABC.selectionEnd = 0;
-          }
+          resetAbcSelection();
+          // if (gEnableSyntax){
+          //   // Set the select point
+          //   gTheCM.selectionStart = 0;
+          //   gTheCM.selectionEnd = 0;
+          // }
+          // else{
+          //   // Set the select point
+          //   gTheABC.selectionStart = 0;
+          //   gTheABC.selectionEnd = 0;
+          // }
 
           // Focus after operation
           FocusAfterOperation();
@@ -42497,17 +42539,17 @@ function InstrumentExplorerInject() {
         scrollWithPage: (AllowDialogsToScroll())
       }).then(function() {
 
-        if (gEnableSyntax){
-          // Set the select point
-          gTheCM.selectionStart = 0;
-          gTheCM.selectionEnd = 0;
-        }
-        else{
-          // Set the select point
-          gTheABC.selectionStart = 0;
-          gTheABC.selectionEnd = 0;
-
-        }
+        resetAbcSelection();
+        // if (gEnableSyntax){
+        //   // Set the select point
+        //   gTheCM.selectionStart = 0;
+        //   gTheCM.selectionEnd = 0;
+        // }
+        // else{
+        //   // Set the select point
+        //   gTheABC.selectionStart = 0;
+        //   gTheABC.selectionEnd = 0;
+        // }
 
         // Focus after operation
         FocusAfterOperation();
@@ -43411,17 +43453,17 @@ function GraceExplorerInject() {
             scrollWithPage: (AllowDialogsToScroll())
           }).then(function() {
 
-            if (gEnableSyntax){
-              // Set the select point
-              gTheCM.selectionStart = 0;
-              gTheCM.selectionEnd = 0;
-            }
-            else{
-              // Set the select point
-              gTheABC.selectionStart = 0;
-              gTheABC.selectionEnd = 0;
-
-            }
+            resetAbcSelection();
+            // if (gEnableSyntax){
+            //   // Set the select point
+            //   gTheCM.selectionStart = 0;
+            //   gTheCM.selectionEnd = 0;
+            // }
+            // else{
+            //   // Set the select point
+            //   gTheABC.selectionStart = 0;
+            //   gTheABC.selectionEnd = 0;
+            // }
 
             // Focus after operation
             FocusAfterOperation();
@@ -43441,17 +43483,17 @@ function GraceExplorerInject() {
           scrollWithPage: (AllowDialogsToScroll())
         }).then(function() {
 
-          if (gEnableSyntax){
-            // Set the select point
-            gTheCM.selectionStart = 0;
-            gTheCM.selectionEnd = 0;
-          }
-          else{
-            // Set the select point
-            gTheABC.selectionStart = 0;
-            gTheABC.selectionEnd = 0;
-
-          }
+          resetAbcSelection();
+          // if (gEnableSyntax){
+          //   // Set the select point
+          //   gTheCM.selectionStart = 0;
+          //   gTheCM.selectionEnd = 0;
+          // }
+          // else{
+          //   // Set the select point
+          //   gTheABC.selectionStart = 0;
+          //   gTheABC.selectionEnd = 0;
+          // }
 
           // Focus after operation
           FocusAfterOperation();
@@ -55280,7 +55322,8 @@ function DoMultiReadCommon(the_files, fileElement) {
 
               if (!isMobileBrowser) {
                 gTheCM.getInputField().blur();
-                gTheCM.focus();
+                // gTheCM.focus();
+                doFocusAbc();
               }
             }
             else{
@@ -55288,7 +55331,8 @@ function DoMultiReadCommon(the_files, fileElement) {
 
                 if (!isMobileBrowser) {
                   gTheABC.blur();
-                  gTheABC.focus();
+                  // gTheABC.focus();
+                  doFocusAbc();
                 }              
             }
 
@@ -58427,18 +58471,17 @@ function JumpToTune() {
         var tuneOffset = findTuneOffsetByIndex(gCurrentTune)
 
         // Some browsers like Chrome require focus before setting the selection range
-        if (gEnableSyntax){
-          gTheCM.focus();
+        doFocusAbc();
 
+        if (gEnableSyntax){
+          // gTheCM.focus();
           gTheCM.selectionStart = tuneOffset;
           gTheCM.selectionEnd = tuneOffset;
         }
         else{
-          gTheABC.focus();
-
+          // gTheABC.focus();
           gTheABC.selectionStart = tuneOffset;
           gTheABC.selectionEnd = tuneOffset;
-
         }
 
         if (isDesktopBrowser()) {
@@ -58648,8 +58691,10 @@ function SR_highlightMatch(index) {
 
   if (gSR_matchIndexes.length === 0 || searchValue === '') return;
 
+  doFocusAbc();
+
   if (gEnableSyntax){
-   	gTheCM.focus();
+   	// gTheCM.focus();
 
     if (!isRegex) {
       //console.log("Not regex, setting selection to: "+gSR_matchIndexes[index].offset+" to "+(gSR_matchIndexes[index].offset + searchValue.length));
@@ -58667,7 +58712,7 @@ function SR_highlightMatch(index) {
   }
   else{
 
-   	gTheABC.focus();
+   	// gTheABC.focus();
 
     if (!isRegex) {
       //console.log("Not regex, setting selection to: "+gSR_matchIndexes[index].offset+" to "+(gSR_matchIndexes[index].offset + searchValue.length));
@@ -59118,12 +59163,13 @@ function FindAndReplace() {
     scrollWithPage: false
   }).then(function() {
   	if (!isPureDesktopBrowser()){
-  		if (gEnableSyntax){
-   			gTheCM.focus();
-   		}
-   		else{
-   			gTheABC.focus();
-   		}
+      doFocusAbc();
+  		// if (gEnableSyntax){
+   		// 	gTheCM.focus();
+   		// }
+   		// else{
+   		// 	gTheABC.focus();
+   		// }
   	}
 
   });
@@ -59573,17 +59619,17 @@ function SplitLongTextAndTags() {
           // Force a redraw
           RenderAsync(true, null, function() {
 
-            if (gEnableSyntax){
-              // Set the select point
-              gTheCM.selectionStart = 0;
-              gTheCM.selectionEnd = 0;
-            }
-            else{
-              // Set the select point
-              gTheABC.selectionStart = 0;
-              gTheABC.selectionEnd = 0;
-
-            }
+            resetAbcSelection();
+            // if (gEnableSyntax){
+            //   // Set the select point
+            //   gTheCM.selectionStart = 0;
+            //   gTheCM.selectionEnd = 0;
+            // }
+            // else{
+            //   // Set the select point
+            //   gTheABC.selectionStart = 0;
+            //   gTheABC.selectionEnd = 0;
+            // }
 
             ensureMoreToolsVisible();
 
@@ -59709,16 +59755,17 @@ function DoNormalizeDiacriticals(inverse) {
     // Force a redraw
     RenderAsync(true, null, function() {
 
-      if (gEnableSyntax){
-        // Set the select point
-        gTheCM.selectionStart = 0;
-        gTheCM.selectionEnd = 0;
-      }
-      else{
-        // Set the select point
-        gTheABC.selectionStart = 0;
-        gTheABC.selectionEnd = 0;
-      }
+      resetAbcSelection();
+      // if (gEnableSyntax){
+      //   // Set the select point
+      //   gTheCM.selectionStart = 0;
+      //   gTheCM.selectionEnd = 0;
+      // }
+      // else{
+      //   // Set the select point
+      //   gTheABC.selectionStart = 0;
+      //   gTheABC.selectionEnd = 0;
+      // }
 
       // Make sure the More Tools dialog visible
       ensureMoreToolsVisible();
@@ -59940,16 +59987,17 @@ function normalizeTitleArticles(inverse) {
     // Force a redraw
     RenderAsync(true, null, function() {
 
-      if (gEnableSyntax){
-        // Set the select point
-        gTheCM.selectionStart = 0;
-        gTheCM.selectionEnd = 0;
-      }
-      else{
-        // Set the select point
-        gTheABC.selectionStart = 0;
-        gTheABC.selectionEnd = 0;
-      }
+      resetAbcSelection();
+      // if (gEnableSyntax){
+      //   // Set the select point
+      //   gTheCM.selectionStart = 0;
+      //   gTheCM.selectionEnd = 0;
+      // }
+      // else{
+      //   // Set the select point
+      //   gTheABC.selectionStart = 0;
+      //   gTheABC.selectionEnd = 0;
+      // }
 
       // Make sure the More Tools dialog visible
       ensureMoreToolsVisible();
@@ -60330,16 +60378,17 @@ function NormalizeVoiceKeySignatures(){
     // Force a redraw
     RenderAsync(true, null, function() {
 
-      if (gEnableSyntax){
-        // Set the select point
-        gTheCM.selectionStart = 0;
-        gTheCM.selectionEnd = 0;
-      }
-      else{
-        // Set the select point
-        gTheABC.selectionStart = 0;
-        gTheABC.selectionEnd = 0;
-      }
+      resetAbcSelection();
+      // if (gEnableSyntax){
+      //   // Set the select point
+      //   gTheCM.selectionStart = 0;
+      //   gTheCM.selectionEnd = 0;
+      // }
+      // else{
+      //   // Set the select point
+      //   gTheABC.selectionStart = 0;
+      //   gTheABC.selectionEnd = 0;
+      // }
 
       // Make sure the More Tools dialog visible
       ensureMoreToolsVisible();
@@ -62095,6 +62144,7 @@ function DoStartup() {
         else{
           PlayABC(null);
         }
+        doPlayerFocus();
       };
 
     // Hook up the PDF button
@@ -62506,7 +62556,7 @@ function DoStartup() {
           if (button) {
 
             button.click();
-
+            button.focus();
           }
         } else
           // F4 toggles the player state
@@ -62516,6 +62566,7 @@ function DoStartup() {
             if (button) {
 
               button.click();
+              button.focus();
 
               if (!isSafari()) {
                 setTimeout(function() {
@@ -62552,6 +62603,9 @@ function DoStartup() {
 
               if (button) {
                 button.click();
+                setTimeout(() => {
+                  doPlayerFocus();
+                }, 50);
               }
 
             }
@@ -62658,6 +62712,7 @@ function DoStartup() {
           const button = document.querySelector('button.abcjs-midi-reset');
           if (button) {
             button.click();
+            button.focus();
           }
         } else
           // F4 toggles the player state
@@ -62667,6 +62722,7 @@ function DoStartup() {
             if (button) {
 
               button.click();
+              button.focus();
 
               setTimeout(function() {
 
@@ -62700,6 +62756,9 @@ function DoStartup() {
 
               if (button) {
                 button.click();
+                setTimeout(() => {
+                  doPlayerFocus();
+                }, 50);
               }
 
             }
@@ -62921,13 +62980,15 @@ function DoStartup() {
     }
 
     // And set the focus
-    gTheCM.focus();
+    // gTheCM.focus();
   }
-  else{
+  // else{
     // And set the focus
-    gTheABC.focus();
+    // gTheABC.focus();
    
-  }
+  // }
+
+  if (!isFromShare) doFocusAbc();
 
   // Show update message?
   // if (gLocalStorageAvailable && (!isFromShare)){
@@ -64276,16 +64337,17 @@ function PhraseBuilder(theTrainerTune,callback){
 
             ensureMoreToolsVisible();
 
-            if (gEnableSyntax){
-              // Set the select point
-              gTheCM.selectionStart = 0;
-              gTheCM.selectionEnd = 0;
-            }
-            else{
-              // Set the select point
-              gTheABC.selectionStart = 0;
-              gTheABC.selectionEnd = 0;
-            }
+            resetAbcSelection();
+            // if (gEnableSyntax){
+            //   // Set the select point
+            //   gTheCM.selectionStart = 0;
+            //   gTheCM.selectionEnd = 0;
+            // }
+            // else{
+            //   // Set the select point
+            //   gTheABC.selectionStart = 0;
+            //   gTheABC.selectionEnd = 0;
+            // }
 
             // Focus after operation
             FocusAfterOperation();
