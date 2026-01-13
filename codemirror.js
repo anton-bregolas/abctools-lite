@@ -7809,7 +7809,7 @@
       if (prev && prev.detach) { prev.detach(cm, next); }
       if (next.attach) { next.attach(cm, prev || null); }
     });
-    option("extraKeys", null);
+    option("extraKeys", { Tab: false, "Shift-Tab": false });
     option("configureMouse", null);
 
     option("lineWrapping", false, wrappingChanged, true);
