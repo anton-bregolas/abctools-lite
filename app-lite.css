@@ -32,6 +32,25 @@ body {																											/* vanilla abc tools settings */
 
   --abctools-color-attention: #8ac716;                    /* red */
   --abctools-color-update: #1c741c;                       /* red */
+  --abctools-color-liteblue: #d5ebfd;
+  --abctools-color-litecyan: #dcffff;
+  --abctools-color-litegray: #f0f0f0;
+  --abctools-color-litegreen: #f0fff0;
+  --abctools-color-litelime: #ccf99f;
+  --abctools-color-litemagenta: #e9bee9;
+  --abctools-color-liteorange: #ffeac3;
+  --abctools-color-litepurple: #f0dff5;
+  --abctools-color-litered: #fff5f5;
+  --abctools-color-liteskyblue: #dcf3fe;
+  --abctools-color-liteyellow: #fdffe0;
+  --abctools-color-liteviolet: lavender;
+  --abctools-color-midcyan: #c5f0f0;
+  --abctools-color-midgray: #e6e6e6;
+  --abctools-color-midgreen: #cde69a;
+  --abctools-color-midpurple: #e5caf2;
+  --abctools-color-midred: #ffcccc;
+  --abctools-color-midskyblue: #c8ecfe;
+  --abctools-color-midturquoise : #abf2e4;
 }
 
 /*//////////////////////////////////////////
@@ -361,6 +380,34 @@ input[type="checkbox"]:focus-visible {
   margin: 0;
   text-align: center;
   cursor: pointer;
+}
+
+.btn-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  text-decoration: none;
+  outline-offset: 0;
+}
+
+.btn-link:hover {
+  color: inherit;
+}
+
+.btn.btn-link {
+  background-color: var(--abctools-color-liteviolet);
+}
+
+.adv-tab-links-container {
+  grid-template-columns: 1fr 1fr 1fr;
+  justify-content: space-evenly;
+  padding: 1rem;
+  gap: 1.25rem;
+}
+
+.adv-tab-links-container.active.active {
+  display: grid;
 }
 
 .adv-tab-bar .adv-tab-btn.active {

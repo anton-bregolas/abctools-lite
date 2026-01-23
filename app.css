@@ -86,7 +86,6 @@ margin-right:16px;
 background: #c0df81;
 color: black;
 user-select: none;
-
 }
 
 @media (hover: hover) {
@@ -502,7 +501,6 @@ font-family: var(--abctools-font-fallback-ui);
 height:32px;
 width:152px;
 margin-left:4px;
-
 }
 
 #firstpagelabel{
@@ -2569,8 +2567,8 @@ body.noui svg {
 	animation-duration: 1s;
 	animation-iteration-count: infinite;
 	animation-timing-function: linear;
-
 }
+
 .abcjs-inline-audio .abcjs-loading-svg circle {
 	stroke: #f4f4f4;
 }
@@ -3319,7 +3317,6 @@ margin-top:-7px;
 	height:42px;
 	margin-top: 9px;
 	padding:12px;
-
 }
 
 @media (hover: hover) {
@@ -5319,7 +5316,6 @@ display:flex;
 	line-height: 0.69;
 	margin-top:16px;
 	display:flex;
-
 }
 
 .inject_gchord_templates_form_text>input{
@@ -5712,16 +5708,15 @@ body.dp-tabs-building .modal_flat_main {
 /* STYLES RELATED TO BUTTONS                                                  */
 /******************************************************************************/
 .btn {
-  --color: var(--abctools-ui-btn-textcolor);
-  --background-color: var(--abctools-ui-btn-bgcolor);
-  --border-color: var(--abctools-ui-btn-bordercolor);
-  color: var(--color);
+  color: var(--abctools-ui-btn-textcolor);
+  background-color: var(--abctools-ui-btn-bgcolor);
+  border-color: var(--abctools-ui-btn-bordercolor);
+	border-style: solid;
+  border-width: 1px;
   font-family: var(--abctools-font-fallback-ui) !important;
   font-size: var(--abctools-font-size-label-s-11) !important;
-  background-color: var(--background-color);
   padding: 0.7rem 0.7rem;
   padding-top: 0.8rem;
-  border: solid 1px var(--border-color);
   outline: none;
   position: relative;
   border-radius: 0.55em;
@@ -5748,651 +5743,504 @@ body.dp-tabs-building .modal_flat_main {
 }
 
 .btn-info {
-  --color: #ffffff;
-  --background-color: #0091ea;
-  --border-color: #0079c4;
+  color: #ffffff;
+  background-color: #0091ea;
+  border-color: #0079c4;
 }
 .btn-info:active {
-  --color: #ececec;
+  color: #ececec;
 }
 .btn-success {
-  --color: #ffffff;
-  --background-color: #00c853;
-  --border-color: #00a243;
+  color: #ffffff;
+  background-color: #00c853;
+  border-color: #00a243;
 }
 .btn-success:active {
-  --color: #ececec;
+  color: #ececec;
 }
 .btn-warning {
-  --color: #3e2723;
-  --background-color: #ffc400;
-  --border-color: #d9a700;
+  color: #3e2723;
+  background-color: #ffc400;
+  border-color: #d9a700;
 }
 .btn-warning:active {
-  --color: #261815;
+  color: #261815;
 }
 .btn-error {
-  --color: #ffffff;
-  --background-color: #d50000;
-  --border-color: #af0000;
+  color: #ffffff;
+  background-color: #d50000;
+  border-color: #af0000;
 }
 .btn-error:active {
-  --color: #ececec;
+  color: #ececec;
 }
 .btn-dark {
-  --color: #ffffff;
-  --background-color: #303030;
-  --border-color: #1d1d1d;
+  color: #ffffff;
+  background-color: #303030;
+  border-color: #1d1d1d;
 }
 .btn-dark:active {
-  --color: #ececec;
+  color: #ececec;
 }
 
 .btn-play {
-  --color: black;
-  --background-color: #C8ECFE;
+  background-color: var(--abctools-color-midskyblue);
 }
 
 .btn-train{
-  --color: black;
-  --background-color: #ccf99f;	
+  background-color: var(--abctools-color-litelime);	
 }
 
 .btn-toggleallcontrols {
-  --color: black;
-  --background-color: #FFF4E6;
+  background-color: var(--abctools-color-liteorange);
 }
 
 .btn-configuresettings{
-  --color: black;
-  --background-color: lavender;
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-transpose{
-  --color: black;
-  --background-color: #ffeac3;
+  background-color: var(--abctools-color-liteorange);
 }
 
 .transposedown{
-  --color: black;
-  --background-color: #fdffe0;
+  background-color: var(--abctools-color-liteyellow);
 }
 
 .btn-sortbutton{
-  --color: black;
-  --background-color: #f0fff0;
+  background-color: var(--abctools-color-litegreen);
 }
 
 .btn-transposetokey{
-  --color: black;
-  --background-color: #f0fff0;
+  background-color: var(--abctools-color-litegreen);
 }
 
 .btn-phrasebuilder{
-  --color: black;
-  --background-color: #f0fff0;
+  background-color: var(--abctools-color-litegreen);
 }
 
 .btn-cssgenerator {
-  --color: black;
-  --background-color: #f0fff0;
+  background-color: var(--abctools-color-litegreen);
 }
 
 .btn-incipitsbuilder{
-  --color: black;
-  --background-color: #f0fff0;
+  background-color: var(--abctools-color-litegreen);
 }
 
 .btn-snapshotbutton{
-  --color: black;
-  /* --background-color: #F0E6F0; */
-  --background-color: #cde69a;
+  background-color: var(--abctools-color-midgreen);
 }
 
 .btn-restorebutton{
-  --color: black;
-  /* --background-color: #F0E6F0; */
-  --background-color: #f0dff5;
+  background-color: var(--abctools-color-litepurple);
 }
 
 .btn-togglesharecontrols{
-  --color: black;
-  --background-color: lavender;
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-clearbutton{
-  --color: black;
-  --background-color: #FFCCCC;	
+  background-color: var(--abctools-color-midred);	
 }
 
 .btn-toggleadvancedcontrols{
-  --color: black;
-  --background-color: #c5f0f0;
+  background-color: var(--abctools-color-midcyan);
 }
 
 .btn-advancedcontrols{
-  --color: black;
-  --background-color: #DCFFFF;
+  background-color: var(--abctools-color-litecyan);
 }
 
 .btn-injectcontrols{
-  --color: black;
-  --background-color: #fff5f5;
+  background-color: var(--abctools-color-litered);
 }
 
 .btn-injectcontrols-headers{
-  --color: black;
-  --background-color: #f0fff0;
+  background-color: var(--abctools-color-litegreen);
 }
 
 .btn-injectcontrols-addabc{
-  --color: black;
-  --background-color: #DCF3FE;
+  background-color: var(--abctools-color-liteskyblue);
 }
 
 .btn-injectcontrols-injectpdfheaders{
-  --color: black;
-  --background-color: #DCF3FE;
+  background-color: var(--abctools-color-liteskyblue);
 }
 
 .btn-injectcontrols-tunebookbuilder{
-  --color: black;
-  --background-color: #DCF3FE;
+  background-color: var(--abctools-color-liteskyblue);
 }
 
 .btn-injectcontrols-tunebookbuilder-play{
-  --color: black;
-  --background-color: #DCF3FE;
+  background-color: var(--abctools-color-liteskyblue);
 }
 
 .btn-urlcontrols{
-  --color: black;
-  --background-color: lavender;
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-top{
-  --color: black;
-  --background-color: #F0F0F0;
+  background-color: var(--abctools-color-litegray);
 }
 
 .btn-tab{
-  --color: black;
-  --background-color: #F0F0F0;
+  background-color: var(--abctools-color-litegray);
 }
 
 .btn-placeholder{
-  --color: black;
-  --background-color: #F0F0F0;
+  background-color: var(--abctools-color-litegray);
 }
 
 .btn-cancelpdf{
-  --color: black;
-  --background-color: #F0F0F0;
-
+  background-color: var(--abctools-color-litegray);
 }
 
 .btn-subdialog{
-  --color: black;
-  --background-color: #D5EBFD;
-
+  background-color: var(--abctools-color-liteblue);
 }
 
 .btn-exportaudiomidi{
-  --color: black;
-  --background-color: #DCFFFF;
-
+  background-color: var(--abctools-color-litecyan);
 }
 
 .btn-wavedownload{
-  --color: black;
-  --background-color: lavender;
-
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-wavereverbdownload{
-  --color: black;
-  --background-color: lavender;
-
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-mp3reverbdownload{
-  --color: black;
-  --background-color: lavender;
-
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-mididownload{
-  --color: black;
-  --background-color: lavender;
-
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-mp3download{
-  --color: black;
-  --background-color: lavender;
-
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-pngdownload{
-  --color: black;
-  --background-color: #f0fff0;
-
+  background-color: var(--abctools-color-litegreen);
 }
 
 .btn-jpgdownload{
-  --color: black;
-  --background-color: #f0fff0;
-
+  background-color: var(--abctools-color-litegreen);
 }
 
 .btn-svgdownload{
-  --color: black;
-  --background-color: #f0fff0;
-
+  background-color: var(--abctools-color-litegreen);
 }
 
 .btn-pdfdownload{
-  --color: black;
-  --background-color: #f0fff0;
-
+  background-color: var(--abctools-color-litegreen);
 }
 
 .btn-allmp3download{
-  --color: black;
-  --background-color: lavender;
-
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-allmididownload{
-  --color: black;
-  --background-color: lavender;
-
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-alljpegdownload{
-  --color: black;
-  --background-color: lavender;
-
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-allpngdownload{
-  --color: black;
-  --background-color: lavender;
-
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-allsvgdownload{
-  --color: black;
-  --background-color: lavender;
-
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-allmusicxmldownload{
-  --color: black;
-  --background-color: lavender;
-
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-allabcdownload{
-  --color: black;
-  --background-color: lavender;
-
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-alljsondownload{
-  --color: black;
-  --background-color: #F0F0F0;
-
+  background-color: var(--abctools-color-litegray);
 }
 
 .btn-allcsvdownload{
-  --color: black;
-  --background-color: #F0F0F0;
-
+  background-color: var(--abctools-color-litegray);
 }
 
 .btn-smartdraw{
-  --color: black;
-  --background-color: #F0F0F0;
-
+  background-color: var(--abctools-color-litegray);
 }
 
 .btn-launchcsvextractor{
-  --color: black;
-  --background-color: #F0F0F0;
-
+  background-color: var(--abctools-color-litegray);
 }
 
 .btn-exporttunetitles{
-  --color: black;
-  --background-color: lavender;
-
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-exportwebsite{
-  --color: black;
-  --background-color: #F0F0F0;
-
+  background-color: var(--abctools-color-litegray);
 }
 
 .btn-export{
-  --color: black;
-  --background-color: #f0fff0;
+  background-color: var(--abctools-color-litegreen);
 }
 
 .btn-swingexplorer{
-  --color: black;
-  --background-color: #C8ECFE;
+  background-color: var(--abctools-color-midskyblue);
 }
 
 .btn-swingexplorertest{
-  --color: black;
-  --background-color: #F0F0F0;
+  background-color: var(--abctools-color-litegray);
 }
 
 .btn-swingexplorerinject{
-  --color: black;
-  --background-color: #C8ECFE;
+  background-color: var(--abctools-color-midskyblue);
 }
 
 .btn-graceexplorer{
-  --color: black;
-  --background-color: #C8ECFE;
+  background-color: var(--abctools-color-midskyblue);
 }
 
 .btn-graceexplorertest{
-  --color: black;
-  --background-color: #F0F0F0;
+  background-color: var(--abctools-color-litegray);
 }
 
 .btn-graceexplorerinject{
-  --color: black;
-  --background-color: #C8ECFE;
+  background-color: var(--abctools-color-midskyblue);
 }
 
 .btn-rollexplorer{
-  --color: black;
-  --background-color: #C8ECFE;
+  background-color: var(--abctools-color-midskyblue);
 }
 
 .btn-rollexplorertest{
-  --color: black;
-  --background-color: #F0F0F0;
+  background-color: var(--abctools-color-litegray);
 }
 
 .btn-rollexplorerinject{
-  --color: black;
-  --background-color: #C8ECFE;
+  background-color: var(--abctools-color-midskyblue);
 }
 
 .btn-rollexplorertransform{
-  --color: black;
-  --background-color: #C8ECFE;
+  background-color: var(--abctools-color-midskyblue);
 }
 
 .btn-reverbexplorer{
-  --color: black;
-  --background-color: #C8ECFE;
+  background-color: var(--abctools-color-midskyblue);
 }
 
 .btn-notation-spacing-explorer{
-  --color: black;
-  --background-color: #C8ECFE;
+  background-color: var(--abctools-color-midskyblue);
 }
 
 .btn-instrumentexplorer{
-  --color: black;
-  --background-color: #C8ECFE;
+  background-color: var(--abctools-color-midskyblue);
 }
 
 .btn-instrumentexplorertest{
-  --color: black;
-  --background-color: #F0F0F0;
+  background-color: var(--abctools-color-litegray);
 }
 
 .btn-instrumentexplorerinject{
-  --color: black;
-  --background-color: #C8ECFE;
+  background-color: var(--abctools-color-midskyblue);
 }
 
 .btn-looper{
-  --color: black;
-  --background-color: #C8ECFE;
+  background-color: var(--abctools-color-midskyblue);
 }
 
 .btn-looperreset{
-  --color: black;
-  --background-color: #F0F0F0;
+  background-color: var(--abctools-color-litegray);
 }
 
 .btn-metronome{
-  --color: black;
-  --background-color: #ABF2E4;
+  background-color: var(--abctools-color-midturquoise);
 }
 
 .btn-wide-player{
-  --color: black;
-  --background-color: #E5CAF2;
-}
-
-.btn-wide-player{
-  --color: black;
-  --background-color: #E5CAF2;
+  background-color: var(--abctools-color-midpurple);
 }
 
 .btn-playerprevious{
-  --color: black;
-  --background-color: #E6E6E6;
+  background-color: var(--abctools-color-midgray);
 }
 
 .btn-playernext{
-  --color: black;
-  --background-color: #E6E6E6;
+  background-color: var(--abctools-color-midgray);
 }
 
 .btn-playernext{
-  --color: black;
-  --background-color: #E6E6E6;
+  background-color: var(--abctools-color-midgray);
 }
 
 .btn-player_zoom{
-  --color: black;
-  --background-color: #E6E6E6;
+  background-color: var(--abctools-color-midgray);
 }
 
 .btn-wide-trainer{
-  --color: black;
-  --background-color: #E5CAF2;
+  background-color: var(--abctools-color-midpurple);
 }
 
 .btn-notationspacingexplorertest{
-  --color: black;
-  --background-color: #C8ECFE;
+  background-color: var(--abctools-color-midskyblue);
 }
 
 .btn-notationspacingexplorerinject{
-  --color: black;
-  --background-color: #C8ECFE;
+  background-color: var(--abctools-color-midskyblue);
 }
 
 .btn-injectcontrols-headers-pdf{
-  --color: black;
-  --background-color: #C8ECFE;
+  background-color: var(--abctools-color-midskyblue);
 }
 
 .btn-rawmode-on{
-  --color: black;
-  --background-color: #E9BEE9;
+  background-color: var(--abctools-color-litemagenta);
 }
 
 .btn-rawmode-off{
-  --color: black;
-  --background-color: #E6E6E6;
+  background-color: var(--abctools-color-midgray);
 }
 
 .btn-reset_roll_explorer_2{
-  --color: black;
-  --background-color: #E6E6E6;
+  background-color: var(--abctools-color-midgray);
 }
 
 .btn-reset_roll_explorer_3{
-  --color: black;
-  --background-color: #E6E6E6;
+  background-color: var(--abctools-color-midgray);
 }
 
 .btn-default_roll_explorer_2{
-  --color: black;
-  --background-color: #E6E6E6;
+  background-color: var(--abctools-color-midgray);
 }
 
 .btn-default_roll_explorer_3{
-  --color: black;
-  --background-color: #E6E6E6;
+  background-color: var(--abctools-color-midgray);
 }
 
 .btn-start-search{
-  --color: black;
-  --background-color: lavender;
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-add-search-results{
-  --color: black;
-  --background-color: lavender;
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-search-previous{
-  --color: black;
-  --background-color: lavender;
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-search-next{
-  --color: black;
-  --background-color: lavender;
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-search-replace{
-  --color: black;
-  --background-color: lavender;
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-search-replace-all{
-  --color: black;
-  --background-color: lavender;
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-search-load{
-  --color: black;
-  --background-color: lavender;
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-search-save{
-  --color: black;
-  --background-color: lavender;
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-smartdraw-export{
-  --color: black;
-  --background-color: lavender;
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-resetsettings{
-  --color: black;
-  --background-color: #FFCCCC;	
+  background-color: var(--abctools-color-midred);	
 }
 
 .btn-managedatabases{
-  --color: black;
-  --background-color: lavender;	
+  background-color: var(--abctools-color-liteviolet);	
 }
 
 .btn-managesamples{
-  --color: black;
-  --background-color: lavender;	
+  background-color: var(--abctools-color-liteviolet);	
 }
 
 .btn-deletesamples{
-  --color: black;
-  --background-color: #FFCCCC;	
+  background-color: var(--abctools-color-midred);	
 }
 
 .btn-managereverb{
-  --color: black;
-  --background-color: lavender;	
+  background-color: var(--abctools-color-liteviolet);	
 }
 
 .btn-managesearch{
-  --color: black;
-  --background-color: lavender;	
+  background-color: var(--abctools-color-liteviolet);	
 }
 
 .btn-reverbexplorertest{
-  --color: black;
-  --background-color: #F0F0F0;
+  background-color: var(--abctools-color-litegray);
 }
 
 .btn-reverbexplorerinject{
-  --color: black;
-  --background-color: #C8ECFE;
+  background-color: var(--abctools-color-midskyblue);
 }
 
 .btn-configuresettingsfromhelp{
-  --color: black;
-  --background-color: lavender;
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-websiteexport{
-  --color: black;
-  --background-color: #C8ECFE;
+  background-color: var(--abctools-color-midskyblue);
 }
 
 .btn-browser-pdf-export{
-  --color: black;
-  --background-color: #F0F0F0;;
+  background-color: var(--abctools-color-litegray);
 }
 
 .btn-tuneset-inject{
-  --color: black;
-  --background-color: lavender;
+  background-color: var(--abctools-color-liteviolet);
 }
 
 .btn-injectbagpipedrones{
-  --color: black;
-  --background-color: #f0fff0;
+  background-color: var(--abctools-color-litegreen);
 }
 
 .btn-batchmp3export{
-  --color: black;
-  --background-color: #f0fff0;	
+  background-color: var(--abctools-color-litegreen);	
 }
 
 .btn-splitlongtextandtags{
-  --color: black;
-  --background-color: #f0fff0;	
+  background-color: var(--abctools-color-litegreen);	
 }
 
 .btn-normalizediacriticals{
-  --color: black;
-  --background-color: #f0fff0;	
+  background-color: var(--abctools-color-litegreen);	
 }
 
 .btn-normalizetitles{
-  --color: black;
-  --background-color: #f0fff0;	
+  background-color: var(--abctools-color-litegreen);	
 }
 
 .btn-normalizevoicekeysignatures{
-  --color: black;
-  --background-color: #f0fff0;	
+  background-color: var(--abctools-color-litegreen);	
 }
 
 .btn-reformatusingmusicxml{
-  --color: black;
-  --background-color: #f0fff0;	
+  background-color: var(--abctools-color-litegreen);	
 }
 
 .btn-injectmidigchord{
-  --color: black;
-  --background-color: #f0fff0;	
+  background-color: var(--abctools-color-litegreen);	
 }
 
 @media (hover: hover) {
