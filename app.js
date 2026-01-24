@@ -60700,8 +60700,26 @@ function SetupContextMenu(showUpdateItem) {
 
         items.unshift(theFindItem);
 
+        items.unshift({});
+
+        // Lite: Customized
+        var theAbcToolsLinks = {
+          name: 'Open ABC Tools Links',
+          fn: function(target) {
+            openAbcToolsLinks();
+          }
+        };
+
+        items.unshift(theAbcToolsLinks);
+
       } else {
         items = [
+        { // Lite: Customized
+          name: 'Open ABC Tools Links',
+          fn: function(target) {
+            openAbcToolsLinks();
+          }
+        },{},
         {
           name: 'Find and Replace',
           fn: function(target) {
@@ -60987,9 +61005,27 @@ function SetupContextMenu(showUpdateItem) {
 
         items.unshift(theFindItem);
 
+        items.unshift({});
+
+        // Lite: Customized
+        var theAbcToolsLinks = {
+          name: 'Open ABC Tools Links',
+          fn: function(target) {
+            openAbcToolsLinks();
+          }
+        };
+
+        items.unshift(theAbcToolsLinks);
+
       } else {
 
         items = [
+        { // Lite: Customized
+          name: 'Open ABC Tools Links',
+          fn: function(target) {
+            openAbcToolsLinks();
+          }
+        },{},
         {
           name: 'Find and Replace',
           fn: function(target) {
@@ -61102,6 +61138,12 @@ function SetupContextMenu(showUpdateItem) {
     if (gIsQuickEditor) {
 
       items = [
+        { // Lite: Customized
+          name: 'Open ABC Tools Links',
+          fn: function(target) {
+            openAbcToolsLinks();
+          }
+        },{},
       {
         name: 'Find and Replace',
           fn: function(target) {
@@ -61211,6 +61253,12 @@ function SetupContextMenu(showUpdateItem) {
     } else {
 
       items = [
+        { // Lite: Customized
+          name: 'Open ABC Tools Links',
+          fn: function(target) {
+            openAbcToolsLinks();
+          }
+        },{},
       {
         name: 'Find and Replace',
           fn: function(target) {
