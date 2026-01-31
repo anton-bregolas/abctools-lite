@@ -51,11 +51,21 @@
 
 			<div id="uioverlay" class="uioverlay hidden-print">
 
-				<img id="helpbutton" class="btn-uioverlay helpbutton" src="img/helpbutton.png"  title="Get help using the ABC Transcription Tools"/>
-				<img id="playbuttonicon" class="btn-uioverlay playbuttonicon" src="img/playbutton.png"  title="Play the current tune.&nbsp;&nbsp;Shift-click to open the current tune in the Tune Trainer."/>
-				<img id="pdfbuttonicon" class="btn-uioverlay pdfbuttonicon" src="img/pdfbutton.png"  title="Export the tunes as a PDF tunebook"/>
-				<img id="zoombutton" class="btn-uioverlay zoombutton" src="img/zoomout.png"  title="Toggles between showing the ABC editor and displaying the notation full screen.&nbsp;&nbsp;Alt-click to hide/show all corner buttons and enter Presentation mode."/>
-				<img id="jumpbutton" class="btn-uioverlay jumpbutton" src="img/jumpbutton.png"  title="Opens up the Jump to Tune dialog"/>
+				<button id="helpbutton" class="btn-lite btn-uioverlay helpbutton" title="Open ABC Transcription Tools User Guide" aria-title="Open ABC Transcription Tools User Guide">
+					<svg aria-hidden="true"><use href="#lite-icon-help"></use></svg>
+				</button>
+				<button id="jumpbutton" class="btn-lite btn-uioverlay jumpbutton" title="Open Jump to Tune Dialog" aria-title="Open Jump to Tune Dialog">
+					<svg aria-hidden="true"><use href="#lite-icon-tunelist"></use></svg>
+				</button>
+				<button id="zoombutton" class="btn-lite btn-uioverlay zoombutton" title="Toggle Between ABC Editor and Standalone Notation.&nbsp;&nbsp;Alt-Click to Enter Presentation Mode." aria-title="Toggle Between ABC Editor and Standalone Notation. Alt-Click to Enter Presentation Mode">
+					<svg aria-hidden="true"><use href="#lite-icon-notation"></use></svg>
+				</button>
+				<button id="pdfbuttonicon" class="btn-lite btn-uioverlay pdfbuttonicon" title="Open PDF Export Dialog" aria-title="Open PDF Export Dialog">
+					<svg aria-hidden="true"><use href="#lite-icon-pdf"></use></svg>
+				</button>
+				<button id="playbuttonicon" class="btn-lite btn-uioverlay playbuttonicon" title="Open Player (F4).&nbsp;&nbsp;Shift-Click to Open Tune Trainer" aria-title="Open Player. Shortcut: Press F4. Shift-Click to Open Tune Trainer">
+					<svg aria-hidden="true"><use href="#lite-icon-play"></use></svg>
+				</button>
 				
 				<div id="spinnerOverlay" class="spinnerOverlay">
 				  <div id="spinnerContainer" class="spinnerContainer">
@@ -99,7 +109,7 @@
 
 				<div id="notenlinks" class="notenlinks hidden-print">
 
-					<div id="topbar">
+					<div id="topbar" class="topbar">
 
 						<h1 id="toolpagetitle">ABC Tools Lite</h1>
 
@@ -202,6 +212,66 @@
 		
 		<div id="qrcode" class="qrcode hidden-print">
 		</div>
+
+		<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="display: none;">
+			<symbol fill="currentColor" viewBox="0 0 192 192" id="lite-icon-abctools">
+					<path d="M186 96a90 90 0 1 1 -180 0 90 90 0 1 1 180 0z" fill="none" stroke="currentColor" stroke-width="12"></path>
+					<g transform="translate(96,96) scale(0.84) translate(-96,-96)">
+							<path fill-rule="evenodd" d="M64.493,129.409a4.161,4.161,0,0,0,1.362-3.165,18.321,18.321,0,0,0-1.274-4.746l-2.5-6.943L55.528,84.013,52.759,69.247q-1.275-4.834-4.746-4.834-2.549,0-12.964,16.655Q27.4,93.286,22.393,102.69q-4.307,1.011-4.307,4.57a4.706,4.706,0,0,0,.747,2.637q-6.636,13.93-6.636,16.04a4.125,4.125,0,0,0,1.384,3.164,4.516,4.516,0,0,0,3.142,1.274,4.269,4.269,0,0,0,3.823-2.461q5.317-11.073,7.515-16.831l11.689-2.417q7.251-1.581,11.733-2.2,1.714,9.888,2.856,13.843,2.988,10.371,7.031,10.371A4.441,4.441,0,0,0,64.493,129.409ZM49.42,97.416q-10.811,1.934-16.128,3.3L45.86,80.453ZM119.6,122.377q5.757-4.965,5.757-10.283a10.64,10.64,0,0,0-3.274-7.471,29.669,29.669,0,0,0-9.866-6.24q8.788-6.5,8.789-17.8,0-8.921-8.217-14.985a24.618,24.618,0,0,0-14.854-5.273,45.991,45.991,0,0,0-13.579,1.846,3.816,3.816,0,0,0-1.45,2.9q-0.527,8-.483,12.041-0.088,5.626-.967,18.193-0.791,11.646-.791,17.93v12.788a5.326,5.326,0,0,0,1.692,3.669,4.937,4.937,0,0,0,3.582,1.78q15.381,0,25.269-3.867a28.331,28.331,0,0,0,8.393-5.23h0ZM107.691,72.851q4.614,3.56,4.614,7.734a12.692,12.692,0,0,1-4.526,10.063A18.483,18.483,0,0,1,96.924,94.78q-0.44.044-6.68-.483l0.879-17.007,0.088-7.69a49.567,49.567,0,0,1,6.724-.308A15.722,15.722,0,0,1,107.691,72.851Zm3.384,34.585q5.625,2.594,5.625,4.658,0,1.143-2.681,3.428a19.343,19.343,0,0,1-5.889,3.691q-7.251,2.858-18.764,3.252v-9.1q0-4.35.264-9.887a34.789,34.789,0,0,0,5.054.4q0.615,0,1.78-.066t1.736-.066l4.658,0.748a43.422,43.422,0,0,1,8.218,2.944h0ZM180.9,78.344a5.329,5.329,0,0,0,.967-3.164,46.106,46.106,0,0,0-.7-8.745q-0.792-4-3.824-4a4.663,4.663,0,0,0-4,2.241,15.119,15.119,0,0,0-3.032-.637,34,34,0,0,0-3.867-.2q-10.592,0-21.006,13.052-12.481,15.645-12.48,30.542a23.18,23.18,0,0,0,6.064,16,19.9,19.9,0,0,0,15.381,6.987q11.865,0,23.467-10.283a4.538,4.538,0,0,0,1.67-3.472,4.672,4.672,0,0,0-1.275-3.186,4.075,4.075,0,0,0-3.164-1.428q-1.275,0-3.779,1.846a68.651,68.651,0,0,1-7.822,5.185,19.885,19.885,0,0,1-9.1,2.329,11.617,11.617,0,0,1-9.009-4.218,14.155,14.155,0,0,1-3.647-9.756q0-11.734,10.546-24.829,7.779-9.756,14.151-9.756,3.647,0,4.57.483,1.054,0.616,2.285,3.428,1.407,3.3,4.219,3.3a3.87,3.87,0,0,0,3.384-1.714h0Z"></path>
+					</g>
+			</symbol>
+			<symbol fill="currentColor" viewBox="0 0 16 16" id="lite-icon-edit">
+					<path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+					<path fill-rule="evenodd" d="M0 14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.5a.5.5 0 0 0-1 0v7.5a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-12a1 1 0 0 1 1-1H9a.5.5 0 0 0 0-1H2a2 2 0 0 0-2 2z"/>
+			</symbol>
+			<symbol fill="currentColor" viewBox="0 0 16 16" id="lite-icon-help">
+				<path fill-rule="evenodd" d="M4.475 5.458c-.284 0-.514-.237-.47-.517C4.28 3.24 5.576 2 7.825 2c2.25 0 3.767 1.36 3.767 3.215 0 1.344-.665 2.288-1.79 2.973-1.1.659-1.414 1.118-1.414 2.01v.03a.5.5 0 0 1-.5.5h-.77a.5.5 0 0 1-.5-.495l-.003-.2c-.043-1.221.477-2.001 1.645-2.712 1.03-.632 1.397-1.135 1.397-2.028 0-.979-.758-1.698-1.926-1.698-1.009 0-1.71.529-1.938 1.402-.066.254-.278.461-.54.461h-.777ZM7.496 14c.622 0 1.095-.474 1.095-1.09 0-.618-.473-1.092-1.095-1.092-.606 0-1.087.474-1.087 1.091S6.89 14 7.496 14"/>
+			</symbol>
+			<symbol fill="currentColor" viewBox="0 0 16 16" id="lite-icon-helpcircle">
+				<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+				<path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286m1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94"/>
+			</symbol>
+			<symbol fill="currentColor" viewBox="0 0 16 16" id="lite-icon-notation">
+					<g transform="translate(1.85, 1.85) scale(0.75)">
+							<path d="M6 13c0 1.105-1.12 2-2.5 2S1 14.105 1 13s1.12-2 2.5-2 2.5.896 2.5 2m9-2c0 1.105-1.12 2-2.5 2s-2.5-.895-2.5-2 1.12-2 2.5-2 2.5.895 2.5 2"/>
+							<path fill-rule="evenodd" d="M14 11V2h1v9zM6 3v10H5V3z"/>
+							<path d="M5 2.905a1 1 0 0 1 .9-.995l8-.8a1 1 0 0 1 1.1.995V3L5 4z"/>
+					</g>
+					<path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm0 1h12a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1"/>
+			</symbol>
+			<symbol fill="currentColor" viewBox="0 0 16 16" id="lite-icon-pdf">
+				<path fill-rule="evenodd" d="M14 4.5V14a2 2 0 0 1-2 2h-1v-1h1a1 1 0 0 0 1-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5zM1.6 11.85H0v3.999h.791v-1.342h.803q.43 0 .732-.173.305-.175.463-.474a1.4 1.4 0 0 0 .161-.677q0-.375-.158-.677a1.2 1.2 0 0 0-.46-.477q-.3-.18-.732-.179m.545 1.333a.8.8 0 0 1-.085.38.57.57 0 0 1-.238.241.8.8 0 0 1-.375.082H.788V12.48h.66q.327 0 .512.181.185.183.185.522m1.217-1.333v3.999h1.46q.602 0 .998-.237a1.45 1.45 0 0 0 .595-.689q.196-.45.196-1.084 0-.63-.196-1.075a1.43 1.43 0 0 0-.589-.68q-.396-.234-1.005-.234zm.791.645h.563q.371 0 .609.152a.9.9 0 0 1 .354.454q.118.302.118.753a2.3 2.3 0 0 1-.068.592 1.1 1.1 0 0 1-.196.422.8.8 0 0 1-.334.252 1.3 1.3 0 0 1-.483.082h-.563zm3.743 1.763v1.591h-.79V11.85h2.548v.653H7.896v1.117h1.606v.638z"/>
+			</symbol>
+			<symbol fill="currentColor" viewBox="0 0 16 16" id="lite-icon-play">
+				<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+				<path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445"/>
+			</symbol>
+			<symbol fill="currentColor" viewBox="0 0 16 16" id="lite-icon-rewind">
+				<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+				<path d="M10.229 5.055a.5.5 0 0 0-.52.038L7 7.028V5.5a.5.5 0 0 0-1 0v5a.5.5 0 0 0 1 0V8.972l2.71 1.935a.5.5 0 0 0 .79-.407v-5a.5.5 0 0 0-.271-.445"/>
+			</symbol>
+			<symbol fill="currentColor" viewBox="0 0 16 16" id="lite-icon-share">
+				<path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/>
+				<path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
+			</symbol>
+			<symbol fill="currentColor" viewBox="0 0 16 16" id="lite-icon-tempo">
+				<path d="M8 4a.5.5 0 0 1 .5.5V6a.5.5 0 0 1-1 0V4.5A.5.5 0 0 1 8 4M3.732 5.732a.5.5 0 0 1 .707 0l.915.914a.5.5 0 1 1-.708.708l-.914-.915a.5.5 0 0 1 0-.707M2 10a.5.5 0 0 1 .5-.5h1.586a.5.5 0 0 1 0 1H2.5A.5.5 0 0 1 2 10m9.5 0a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 0 1H12a.5.5 0 0 1-.5-.5m.754-4.246a.39.39 0 0 0-.527-.02L7.547 9.31a.91.91 0 1 0 1.302 1.258l3.434-4.297a.39.39 0 0 0-.029-.518z"/>
+				<path fill-rule="evenodd" d="M0 10a8 8 0 1 1 15.547 2.661c-.442 1.253-1.845 1.602-2.932 1.25C11.309 13.488 9.475 13 8 13c-1.474 0-3.31.488-4.615.911-1.087.352-2.49.003-2.932-1.25A8 8 0 0 1 0 10m8-7a7 7 0 0 0-6.603 9.329c.203.575.923.876 1.68.63C4.397 12.533 6.358 12 8 12s3.604.532 4.923.96c.757.245 1.477-.056 1.68-.631A7 7 0 0 0 8 3"/>
+			</symbol>
+			<symbol fill="currentColor" viewBox="0 0 16 16" id="lite-icon-tune">
+				<path d="M6 13c0 1.105-1.12 2-2.5 2S1 14.105 1 13s1.12-2 2.5-2 2.5.896 2.5 2m9-2c0 1.105-1.12 2-2.5 2s-2.5-.895-2.5-2 1.12-2 2.5-2 2.5.895 2.5 2"/>
+				<path fill-rule="evenodd" d="M14 11V2h1v9zM6 3v10H5V3z"/>
+				<path d="M5 2.905a1 1 0 0 1 .9-.995l8-.8a1 1 0 0 1 1.1.995V3L5 4z"/>
+			</symbol>
+			<symbol fill="currentColor" viewBox="0 0 16 16" id="lite-icon-tunelist">
+					<g transform="translate(0, -0.7)">
+							<path transform="scale(0.95)" d="M12 13c0 1.105-1.12 2-2.5 2S7 14.105 7 13s1.12-2 2.5-2 2.5.895 2.5 2"/>
+							<path transform="scale(0.95)" fill-rule="evenodd" d="M12 3v10h-1V3z"/>
+							<path transform="scale(0.95)" d="M11 2.82a1 1 0 0 1 .804-.98l3-.6A1 1 0 0 1 16 2.22V4l-5 1z"/>
+							<path fill-rule="evenodd" d="M0 11.5a.5.5 0 0 1 .5-.5H4a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5m0-4A.5.5 0 0 1 .5 7H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5m0-4A.5.5 0 0 1 .5 3H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5"/>
+					</g>
+			</symbol>
+		</svg>
 	
 	</body>
 

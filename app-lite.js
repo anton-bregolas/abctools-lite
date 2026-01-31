@@ -6,7 +6,7 @@
 ///////////////////////////////////////////////////////////////////////
 
 // Custom global variables / constants
-var gLiteVersionNumber = 'lite-3129-9';
+var gLiteVersionNumber = 'lite-3129-10';
 
 var ABC_TOOLS_BASE_URL =
   window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
@@ -23,6 +23,22 @@ var PDF_FONT_FIRA_REGULAR = "./fonts/firasans-regular.js";
 var PDF_FONT_FIRA_BOLD = "./fonts/firasans-semibold.js";
 var PDF_FONT_FIRA_ITALIC = "./fonts/firasans-italic.js";
 var PDF_FONT_FIRA_BOLDITALIC = "./fonts/firasans-semibolditalic.js";
+
+////////////////////////////////////////////
+// APP LITE: ADD CUSTOM DATA-ATTR
+///////////////////////////////////////////
+
+// Add compact mode data
+
+function liteEnableCompactMode() {
+  document.body.dataset.mode = "compact";
+}
+
+// Reset current mode data
+
+function liteResetCurrentMode() {
+  document.body.removeAttribute("data-mode");
+}
 
 ////////////////////////////////////////////
 // APP LITE: AUTO-SCALE NOTATION

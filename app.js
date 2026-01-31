@@ -27462,7 +27462,11 @@ function DoMinimize() {
   // document.getElementById("noscroller").style.display = "block";
   // document.getElementById("notation-spacer").style.display = "block";
 
-	document.getElementById("zoombutton").src = "img/zoomout.png"
+	// document.getElementById("zoombutton").src = "img/zoomout.png"
+
+  const zoomBtnIcon =	document.getElementById("zoombutton").querySelector('use');
+  
+  zoomBtnIcon.setAttribute("href", "#lite-icon-notation");
 
 	// Clear the notation column's alignment
 	// gTheNotation.parentElement.style.removeProperty("align-items");
@@ -27661,7 +27665,11 @@ function ToggleMaximize() {
 		DoMaximize();
 
     // 2 Jul 2024 - Moved this here to avoid binding error on Firefox at start
-    document.getElementById("zoombutton").src = "img/zoomin.png"
+    // document.getElementById("zoombutton").src = "img/zoomin.png"
+
+    const zoomBtnIcon =	document.getElementById("zoombutton").querySelector('use');
+
+    zoomBtnIcon.setAttribute("href", "#lite-icon-edit");
 
     // Lite: Customized
     // Turn off default auto-scaling: prevents user from zooming in/out manually
@@ -38303,7 +38311,7 @@ function PlayABCDialog(theABC, callback, val, metronome_state) {
 
     // Add the share controls
     if (gPlayerShowExternalToolsIcon){
-      modal_msg += '<img id="external_tools_share" class="external_tools_share modal-header-ui modal-btn-share-player" src="img/external_share.png" title="Open the tune in an external ABC tool.&nbsp;&nbsp;This control can be shown/hidden in the Player by a setting in the Player Settings dialog."/>';
+      modal_msg += '<button id="external_tools_share" class="btn-lite external_tools_share modal-header-ui modal-btn-share-player" title="Open the tune in an external ABC tool.&nbsp;&nbsp;This control can be shown/hidden in the Player by a setting in the Player Settings dialog."><svg aria-hidden="true"><use href="#lite-icon-share"></use></svg></button>';
     }
 
     modal_msg += '<div id="playerholder" style="height:' + theHeight + 'px;overflow-y:auto;margin-bottom:15px;">';
@@ -45753,7 +45761,7 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
 
     // Add the share controls
     if (gPlayerShowExternalToolsIcon){
-      modal_msg += '<img id="external_tools_share" class="external_tools_share modal-header-ui modal-btn-share-player" src="img/external_share.png" title="Open the tune in an external ABC tool.&nbsp;&nbsp;This control can be shown/hidden in the Tune Trainer by a setting in the Player Settings dialog."/>';
+      modal_msg += '<button id="external_tools_share" class="btn-lite external_tools_share modal-header-ui modal-btn-share-player" title="Open the tune in an external ABC tool.&nbsp;&nbsp;This control can be shown/hidden in the Tune Trainer by a setting in the Player Settings dialog."><svg aria-hidden="true"><use href="#lite-icon-share"></use></svg></button>';
     }
 
     modal_msg += '<div id="playerholder" style="height:' + theHeight + 'px;overflow-y:auto;margin-bottom:15px;">';
@@ -49562,6 +49570,7 @@ function SharingControlsDialog() {
 		'Sharing Controls&nbsp;&nbsp;' +
 		'</h2>';
   modal_msg += '<div id="sharing-controls-dialog">';
+  modal_msg += '<button id="external_tools_share" class="btn-lite external_tools_share modal-header-ui" title="Open the ABC in an external ABC tool"><svg aria-hidden="true"><use href="#lite-icon-share"></use></svg></button>';
   modal_msg += '<p style="margin-top:28px;">';
   modal_msg += '<input id="testurl" class="urlcontrols btn btn-urlcontrols" onclick="TestShareURL()" type="button" value="Test Share URL" title="Opens the Share URL in a new tab">';
   modal_msg += '<input id="copyurl" class="urlcontrols btn btn-urlcontrols" onclick="CopyShareURL()" type="button" value="Copy Share URL" title="Copies the Share URL to the clipboard">';
@@ -49573,7 +49582,6 @@ function SharingControlsDialog() {
   modal_msg += '<textarea id="urltextbox" rows="10" cols="80" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="URL for sharing will appear here" >';
   modal_msg += '</textarea>';
   modal_msg += '</p>';
-  modal_msg += '<img id="external_tools_share" class="external_tools_share" src="img/external_share.png" title="Open the ABC in an external ABC tool"/>';
   modal_msg += '<p id="shareurlcaption">Share URL</p>';
   modal_msg += '<p style="text-align:center;margin-top:36px;"><input id="addautoplay" class="urlcontrols btn btn-urlcontrols" onclick="AddAutoPlay()" type="button" value="Add Auto-Play" title="Adds &play=1 to the ShareURL.&nbsp;&nbsp;Tune will open in the player."><input id="addopenineditor" class="urlcontrols btn btn-urlcontrols" onclick="AddOpenInEditor()" type="button" value="Add Open in Editor" title="Adds &editor=1 to the ShareURL.&nbsp;&nbsp;Share links will load in the editor.&nbsp;&nbsp;This setting overrides Add Auto-Play."><input id="adddisableediting" class="urlcontrols btn btn-urlcontrols" onclick="AddDisableEditing()" type="button" value="Add Disable Editing" title="Adds &dx=1 to the ShareURL.&nbsp;&nbsp;Entering the editor from the full screen tune view will be disabled.&nbsp;&nbsp;Also overrides Add Open in Editor."><input id="addnoui" class="urlcontrolslast btn btn-urlcontrols" onclick="AddNoUI()" type="button" value="Add Hide UI" title="Adds &noui to the ShareURL for responsive iframe embedding.&nbsp;&nbsp;When the link is opened, hides the UI.&nbsp;&nbsp;Overrides Add Open in Editor and Add Auto-Play.">&nbsp;&nbsp;&nbsp;&nbsp;<input id="urlallowdef" type="checkbox" checked style="margin-top:-5px;margin-bottom:0px;" title="When checked uses Deflate instead of LZW for compressing the ABC in the Share URL resulting in a shorter link"/>&nbsp;Use Deflate</p>';
 
@@ -54686,22 +54694,24 @@ function DoFileRead(file, callback) {
 
 function ShowTopBar() {
 
-  var elem = document.getElementById("topbar");
+  // var elem = document.getElementById("topbar");
 
-  elem.style.display = "block";
-  elem.style.opacity = 1.0;
+  // elem.style.display = "block";
+  // elem.style.opacity = 1.0;
+
+  liteResetCurrentMode();
 
   gTopBarShowing = true;
 
   // Also show ABC status & restore upper margin
 
-  const abcStatusBar = document.getElementById("abc-selected");
+  // const abcStatusBar = document.getElementById("abc-selected");
   
-  abcStatusBar.style.removeProperty('display');
+  // abcStatusBar.style.removeProperty('display');
   
-  const topButtonsBar = document.getElementById("fileoperations");
+  // const topButtonsBar = document.getElementById("fileoperations");
 
-  topButtonsBar.style.removeProperty('margin-top');
+  // topButtonsBar.style.removeProperty('margin-top');
 
   // Move the title down a bit
   // abcStatusBar.style.marginTop = "15px";
@@ -54720,21 +54730,23 @@ function ShowTopBar() {
 
 function HideTopBar() {
 
-  var elem = document.getElementById("topbar");
+  // var elem = document.getElementById("topbar");
 
-  elem.style.display = "none";
+  // elem.style.display = "none";
+
+  liteEnableCompactMode();
 
   gTopBarShowing = false;
 
   // Also remove ABC status & shrink upper margin
 
-  const abcStatusBar = document.getElementById("abc-selected");
+  // const abcStatusBar = document.getElementById("abc-selected");
   
-  abcStatusBar.style.display = "none";
+  // abcStatusBar.style.display = "none";
   
-  const topButtonsBar = document.getElementById("fileoperations");
+  // const topButtonsBar = document.getElementById("fileoperations");
 
-  topButtonsBar.style.marginTop = "0px";
+  // topButtonsBar.style.marginTop = "0px";
 
   // Move the title up a bit
 
@@ -55572,29 +55584,35 @@ function HandleWindowResize() {
 
       if (gAlwaysTwoColumns) {
 
-        var iconSize;
-        var iconOffset;
-        var offset;
+        let iconSize;
+        let iconOffset;
+        let offset;
 
         if (!isLandscapeOrientation()) {
 
-          iconSize = "80px";
-          iconOffset = "8px";
+          // var iconSize = "80px";
+          iconSize = "5.5rem";
+          // var iconOffset = "8px";
+          iconOffset = "0.5rem";
           offset = 8;
 
         } else {
-          iconSize = "54px";
-          iconOffset = "16px";
+          // iconSize = "54px";
+          iconSize = "3.875rem";
+          // iconOffset = "16px";
+          iconOffset = "1rem";
           offset = 16;
         }
 
-        document.getElementById("zoombutton").style.width = iconSize;
-        document.getElementById("zoombutton").style.height = iconSize;
+        document.body.style.setProperty("--abctools-ui-float-btn-height", iconSize);
+
+        // document.getElementById("zoombutton").style.width = iconSize;
+        // document.getElementById("zoombutton").style.height = iconSize;
         document.getElementById("zoombutton").style.top = iconOffset;
         document.getElementById("zoombutton").style.right = iconOffset;
 
-        document.getElementById("jumpbutton").style.width = iconSize;
-        document.getElementById("jumpbutton").style.height = iconSize;
+        // document.getElementById("jumpbutton").style.width = iconSize;
+        // document.getElementById("jumpbutton").style.height = iconSize;
         document.getElementById("jumpbutton").style.top = iconOffset;
 
         if (isLandscapeOrientation()){
@@ -55604,20 +55622,20 @@ function HandleWindowResize() {
           document.getElementById("jumpbutton").style.right = (offset+180)+"px";          
         }
 
-        document.getElementById("helpbutton").style.width = iconSize;
-        document.getElementById("helpbutton").style.height = iconSize;
+        // document.getElementById("helpbutton").style.width = iconSize;
+        // document.getElementById("helpbutton").style.height = iconSize;
         document.getElementById("helpbutton").style.top = iconOffset;
         document.getElementById("helpbutton").style.left = iconOffset;
 
-        document.getElementById("playbuttonicon").style.width = iconSize;
-        document.getElementById("playbuttonicon").style.height = iconSize;
+        // document.getElementById("playbuttonicon").style.width = iconSize;
+        // document.getElementById("playbuttonicon").style.height = iconSize;
         document.getElementById("playbuttonicon").style.bottom = iconOffset;
         document.getElementById("playbuttonicon").style.right = iconOffset;
 
         if (!gIsQuickEditor) {
 
-          document.getElementById("pdfbuttonicon").style.width = iconSize;
-          document.getElementById("pdfbuttonicon").style.height = iconSize;
+          // document.getElementById("pdfbuttonicon").style.width = iconSize;
+          // document.getElementById("pdfbuttonicon").style.height = iconSize;
           document.getElementById("pdfbuttonicon").style.bottom = iconOffset;
           document.getElementById("pdfbuttonicon").style.left = iconOffset;
 
@@ -55625,8 +55643,8 @@ function HandleWindowResize() {
         else{
 
           // Position the QE rewind and tempo buttons
-          document.getElementById("qerewindbutton").style.width = iconSize;
-          document.getElementById("qerewindbutton").style.height = iconSize;
+          // document.getElementById("qerewindbutton").style.width = iconSize;
+          // document.getElementById("qerewindbutton").style.height = iconSize;
           document.getElementById("qerewindbutton").style.bottom = iconOffset;
           if (isLandscapeOrientation()){
             document.getElementById("qerewindbutton").style.right = (offset+120)+"px";
@@ -55635,8 +55653,8 @@ function HandleWindowResize() {
             document.getElementById("qerewindbutton").style.right = (offset+180)+"px";            
           }
 
-          document.getElementById("qetempobutton").style.width = iconSize;
-          document.getElementById("qetempobutton").style.height = iconSize;
+          // document.getElementById("qetempobutton").style.width = iconSize;
+          // document.getElementById("qetempobutton").style.height = iconSize;
           document.getElementById("qetempobutton").style.bottom = iconOffset;
 
           if (isLandscapeOrientation()){
@@ -55657,29 +55675,33 @@ function HandleWindowResize() {
 
       if (gAlwaysTwoColumns) {
 
-        var iconSize;
-        var iconOffset;
-        var offset;
+        let iconSize;
+        let iconOffset;
+        let offset;
 
         if (!isLandscapeOrientation()) {
 
-          iconSize = "80px";
-          iconOffset = "8px";
+          // var iconSize = "80px";
+          iconSize = "5.5rem";
+          // var iconOffset = "8px";
+          iconOffset = "0.5rem";
           offset = 8;
 
         } else {
-          iconSize = "54px";
-          iconOffset = "16px";
+          // iconSize = "54px";
+          iconSize = "3.875rem";
+          // iconOffset = "16px";
+          iconOffset = "1rem";
           offset = 16;
         }
 
-        document.getElementById("zoombutton").style.width = iconSize;
-        document.getElementById("zoombutton").style.height = iconSize;
+        // document.getElementById("zoombutton").style.width = iconSize;
+        // document.getElementById("zoombutton").style.height = iconSize;
         document.getElementById("zoombutton").style.top = iconOffset;
         document.getElementById("zoombutton").style.right = iconOffset;
 
-        document.getElementById("jumpbutton").style.width = iconSize;
-        document.getElementById("jumpbutton").style.height = iconSize;
+        // document.getElementById("jumpbutton").style.width = iconSize;
+        // document.getElementById("jumpbutton").style.height = iconSize;
         document.getElementById("jumpbutton").style.top = iconOffset;
         if (isLandscapeOrientation()){
           document.getElementById("jumpbutton").style.right = (offset+120)+"px";
@@ -55688,20 +55710,20 @@ function HandleWindowResize() {
           document.getElementById("jumpbutton").style.right = (offset+180)+"px";          
         }
 
-        document.getElementById("helpbutton").style.width = iconSize;
-        document.getElementById("helpbutton").style.height = iconSize;
+        // document.getElementById("helpbutton").style.width = iconSize;
+        // document.getElementById("helpbutton").style.height = iconSize;
         document.getElementById("helpbutton").style.top = iconOffset;
         document.getElementById("helpbutton").style.left = iconOffset;
 
-        document.getElementById("playbuttonicon").style.width = iconSize;
-        document.getElementById("playbuttonicon").style.height = iconSize;
+        // document.getElementById("playbuttonicon").style.width = iconSize;
+        // document.getElementById("playbuttonicon").style.height = iconSize;
         document.getElementById("playbuttonicon").style.bottom = iconOffset;
         document.getElementById("playbuttonicon").style.right = iconOffset;
 
         if (!gIsQuickEditor) {
 
-          document.getElementById("pdfbuttonicon").style.width = iconSize;
-          document.getElementById("pdfbuttonicon").style.height = iconSize;
+          // document.getElementById("pdfbuttonicon").style.width = iconSize;
+          // document.getElementById("pdfbuttonicon").style.height = iconSize;
           document.getElementById("pdfbuttonicon").style.bottom = iconOffset;
           document.getElementById("pdfbuttonicon").style.left = iconOffset;
 
@@ -55709,8 +55731,8 @@ function HandleWindowResize() {
         else{
 
           // Position the QE rewind and tempo buttons
-          document.getElementById("qerewindbutton").style.width = iconSize;
-          document.getElementById("qerewindbutton").style.height = iconSize;
+          // document.getElementById("qerewindbutton").style.width = iconSize;
+          // document.getElementById("qerewindbutton").style.height = iconSize;
           document.getElementById("qerewindbutton").style.bottom = iconOffset;
           if (isLandscapeOrientation()){
             document.getElementById("qerewindbutton").style.right = (offset+120)+"px";
@@ -55719,8 +55741,8 @@ function HandleWindowResize() {
             document.getElementById("qerewindbutton").style.right = (offset+180)+"px";            
           }
 
-          document.getElementById("qetempobutton").style.width = iconSize;
-          document.getElementById("qetempobutton").style.height = iconSize;
+          // document.getElementById("qetempobutton").style.width = iconSize;
+          // document.getElementById("qetempobutton").style.height = iconSize;
           document.getElementById("qetempobutton").style.bottom = iconOffset;
 
           if (isLandscapeOrientation()){
@@ -56676,7 +56698,7 @@ function ShowHelp() {
       modal_msg += '<p style="font-size:12pt;line-height:16pt;">In the ABC editor, click the Zoom-Out arrows at the top-right to view the notation full screen.</p>';
     }
 
-    modal_msg += '<p style="font-size:12pt;line-height:16pt;">Please visit the <a href="userguide.html" target="_blank" title="ABC Transcription Tools User Guide">User Guide</a> page for complete instructions and demo videos on how to use the tools.</p>';
+    modal_msg += '<p style="font-size:12pt;line-height:16pt;">Please visit Michael Eskin\'s <a href="https://michaeleskin.com/abctools/userguide.html" target="_blank" title="ABC Transcription Tools User Guide">User Guide</a> page for complete instructions and demo videos on how to use the tools.</p>';
 
     DayPilot.Modal.alert(modal_msg, {
       theme: "modal_flat",
@@ -61874,52 +61896,58 @@ function DoStartup() {
   // On iPad or in Two column display, resize the zoom button
   if (gIsIPad || gAlwaysTwoColumns) {
 
-    var iconSize = "36px";
-    var iconOffset = "8px";
+    // var iconSize = "36px";
+    let iconSize = "2.75rem";
+    // var iconOffset = "8px";
+    let iconOffset = "0.5rem";
     var offset = 8;
 
     if (gAlwaysTwoColumns) {
-      iconSize = "54px";
-      iconOffset = "16px";
+      // iconSize = "54px";
+      iconSize = "3.875rem";
+      // iconOffset = "16px";
+      iconOffset = "1rem";
       offset = 16;
     }
+    
+    document.body.style.setProperty("--abctools-ui-float-btn-height", iconSize);
 
-    document.getElementById("zoombutton").style.width = iconSize;
-    document.getElementById("zoombutton").style.height = iconSize;
+    // document.getElementById("zoombutton").style.width = iconSize;
+    // document.getElementById("zoombutton").style.height = iconSize;
     document.getElementById("zoombutton").style.top = iconOffset;
     document.getElementById("zoombutton").style.right = iconOffset;
 
-    document.getElementById("jumpbutton").style.width = iconSize;
-    document.getElementById("jumpbutton").style.height = iconSize;
+    // document.getElementById("jumpbutton").style.width = iconSize;
+    // document.getElementById("jumpbutton").style.height = iconSize;
     document.getElementById("jumpbutton").style.top = iconOffset;
     document.getElementById("jumpbutton").style.right = (offset+80)+"px";
 
-    document.getElementById("helpbutton").style.width = iconSize;
-    document.getElementById("helpbutton").style.height = iconSize;
+    // document.getElementById("helpbutton").style.width = iconSize;
+    // document.getElementById("helpbutton").style.height = iconSize;
     document.getElementById("helpbutton").style.top = iconOffset;
     document.getElementById("helpbutton").style.left = iconOffset;
 
-    document.getElementById("playbuttonicon").style.width = iconSize;
-    document.getElementById("playbuttonicon").style.height = iconSize;
+    // document.getElementById("playbuttonicon").style.width = iconSize;
+    // document.getElementById("playbuttonicon").style.height = iconSize;
     document.getElementById("playbuttonicon").style.bottom = iconOffset;
     document.getElementById("playbuttonicon").style.right = iconOffset;
 
     if (!gIsQuickEditor) {
-      document.getElementById("pdfbuttonicon").style.width = iconSize;
-      document.getElementById("pdfbuttonicon").style.height = iconSize;
+      // document.getElementById("pdfbuttonicon").style.width = iconSize;
+      // document.getElementById("pdfbuttonicon").style.height = iconSize;
       document.getElementById("pdfbuttonicon").style.bottom = iconOffset;
       document.getElementById("pdfbuttonicon").style.left = iconOffset;
     }
     else{
 
       // Position the QE rewind and tempo buttons
-      document.getElementById("qerewindbutton").style.width = iconSize;
-      document.getElementById("qerewindbutton").style.height = iconSize;
+      // document.getElementById("qerewindbutton").style.width = iconSize;
+      // document.getElementById("qerewindbutton").style.height = iconSize;
       document.getElementById("qerewindbutton").style.bottom = iconOffset;
       document.getElementById("qerewindbutton").style.right = (offset+80)+"px";
 
-      document.getElementById("qetempobutton").style.width = iconSize;
-      document.getElementById("qetempobutton").style.height = iconSize;
+      // document.getElementById("qetempobutton").style.width = iconSize;
+      // document.getElementById("qetempobutton").style.height = iconSize;
       document.getElementById("qetempobutton").style.bottom = iconOffset;
       document.getElementById("qetempobutton").style.right = (offset+160)+"px";
 

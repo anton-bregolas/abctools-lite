@@ -1983,56 +1983,70 @@ padding-top:12px;
 
 .zoombutton{
 position:fixed;
-right:24px;
-top:16px;
+/* right:24px;
+top:16px; */
+right: 1.5rem;
+top: 1rem;
 z-index:101;
 display:none;
 }
 
 .jumpbutton{
 position:fixed;
-right:112px;
-top:16px;
+/* right:112px;
+top:16px; */
+right: 7rem;
+top: 1rem;
 z-index:101;
 display:none;
 }
 
 .helpbutton{
 position:fixed;
-left:24px;
-top:16px;
+/* left:24px;
+top:16px; */
+left: 1.5rem;
+top: 1rem;
 z-index:101;
 display:none;
 }
 
 .playbuttonicon{
 position:fixed;
-right:24px;
-bottom:16px;
+/* right:24px;
+bottom:16px; */
+right: 1.5rem;
+bottom: 1rem;
 z-index:101;
 display:none;
 }
 
 .qerewindbutton{
 position:fixed;
-right:112px;
-bottom:16px;
+/* right:112px;
+bottom:16px; */
+right: 7rem;
+bottom: 1rem;
 z-index:101;
 display:none;
 }
 
 .qetempobutton{
 position:fixed;
-right:200px;
-bottom:16px;
+/* right:200px;
+bottom:16px; */
+right: 12.5rem;
+bottom: 1rem;
 z-index:101;
 display:none;
 }
 
 .pdfbuttonicon{
 position:fixed;
-left:24px;
-bottom:16px;
+/* left:24px;
+bottom:16px; */
+left: 1.5rem;
+bottom: 1rem;
 z-index:101;
 display:none;
 }
@@ -2399,14 +2413,14 @@ body.noui svg {
 .modal_flat_main { border: 1px solid #333; box-shadow: 0 0px 15px -2px rgba(0,0,0,0.75);  }
 
 /* font size only - Lite: Customized */
-/* .modal_flat_main, .modal_flat_main input, .modal_flat_main button {  font-size: 16px; } */
+/* .modal_flat_main, .modal_flat_main input, .modal_flat_buttons button {  font-size: 16px; } */
 
-.modal_flat_main input, .modal_flat_main button {  padding: 5px; box-sizing: border-box; }
+.modal_flat_main input, .modal_flat_buttons button {  padding: 5px; box-sizing: border-box; }
 .modal_flat_inner { padding: 10px 30px 30px 30px; background: #fff; color: #000; }
 .modal_flat_content { font-family: var(--abctools-font-fallback-ui); margin: 20px 0px;}
 .modal_flat_input { margin: 20px 0px;}
 .modal_flat_buttons { text-align:center;margin-top: 40px; }
-.modal_flat_main button { background-color: #ccc; color: #000; padding: 10px 20px; border: 0; cursor: pointer; outline: none; width: 100px;  }
+.modal_flat_buttons button { background-color: #ccc; color: #000; padding: 10px 20px; border: 0; cursor: pointer; outline: none; width: 100px;  }
 .modal_flat_cancel {margin-left: 5px;}
 
 /* For modal dialog prompt replacement */
@@ -2414,14 +2428,14 @@ body.noui svg {
 .modal_flat_wide_main { border: 1px solid #333; box-shadow: 0 0px 15px -2px rgba(0,0,0,0.75);  }
 
 /* font size only - Lite: Customized */
-/* .modal_flat_wide_main, .modal_flat_wide_main input, .modal_flat_wide_main button {  font-size: 16px; } */
+/* .modal_flat_wide_main, .modal_flat_wide_main input, .modal_flat_wide_buttons button {  font-size: 16px; } */
 
-.modal_flat_wide_main input, .modal_flat_wide_main button {  padding: 5px; box-sizing: border-box; }
+.modal_flat_wide_main input, .modal_flat_wide_buttons button {  padding: 5px; box-sizing: border-box; }
 .modal_flat_wide_inner { padding: 10px 30px 30px 30px; background: #fff; color: #000; }
 .modal_flat_wide_content { font-family: var(--abctools-font-fallback-ui); margin: 20px 0px;}
 .modal_flat_wide_input { margin: 20px 0px;}
 .modal_flat_wide_buttons { text-align:center;margin-top: 40px; }
-.modal_flat_wide_main button { background-color: #ccc; color: #000; padding: 10px 20px; border: 0; cursor: pointer; outline: none; width: 125px;  }
+.modal_flat_wide_buttons button { background-color: #ccc; color: #000; padding: 10px 20px; border: 0; cursor: pointer; outline: none; width: 125px;  }
 .modal_flat_wide_cancel {margin-left: 5px;}
 
 
@@ -5542,11 +5556,11 @@ cursor: pointer;
 
 .external_tools_share:not(.modal-btn-share-player){
 position:absolute;
-width:30px;
-height:40px;
+/* width:30px;
+height:40px; */
 right:16px;
-top:8px;
-padding:4px;
+top:0.75rem;
+/* padding:4px; */
 display:block;
 }
 
@@ -6295,7 +6309,7 @@ body.dp-tabs-building .modal_flat_main {
 	  transition: transform .1s ease-in-out 0s; 
 	}
 
-	.helpbutton:hover {
+	.helpbutton:is(:hover, :focus, :focus-visible) {
 	  transform: scale(1.04); 
 	}
 
@@ -6304,9 +6318,9 @@ body.dp-tabs-building .modal_flat_main {
 	  transition: transform .1s ease-in-out 0s; 
 	}
 
-	.playbuttonicon:hover {
-	    transform: scale(1.05); 
-	  	transition: opacity 0s ease 1.25s; 
+	.playbuttonicon:is(:hover, :focus, :focus-visible) {
+		transform: scale(1.05); 
+		transition: opacity 0s ease 1.25s;
 	}
 
 	.zoombutton
@@ -6314,8 +6328,8 @@ body.dp-tabs-building .modal_flat_main {
 	  transition: transform .1s ease-in-out 0s; 
 	}
 
-	.zoombutton:hover {
-	    transform: scale(1.05); 
+	.zoombutton:is(:hover, :focus, :focus-visible) {
+		transform: scale(1.05);
 	}
 
 	.jumpbutton
@@ -6323,8 +6337,8 @@ body.dp-tabs-building .modal_flat_main {
 	  transition: transform .1s ease-in-out 0s; 
 	}
 
-	.jumpbutton:hover {
-	    transform: scale(1.05); 
+	.jumpbutton:is(:hover, :focus, :focus-visible) {
+		transform: scale(1.05);
 	}
 
 	.qerewindbutton
@@ -6332,8 +6346,8 @@ body.dp-tabs-building .modal_flat_main {
 	  transition: transform .1s ease-in-out 0s; 
 	}
 
-	.qerewindbutton:hover {
-	    transform: scale(1.05); 
+	.qerewindbutton:is(:hover, :focus, :focus-visible) {
+		transform: scale(1.05);
 	}
 
 	.qetempobutton
@@ -6341,8 +6355,8 @@ body.dp-tabs-building .modal_flat_main {
 	  transition: transform .1s ease-in-out 0s; 
 	}
 
-	.qetempobutton:hover {
-	    transform: scale(1.05); 
+	.qetempobutton:is(:hover, :focus, :focus-visible) {
+		transform: scale(1.05);
 	}
 
 	.pdfbuttonicon
@@ -6350,8 +6364,8 @@ body.dp-tabs-building .modal_flat_main {
 	  transition: transform .1s ease-in-out 0s; 
 	}
 
-	.pdfbuttonicon:hover {
-	    transform: scale(1.05); 
+	.pdfbuttonicon:is(:hover, :focus, :focus-visible) {
+		transform: scale(1.05);
 	}
 
 	.dialogcornerbutton
@@ -6359,8 +6373,8 @@ body.dp-tabs-building .modal_flat_main {
 	  transition: transform .1s ease-in-out 0s; 
 	}
 
-	.dialogcornerbutton:hover {
-	    transform: scale(1.06); 
+	.dialogcornerbutton:is(:hover, :focus, :focus-visible) {
+		transform: scale(1.06);
 	}
 
 	.moresettingsbutton
@@ -6368,11 +6382,11 @@ body.dp-tabs-building .modal_flat_main {
 	  transition: transform .1s ease-in-out 0s; 
 	}
 
-	.moresettingsbutton:hover {
+	.moresettingsbutton:is(:hover, :focus, :focus-visible) {
 		background: var(--abctools-ui-btn-hovercolor);
 	}
 
 	.moresettingsbutton:hover {
-	    transform: scale(1.06); 
+		transform: scale(1.06);
 	}
 }

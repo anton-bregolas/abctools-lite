@@ -24,7 +24,7 @@ body {																											/* vanilla abc tools settings */
   --abctools-ui-btn-outlinecolor: slateblue;              /* none */
 	--abctools-ui-btn-textcolor: #000000;									 /* #000000 */
   --abctools-ui-input-bordercolor: #767676;               /* #767676 */
-	--abctools-ui-float-btn-height: 3rem;											/* 48px */
+	--abctools-ui-float-btn-height: 3.5rem;									  /* 48px */
 	--abctools-ui-float-btn-padding: 0.25rem;									/* 4px */
 	--abctools-ui-float-btn-filter: drop-shadow(1px 1px 7px white);
   --abctools-ui-tab-btn-bgcolor: #d5ebfdba;               /* #ffffff */
@@ -351,7 +351,6 @@ input:focus-visible,
 select:focus-visible,
 textarea:focus-visible,
 .btn:focus-visible,
-.btn-uioverlay:focus-visible,
 .modal-header-ui:focus-visible {
   outline: 0.17rem solid var(--abctools-ui-btn-outlinecolor);
 }
@@ -440,6 +439,35 @@ input[type="checkbox"]:focus-visible {
   }
 }
 
+/* UI: Compact Mode / Title Bar Off */
+
+[data-mode="compact"] .abc-selected-title,
+[data-mode="compact"] .topbar {
+  display: none;
+}
+
+[data-mode="compact"] .fileoperations {
+  margin-top: 0;
+}
+
+[data-mode="compact"][data-notation="minimized"] .helpbutton,
+[data-mode="compact"][data-notation="minimized"] .zoombutton {
+  top: calc(50% - var(--abctools-ui-float-btn-height) / 2);
+}
+
+[data-mode="compact"][data-notation="minimized"] .jumpbutton {
+  top: calc(25% - var(--abctools-ui-float-btn-height) / 2);
+}
+
+[data-mode="compact"][data-notation="minimized"] .jumpbutton,
+[data-mode="compact"][data-notation="minimized"] .zoombutton {
+  right: 1rem !important;
+}
+
+[data-mode="compact"][data-notation="minimized"] .helpbutton {
+  left: 1rem !important;
+}
+
 /* UI: Bottom Button Bar */
 
 [data-abctools-ui-bottom-bar="show"][data-notation="minimized"] .notenrechts {
@@ -448,7 +476,23 @@ input[type="checkbox"]:focus-visible {
 
 /* UI: Overlay Buttons */
 
+.btn-uioverlay {
+  border-radius: 0.5rem;
+}
 
+.btn-uioverlay:focus-visible {
+  outline: 0.2rem solid var(--abctools-ui-btn-outlinecolor);
+}
+
+.btn-uioverlay svg {
+  width: 100%;
+  height: 100%;
+}
+
+.external_tools_share svg {
+  width: 75%;
+  height: 75%;
+}
 
 /* UI: Settings Menu */
 
