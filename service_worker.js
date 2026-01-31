@@ -34,7 +34,7 @@
 const cacheName = 'abctoolscache-3129';
 
 const CACHE_PREFIX = 'abctools';
-const CACHE_VERSION = 'lite-3129-10';
+const CACHE_VERSION = 'lite-3129-11';
 const CACHE_NAME_LITE = `${CACHE_PREFIX}${CACHE_VERSION}`;
 
 const contentToCache = [
