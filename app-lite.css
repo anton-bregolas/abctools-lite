@@ -27,6 +27,8 @@ body {																											/* vanilla abc tools settings */
 	--abctools-ui-float-btn-height: 3.5rem;									  /* 48px */
 	--abctools-ui-float-btn-padding: 0.25rem;									/* 4px */
 	--abctools-ui-float-btn-filter: drop-shadow(1px 1px 7px white);
+  --abctools-ui-modal-btn-font-size: 2rem;
+  --abctools-ui-modal-btn-width: 2.2rem;
   --abctools-ui-tab-btn-bgcolor: #d5ebfdba;               /* #ffffff */
   --abctools-notation-fullscreen-scaling: 50%;              /* 50% */
 
@@ -208,7 +210,7 @@ body {																											/* vanilla abc tools settings */
 .modal_flat_wide_main label,
 div.modal_flat_form_item_label {
   font-size: var(--abctools-font-size-label-m-12);
-  /* color: purple; */
+  /* color: purple; !important; */
 }
 
 .modal_flat_main select,
@@ -236,6 +238,10 @@ div.modal_flat_form_item_label {
   margin: 1em 0;
 }
 
+.modal-header-offset {
+  margin: 2em 0 1em;
+}
+
 .modal-header-settings {
   font-size: 1.5rem;
   font-weight: 600;
@@ -248,14 +254,35 @@ div.modal_flat_form_item_label {
 
 .modal-header-ui {
   position: absolute;
-  width: 2.2rem;
-  height: 2.2rem;
-  font-size: 2rem;
+  width: var(--abctools-ui-modal-btn-width);
+  height: var(--abctools-ui-modal-btn-width);
+  font-size: var(--abctools-ui-modal-btn-font-size);
   text-decoration: none;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.modal_flat_x {
+  top: 0.75rem;
+  right: 0.75rem;
+  transition:
+  transform 150ms ease-in-out;
+}
+
+.modal_flat_x.corner-x {
+  top: 0.3rem;
+  right: 0.3rem;
+}
+
+.modal_flat_x:not(.corner-x):is(:hover, :focus-visible) {
+  transform: scale(1.1);
+}
+
+.modal_flat_x svg {
+  width: 100%;
+  height: 100%;
 }
 
 .modal-link-help {
@@ -398,6 +425,10 @@ input[type="checkbox"]:focus-visible {
   background-color: var(--abctools-color-liteviolet);
 }
 
+.btn.btn-lite-lime {
+  background-color: var(--abctools-color-litelime);
+}
+
 .adv-tab-links-container {
   grid-template-columns: 1fr 1fr 1fr;
   justify-content: space-evenly;
@@ -407,6 +438,45 @@ input[type="checkbox"]:focus-visible {
 
 .adv-tab-links-container.active.active {
   display: grid;
+}
+
+.btn-container,
+.btn-container-center,
+.btn-container-space-between,
+.adv-tab-mixed-container.active.active,
+.adv-tab-btn-container.active.active {
+  display: flex;
+}
+
+.btn-container {
+  justify-content: space-evenly;
+}
+
+.btn-container-center {
+  justify-content: center;
+}
+
+.btn-container-space-between {
+  justify-content: space-between;
+}
+
+.adv-tab-mixed-container,
+.adv-tab-btn-container {
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem 0;
+  gap: 1.5rem;
+}
+
+.adv-tab-mixed-container {
+  flex-flow: column wrap;
+}
+
+.adv-tab-mixed-container p {
+  font-size: 1.125rem;
+  text-align: center;
+  margin: 0;
 }
 
 .adv-tab-bar .adv-tab-btn.active {
@@ -468,10 +538,20 @@ input[type="checkbox"]:focus-visible {
   left: 1rem !important;
 }
 
+/* UI: Top Button Bar */
+
+.fileoperations {
+  margin: 0.75rem 1.72rem 0;
+}
+
 /* UI: Bottom Button Bar */
 
 [data-abctools-ui-bottom-bar="show"][data-notation="minimized"] .notenrechts {
-  display: inline-block;
+  display: block;
+}
+
+.notenrechts {
+  margin: 1rem 2rem 0;
 }
 
 /* UI: Overlay Buttons */
@@ -649,6 +729,7 @@ input[type="checkbox"]:focus-visible {
 
   @media (hover: hover) {
     .btn,
+    .btn-lite,
     .btn-uioverlay,
     .dialogcornerbutton,
     .modal_flat_buttons button,

@@ -78,7 +78,7 @@ const gPlayerSwipeThreshold = 50; // px
 
 var gPlayerScaling = 50;
 
-var gPlayerShowExternalToolsIcon = true;
+var gPlayerShowExternalToolsIcon = false;
 
 var gRenderingPDF = false;
 
@@ -17802,7 +17802,7 @@ function addSearchResults() {
 
   var elem = document.getElementById('search_results');
 
-  var theSearchResult;
+  var theSearchResults;
 
   var selStart = elem.selectionStart;
 
@@ -17827,7 +17827,7 @@ function addSearchResults() {
 
   if (theSearchResults && (theSearchResults.length != 0)) {
 
-    ProcessAddTune(theSearchResults);
+    ProcessAddTune(theSearchResults, elem);
 
     var buttonElem = document.getElementById('add-search-results');
 
@@ -19621,7 +19621,7 @@ function BuildTuneSetAppend() {
             // gTheABC.focus();
           }
 
-          doFocusAbc();
+          // doFocusAbc();
 
           if (!AllowDialogsToScroll()) {
             // Scroll the tune into view
@@ -19979,16 +19979,20 @@ function AddABC() {
     }
   }
 
+  // Lite: Customized
+  // Add Search DB tab
   // Decide initial tab BEFORE rendering (prevents flash)
   var initialTab = "addabc-tab-examples";
   if (gAddABCLastTab === "addabc-tab-examples" ||
       gAddABCLastTab === "addabc-tab-templates" ||
+      gAddABCLastTab === "addabc-tab-search-db" ||
       gAddABCLastTab === "addabc-tab-pdf-features") {
     initialTab = gAddABCLastTab;
   }
 
   var isExamplesActive     = (initialTab === "addabc-tab-examples");
   var isTemplatesActive    = (initialTab === "addabc-tab-templates");
+  var isSearchDBActive    = (initialTab === "addabc-tab-search-db");
   var isPDFFeaturesActive  = (initialTab === "addabc-tab-pdf-features");
 
   // Precompute button display styles so they are correct on first paint
@@ -20023,60 +20027,56 @@ function AddABC() {
   /* ===========================================================
      TABS
      =========================================================== */
+  // Lite: Customized
+  // Replace inline styles with reusable classes
 
   modal_msg += '<div class="adv-tabs">';
   modal_msg += '<div class="adv-tab-bar">';
-
-  modal_msg += '<button class="adv-tab-btn' + (isExamplesActive ? ' active' : '') + '" data-tab="addabc-tab-examples" aria-selected="' + (isExamplesActive ? 'true' : 'false') + '" onclick="AddABC_SelectTab(\'addabc-tab-examples\')">Add Example Tunes</button>';
-
-  modal_msg += '<button class="adv-tab-btn' + (isTemplatesActive ? ' active' : '') + '" data-tab="addabc-tab-templates" aria-selected="' + (isTemplatesActive ? 'true' : 'false') + '" onclick="AddABC_SelectTab(\'addabc-tab-templates\')">Add Example Templates</button>';
-
+  modal_msg += '<button class="adv-tab-btn' + (isExamplesActive ? ' active' : '') + '" data-tab="addabc-tab-examples" aria-selected="' + (isExamplesActive ? 'true' : 'false') + '" onclick="AddABC_SelectTab(\'addabc-tab-examples\')">Add ABC Tunes</button>';
+  modal_msg += '<button class="adv-tab-btn' + (isTemplatesActive ? ' active' : '') + '" data-tab="addabc-tab-templates" aria-selected="' + (isTemplatesActive ? 'true' : 'false') + '" onclick="AddABC_SelectTab(\'addabc-tab-templates\')">Add Templates</button>';
+  modal_msg += '<button class="adv-tab-btn' + (isSearchDBActive ? ' active' : '') + '" data-tab="addabc-tab-search-db" aria-selected="' + (isSearchDBActive ? 'true' : 'false') + '" onclick="AddABC_SelectTab(\'addabc-tab-search-db\')">Add From Search</button>';
   modal_msg += '<button class="adv-tab-btn' + (isPDFFeaturesActive ? ' active' : '') + '" data-tab="addabc-tab-pdf-features" aria-selected="' + (isPDFFeaturesActive ? 'true' : 'false') + '" onclick="AddABC_SelectTab(\'addabc-tab-pdf-features\')">Inject PDF Features</button>';
-
   modal_msg += '</div>';
   modal_msg += '<div class="adv-tab-panels">';
 
   /* ---------------- Example ABC tunes tab ---------------- */
 
-  modal_msg += '<div id="addabc-tab-examples" class="adv-tab-panel' + (isExamplesActive ? ' active' : '') + '">';
-  modal_msg += '<p style="text-align:center;margin-top:16px;">';
+  modal_msg += '<div id="addabc-tab-examples" class="adv-tab-panel adv-tab-btn-container' + (isExamplesActive ? ' active' : '') + '">';
   modal_msg += '<input id="addnewreel" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AppendSampleReel();" type="button" value="Cooley\'s (reel)" title="Adds an example reel (Cooley\'s) to the end of the ABC">';
   modal_msg += '<input id="addnewjig" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AppendSampleJig();" type="button" value="The Kesh (jig)" title="Adds an example jig (The Kesh) to the end of the ABC">';
   modal_msg += '<input id="addnewhornpipe" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AppendSampleHornpipe();" type="button" value="Alexander\'s (hornpipe)" title="Adds an example Hornpipe (Alexander\'s) to the end of the ABC">';
-  modal_msg += '</p>';
-  modal_msg += '<p style="text-align:center;margin-top:24px;">';
-  modal_msg += '<input id="addragtime" class="advancedcontrols btn btn-injectcontrols-headers"  style="margin-right:24px;" onclick="AddRagtimeNightingale();" type="button" value="Ragtime Nightingale" title="Adds Ragtime Nightingale by Joseph Lamb to the end of the ABC">';
-  modal_msg += '<input id="addjsbach" class="advancedcontrols btn btn-injectcontrols-headers" style="margin-right:24px;" onclick="AppendJSBach();" type="button" value="J.S. Bach Two-Part Invention #1" title="Adds the J.S. Bach 2-Part Invention #1 to the end of the ABC">';
+  modal_msg += '<input id="addragtime" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AddRagtimeNightingale();" type="button" value="Ragtime Nightingale" title="Adds Ragtime Nightingale by Joseph Lamb to the end of the ABC">';
+  modal_msg += '<input id="addjsbach" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AppendJSBach();" type="button" value="J.S. Bach Two-Part Invention #1" title="Adds the J.S. Bach 2-Part Invention #1 to the end of the ABC">';
   modal_msg += '<input id="addjsbach2" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AppendJSBach2();" type="button" value="J.S. Bach Fantasia" title="Adds the J.S. Bach BWV570 Fantasia for Pipe Organ to the end of the ABC">';
-
-  modal_msg += '</p></div>';
+  modal_msg += '</div>';
 
   /* ---------------- ABC templates tab ---------------- */
 
-  modal_msg += '<div id="addabc-tab-templates" class="adv-tab-panel' + (isTemplatesActive ? ' active' : '') + '">';
-  modal_msg += '<p style="text-align:center;margin-top:16px;">';
+  modal_msg += '<div id="addabc-tab-templates" class="adv-tab-panel adv-tab-btn-container' + (isTemplatesActive ? ' active' : '') + '">';
   modal_msg += '<input id="addnewtunetemplate" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AppendTuneTempate();" type="button" value="Add a Tune Template" title="Adds a tune template to the end of the ABC">';
   modal_msg += '<input id="addsongtemplate" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AppendSongTemplate();" type="button" value="Add a Song Template" title="Adds a minimal song template to the end of the ABC">';
   modal_msg += '<input id="addnewsong" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AppendSampleSong();" type="button" value="Add an Example Song" title="Adds an example song to the end of the ABC">';
-  modal_msg += '</p>';
-  modal_msg += '<p style="text-align:center;margin-top:24px;">';
   modal_msg += '<input id="addbodhrantemplate" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AddBodhranTemplate();" type="button" value="Add Bodhran Backing Track Template" title="Opens a dialog where you can choose a bodhran backing track template of common tune styles to add to the end of the ABC">';
-  modal_msg += '</p></div>';
+  modal_msg += '</div>';
+
+  // Lite: Customized
+  // Move Tune Engine button to Search DB tab
+  /* ---------------- Search DB tab ---------------- */
+  modal_msg += '<div id="addabc-tab-search-db" class="adv-tab-panel adv-tab-mixed-container' + (isSearchDBActive ? ' active' : '') + '">';
+  modal_msg += '<p>Click here to fetch Search Database (~20-30MB files)</p>';
+  modal_msg += '<p>Search and add tunes from 65,000 combined items</p>';
+  modal_msg += '<input id="searchandaddtunes" class="advancedcontrols btn btn-injectcontrols-addabc" onclick="AddFromSearch(null,AddABCCallback);" type="button" value="Tune Search Engine" title="Fetch Search Database files from Michael Eskin\'s website.&nbsp;&nbsp;Pick preferred DB and add tunes from 65,000 items">';
+  modal_msg += '</div>';
 
   /* ---------------- PDF features tab ---------------- */
 
-  modal_msg += '<div id="addabc-tab-pdf-features" class="adv-tab-panel' + (isPDFFeaturesActive ? ' active' : '') + '">';
-  modal_msg += '<p style="text-align:center;margin-top:16px;"><input id="tunebookbuilder-add-play" class="advancedcontrols btn btn-injectcontrols-tunebookbuilder-play" onclick="PDFTunebookBuilderPlayOnly();" type="button" value="Inject Only PDF Tunebook Play Features" title="Inject only minimal playback-related instrument and volume commands at the top of your tunebook ABC"><input id="tunebookbuilder_add" class="advancedcontrols btn btn-injectcontrols-tunebookbuilder" onclick="PDFTunebookBuilder();" type="button" value="Inject All PDF Tunebook Features" title="Inject commands at the top of your tunebook ABC for adding a Title Page, Table of Contents, Index, Page Headers, Page Footers, instruments and volumes for Playback Links, and Custom QR Code"></p>';
-  modal_msg += '<p style="text-align:center;margin-top:24px;"><input id="addpdfplayonlytemplate" class="advancedcontrols btn btn-injectcontrols-headers" style="margin-right:24px;" onclick="AddPDFPlayOnlyTemplate();" type="button" value="Example PDF Only Play Features Template" title="Inject an example template with only minimal playback-related instrument and volume commands at the top of your tunebook ABC">';
-  modal_msg += '<input id="addpdfannotationstemplate" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AddPDFAnnotationsTemplate();" type="button" value="Example PDF All Features Template" title="Inject an example template that contains the most common PDF tunebook export feature annotations"></p>';
+  modal_msg += '<div id="addabc-tab-pdf-features" class="adv-tab-panel adv-tab-btn-container' + (isPDFFeaturesActive ? ' active' : '') + '">';
+  modal_msg += '<input id="tunebookbuilder-add-play" class="advancedcontrols btn btn-injectcontrols-tunebookbuilder-play" onclick="PDFTunebookBuilderPlayOnly();" type="button" value="Inject Only PDF Tunebook Play Features" title="Inject only minimal playback-related instrument and volume commands at the top of your tunebook ABC"><input id="tunebookbuilder_add" class="advancedcontrols btn btn-injectcontrols-tunebookbuilder" onclick="PDFTunebookBuilder();" type="button" value="Inject All PDF Tunebook Features" title="Inject commands at the top of your tunebook ABC for adding a Title Page, Table of Contents, Index, Page Headers, Page Footers, instruments and volumes for Playback Links, and Custom QR Code">';
+  modal_msg += '<input id="addpdfplayonlytemplate" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AddPDFPlayOnlyTemplate();" type="button" value="Example PDF Only Play Features Template" title="Inject an example template with only minimal playback-related instrument and volume commands at the top of your tunebook ABC">';
+  modal_msg += '<input id="addpdfannotationstemplate" class="advancedcontrols btn btn-injectcontrols-headers" onclick="AddPDFAnnotationsTemplate();" type="button" value="Example PDF All Features Template" title="Inject an example template that contains the most common PDF tunebook export feature annotations">';
   modal_msg += '</div>';
-
   modal_msg += '<p style="font-size:2pt;">&nbsp;</p>';
   modal_msg += '</div></div>';
-
-  modal_msg += '<p style="text-align:center;font-size:18px;margin-top:26px;">Search and Add Tunes (Over 65,000 Tunes Available)</p>';
-  modal_msg += '<p style="text-align:center;margin-top:16px;">';
-  modal_msg += '<input id="searchandaddtunes" class="advancedcontrols btn btn-injectcontrols-addabc" onclick="AddFromSearch(null,AddABCCallback);" type="button" value="Tune Search Engine" title="Search for tunes to add to your tunebook.&nbsp;&nbsp;Over 65,000 tunes available.">';
 
   modal_msg += '<p style="text-align:center;font-size:18px;margin-top:24px;">Change the Order or Delete Tunes</p>';
   modal_msg += '<p style="text-align:center;margin-top:16px;">';
@@ -20098,10 +20098,12 @@ function AddABC() {
     idleAddABC();
   }, 50);
 
+  // Lite: Customized
+  // Make Add dialog wider
   DayPilot.Modal.alert(modal_msg, {
     theme: "modal_flat",
     top: 50,
-    width: 700,
+    width: 720,
     scrollWithPage: false
   });
 
@@ -20214,9 +20216,15 @@ function AddBodhranReelTemplate() {
   theValue += "|: ^d=CCe DD=f^D | ^A=C=FC ^A2=AA | A3d =c2AA | =G^GAA e2GG |\n";
   theValue += "   ^d=CCe DD=f^D | ^A=C=FC ^A2=AA | A3d =c2AA | =G^GAA e2GG :|\n";
 
-  // Do common tune addition processing
-  ProcessAddTune(theValue);
+  // Lite: Customized
+  // Close the prompt window
+  // Refocus on the prompt trigger button after ABC added
+  //
+  const focusElem = document.getElementById('addbodhrantemplate');
+  const okBtns = document.getElementsByClassName("modal_flat_ok");
+  okBtns[okBtns.length - 1].click();
 
+  ProcessAddTune(theValue, focusElem);
 }
 
 function AddBodhranJigTemplate() {
@@ -20284,9 +20292,15 @@ function AddBodhranJigTemplate() {
   theValue += "|: ^d=CC =F/F/FC | ^A2d =F=C=A | d=c/=B/^A ^d=C=F | AEE d3 |\n";
   theValue += "   ^d=CC =F/F/FC | ^A2d =F=C=A | d=c/=B/^A ^d=C=F | AEE d3 :| \n";
 
-  // Do common tune addition processing
-  ProcessAddTune(theValue);
+  // Lite: Customized
+  // Close the prompt window
+  // Refocus on the prompt trigger button after ABC added
+  //
+  const focusElem = document.getElementById('addbodhrantemplate');
+  const okBtns = document.getElementsByClassName("modal_flat_ok");
+  okBtns[okBtns.length - 1].click();
 
+  ProcessAddTune(theValue, focusElem);
 }
 
 function AddBodhranSlipJigTemplate() {
@@ -20350,9 +20364,15 @@ function AddBodhranSlipJigTemplate() {
   theValue += "|: ^d=CC =FCC FCC | ^d2=C =FCC AEA | ^A2=C =FCC A2A | ^d=CC =FCF A3 |\n";
   theValue += "   ^d=CC =FCC FCC | ^d2=C =FCC AEA | ^A2=C =FCC A2A | ^d=CC =FCF A3 :|\n";
 
-  // Do common tune addition processing
-  ProcessAddTune(theValue);
-
+  // Lite: Customized
+  // Close the prompt window
+  // Refocus on the prompt trigger button after ABC added
+  //
+  const focusElem = document.getElementById('addbodhrantemplate');
+  const okBtns = document.getElementsByClassName("modal_flat_ok");
+  okBtns[okBtns.length - 1].click();
+  
+  ProcessAddTune(theValue, focusElem);
 }
 
 function AddBodhranSlideTemplate() {
@@ -20416,9 +20436,15 @@ function AddBodhranSlideTemplate() {
   theValue += "|: ^A2=F ^dF^A =d2=A ^c2^G | ^A2=F ^dF^A =B3 B2^F |\n";
   theValue += "   ^A2=F ^dF^A =d2=A ^c2^G | ^A=C=F ^dF^A F3 ^A3 :|\n";
 
-  // Do common tune addition processing
-  ProcessAddTune(theValue);
+  // Lite: Customized
+  // Close the prompt window
+  // Refocus on the prompt trigger button after ABC added
+  //
+  const focusElem = document.getElementById('addbodhrantemplate');
+  const okBtns = document.getElementsByClassName("modal_flat_ok");
+  okBtns[okBtns.length - 1].click();
 
+  ProcessAddTune(theValue, focusElem);
 }
 
 function AddBodhranPolkaTemplate() {
@@ -20481,9 +20507,15 @@ function AddBodhranPolkaTemplate() {
   theValue += "|: ^A/A/A =C^A | ^F^A =CA | ^A=A/A/ =FA | ^A2E^c |\n";
   theValue += "   ^A/A/A =C^A | ^F^A =CA | ^A=A/A/ =FA | ^A2E^c :|\n";
 
-  // Do common tune addition processing
-  ProcessAddTune(theValue);
+  // Lite: Customized
+  // Close the prompt window
+  // Refocus on the prompt trigger button after ABC added
+  //
+  const focusElem = document.getElementById('addbodhrantemplate');
+  const okBtns = document.getElementsByClassName("modal_flat_ok");
+  okBtns[okBtns.length - 1].click();
 
+  ProcessAddTune(theValue, focusElem);
 }
 
 function AddBodhranHornpipeTemplate() {
@@ -20547,9 +20579,15 @@ function AddBodhranHornpipeTemplate() {
   theValue += "|: =F,=C, F,C, F,C, F,C, | =F,=C, F,C, F,C, F,C, | =F,=C, F,C, F,C, F,C, | =F,=C, (3!>!F,C,C, !>!F,z F,C, |\n";
   theValue += "   =F,=C, F,C, F,C, F,C, | =F,=C, F,C, F,C, F,C, | =F,=C, F,C, F,C, F,C, | =F,=C, (3!>!F,C,C, !>!F,z F,C, :|\n";
 
-  // Do common tune addition processing
-  ProcessAddTune(theValue);
+  // Lite: Customized
+  // Close the prompt window
+  // Refocus on the prompt trigger button after ABC added
+  //
+  const focusElem = document.getElementById('addbodhrantemplate');
+  const okBtns = document.getElementsByClassName("modal_flat_ok");
+  okBtns[okBtns.length - 1].click();
 
+  ProcessAddTune(theValue, focusElem);
 }
 
 // Lite: Customized
@@ -20599,9 +20637,12 @@ function AppendSampleReel() {
   theValue += '|:"Em"eB (3BBB eBgf|eBB2 gedB|"D"A/A/A FA DAFA|A/A/A FA defg|\n';
   theValue += '"Em"eB (3BBB eBgf|eBBB defg|"D"afge dBAF|1 DEFD "Em"E2gf:|2 DEFD "Em"E4|]\n';
 
-  // Do common tune addition processing
-  ProcessAddTune(theValue);
+  // Lite: Customized
+  // Refocus on the button after ABC added
+  //
+  const focusElem = document.getElementById('addnewreel');
 
+  ProcessAddTune(theValue, focusElem);
 }
 
 // Lite: Customized
@@ -20651,9 +20692,12 @@ function AppendSampleJig() {
   theValue += '|:"G"BAB dBd|"C"ege "D"dBA|"G"BAB dBG|"D"ABA AGA|\n';
   theValue += '"G"BAB dBd|"C"ege "G"dBd|"C"gfg "D"aga|"G"bgf g3:|\n';
 
-  // Do common tune addition processing
-  ProcessAddTune(theValue);
+  // Lite: Customized
+  // Refocus on the button after ABC added
+  //
+  const focusElem = document.getElementById('addnewjig');
 
+  ProcessAddTune(theValue, focusElem);
 }
 
 // Lite: Customized
@@ -20704,9 +20748,12 @@ function AppendSampleHornpipe() {
   theValue += '|:AG|"D"FAdA FAdA|"G"GBdB GBdB|"A"Acec Acec|"D"dfaf "A"(3gfe (3dAG|\n';
   theValue += '"D"FAdA FAdA|"G"GBdB GBdB|"A"Acef gecd|(3efe dc"D"d2:|\n';
 
-  // Do common tune addition processing
-  ProcessAddTune(theValue);
+  // Lite: Customized
+  // Refocus on the button after ABC added
+  //
+  const focusElem = document.getElementById('addnewhornpipe');
 
+  ProcessAddTune(theValue, focusElem);
 }
 
 //
@@ -20760,9 +20807,12 @@ function AppendTuneTempate() {
   theValue += "% Add your tune's ABC below:\n";
   theValue += '"C"C2 D2 E2 F2| G2 A2 B2 c2|]\n';
 
-  // Do common tune addition processing
-  ProcessAddTune(theValue);
+  // Lite: Customized
+  // Refocus on the button after ABC added
+  //
+  const focusElem = document.getElementById('addnewtunetemplate');
 
+  ProcessAddTune(theValue, focusElem);
 }
 
 //
@@ -20840,10 +20890,12 @@ function AppendSongTemplate() {
   theValue += "%\n";
   theValue += "% That should get you started. Go play!\n";
 
+  // Lite: Customized
+  // Refocus on the button after ABC added
+  //
+  const focusElem = document.getElementById('addsongtemplate');
 
-  // Do common tune addition processing
-  ProcessAddTune(theValue);
-
+  ProcessAddTune(theValue, focusElem);
 }
 
 //
@@ -20983,9 +21035,12 @@ function AppendSampleSong() {
   theValue += "%\n";
   theValue += "% That should get you started. Go play!\n";
 
-  // Do common tune addition processing
-  ProcessAddTune(theValue);
+  // Lite: Customized
+  // Refocus on the button after ABC added
+  //
+  const focusElem = document.getElementById('addnewsong');
 
+  ProcessAddTune(theValue, focusElem);
 }
 
 //
@@ -21118,9 +21173,12 @@ function AppendJSBach(){
   theValue += 'A,2_B,2A,2G,2 F,2D2C2B,2 | A,2F2E2D2 ED,E,F, G,E,F,D, |\n';
   theValue += '[][Q:1/4=56][M:2/4]E,2C,2D,2E,2|[Q:1/4=42]F,D,E,F, G,2G,,2 |[M:4/4][C,,C,]16 |]\n';
 
-  // Do common tune addition processing
-  ProcessAddTune(theValue);
+  // Lite: Customized
+  // Refocus on the button after ABC added
+  //
+  const focusElem = document.getElementById('addjsbach');
 
+  ProcessAddTune(theValue, focusElem);
 }
 
 //
@@ -21227,10 +21285,12 @@ function AppendJSBach2(){
   theValue += 'G,4 F,6 G,F,E,2D,C, | G,8G,8- | G,8G,8- | G,8 C,2C_B,A,2G,F, |\n';
   theValue += 'E,4 F,4 C,8 | C,16 |]\n';
 
+  // Lite: Customized
+  // Refocus on the button after ABC added
+  //
+  const focusElem = document.getElementById('addjsbach2');
 
-  // Do common tune addition processing
-  ProcessAddTune(theValue);
-
+  ProcessAddTune(theValue, focusElem);
 }
 
 // 
@@ -21401,15 +21461,20 @@ function AddRagtimeNightingale(){
   theValue += "x2 | x2 | x2 | x2 | %88\n";
   theValue += "x2 | x2 | x2 |] %91\n";
 
-  // Do common tune addition processing
-  ProcessAddTune(theValue);
+  // Lite: Customized
+  // Refocus on the button after ABC added
+  //
+  const focusElem = document.getElementById('addragtime');
 
+  ProcessAddTune(theValue, focusElem);
 }
 
 // 
 // Common code after template add
+// Lite: Customized
+// Fix focus loss: Focus back on elem / section
 //
-function ProcessAddTune(theValue) {
+function ProcessAddTune(theValue, focusElem) {
 
   // Force scroll into view
   var theOriginalLength = getABCEditorText().length;
@@ -21484,7 +21549,16 @@ function ProcessAddTune(theValue) {
         // gTheABC.focus();
       }
 
-      doFocusAbc();
+      if (focusElem) {
+
+        setTimeout(() => {
+          focusElem.focus()
+        }, 250);
+        
+      } else {
+
+        doFocusAbc();
+      }
     }
 
     // Scroll the tune into view
@@ -25930,7 +26004,7 @@ function InjectAllMIDIParams() {
     type: "text",
     cssClass: "configure_midi_program_form_number_input"
   }, {
-    html: '<p style="font-size:14pt;line-height:19pt;margin-bottom:24px;text-align:center;"><a href="https://michaeleskin.com/documents/general_midi_extended_v10.pdf" target="_blank">General MIDI Instrument Program Numbers</a></p>'
+    html: '<p style="font-size:14pt;line-height:19pt;margin-bottom:24px;text-align:center;"><a href="https://michaeleskin.com/abctools/general_midi_extended_v10.pdf" target="_blank">General MIDI Instrument Program Numbers</a></p>'
   }, {
     name: "            Inject all tunes",
     id: "configure_inject_all",
@@ -38420,13 +38494,16 @@ function PlayABCDialog(theABC, callback, val, metronome_state) {
       theWidth = 800;
 
     }
-
+    // Lite: Customized
+    // Use additional keys for customizing X position
     DayPilot.Modal.alert(modal_msg, {
       theme: "modal_flat",
       top: theTop,
       width: theWidth,
       okText: "Close",
-      scrollWithPage: (isMobileBrowser())
+      scrollWithPage: (isMobileBrowser()),
+      noX: (gPlayerShowExternalToolsIcon),
+      moveX: true
     });
 
     // Add external tools icon?
@@ -45842,13 +45919,16 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
       theWidth = 800;
 
     }
-
+    // Lite: Customized
+    // Use additional keys for customizing X position
     DayPilot.Modal.alert(modal_msg, {
       theme: "modal_flat",
       top: theTop,
       width: theWidth,
       okText: "Close",
-      scrollWithPage: (isMobileBrowser())
+      scrollWithPage: (isMobileBrowser()),
+      noX: (gPlayerShowExternalToolsIcon),
+      moveX: true
     });
 
     // Add external tools icon?
@@ -47771,7 +47851,7 @@ function GetInitialConfigurationSettings() {
     gLooperAddMeasureCount = 1;
   }
 
-  gPlayerShowExternalToolsIcon = true;
+  gPlayerShowExternalToolsIcon = false;
   val = localStorage.PlayerShowExternalToolsIcon
   if (val) {
     gPlayerShowExternalToolsIcon = (val == "true");
@@ -49566,22 +49646,18 @@ function SharingControlsDialog() {
 		'<a href="https://michaeleskin.com/abctools/userguide.html#sharing_controls" target="_blank" ' +
 		'title="View documentation in new tab" ' +
 		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
-		'<h2 class="modal-header">' +
+		'<h2 class="modal-header modal-header-offset">' +
 		'Sharing Controls&nbsp;&nbsp;' +
 		'</h2>';
   modal_msg += '<div id="sharing-controls-dialog">';
   modal_msg += '<button id="external_tools_share" class="btn-lite external_tools_share modal-header-ui" title="Open the ABC in an external ABC tool"><svg aria-hidden="true"><use href="#lite-icon-share"></use></svg></button>';
-  modal_msg += '<p style="margin-top:28px;">';
   modal_msg += '<input id="testurl" class="urlcontrols btn btn-urlcontrols" onclick="TestShareURL()" type="button" value="Test Share URL" title="Opens the Share URL in a new tab">';
   modal_msg += '<input id="copyurl" class="urlcontrols btn btn-urlcontrols" onclick="CopyShareURL()" type="button" value="Copy Share URL" title="Copies the Share URL to the clipboard">';
   modal_msg += '<input id="saveurl" class="urlcontrols btn btn-urlcontrols" onclick="SaveShareURL()" type="button" value="Save Share URL" title="Saves the Share URL to a file">';
   modal_msg += '<input id="shortenurl" class="urlcontrols btn btn-urlcontrols" onclick="ShortenURL(event)" type="button" value="Shorten URL" title="Shortens the Share URL and copies it to the clipboard">';
   modal_msg += '<input id="generateqrcode" class="urlcontrolslast btn btn-urlcontrols" onclick="GenerateQRCode(event)" type="button" value="Generate QR Code" title="Generates a QR Code for the Share URL.&nbsp;&nbsp;Even if this button is greyed-out, Shift-click attempts to generate a QR code from the text in the Share URL box.">';
-  modal_msg += '</p>';
-  modal_msg += '<p style="margin-top:24px;">';
   modal_msg += '<textarea id="urltextbox" rows="10" cols="80" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="URL for sharing will appear here" >';
   modal_msg += '</textarea>';
-  modal_msg += '</p>';
   modal_msg += '<p id="shareurlcaption">Share URL</p>';
   modal_msg += '<p style="text-align:center;margin-top:36px;"><input id="addautoplay" class="urlcontrols btn btn-urlcontrols" onclick="AddAutoPlay()" type="button" value="Add Auto-Play" title="Adds &play=1 to the ShareURL.&nbsp;&nbsp;Tune will open in the player."><input id="addopenineditor" class="urlcontrols btn btn-urlcontrols" onclick="AddOpenInEditor()" type="button" value="Add Open in Editor" title="Adds &editor=1 to the ShareURL.&nbsp;&nbsp;Share links will load in the editor.&nbsp;&nbsp;This setting overrides Add Auto-Play."><input id="adddisableediting" class="urlcontrols btn btn-urlcontrols" onclick="AddDisableEditing()" type="button" value="Add Disable Editing" title="Adds &dx=1 to the ShareURL.&nbsp;&nbsp;Entering the editor from the full screen tune view will be disabled.&nbsp;&nbsp;Also overrides Add Open in Editor."><input id="addnoui" class="urlcontrolslast btn btn-urlcontrols" onclick="AddNoUI()" type="button" value="Add Hide UI" title="Adds &noui to the ShareURL for responsive iframe embedding.&nbsp;&nbsp;When the link is opened, hides the UI.&nbsp;&nbsp;Overrides Add Open in Editor and Add Auto-Play.">&nbsp;&nbsp;&nbsp;&nbsp;<input id="urlallowdef" type="checkbox" checked style="margin-top:-5px;margin-bottom:0px;" title="When checked uses Deflate instead of LZW for compressing the ABC in the Share URL resulting in a shorter link"/>&nbsp;Use Deflate</p>';
 
@@ -49613,7 +49689,8 @@ function SharingControlsDialog() {
 
   }, 200);
 
-
+  // Lite: Customized
+  // Use additional keys for customizing X position
   DayPilot.Modal.alert(modal_msg, {
     theme: "modal_flat",
     top: 100,
@@ -50900,88 +50977,77 @@ function AdvancedControlsDialog() {
   modal_msg += '</div>';
   modal_msg += '<div class="adv-tab-panels">';
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
   /* ---------------- Injection tab ---------------- */
   // Hide Export All Tunes on mobile BEFORE render to prevent a layout jump
   var exportAllTunesStyle = isMobileBrowser() ? ' style="display:none;"' : '';
 
-  modal_msg += '<div id="adv-tab-injection" class="adv-tab-panel' + (isInjectionActive ? ' active' : '') + '">';
-  modal_msg += '<p style="text-align:center;">';
+  modal_msg += '<div id="adv-tab-injection" class="adv-tab-panel adv-tab-btn-container' + (isInjectionActive ? ' active' : '') + '">';
   modal_msg += '<input id="injecttunenumbers" class="advancedcontrols btn btn-injectcontrols-headers" onclick="TuneTitlesNumbersDialog()" type="button" value="Inject Tune Title Numbers">';
   modal_msg += '<input id="injectsectionheader" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectSectionHeader()" type="button" value="Inject PDF Section Header">';
   modal_msg += '<input id="injectfontsettings" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectFontSettings()" type="button" value="Inject Font Settings">';
-  modal_msg += '</p>';
 
-  modal_msg += '<p style="text-align:center;margin-top:24px;">';
   modal_msg += '<input id="injectallmidiparams" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectAllMIDIParams()" type="button" value="Inject MIDI Programs and Volumes">';
   modal_msg += '<input id="injectmetronome" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectMetronome()" type="button" value="Inject Metronome">';
   modal_msg += '<input id="injectclicktrackall" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectRepeatsAndClickTrackAll()" type="button" value="Inject Repeats + Intros">';
-  modal_msg += '</p>';
 
-  modal_msg += '<p style="text-align:center;margin-top:24px;">';
-  modal_msg += '<input id="injectheaderstring" style="margin-right:20px;" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectHeaderString()" type="button" value="Inject ABC Header Text">';
-  modal_msg += '<input id="injectcustomstringedtab" style="margin-right:20px;" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectCustomStringedInstrumentTab()" type="button" value="Inject Stringed Instrument Tab">';
+  modal_msg += '<input id="injectheaderstring" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectHeaderString()" type="button" value="Inject ABC Header Text">';
+  modal_msg += '<input id="injectcustomstringedtab" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectCustomStringedInstrumentTab()" type="button" value="Inject Stringed Instrument Tab">';
   modal_msg += '<input id="ceoltastransform" class="advancedcontrols btn btn-injectcontrols-headers" onclick="DoCeoltasTransformDialog()" type="button" value="Comhaltas Transform" title="Brings up a dialog where you can transform the ABC to/from Comhaltas format">';
-  modal_msg += '</p>';
-  modal_msg += '<p style="text-align:center;margin-top:24px;">';
+
   modal_msg += '<input id="phrasebuilder" class="advancedcontrols btn btn-phrasebuilder" onclick="PhraseBuilder(null,null)" type="button" value="Phrase Builder">';
   modal_msg += '<input id="incipitsbuilder" class="advancedcontrols incipitsbuilder btn btn-incipitsbuilder" onclick="IncipitsBuilderDialog()" type="button" value="Notes Incipits Builder">';
   modal_msg += '<input id="configure_batch_mp3_export" class="advancedcontrols btn btn-batchmp3export" onclick="ExportAll()" type="button" value="Export All Tunes"' + exportAllTunesStyle + '>';
 
-  modal_msg += '</p></div>';
+  modal_msg += '</div>';
 
   /* ---------------- Tablatures tab ---------------- */
 
-  modal_msg += '<div id="adv-tab-tablatures" class="adv-tab-panel' + (isTablaturesActive ? ' active' : '') + '">';
-  modal_msg += '<p style="text-align:center;">';
+  modal_msg += '<div id="adv-tab-tablatures" class="adv-tab-panel adv-tab-btn-container' + (isTablaturesActive ? ' active' : '') + '">';
+
   modal_msg += '<input id="injectharmonicatab" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectHarmonicaTab()" type="button" value="Inject Harmonica Tab">';
   modal_msg += '<input id="injectboxtab" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectBoxTablature()" type="button" value="Inject Irish Button Box Tab">';
   modal_msg += '<input id="injectanglotab" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectTablature_Anglo()" type="button" value="Inject Anglo Concertina Tab">';
-  modal_msg += '</p>';
 
-  modal_msg += '<p style="text-align:center;margin-top:24px;">';
   modal_msg += '<input id="injectfiddlefingerings" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectTablature_Fiddle_Fingerings_Dialog()" type="button" value="Inject Fiddle Fingerings">';
   modal_msg += '<input id="injectmd" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectTablature_MD()" type="button" value="Inject Dulcimer Tab">';
   modal_msg += '<input id="injectbambooflute" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectTablature_Bamboo_Flute()" type="button" value="Inject Bamboo Flute Tab">';
-  modal_msg += '<p style="text-align:center;margin-top:24px;">';
-  modal_msg += '<input id="injectshapenotes" style="margin-right:24px;" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectTablature_ShapeNotes()" type="button" value="Inject Note Names/Shapes/Solfège" title="Injects note names (Pitch Names, Standard ABC, Comhaltas ABC), Shape Note shapes, or Solfège note names into the ABC">';
+
+  modal_msg += '<input id="injectshapenotes" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectTablature_ShapeNotes()" type="button" value="Inject Note Names/Shapes/Solfège" title="Injects note names (Pitch Names, Standard ABC, Comhaltas ABC), Shape Note shapes, or Solfège note names into the ABC">';
   modal_msg += '<input id="injectcustomtab" class="advancedcontrols btn btn-injectcontrols" onclick="DoInjectCustomTab()" type="button" value="Inject Custom Tab" title="Injects custom tablature into the ABC">';
-  modal_msg += '</p></div>';
+  modal_msg += '</div>';
 
   /* ---------------- Explorers tab ---------------- */
 
-  modal_msg += '<div id="adv-tab-players" class="adv-tab-panel' + (isPlayersActive ? ' active' : '') + '">';
-  modal_msg += '<p style="text-align:center;">';
+  modal_msg += '<div id="adv-tab-players" class="adv-tab-panel adv-tab-btn-container' + (isPlayersActive ? ' active' : '') + '">';
 
   modal_msg += '<input id="configure_instrument_explorer" class="advancedcontrols btn btn-instrumentexplorer" onclick="InstrumentExplorer()" type="button" value="MIDI Instrument Explorer">';
   modal_msg += '<input id="configure_swing_explorer" class="advancedcontrols btn btn-swingexplorer" onclick="SwingExplorer()" type="button" value="Swing Explorer">';
   modal_msg += '<input id="configure_grace_explorer" class="advancedcontrols btn btn-graceexplorer" onclick="GraceExplorer()" type="button" value="Grace Duration Explorer">';
-  modal_msg += '</p>';
 
-  modal_msg += '<p style="text-align:center;margin-top:24px;">';
   modal_msg += '<input id="configure_roll_explorer" class="advancedcontrols btn btn-rollexplorer" onclick="RollExplorer()" type="button" value="Roll Explorer">';
   modal_msg += '<input id="configure_reverb_explorer" class="advancedcontrols btn btn-reverbexplorer" onclick="ReverbExplorer()" type="button" value="Reverb Explorer">';
   modal_msg += '<input id="injectlargeprint" class="advancedcontrols btn btn-notation-spacing-explorer" onclick="NotationSpacingExplorer()" type="button" value="Notation Spacing Explorer">';
 
-  modal_msg += '</p></div>';
+  modal_msg += '</div>';
 
   /* ---------------- Other tools tab ---------------- */
 
-  modal_msg += '<div id="adv-tab-bagpipes" class="adv-tab-panel' + (isOtherToolsActive ? ' active' : '') + '">';
-  modal_msg += '<p style="text-align:center;">';
+  modal_msg += '<div id="adv-tab-bagpipes" class="adv-tab-panel adv-tab-btn-container' + (isOtherToolsActive ? ' active' : '') + '">';
+
   modal_msg += '<input id="customcssgenerator" class="advancedcontrols btn btn-cssgenerator" onclick="abcjsColorEditor()" type="button" value="Custom CSS Generator">';
   modal_msg += '<input id="transposetokey" class="advancedcontrols transposetokey btn btn-transposetokey" onclick="TransposeToKeyDialog()" type="button" value="Transpose to Key">';
   modal_msg += '<input id="injectbagpipedrones" class="advancedcontrols btn btn-injectbagpipedrones" onclick="InjectBagpipeSounds()" type="button" value="Inject Bagpipe Sounds">';
-  modal_msg += '</p>';
-  modal_msg += '<p style="text-align:center;margin-top:24px;">';
+
   modal_msg += '<input id="splitlongtextandtags" class="advancedcontrols btn btn-splitlongtextandtags" onclick="SplitLongTextAndTags()" type="button" value="Split Long Tags and Text">';
   modal_msg += '<input id="normalizediacriticals" class="advancedcontrols  btn btn-normalizediacriticals" onclick="NormalizeDiacriticals()" type="button" value="Normalize Diacriticals">';
   modal_msg += '<input id="normalizetitles" class="advancedcontrols btn btn-normalizetitles" onclick="NormalizeTitles()" type="button" value="Normalize Title Postfixes">';
-  modal_msg += '</p>';
-  modal_msg += '<p style="text-align:center;margin-top:24px;">';
+
   modal_msg += '<input id="normalizevoicekeysignatures" class="advancedcontrols btn btn-normalizevoicekeysignatures" onclick="NormalizeVoiceKeySignatures()" type="button" value="Normalize Voice Keys">';
   modal_msg += '<input id="reformatusingmusicxml" class="advancedcontrols  btn btn-reformatusingmusicxml" onclick="BatchMusicXMLRoundTrip()" type="button" value="Reformat Using MusicXML">';
   modal_msg += '<input id="injectmidigchord" class="advancedcontrols btn btn-injectmidigchord" onclick="InjectMIDIGChordTemplates()" type="button" value="Inject MIDI gchord Templates">';
-  modal_msg += '</p>';
+
   modal_msg += '</div>';
 
   modal_msg += '<p style="font-size:2pt;">&nbsp;</p>';
@@ -51203,14 +51269,14 @@ async function manageCustomInstrumentSlots(files){
     .${UID}-slot[data-has="true"]  { font-weight: 600; }
     .${UID}-slot.dragover { outline: 2px dashed #888; outline-offset: 2px; }
     .${UID}-label { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;font-size:11pt; }
-    .${UID}-chip { border:1px solid #bbb; border-radius:8px; padding:8px 14px; margin:6px; display:inline-flex; align-items:center;
+    .${UID}-chip { border:1px solid #bbb; border-radius:8px; margin:6px; display:inline-flex; align-items:center;
       cursor:grab; user-select:none; background:#fff; font-size:12px; max-width: 320px; overflow: hidden; text-overflow: ellipsis;
       white-space: nowrap; min-width: 0; }
     .${UID}-chip.selected { outline: 2px solid #007aff; }
     .${UID}-chip:active { cursor:grabbing; }
     #${UID}-buttons { display:flex; align-items:center; justify-content:flex-start; gap:12px; margin-top:12px; max-width:100%;
       padding-right:4px; box-sizing:border-box; flex-wrap: wrap; }
-    .${UID}-btn { padding:8px 14px; min-width:80px; border-radius:10px; border:1px solid #ccc; background:#fff; cursor:pointer; font-size:13px; }
+    .${UID}-btn { min-width:80px; border-radius:10px; border:1px solid #ccc; background:#fff; cursor:pointer; font-size:13px; }
     .${UID}-btn.primary { background:#007aff; border-color:#007aff; color:#fff; }
     .${UID}-btn.danger  { background:#ffdbdb; border-color:#9c0d0d; color:#9c0d0d; width:120px;}
     @media (hover:hover){ .${UID}-btn.danger:hover{ background:#D0B0B0; } }
@@ -52509,7 +52575,7 @@ function ConfigurePlayerSettings(player_callback) {
       cssClass: "configure_settings_form_text_fs"
     }, ]);
   }
-
+  // Lite: Customized (turn off share corner icon by default – swap with X if turned on)
   form = form.concat([{
     name: "            Player uses wide note highlight cursor",
     id: "configure_wide_playback_cursor",
@@ -52521,10 +52587,10 @@ function ConfigurePlayerSettings(player_callback) {
     type: "checkbox",
     cssClass: "configure_settings_form_text_checkbox_fs"
   },{
-    name: '            Show "Open ABC in External Tool" icon at top right of the Player and Tune Trainer',
+    name: '            Show "Open ABC in External Tool" icon at top right of Player or Tune Trainer (Default: X)',
     id: "configure_show_external_tools",
     type: "checkbox",
-    cssClass: "configure_settings_form_text_checkbox_fs"
+    cssClass: "configure_settings_form_text_checkbox_fs lite-custom-setting"
   }]);
   // Lite: Customized
   // Fix input inaccessible for tabbing
@@ -52737,21 +52803,31 @@ function ConfigurePlayerSettings(player_callback) {
       if (player_callback) {
         player_callback(true);
       }
+      // Lite: Customized
+      // Fix ABC Player losing focus after refresh
+      setTimeout(() => {
+        const settingsBtn = 
+          document.getElementById('abcplayer_settingsbutton').focus();
+        if (settingsBtn) { settingsBtn.focus() };
+      }, 250);
 
     } else {
 
       // Focus after operation
-      FocusAfterOperation();
+      // Lite: Customized
+      //
+      // FocusAfterOperation();
 
       // No need to reload player
       if (player_callback) {
         player_callback(false);
       }
 
+      const settingsBtn = 
+        document.getElementById('abcplayer_settingsbutton').focus()
 
+      if (settingsBtn) settingsBtn.focus();
     }
-
-
   });
 
 }
@@ -59176,7 +59252,8 @@ function FindAndReplace() {
   }
   // Lite: Customized
   // Fix input inaccessible for tabbing
-  modal_msg += '<p style="font-size:12pt;text-align:center;margin-top:24px;"><input class="btn btn-search-previous search-previous" id="search-previous" onclick="SR_search_previous();" type="button" value="Find Previous" title="Find previous match"/><input class="btn btn-search-next search-next" id="search-next" onclick="SR_search_next();" type="button" value="Find Next" title="Find next match"/><input class="btn btn-search-replace search-replace" id="search-replace" onclick="SR_replaceOne();" type="button" value="Replace" title="Replace one text instance"/><input class="btn btn-search-replace-all search-replace-all" id="search-replace-all" onclick="SR_replaceAll();" type="button" value="Replace All" title="Replace all text instances"/><label for="load_find_replace_fs" class="btn btn-search-load search-load" id="search-load" type="button" title="Load Find and Replace settings">Load<input type="file" id="load_find_replace_fs" accept=".txt,.TXT" class="visually-hidden"/></label><input class="btn btn-search-save search-save" id="search-save" onclick="SR_save();" type="button" value="Save" title="Save Find and Replace settings"/></p>';
+  // Replace inline styles with reusable classes
+  modal_msg += '<p class="btn-container" style="font-size:12pt;text-align:center;margin-top:24px;"><input class="btn btn-search-previous search-previous" id="search-previous" onclick="SR_search_previous();" type="button" value="Find Previous" title="Find previous match"/><input class="btn btn-search-next search-next" id="search-next" onclick="SR_search_next();" type="button" value="Find Next" title="Find next match"/><input class="btn btn-search-replace search-replace" id="search-replace" onclick="SR_replaceOne();" type="button" value="Replace" title="Replace one text instance"/><input class="btn btn-search-replace-all search-replace-all" id="search-replace-all" onclick="SR_replaceAll();" type="button" value="Replace All" title="Replace all text instances"/><label for="load_find_replace_fs" class="btn btn-search-load search-load" id="search-load" type="button" title="Load Find and Replace settings">Load<input type="file" id="load_find_replace_fs" accept=".txt,.TXT" class="visually-hidden"/></label><input class="btn btn-search-save search-save" id="search-save" onclick="SR_save();" type="button" value="Save" title="Save Find and Replace settings"/></p>';
 
   DayPilot.Modal.alert(modal_msg, {
     theme: "modal_flat",
@@ -61392,73 +61469,76 @@ function SetupContextMenu(showUpdateItem) {
 // 
 // Optimize the margins of the top buttons
 //
-function SetTopButtonMargins() {
+// Lite: Customized (reduntant, handled by CSS)
+//
+// function SetTopButtonMargins() {
 
-  if (gIsQuickEditor) {
+//   if (gIsQuickEditor) {
 
-    var elems = ["openabcfile", "newabcfile", "saveabcfile", "saveaswebsite", "tunetrainerbutton", "playbutton", "rawmodebutton"];
+//     var elems = ["openabcfile", "newabcfile", "saveabcfile", "saveaswebsite", "tunetrainerbutton", "playbutton", "rawmodebutton"];
 
-    var theMargin = 20;
+//     var theMargin = 20;
 
-    if (isMobileBrowser()) {
+//     if (isMobileBrowser()) {
 
-      theMargin = 32;
+//       theMargin = 32;
 
-    }
+//     }
 
-    if (gAlwaysTwoColumns) {
+//     if (gAlwaysTwoColumns) {
 
-      theMargin = 32;
+//       theMargin = 32;
 
-    }
+//     }
 
-    elems.forEach(function(id) {
+//     elems.forEach(function(id) {
 
-      var el = document.getElementById(id);
+//       var el = document.getElementById(id);
 
-      if (el) {
-        el.style.marginRight = theMargin + "px";
-      }
+//       if (el) {
+//         el.style.marginRight = theMargin + "px";
+//       }
 
-    });
+//     });
 
-  } else {
+//   } else {
 
-    var elems = ["openabcfile", "newabcfile", "saveabcfile", "saveaspdf", "saveaswebsite", "tunetrainerbutton", "playbutton", "rawmodebutton"];
+//     var elems = ["openabcfile", "newabcfile", "saveabcfile", "saveaspdf", "saveaswebsite", "tunetrainerbutton", "playbutton", "rawmodebutton"];
 
-    var theMargin = 8;
+//     var theMargin = 8;
 
-    if (isMobileBrowser()) {
+//     if (isMobileBrowser()) {
 
-      theMargin = 20;
+//       theMargin = 20;
 
-    }
+//     }
 
-    if (gIsIPad) {
+//     if (gIsIPad) {
 
-      theMargin = 14;
+//       theMargin = 14;
 
-    }
+//     }
 
-    if (gAlwaysTwoColumns) {
+//     if (gAlwaysTwoColumns) {
 
-      theMargin = 22;
+//       theMargin = 22;
 
-    }
+//     }
 
-    elems.forEach(function(id) {
+//     elems.forEach(function(id) {
 
-      var el = document.getElementById(id);
+//       var el = document.getElementById(id);
 
-      if (el) {
-        el.style.marginRight = theMargin + "px";
-      }
+//       if (el) {
+//         el.style.marginRight = theMargin + "px";
+//       }
 
-    });
+//     });
 
-  }
+//   }
 
-}
+// }
+
 // Lite: Customized
 function DoStartup() {
 
@@ -61873,6 +61953,9 @@ function DoStartup() {
       elem = document.getElementById("rawmodebutton");
       elem.style.display = "none";
 
+      // Hide Export Website button
+      elem = document.getElementById("saveaswebsite");
+      elem.style.display = "none";
     }
   }
 
@@ -62357,7 +62440,9 @@ function DoStartup() {
   ShowHideTabButtons();
 
   // Optimize layout of top buttons
-  SetTopButtonMargins();
+  // Lite: Customized (reduntant, handled by CSS)
+  //
+  // SetTopButtonMargins();
 
   // Hide the jump button
   HideJumpButton();
@@ -62638,6 +62723,14 @@ function DoStartup() {
           // F4 toggles the player state
           if (event.key === 'F4') {
             event.preventDefault();
+
+            // Lite: Customized
+            // Shift + F4 focuses on ABC
+            if (event.shiftKey) {
+              doFocusAbc();
+              return;
+            }
+
             const button = document.querySelector('button.abcjs-midi-start');
             if (button) {
 
@@ -62794,6 +62887,14 @@ function DoStartup() {
           // F4 toggles the player state
           if (event.key === 'F4') {
             event.preventDefault();
+
+            // Lite: Customized
+            // Shift + F4 focuses on ABC
+            if (event.shiftKey) {
+              doFocusAbc();
+              return;
+            }
+
             const button = document.querySelector('button.abcjs-midi-start');
             if (button) {
 
@@ -64654,7 +64755,9 @@ function openInExternalTool(theABC){
 		'Open ABC in External Tool&nbsp;&nbsp;' +
 		'</h2>';
 
-  modal_msg += '<p style="text-align:center;"> <span class="external-tool" style="display:inline-block; margin-right:48px;margin-bottom:12px;"> <img id="external_pureocarinas" src="img/pureocarinas.png" title="Open the ABC in the Pure Ocarinas Phrase-by-phrase ABC tune practice tool" alt="Pure Ocarinas Phrase-by-phrase ABC practice tool"><br> <span style="font-size:1.2em;">Phrase-by-phrase ABC practice tool</span> </span> <span class="external-tool" style="display:inline-block;margin-bottom:12px;"> <img id="external_abcjs" src="img/abcjs_logo.png" title="Open the ABC in the abcjs quick editor" alt="abcjs quick editor"><br> <span style="font-size:1.2em;">abcjs quick editor</span> </span> </p>';
+  // Lite: Customized
+  // Convert non-interactive elements into proper buttons
+  modal_msg += '<p style="text-align:center;"><button class="btn-lite external-tool" style="display:inline-block; margin-right:48px;margin-bottom:12px;"> <img id="external_pureocarinas" src="img/pureocarinas.png" title="Open the ABC in the Pure Ocarinas Phrase-by-phrase ABC tune practice tool" alt="Pure Ocarinas Phrase-by-phrase ABC practice tool"><br> <span style="font-size:1.2em;">Phrase-by-phrase ABC practice tool</span></button><button class="btn-lite external-tool" style="display:inline-block;margin-bottom:12px;"> <img id="external_abcjs" src="img/abcjs_logo.png" title="Open the ABC in the abcjs quick editor" alt="abcjs quick editor"><br> <span style="font-size:1.2em;">abcjs quick editor</span> </button> </p>';
 
   DayPilot.Modal.alert(modal_msg, {
     theme: "modal_flat",

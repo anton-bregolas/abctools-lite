@@ -78,10 +78,6 @@ display: none;
 display: none;
 }
 
-.toggle-buttons label {
-margin-right:16px;
-}
-
 .toggle-buttons input:checked + label {
 background: #c0df81;
 color: black;
@@ -125,20 +121,10 @@ margin-bottom: 0;
 -moz-appearance: none;
 }
 
-.transposeup {
-margin-right:24px;
-margin-left: 0;
-}
-
 @media (hover: hover) {
 	.transposeup:hover{
 	background: var(--abctools-ui-btn-hovercolor);
 	}
-}
-
-.transposedown {
-margin-right:20px;
-margin-left: 0;
 }
 
 @media (hover: hover) {
@@ -177,29 +163,16 @@ opacity: 0.4;
 	}
 }
 
-.toggleadvancedcontrols{
-margin-left: 0;
-margin-right:22px;
-}
-
 @media (hover: hover) {
 	.toggleadvancedcontrols:hover{
 	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
-.togglesharecontrols{
-margin-left: 0;
-margin-right:21px;
-}
-
 @media (hover: hover) {
 	.togglesharecontrols:hover{
 	background: var(--abctools-ui-btn-hovercolor);
 	}
-}
-
-.advancedcontrols{
 }
 
 .advancedcontrolsdisabled{
@@ -225,14 +198,10 @@ margin-right:12px;
 .urlcontrols{
 margin-right:16px;
 margin-left: 0;
-height:42px;
-padding:12px !important;
 }
 
 .urlcontrolslast{
 margin-left: 0;
-height:42px;
-padding:12px !important;
 }
 
 
@@ -245,26 +214,12 @@ padding:12px !important;
 .urlcontrolsdisabled{
 margin-right:21px;
 margin-left: 0;
-opacity:0.4;
-height:42px;
-padding:12px;}
-
-#sortbutton{
-	height:42px;
-	padding:12px;
-	margin-right: 24px;
-}
+opacity:0.4;}
 
 @media (hover: hover) {
 	.sortbutton:hover{
 	background: var(--abctools-ui-btn-hovercolor);
 	}
-}
-
-#transposetokey{
-	height:42px;
-	padding:12px;
-	margin-right:24px;
 }
 
 @media (hover: hover) {
@@ -273,21 +228,10 @@ padding:12px;}
 	}
 }
 
-#incipitsbuilder{
-	height:42px;
-	padding:12px;
-	margin-right: 0;
-}
-
 @media (hover: hover) {
 	.incipitsbuilder:hover{
 	background: var(--abctools-ui-btn-hovercolor);
 	}
-}
-
-.snapshotbutton{
-margin-left: 0;
-margin-right: 22px;
 }
 
 @media (hover: hover) {
@@ -296,33 +240,16 @@ margin-right: 22px;
 	}
 }
 
-.restorebutton{
-margin-left: 0;
-margin-right: 22px;
-}
-
 @media (hover: hover) {
 	.restorebutton:hover{
 	background: #ffab9e;
 	}
 }
 
-#dialogrestorebutton{
-	height:42px;
-	padding:12px;
-	margin-left:24px;
-}
-
 @media (hover: hover) {
 	.dialogrestorebutton:hover{
 	background: var(--abctools-ui-btn-hovercolor);
 	}
-}
-
-#dialogrestoreautobutton{
-	height:42px;
-	padding:12px;
-	margin-left:24px;
 }
 
 @media (hover: hover) {
@@ -354,7 +281,7 @@ margin-bottom:1px;
 }
 
 .notenrechts {
-margin-top:16px;
+/* margin-top:16px; */
 display:none;
 }
 
@@ -389,8 +316,8 @@ margin-bottom:24px;
 
 #sharing-controls-dialog{
 display:block;
-margin-top:24px;
-margin-bottom:24px;
+/* margin-top:24px;
+margin-bottom:24px; */
 text-align: center;
 }
 
@@ -467,7 +394,6 @@ margin-left: 0;
 margin-right: 0;
 user-select: none;
 }
-
 
 #pdfformat,#pdfformat_dialog{
 font-size: var(--abctools-font-size-label-s-11);
@@ -597,7 +523,7 @@ margin-left: -11px;
 
 #urltextbox{
 font-family: var(--abctools-font-fallback-code);
-margin-top:8px;
+margin-top: 2em;
 font-size: var(--abctools-font-size-label-s-11);
 resize: none;
 -webkit-appearance: none;
@@ -647,109 +573,54 @@ font-size: var(--abctools-font-size-label-m-12);
 
 #toggleannotations, #toggletext,#togglechords,#toggletab{
 margin-right:13px;
-height:42px;
-padding:12px;
-}
-
-#toggleornaments{
-height:42px;
-padding:12px;
 }
 
 #stripannotations, #striptext, #stripchords,  #striptab {
 margin-right:13px;
-height:42px;
-padding:12px;
-}
-
-#stripornaments{
-height:42px;
-padding:12px;
-}
-
-#toggletabnames {
-height:42px;
-padding:12px;
-}
-
-.toggletabnames {
-height:42px;
-padding:12px;
 }
 
 .toggletabnamesdisabled {
-height:42px;
 opacity: 0.4;
-padding:12px;
 }
 
-#ceoltasdialog,#injectheaderstring,#injectallmidiparams,#injectharmonicatab,#injectboxtab,#injectfiddlefingerings,#injectmd,#injectmelody,#injectstaffwidth,#injectmetronome,#injectshapenotes,#injectsectionheader,#injecttunenumbers,#addtunetitlenumbers,#compliancedialog,#injectbcbox,#normalizediacriticals,#customcssgenerator,#injectcustomstringedtab,#phrasebuilder,#splitlongtextandtags,#normalizevoicekeysignatures,#reformatusingmusicxml{
-height:42px;
-padding:12px;
-margin-right:24px;
+#addtunetitlenumbers,
+#bodhranreel,
+#bodhranslipjig,
+#bodhranhornpipe,
+#ceoltasdialog,
+#cull_select_all,
+#changetuneorder,
+#exportall_abcbutton,
+#exportall_mp3button,
+#graceexplorertest,
+#injectbcbox,
+#load_rendering_fonts,
+#reverbexplorertest,
+#save_custom_anglo_names,
+#save_custom_harmonica_tuning,
+#save_custom_tab,
+#save_rendering_fonts,
+#sortbutton,
+#swingexplorertest,
+#tunebookbuilder-play,
+#tuneset_select_all,
+#websiteimages {
+	margin-right: 1.5rem;
 }
 
-#injectbambooflute,#injectclicktrackall,#injectchords,#injectheadertemplate,#injectanglotab,#looper_metronomebutton,#pdfinjectlargeprint,#tunebookbuilder_add,#injectfontsettings,#removetunetitlenumbers,#ceoltasdialoginverse,#compliancetransform,#compliancedialoginverse,#fiddlefingeringsdialog0,#fiddlefingeringsdialog1,#fiddlefingeringsdialog2,#fiddlefingeringsdialog3,#fiddlefingeringsdialog4,#websitefull,#injectheaderstringfh,#injectcsdbox,#websitelightbox,#websitesimple,#escapediacriticals,#injectbagpipedrones,#injectlargeprint,#ceoltastransform,#normalizetitles,#injectmidigchord{
-height:42px;
-padding:12px;
+#abcplayer_wideplayerbutton,
+#abcplayer_widetrainerbutton,
+#dialogrestoreautobutton,
+#dialogrestorebutton,
+#escapediacriticals {
+	margin-left: 1.5rem;
 }
 
-#fiddlefingeringsdialog1, #fiddlefingeringsdialog2, #fiddlefingeringsdialog3, #fiddlefingeringsdialog4{
-	margin-top:24px;
-}
-
-#addnewreel,#addnewjig,#changetuneorder,#cull_select_all,#mobile_tune_order_up,#smartdraw_add_set_name,#smartdraw_delete_set_name,#addnewtunetemplate,#addsongtemplate,#search-previous,#search-next,#search-replace,#search-replace-all,#search-load,#websiteimages,#tuneset_select_all,#tuneset_open_in_player,#tuneset_open_in_editor,#title_normalize_forward,#pdfusebrowserprint,#addpdfplayonlytemplate{
-height:42px;
-padding:12px;
-margin-right:24px;
-}
-
-#addnewhornpipe,#searchandaddtunes,#culltunes,#cull_clear_selection,#mobile_tune_order_down,#smartdraw_export,#addnewsong,#addboxfingeringtemplate,#search-save,#tunesettunes,#tuneset_clear_selection,#tuneset_append_to_abc,#title_normalize_inverse,#addbodhrantemplate,#addpdfannotationstemplate{
-height:42px;
-padding:12px;
-}
-
-#bodhranreel,#bodhranslipjig,#bodhranhornpipe{
-height:42px;
-padding:12px;
-margin-right:24px;	
-}
-
-#bodhranjig,#bodhranslide,#bodhranpolka{
-height:42px;
-padding:12px;
-}
-
-#tunebookbuilder{
-height:42px;
-padding:12px;
-}
-
-#tunebookbuilder-play{
-height:42px;
-padding:12px;
-margin-right:24px;
-}
-
-#tunebookbuilder-add{
-height:42px;
-padding:12px;
-}
-
-#tunebookbuilder-add-play{
-height:42px;
-padding:12px;
-margin-right:24px;
-}
-
-#addtunebookheaders{
-height:42px;
-padding:12px;
-}
-
-#addjsbach, #addjsbach2, #addragtime{
-height:42px;
-padding:12px;
+#fiddlefingeringsdialog1,
+#fiddlefingeringsdialog2,
+#fiddlefingeringsdialog3,
+#fiddlefingeringsdialog4 {
+	margin-top: 1.5rem;
 }
 
 #abcplayer_previousbutton{
@@ -777,8 +648,6 @@ margin-left:30px;
 }
 
 #abcplayer_exportbutton{
-height:42px;
-padding:12px;
 margin-left:20px;
 }
 
@@ -789,8 +658,6 @@ margin-left:20px;
 }
 
 #abcplayer_settingsbutton{
-height:42px;
-padding:12px;
 margin-left:20px;
 }
 
@@ -801,8 +668,6 @@ margin-left:20px;
 }
 
 #abcplayer_settingsbutton_d{
-height:42px;
-padding:12px;
 margin-top:10px;
 }
 
@@ -813,8 +678,6 @@ margin-top:10px;
 }
 
 #abcplayer_settingsbutton_d{
-height:42px;
-padding:12px;
 margin-top:10px;
 }
 
@@ -825,9 +688,7 @@ margin-top:10px;
 }
 
 #abcplayer_trainer{
-	height:42px;
 	margin-top: 9px;
-	padding:12px;
 	margin-right:20px;
 }
 
@@ -839,8 +700,6 @@ margin-top:10px;
 
 #abcplayer_zoom_in{
 margin-top: 9px;
-padding:12px;
-height:42px;
 margin-left:20px;
 }
 
@@ -852,8 +711,6 @@ margin-left:20px;
 
 #abcplayer_zoom_out{
 margin-top: 9px;
-height:42px;
-padding:12px;
 margin-right:20px;
 }
 
@@ -863,10 +720,7 @@ margin-right:20px;
 	}
 }
 
-
 #abcplayer_wavbutton{
-height:42px;
-padding:12px;
 margin-right:30px;
 }
 
@@ -877,8 +731,6 @@ margin-right:30px;
 }
 
 #abcplayer_wavreverbbutton{
-height:42px;
-padding:12px;
 margin-right:30px;
 }
 
@@ -889,8 +741,6 @@ margin-right:30px;
 }
 
 #abcplayer_mp3reverbbutton{
-height:42px;
-padding:12px;
 margin-right: 0;
 }
 
@@ -901,8 +751,6 @@ margin-right: 0;
 }
 
 #abcplayer_mp3button{
-height:42px;
-padding:12px;
 margin-right:30px;
 }
 
@@ -912,11 +760,6 @@ margin-right:30px;
 	}
 }
 
-#abcplayer_midibutton{
-height:42px;
-padding:12px;
-}
-
 @media (hover: hover) {
 	.abcplayer_midibutton:hover{
 	background: var(--abctools-ui-btn-hovercolor);
@@ -924,8 +767,6 @@ padding:12px;
 }
 
 #abcplayer_jpgbutton{
-height:42px;
-padding:12px;
 margin-right:30px;
 }
 
@@ -949,21 +790,10 @@ margin-right:30px;
   -moz-user-select: none;
 }
 
-#exportall_mp3button{
-height:42px;
-padding:12px;
-margin-right:30px;
-}
-
 @media (hover: hover) {
 	.exportall_mp3button:hover{
 	background: var(--abctools-ui-btn-hovercolor);
 	}
-}
-
-#exportall_midibutton{
-height:42px;
-padding:12px;
 }
 
 @media (hover: hover) {
@@ -973,8 +803,6 @@ padding:12px;
 }
 
 #exportall_jpegbutton{
-height:42px;
-padding:12px;
 margin-right:30px;
 }
 
@@ -985,8 +813,6 @@ margin-right:30px;
 }
 
 #exportall_pngbutton{
-height:42px;
-padding:12px;
 margin-right:30px;
 }
 
@@ -996,11 +822,6 @@ margin-right:30px;
 	}
 }
 
-#exportall_svgbutton{
-height:42px;
-padding:12px;
-}
-
 @media (hover: hover) {
 	.exportall_svgbutton:hover{
 	background: var(--abctools-ui-btn-hovercolor);
@@ -1008,8 +829,6 @@ padding:12px;
 }
 
 #exportall_jsonbutton{
-height:42px;
-padding:12px;
 margin-right:30px;
 }
 
@@ -1019,20 +838,10 @@ margin-right:30px;
 	}
 }
 
-#exportall_csvbutton{
-height:42px;
-padding:12px;
-}
-
 @media (hover: hover) {
 	.exportall_csvbutton:hover{
 	background: var(--abctools-ui-btn-hovercolor);
 	}
-}
-
-#exportall_musicxmlbutton{
-height:42px;
-padding:12px;
 }
 
 @media (hover: hover) {
@@ -1041,21 +850,10 @@ padding:12px;
 	}
 }
 
-#exportall_abcbutton{
-height:42px;
-padding:12px;
-margin-right:30px;
-}
-
 @media (hover: hover) {
 	.exportall_abcbutton:hover{
 	background: var(--abctools-ui-btn-hovercolor);
 	}
-}
-
-#export_tunetitlesbutton{
-height:42px;
-padding:12px;
 }
 
 @media (hover: hover) {
@@ -1064,32 +862,16 @@ padding:12px;
 	}
 }
 
-#export_smartdrawbutton{
-height:42px;
-padding:12px;
-}
-
 @media (hover: hover) {
 	.export_smartdrawbutton:hover{
 	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
-#launchcsvextractor{
-height:42px;
-padding:12px;
-}
-
 @media (hover: hover) {
 	.launchcsvextractor:hover{
 	background: var(--abctools-ui-btn-hovercolor);
 	}
-}
-
-
-#export_websitebutton{
-height:42px;
-padding:12px;
 }
 
 @media (hover: hover) {
@@ -1127,8 +909,6 @@ padding:12px;
 }
 
 #abcplayer_pngbutton{
-height:42px;
-padding:12px;
 margin-right:30px;
 }
 
@@ -1138,20 +918,10 @@ margin-right:30px;
 	}
 }
 
-#abcplayer_svgbutton{
-height:42px;
-padding:12px;
-}
-
 @media (hover: hover) {
 	.abcplayer_svgbutton:hover{
 	background: var(--abctools-ui-btn-hovercolor);
 	}
-}
-
-#abcplayer_pdfbutton{
-height:42px;
-padding:12px;
 }
 
 @media (hover: hover) {
@@ -1174,21 +944,10 @@ left:20px;
 top:20px;
 } */
 
-#abcplayer_metronomebutton{
-height:42px;
-padding:12px;
-}
-
 @media (hover: hover) {
 	.abcplayer_metronomebutton:hover{
 	background: var(--abctools-ui-btn-hovercolor);
 	}
-}
-
-#abcplayer_wideplayerbutton{
-height:42px;
-padding:12px;
-margin-left:24px;
 }
 
 @media (hover: hover) {
@@ -1198,9 +957,6 @@ margin-left:24px;
 }
 
 #abcplayer_widetrainerbutton{
-height:42px;
-padding:12px;
-margin-left:24px;
 margin-right: 0;
 width:auto !important;
 }
@@ -1211,17 +967,11 @@ width:auto !important;
 	}
 }
 
-#abcplayer_export{
-height:42px;
-padding:12px;
-}
-
 @media (hover: hover) {
 	.abcplayer_export:hover{
 	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
-
 
 /* #abcplayer_help{
 font-size: var(--abctools-font-size-header-xl-24);
@@ -1231,8 +981,6 @@ top:20px;
 } */
 
 #swingexplorerinject{
-height:42px;
-padding:12px;
 width:auto;
 margin-left: 0;
 }
@@ -1244,8 +992,6 @@ margin-left: 0;
 }
 
 #notationspacingexplorerinject{
-height:42px;
-padding:12px;
 width:auto;
 margin-left: 0;
 }
@@ -1257,8 +1003,6 @@ margin-left: 0;
 }
 
 #notationspacingexplorertest{
-height:42px;
-padding:12px;
 width:auto;
 margin-left: 0;
 }
@@ -1277,10 +1021,7 @@ top:5px;
 } */
 
 #swingexplorertest{
-height:42px;
-padding:12px;
 width:auto;
-margin-right:36px;
 opacity: 0.45;
 }
 
@@ -1292,8 +1033,6 @@ top:20px;
 }
 
 #graceexplorerinject{
-height:42px;
-padding:12px;
 width:auto;
 margin-left: 0;
 }
@@ -1305,10 +1044,7 @@ margin-left: 0;
 }
 
 #graceexplorertest{
-height:42px;
-padding:12px;
 width:auto;
-margin-right:36px;
 opacity: 0.45;
 }
 
@@ -1320,8 +1056,6 @@ top:20px;
 } */
 
 #rollexplorerinject{
-height:42px;
-padding:12px;
 width:auto;
 margin-left: 0;
 margin-right:20px;
@@ -1335,8 +1069,6 @@ margin-right:20px;
 }
 
 #rollexplorertransform{
-height:42px;
-padding:12px;
 width:auto;
 margin-left: 0;
 margin-right:20px;
@@ -1349,8 +1081,6 @@ margin-right:20px;
 }
 
 #rollexplorertransform2{
-height:42px;
-padding:12px;
 width:auto;
 margin-left: 0;
 }
@@ -1362,8 +1092,6 @@ margin-left: 0;
 }
 
 #rollexplorertest{
-height:42px;
-padding:12px;
 width:auto;
 margin-right:20px;
 opacity: 0.45;
@@ -1377,16 +1105,12 @@ top:20px;
 } */
 
 #looperreset{
-height:42px;
-padding:12px;
 width:auto;
 margin-right:18px;
 opacity: 0.45;
 }
 
 #trainer_phrase_builder{
-height:42px;
-padding:12px;
 width:auto;
 }
 
@@ -1432,8 +1156,6 @@ display:none;
 }
 
 #looper_metronomebutton{
-height:42px;
-padding:12px;
 margin-right:18px;
 width: auto;
 }
@@ -1470,12 +1192,6 @@ color: #fff;
 margin-bottom:100px;
 }
 
-#configure_instrument_explorer{
-height:42px;
-padding:12px;
-margin-right:24px;
-}
-
 @media (hover: hover) {
 	.configure_instrument_explorer:hover{
 	background: var(--abctools-ui-btn-hovercolor);
@@ -1483,16 +1199,12 @@ margin-right:24px;
 }
 
 #instrumentexplorertest{
-height:42px;
-padding:12px;
 width:auto;
 margin-right:36px;
 opacity: 0.45;
 }
 
 #instrumentexplorerinject{
-height:42px;
-padding:12px;
 width:auto;
 }
 
@@ -1510,8 +1222,6 @@ top:20px;
 } */
 
 #reset_roll_parameters{
-height:42px;
-padding:12px;
 width:auto;
 margin-right:20px;
 }
@@ -1526,8 +1236,6 @@ margin-right:20px;
 }
 
 #customthemeeditor{
-height:42px;
-padding:12px;
 width:auto;
 margin-right:20px;
 }
@@ -1541,8 +1249,6 @@ margin-right:20px;
 }
 
 #loadimpulsebutton{
-height:42px;
-padding:12px;
 width:auto;
 margin-right: 0;
 }
@@ -1556,8 +1262,6 @@ margin-right: 0;
 }
 
 #resetsettings{
-height:42px;
-padding:12px;
 width:auto;
 margin-right: 0;
 margin-left:20px;
@@ -1568,8 +1272,6 @@ margin-left:20px;
 }
 
 #loadinstrumentbutton{
-height:42px;
-padding:12px;
 width:auto;
 }
 
@@ -1582,22 +1284,16 @@ label.btn.loadinstrumentbutton {
 }
 
 #configurecustominstruments{
-height:42px;
-padding:12px;
 margin-left:14px;
 width:auto;
 }
 
 #launchcustominstrumentbuilder{
-height:42px;
-padding:12px;
 margin-left:14px;
 width:auto;
 }
 
 #managedatabases{
-height:42px;
-padding:12px;
 width:auto;
 margin-top:10px;
 }
@@ -1611,8 +1307,6 @@ margin-top:10px;
 }
 
 #managedownloadall{
-height:42px;
-padding:12px;
 width:auto;
 margin-right: 0;
 }
@@ -1627,8 +1321,6 @@ margin-right: 0;
 }
 
 #managesamples{
-height:42px;
-padding:12px;
 width:auto;
 margin-right:20px;
 }
@@ -1643,8 +1335,6 @@ margin-right:20px;
 }
 
 #managenotes{
-height:42px;
-padding:12px;
 width:auto;
 margin-right:20px;
 }
@@ -1659,8 +1349,6 @@ margin-right:20px;
 }
 
 #managereverb{
-height:42px;
-padding:12px;
 width:auto;
 margin-right:20px;
 }
@@ -1674,8 +1362,6 @@ margin-right:20px;
 }
 
 #managesearch{
-height:42px;
-padding:12px;
 width:auto;
 margin-right: 0;
 }
@@ -1685,7 +1371,6 @@ margin-right: 0;
 }
 
 #reset_roll_explorer_2{
-height:32px;
 padding:8px;
 width:auto;
 margin-left:18px;
@@ -1699,7 +1384,6 @@ margin-right: 0;
 }
 
 #reset_roll_explorer_3{
-height:32px;
 padding:8px;
 width:auto;
 margin-left:18px;
@@ -1713,7 +1397,6 @@ margin-right: 0;
 }
 
 #default_roll_explorer_2{
-height:32px;
 padding:8px;
 width:auto;
 margin-left:18px;
@@ -1727,7 +1410,6 @@ margin-right: 0;
 }
 
 #default_roll_explorer_3{
-height:32px;
 padding:8px;
 width:auto;
 margin-left:18px;
@@ -1865,7 +1547,7 @@ opacity:1.0;
 
 .fileoperations {
 text-align:center;
-margin-top:12px;
+/* margin-top:12px; */
 }
 
 @media (hover: hover) {
@@ -1875,8 +1557,6 @@ margin-top:12px;
 }
 
 #start-search,#add-search-results{
-height:42px;
-padding:12px;
 width:auto;
 }
 
@@ -1962,7 +1642,7 @@ padding-top:12px;
 }
 
 #toolpagetitle {
-	font-family: 'Fira Sans';
+	font-family: var(--abctools-font-fallback-ui);
 	font-weight: 700;
 	font-size: x-large;
 	margin: 0;
@@ -2412,10 +2092,14 @@ body.noui svg {
 .modal_flat_background { background-color: #000; opacity: 0.4; }
 .modal_flat_main { border: 1px solid #333; box-shadow: 0 0px 15px -2px rgba(0,0,0,0.75);  }
 
-/* font size only - Lite: Customized */
+/* font size only - Lite: Customized (remove fixed font sizes) */
 /* .modal_flat_main, .modal_flat_main input, .modal_flat_buttons button {  font-size: 16px; } */
 
-.modal_flat_main input, .modal_flat_buttons button {  padding: 5px; box-sizing: border-box; }
+.modal_flat_main input:not([type="button"]),
+.modal_flat_buttons button {
+	padding: 5px; box-sizing: border-box;
+}
+
 .modal_flat_inner { padding: 10px 30px 30px 30px; background: #fff; color: #000; }
 .modal_flat_content { font-family: var(--abctools-font-fallback-ui); margin: 20px 0px;}
 .modal_flat_input { margin: 20px 0px;}
@@ -2427,10 +2111,11 @@ body.noui svg {
 .modal_flat_wide_background { background-color: #000; opacity: 0.4; }
 .modal_flat_wide_main { border: 1px solid #333; box-shadow: 0 0px 15px -2px rgba(0,0,0,0.75);  }
 
-/* font size only - Lite: Customized */
-/* .modal_flat_wide_main, .modal_flat_wide_main input, .modal_flat_wide_buttons button {  font-size: 16px; } */
+.modal_flat_wide_main input:not([type="button"]),
+.modal_flat_wide_buttons button {
+	padding: 5px; box-sizing: border-box;
+}
 
-.modal_flat_wide_main input, .modal_flat_wide_buttons button {  padding: 5px; box-sizing: border-box; }
 .modal_flat_wide_inner { padding: 10px 30px 30px 30px; background: #fff; color: #000; }
 .modal_flat_wide_content { font-family: var(--abctools-font-fallback-ui); margin: 20px 0px;}
 .modal_flat_wide_input { margin: 20px 0px;}
@@ -3328,9 +3013,7 @@ margin-top:-7px;
 
 #configure_box{
 	margin-left:20px;
-	height:42px;
 	margin-top: 9px;
-	padding:12px;
 }
 
 @media (hover: hover) {
@@ -3467,9 +3150,7 @@ margin-top:-7px;
 }
 
 #configure_musicxml_import{
-	height:42px;
 	margin-top: 9px;
-	padding:12px;
 	margin-left:20px;
 }
 
@@ -3480,9 +3161,7 @@ margin-top:-7px;
 }
 
 #configure_developer_settings{
-	height:42px;
 	margin-top: 9px;
-	padding:12px;
 	margin-left:20px;
 }
 
@@ -3493,9 +3172,7 @@ margin-top:-7px;
 }
 
 #configure_fonts{
-	height:42px;
 	margin-top: 9px;
-	padding:12px;
 }
 
 @media (hover: hover) {
@@ -3523,20 +3200,10 @@ margin-top:-7px;
 	display:flex;
 }
 
-#configure_box_advanced{
-	height:42px;
-	padding:12px;
-}
-
 @media (hover: hover) {
 	.configure_box_advanced:hover{
 	background: var(--abctools-ui-btn-hovercolor);
 	}
-}
-
-#injectcustomtab{
-	height:42px;
-	padding:12px;
 }
 
 @media (hover: hover) {
@@ -3545,22 +3212,10 @@ margin-top:-7px;
 	}
 }
 
-#configure_batch_mp3_export{
-	height:42px;
-	padding:12px;
-	margin-left:24px;
-}
-
 @media (hover: hover) {
 	.configure_batch_mp3_export:hover{
 	background: var(--abctools-ui-btn-hovercolor);
 	}
-}
-
-#configure_swing_explorer{
-	height:42px;
-	padding:12px;
-	margin-right:24px;
 }
 
 @media (hover: hover) {
@@ -3569,33 +3224,16 @@ margin-top:-7px;
 	}
 }
 
-#configure_grace_explorer{
-	height:42px;
-	padding:12px;
-}
-
 @media (hover: hover) {
 	.configure_grace_explorer:hover{
 	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 
-#configure_roll_explorer{
-	height:42px;
-	padding:12px;
-	margin-right:24px;
-}
-
 @media (hover: hover) {
 	.configure_roll_explorer:hover{
 	background: var(--abctools-ui-btn-hovercolor);
 	}
-}
-
-#configure_reverb_explorer{
-	height:42px;
-	padding:12px;
-	margin-right:24px;
 }
 
 @media (hover: hover) {
@@ -3605,9 +3243,7 @@ margin-top:-7px;
 }
 
 #configure_anglo_fingerings{
-	height:42px;
 	margin-top: 0;
-	padding:12px;
 }
 
 @media (hover: hover) {
@@ -3617,9 +3253,7 @@ margin-top:-7px;
 }
 
 #configure_anglo_fonts{
-	height:42px;
 	margin-top: 12px;
-	padding:12px;
 }
 
 @media (hover: hover) {
@@ -3629,9 +3263,7 @@ margin-top:-7px;
 }
 
 #default_anglo_fingerings{
-	height:42px;
 	margin-top: 9px;
-	padding:12px;
 }
 
 @media (hover: hover) {
@@ -3641,9 +3273,7 @@ margin-top:-7px;
 }
 
 #inject_tablature_colors{
-	height:42px;
 	margin-top: 12px;
-	padding:12px;
 }
 
 @media (hover: hover) {
@@ -3653,9 +3283,7 @@ margin-top:-7px;
 }
 
 #load_custom_harmonica_tuning{
-	height:42px;
 	margin-top: 9px;
-	padding:12px;
 }
 
 @media (hover: hover) {
@@ -3665,10 +3293,7 @@ margin-top:-7px;
 }
 
 #save_custom_harmonica_tuning{
-	height:42px;
 	margin-top: 9px;
-	padding:12px;
-	margin-right:24px;
 }
 
 @media (hover: hover) {
@@ -3678,9 +3303,7 @@ margin-top:-7px;
 }
 
 #load_custom_anglo_names{
-	height:42px;
 	margin-top: 9px;
-	padding:12px;
 }
 
 @media (hover: hover) {
@@ -3690,10 +3313,7 @@ margin-top:-7px;
 }
 
 #save_custom_anglo_names{
-	height:42px;
 	margin-top: 9px;
-	padding:12px;
-	margin-right:24px;
 }
 
 @media (hover: hover) {
@@ -3703,9 +3323,7 @@ margin-top:-7px;
 }
 
 #configure_harmonica_custom{
-	height:42px;
 	margin-top: 0;
-	padding:12px;
 }
 
 @media (hover: hover) {
@@ -3715,9 +3333,7 @@ margin-top:-7px;
 }
 
 #load_custom_tab{
-	height:42px;
 	margin-top: 9px;
-	padding:12px;
 }
 
 @media (hover: hover) {
@@ -3727,10 +3343,7 @@ margin-top:-7px;
 }
 
 #save_custom_tab{
-	height:42px;
 	margin-top: 9px;
-	padding:12px;
-	margin-right:24px;
 }
 
 @media (hover: hover) {
@@ -3740,9 +3353,7 @@ margin-top:-7px;
 }
 
 #configure_custom_tab{
-	height:42px;
 	margin-top:15px;
-	padding:12px;
 }
 
 @media (hover: hover) {
@@ -3752,9 +3363,7 @@ margin-top:-7px;
 }
 
 #import_website_local{
-	height:42px;
 	margin-top: 9px;
-	padding:12px;
 	margin-right:18px;
 }
 
@@ -3765,9 +3374,7 @@ margin-top:-7px;
 }
 
 #import_website_remote{
-	height:42px;
 	margin-top: 9px;
-	padding:12px;
 }
 
 @media (hover: hover) {
@@ -3783,9 +3390,7 @@ margin-top:-7px;
 }
 
 #import_pdf{
-	height:42px;
 	margin-top: 9px;
-	padding:12px;
 }
 
 @media (hover: hover) {
@@ -3795,9 +3400,7 @@ margin-top:-7px;
 }
 
 #import_csv{
-	height:42px;
 	margin-top: 9px;
-	padding:12px;
 }
 
 @media (hover: hover) {
@@ -3807,9 +3410,7 @@ margin-top:-7px;
 }
 
 #default_musicxml_settings{
-	height:42px;
 	margin-top: 9px;
-	padding:12px;
 }
 
 @media (hover: hover) {
@@ -3819,10 +3420,7 @@ margin-top:-7px;
 }
 
 #load_rendering_fonts{
-	height:42px;
 	margin-top: 9px;
-	padding:12px;
-	margin-right:24px;
 }
 
 @media (hover: hover) {
@@ -3832,10 +3430,7 @@ margin-top:-7px;
 }
 
 #save_rendering_fonts{
-	height:42px;
 	margin-top: 9px;
-	padding:12px;
-	margin-right:24px;
 }
 
 @media (hover: hover) {
@@ -3845,9 +3440,7 @@ margin-top:-7px;
 }
 
 #default_rendering_fonts{
-	height:42px;
 	margin-top: 9px;
-	padding:12px;
 }
 
 @media (hover: hover) {
@@ -4351,8 +3944,6 @@ margin-top:-9px;
 position:absolute;
 left:200px;
 }
-.modal_flat_form_item_label{
-}
 
 .indrag{ 
 background: #CCCCFF;
@@ -4482,7 +4073,6 @@ padding-left:10px;
 
 .abcupload {
 	margin-left: 0;
-	margin-right:12px;
 }
 
 @media (hover: hover) {
@@ -4493,6 +4083,10 @@ padding-left:10px;
 
 .abcuploaddialog {
 	display: inline-block;
+}
+
+.abcuploaddialog.btn-top {
+	background: var(--abctools-color-litelime);
 }
 
 @media (hover: hover) {
@@ -4722,16 +4316,11 @@ margin-top:-7px;
 }
 
 #reverbexplorertest{
-height:42px;
-padding:12px;
 width:auto;
-margin-right:24px;
 opacity: 0.45;
 }
 
 #reverbexplorerinject{
-height:42px;
-padding:12px;
 width:auto;
 margin-left: 0;
 }
@@ -4750,8 +4339,6 @@ top:20px;
 } */
 
 .configuresettingsfromhelp{
-	height:42px;
-	padding:12px !important;
 	width:auto;
 }
 
@@ -5555,13 +5142,15 @@ cursor: pointer;
 }
 
 .external_tools_share:not(.modal-btn-share-player){
-position:absolute;
-/* width:30px;
-height:40px; */
-right:16px;
-top:0.75rem;
-/* padding:4px; */
-display:block;
+	position:absolute;
+	left: calc(50% - 2.2rem / 2);
+	top: 0.75rem;
+	transition:
+	transform 150ms ease-in-out;
+}
+
+.external_tools_share:not(.modal-btn-share-player):is(:hover, :focus-visible) {
+	transform: scale(1.1);
 }
 
 @media (hover: hover) {
@@ -5579,7 +5168,7 @@ display:block;
   cursor: pointer;
 }
 
-.external-tool:hover {
+.external-tool:is(:hover, :focus-visible) {
   border-color: #006999;            /* ABC Tools blue */
   background-color: rgba(0,105,153,0.06);
 }
@@ -5729,8 +5318,7 @@ body.dp-tabs-building .modal_flat_main {
   border-width: 1px;
   font-family: var(--abctools-font-fallback-ui) !important;
   font-size: var(--abctools-font-size-label-s-11) !important;
-  padding: 0.7rem 0.7rem;
-  padding-top: 0.8rem;
+  padding: 0.75rem;
   outline: none;
   position: relative;
   border-radius: 0.55em;
@@ -6368,13 +5956,12 @@ body.dp-tabs-building .modal_flat_main {
 		transform: scale(1.05);
 	}
 
-	.dialogcornerbutton
-	{
-	  transition: transform .1s ease-in-out 0s; 
+	.dialogcornerbutton {
+	  transition: transform .15s ease-in-out;
 	}
 
-	.dialogcornerbutton:is(:hover, :focus, :focus-visible) {
-		transform: scale(1.06);
+	.dialogcornerbutton:not(.modal-link-help-player):is(:hover, :focus, :focus-visible) {
+		transform: scale(1.1);
 	}
 
 	.moresettingsbutton

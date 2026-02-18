@@ -159,6 +159,22 @@ function doPlayerFocus() {
   if (playButton) playButton.focus();
 }
 
+// Shift focus to the specified element
+
+function doFocusElemDelayed(elemSelector, delayMs) {
+
+  const targetEl =
+    document.querySelector(elemSelector);
+
+  if (!targetEl) return;
+
+  setTimeout(() => {
+
+    targetEl.focus();
+
+  }, delayMs);
+}
+
 ////////////////////////////////////////////
 // APP LITE: UI MENU (LEGACY) CUSTOM ITEMS
 ///////////////////////////////////////////
@@ -206,7 +222,7 @@ function openAbcToolsLinks() {
       '</div>' +
       '<div id="tab_tools" class="adv-tab-panel adv-tab-links-container">' +
         // Tools
-        
+        '<button class="saveaswebsite btn btn-top btn-lite-lime" id="saveaswebsite" onclick="generateWebsite();" title="Export Tunebook as Website or Gallery" aria-title="Export Tunebook as Website or Gallery">Export Website</button>' +
       '</div>' +
       '<div id="tab_eskin" class="adv-tab-panel adv-tab-links-container">' + 
         // Michael Eskin

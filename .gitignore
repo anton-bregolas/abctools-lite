@@ -1,6 +1,9 @@
 .DS_Store
 .vscode
+biome.json
 CNAME
 git.diff
+node_modules
 package.json
+package-lock.json
 /dist

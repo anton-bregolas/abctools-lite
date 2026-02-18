@@ -900,7 +900,6 @@ function idleManageSamplesDialog(showActionButtons){
 		                // Load button
 		                const loadButton = document.createElement('input');
 		                loadButton.style.width = "100px";
-		                loadButton.style.height = "36px";
 		                loadButton.style.marginRight = "24px";
 		                loadButton.style.textAlign = "center";
 		                loadButton.style.cursor = "pointer";
@@ -926,7 +925,6 @@ function idleManageSamplesDialog(showActionButtons){
 		                // Delete button
 		                const deleteButton = document.createElement('input');
 		                deleteButton.style.width = "100px";
-		                deleteButton.style.height = "36px";
 		                deleteButton.style.textAlign = "center";
 		                deleteButton.style.cursor = "pointer";
 		                deleteButton.classList.add('btn','btn-deletesamples','managenotes');

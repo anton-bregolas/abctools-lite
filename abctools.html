@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
 		
 		<title>ABC Tools Lite</title>
@@ -118,18 +118,18 @@
 					<!-- name of abc file selected -->
 					<p id="abc-selected" class="abc-selected-title">No ABC file selected</p>
 
-					<div id="fileoperations" class="fileoperations">
+					<div id="fileoperations" class="fileoperations btn-container-space-between">
 						<input type="file" id="selectabcfile" class="selectabcfile" accept=".abc,.txt,.ABC,.TXT,.xml,.XML,.musicxml,.mxl,.MXL,.mid,.MID,.midi,.MIDI,.bww,.BWW" hidden multiple /> 
 						<!--our custom abc file upload button-->
-						<input style="margin-right:8px" class="abcupload btn btn-top" id="openabcfile" title="Opens an existing ABC, MusicXML, BWW, or MIDI file.&nbsp;&nbsp;You may also drag-and-drop ABC, MusicXML, BWW, or MIDI files on the editor area to add them." onclick="fileOpenIntercept(event);" type="button" value="Open"/>
-						<input style="margin-right:8px" class="newabcfile btn btn-top" id="newabcfile" onclick="AddABC();" type="button" value="Add" title="Add your own tunes, restore from a saved snapshot, seach for tunes, re-order tunes, delete tunes, or add examples tunes and song templates to the ABC"/>
-						<input style="margin-right:8px" disabled class="saveabcfiledisabled btn btn-top" id="saveabcfile" onclick="SaveABC();" type="button" value="Save" title="Saves the current ABC text to a file"/>
-						<input style="margin-right:8px" disabled class="saveaspdfdisabled btn btn-top" id="saveaspdf" onclick="PDFExportDialog();" type="button" value="Export PDF" title="Exports a PDF tunebook"/>
-						<input style="margin-right:8px" disabled class="saveaswebsitedisabled btn btn-top" id="saveaswebsite" onclick="generateWebsite();" type="button" value="Export Website" title="Exports the tunebook as a website"/>
-						<input style="margin-right:8px;padding-left:20px;padding-right:20px;" disabled class="playbuttondisabled btn btn-play" id="playbutton" onclick="PlayABC(event);" type="button" value="Play" title="Opens the ABC player with the currently selected tune.&nbsp;&nbsp;Alt-click to play a random tune in the current ABC tunebook.&nbsp;&nbsp;Press F4 to open the Player."/>
-						<input style="margin-right:8px;padding-left:20px;padding-right:20px;" disabled class="playbuttondisabled btn btn-train" id="tunetrainerbutton" onclick="TuneTrainerTopBar();" type="button" value="Train" title="Opens the Tune Trainer with the currently selected tune"/>
-						<input style="margin-right:8px" disabled class="rawmodebuttondisabled btn btn-rawmode-off" id="rawmodebutton" onclick="ToggleRawMode()" type="button" value="Highlighting" title="When On, highlight notation by selecting the ABC text or highlight ABC text by clicking on the notation."/>
-						<input style="padding-left:20px;padding-right:20px" class="morecommands btn btn-top context-menu" id="morecommands" type="button" value="☰" title="Brings up a menu with additional useful commands"/>
+						<input class="abcupload btn btn-top" id="openabcfile" onclick="fileOpenIntercept(event);" type="button" value="Open" title="Open file in ABC, MusicXML, BWW, or MIDI format.&nbsp;&nbsp;Drag-and-drop ABC, MusicXML, BWW, or MIDI files on the Editor area to add them" aria-title="Open file in ABC, MusicXML, BWW, or MIDI format.&nbsp;&nbsp;Drag-and-drop ABC, MusicXML, BWW, or MIDI files on the Editor area to add them"/>
+						<input class="newabcfile btn btn-top" id="newabcfile" onclick="AddABC();" type="button" value="Add" title="Add tunes from file, restore from saved snapshot, search for tunes, add example tunes or song templates to ABC input" aria-title="Add tunes from file, restore from saved snapshot, search for tunes, add example tunes or song templates to ABC input"/>
+						<input disabled class="saveabcfiledisabled btn btn-top" id="saveabcfile" onclick="SaveABC();" type="button" value="Save" title="Save current ABC text to file" aria-title="Save current ABC text to file"/>
+						<input disabled class="saveaspdfdisabled btn btn-top" id="saveaspdf" onclick="PDFExportDialog();" type="button" value="Export PDF" title="Export Tunebook in PDF format" aria-title="Export Tunebook in PDF format"/>
+						<input disabled class="saveaswebsitedisabled btn btn-top" id="saveaswebsite" onclick="generateWebsite();" type="button" value="Export Website" title="Export Tunebook as Website or Gallery" aria-title="Export Tunebook as Website or Gallery"/>
+						<input style="padding-left:20px;padding-right:20px;" disabled class="playbuttondisabled btn btn-play" id="playbutton" onclick="PlayABC(event);" type="button" value="Play" title="Open ABC Player with selected tune.&nbsp;&nbsp;Press F4 to play / pause. Press F3 to rewind.&nbsp;&nbsp;Alt-click to play a random tune from Tunebook" aria-title="Open ABC Player with selected tune.&nbsp;&nbsp;Press F4 to play / pause. Press F3 to rewind.&nbsp;&nbsp;Alt-click to play a random tune from Tunebook"/>
+						<input style="padding-left:20px;padding-right:20px;" disabled class="playbuttondisabled btn btn-train" id="tunetrainerbutton" onclick="TuneTrainerTopBar();" type="button" value="Train" title="Open Tune Trainer with currently selected tune" aria-title="Open Tune Trainer with currently selected tune"/>
+						<input disabled class="rawmodebuttondisabled btn btn-rawmode-off" id="rawmodebutton" onclick="ToggleRawMode()" type="button" value="Highlighting" title="Toggle Highlighting mode. When ON, select ABC text to highlight notation or click on notation to highlight ABC text" aria-title="Toggle Highlighting mode. When ON, select ABC text to highlight notation or click on notation to highlight ABC text"/>
+						<input style="padding-left:20px;padding-right:20px" class="morecommands btn btn-top context-menu" id="morecommands" type="button" value="☰" title="Open Context Menu with additional useful commands" aria-title="Open Context Menu with additional useful commands"/>
 					</div>
 
 					<div id="inputarea" class="inputarea">
@@ -145,40 +145,35 @@
 
 				<div id="notenrechts" class="notenrechts hidden-print">
 
-					<div id="tabs-selection" class="tabs-selection toggle-buttons">
-
-						<input type="radio" id="b1" value="noten" name="notenodertab" class="hidebutton" onclick="ChangeTab()"/>
-						<label for="b1" class="btn btn-tab" title="Shows standard music notation" style="margin-right:16px;">Notation</label>
-						<input type="radio" id="b2" value="notenames" name="notenodertab" class="hidebutton" onclick="ChangeTab()"/>
-						<label for="b2" class="btn btn-tab" title="Shows note names tablature" style="margin-right:16px;">Names</label>
-						<input type="radio" id="b3" value="mandolin" name="notenodertab" class="hidebutton" onclick="ChangeTab()"/>
-						<label for="b3" class="btn btn-tab" title="Shows GDAE Mandolin tablature" style="margin-right:16px;">Mandolin</label>
-						<input type="radio" id="b4" value="gdad" name="notenodertab" class="hidebutton" onclick="ChangeTab()"/>
-						<label for="b4" class="btn btn-tab" id="b4label" title="Shows GDAD Bouzouki tablature" style="margin-right:16px;">GDAD</label>
-						<input type="radio" id="b5" value="cgdae" name="notenodertab" class="hidebutton" onclick="ChangeTab()"/>
-						<label for="b5" class="btn btn-tab" id="b5label" title="Shows CGDAE 5-string Fiddle tablature" style="margin-right:16px;">CGDAE</label>
-						<input type="radio" id="b6" value="guitare" name="notenodertab" class="hidebutton" onclick="ChangeTab()"/>
-						<label for="b6" class="btn btn-tab" title="Shows standard EADGBE Guitar tablature" style="margin-right:16px;">Guitar</label>
-						<input type="radio" id="b7" value="guitard" name="notenodertab" class="hidebutton" onclick="ChangeTab()"/>
-						<label for="b7" class="btn btn-tab" title="Shows DADGAD Guitar tablature" style="margin-right:16px;">DADGAD</label>
-						<input type="radio" id="b8" value="uke" name="notenodertab" class="hidebutton" onclick="ChangeTab()">
-						<label for="b8" class="btn btn-tab" title="Shows Ukulele tablature (G string used for notes lower than C)"  style="margin-right:16px;">Uke</label>
-						<input type="radio" id="b9" value="whistle" name="notenodertab" class="hidebutton" onclick="ChangeTab()"/>
-						<label for="b9" class="btn btn-tab" id="b9label" title="Shows Tin Whistle (D) tablature" style="margin-right:0px;">Whistle</label>
-
-					</div>
-
-					<div id="transpose-controls" class="transpose-controls">
-
-						<input class="transposedown btn btn-transpose" id="transposedown" onclick="TransposeDown(event)" type="button" value="Transpose Down" title="Transposes the selected tunes down one semitone.&nbsp;&nbsp; Shift-click transposes down one full step.&nbsp;&nbsp;Alt-click transposes down one octave."/>
-						<input class="transposeup btn btn-transpose" id="transposeup" onclick="TransposeUp(event)" type="button" value="Transpose Up" title="Transposes the selected tunes up one semitone.&nbsp;&nbsp;Shift-click transposes up one full step.&nbsp;&nbsp;Alt-click transposes up one octave."/>
-						<input class="snapshotbutton btn btn-snapshotbutton" id="snapshotbutton" onclick="SaveSnapshot(event);" type="button" value="Snapshot" title="Saves a Snapshot of the contents of the ABC editor to browser storage.&nbsp;&nbsp;Click for Snapshot #1, Shift-click for Snapshot #2, Alt-click for Snapshot #3, Shift-Alt-click for Snapshot #4."/>
-						<input class="restorebutton btn btn-restorebutton" id="restorebutton" onclick="RestoreSnapshot(event,false,false);" type="button" value="Restore" title="Replaces the contents of the ABC editor with a Snapshot saved in browser storage.&nbsp;&nbsp;Click for Snapshot #1, Shift-click for Snapshot #2, Alt-click for Snapshot #3, Shift-Alt-click for Snapshot #4."/>
-						<input class="toggleadvancedcontrols btn btn-toggleadvancedcontrols" id="toggleadvancedcontrols" onclick="AdvancedControlsDialog()" type="button" value="More Tools" title="Shows the More ABC Tools dialog where you can hide or strip chords and other ABC annotations, inject instrument tablature, as well as perform other ABC operations"/>
-						<input class="togglesharecontrols btn btn-togglesharecontrols" id="togglesharecontrols" onclick="SharingControlsDialog()" type="button" value="Sharing"  title="Shows the Sharing dialog"/>
-						<input class="clearbutton btn btn-clearbutton" id="clearbutton" onclick="Clear()" type="button" value="Clear" title="Clears all the ABC"/>
-
-					</div>
+						<div id="tabs-selection" class="tabs-selection toggle-buttons btn-container-space-between">
+							<input type="radio" id="b1" value="noten" name="notenodertab" class="hidebutton" onclick="ChangeTab()"/>
+							<label for="b1" class="btn btn-tab" title="Show standard music notation">Notation</label>
+							<input type="radio" id="b2" value="notenames" name="notenodertab" class="hidebutton" onclick="ChangeTab()"/>
+							<label for="b2" class="btn btn-tab" title="Show note names tablature">Names</label>
+							<input type="radio" id="b3" value="mandolin" name="notenodertab" class="hidebutton" onclick="ChangeTab()"/>
+							<label for="b3" class="btn btn-tab" title="Show GDAE Mandolin tablature">Mandolin</label>
+							<input type="radio" id="b4" value="gdad" name="notenodertab" class="hidebutton" onclick="ChangeTab()"/>
+							<label for="b4" class="btn btn-tab" id="b4label" title="Show GDAD Bouzouki tablature">GDAD</label>
+							<input type="radio" id="b5" value="cgdae" name="notenodertab" class="hidebutton" onclick="ChangeTab()"/>
+							<label for="b5" class="btn btn-tab" id="b5label" title="Show CGDAE 5-string Fiddle tablature">CGDAE</label>
+							<input type="radio" id="b6" value="guitare" name="notenodertab" class="hidebutton" onclick="ChangeTab()"/>
+							<label for="b6" class="btn btn-tab" title="Show standard EADGBE Guitar tablature">Guitar</label>
+							<input type="radio" id="b7" value="guitard" name="notenodertab" class="hidebutton" onclick="ChangeTab()"/>
+							<label for="b7" class="btn btn-tab" title="Show DADGAD Guitar tablature">DADGAD</label>
+							<input type="radio" id="b8" value="uke" name="notenodertab" class="hidebutton" onclick="ChangeTab()">
+							<label for="b8" class="btn btn-tab" title="Show Ukulele tablature (G string used for notes lower than C)" >Uke</label>
+							<input type="radio" id="b9" value="whistle" name="notenodertab" class="hidebutton" onclick="ChangeTab()"/>
+							<label for="b9" class="btn btn-tab" id="b9label" title="Show Tin Whistle (D) tablature">Whistle</label>
+						</div>
+						<div id="transpose-controls" class="transpose-controls btn-container-space-between">
+							<input class="transposedown btn btn-transpose" id="transposedown" onclick="TransposeDown(event)" type="button" value="Transpose Down" title="Transpose the selected tunes down one semitone.&nbsp;&nbsp; Shift-click transposes down one full step.&nbsp;&nbsp;Alt-click transposes down one octave"/>
+							<input class="transposeup btn btn-transpose" id="transposeup" onclick="TransposeUp(event)" type="button" value="Transpose Up" title="Transpose the selected tunes up one semitone.&nbsp;&nbsp;Shift-click transposes up one full step.&nbsp;&nbsp;Alt-click transposes up one octave"/>
+							<input class="snapshotbutton btn btn-snapshotbutton" id="snapshotbutton" onclick="SaveSnapshot(event);" type="button" value="Snapshot" title="Save a Snapshot of the contents of the ABC editor to browser storage.&nbsp;&nbsp;Click for Snapshot #1, Shift-click for Snapshot #2, Alt-click for Snapshot #3, Shift-Alt-click for Snapshot #4"/>
+							<input class="restorebutton btn btn-restorebutton" id="restorebutton" onclick="RestoreSnapshot(event,false,false);" type="button" value="Restore" title="Replace the contents of the ABC editor with a Snapshot saved in browser storage.&nbsp;&nbsp;Click for Snapshot #1, Shift-click for Snapshot #2, Alt-click for Snapshot #3, Shift-Alt-click for Snapshot #4"/>
+							<input class="toggleadvancedcontrols btn btn-toggleadvancedcontrols" id="toggleadvancedcontrols" onclick="AdvancedControlsDialog()" type="button" value="More Tools" title="Show More ABC Tools dialog: Strip chords and annotations, inject instrument tablature, perform various operations with current ABC"/>
+							<input class="togglesharecontrols btn btn-togglesharecontrols" id="togglesharecontrols" onclick="SharingControlsDialog()" type="button" value="Sharing"  title="Show the Sharing dialog"/>
+							<input class="clearbutton btn btn-clearbutton" id="clearbutton" onclick="Clear()" type="button" value="Clear" title="Clear all ABC text"/>
+						</div>
 
 				</div>
 				
@@ -196,9 +191,9 @@
 
 					<p id="notation-placeholder-text-2" class="notation-placeholder-text-2">Click <strong>Search for Tunes</strong> to find tunes by name.</p>
 
-				<input class="notation-placeholder-button btn btn-placeholder" style="margin-right:18px" onclick="showWelcomeScreen();" type="button" value="Introduction" title="Shows Welcome Screen Instructions"/>
+				<input class="notation-placeholder-button btn btn-placeholder" style="margin-right:18px" onclick="showWelcomeScreen();" type="button" value="Introduction" title="Show Welcome Screen Instructions"/>
 				
-				<input class="notation-placeholder-button btn btn-placeholder" onclick="showWhatsNewScreen();" type="button" value="What's New" title="Shows the latest update info dialog"/>
+				<input class="notation-placeholder-button btn btn-placeholder" onclick="showWhatsNewScreen();" type="button" value="What's New" title="Show the latest update info dialog"/>
 			
 			</div>
 			
@@ -270,6 +265,9 @@
 							<path transform="scale(0.95)" d="M11 2.82a1 1 0 0 1 .804-.98l3-.6A1 1 0 0 1 16 2.22V4l-5 1z"/>
 							<path fill-rule="evenodd" d="M0 11.5a.5.5 0 0 1 .5-.5H4a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5m0-4A.5.5 0 0 1 .5 7H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5m0-4A.5.5 0 0 1 .5 3H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5"/>
 					</g>
+			</symbol>
+			<symbol fill="currentColor" viewBox="0 0 16 16" id="lite-icon-x">
+					<path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"></path>
 			</symbol>
 		</svg>
 	
