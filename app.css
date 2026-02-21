@@ -687,6 +687,28 @@ margin-top:10px;
 	}
 }
 
+#abcplayer_updatebutton_d{
+margin-top:10px;
+}
+
+@media (hover: hover) {
+	.abcplayer_updatebutton_d:hover{
+	background: palegreen;
+	}
+}
+
+#abcplayer_updatebutton_d{
+height:42px;
+padding:12px;
+margin-top:10px;
+}
+
+@media (hover: hover) {
+	.abcplayer_updatebutton_d:hover{
+	background: palegreen;
+	}
+}
+
 #abcplayer_trainer{
 	margin-top: 9px;
 	margin-right:20px;
@@ -1107,7 +1129,6 @@ top:20px;
 #looperreset{
 width:auto;
 margin-right:18px;
-opacity: 0.45;
 }
 
 #trainer_phrase_builder{
@@ -5169,6 +5190,32 @@ cursor: pointer;
 }
 
 .external-tool:is(:hover, :focus-visible) {
+  border-color: #006999;            /* ABC Tools blue */
+  background-color: rgba(0,105,153,0.06);
+}
+
+.tuning-tool {
+  padding: 8px;
+  border: 2px solid transparent;   /* prevents layout shift */
+  border-radius: 6px;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  cursor: pointer;
+}
+
+.tuning-tool:hover {
+  border-color: #006999;            /* ABC Tools blue */
+  background-color: rgba(0,105,153,0.06);
+}
+
+.tuning-tool {
+  padding: 8px;
+  border: 2px solid transparent;   /* prevents layout shift */
+  border-radius: 6px;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  cursor: pointer;
+}
+
+.tuning-tool:hover {
   border-color: #006999;            /* ABC Tools blue */
   background-color: rgba(0,105,153,0.06);
 }

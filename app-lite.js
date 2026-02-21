@@ -6,7 +6,7 @@
 ///////////////////////////////////////////////////////////////////////
 
 // Custom global variables / constants
-var gLiteVersionNumber = 'lite-3129-11';
+var gLiteVersionNumber = 'lite-3177-1';
 
 var ABC_TOOLS_BASE_URL =
   window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
@@ -223,6 +223,8 @@ function openAbcToolsLinks() {
       '<div id="tab_tools" class="adv-tab-panel adv-tab-links-container">' +
         // Tools
         '<button class="saveaswebsite btn btn-top btn-lite-lime" id="saveaswebsite" onclick="generateWebsite();" title="Export Tunebook as Website or Gallery" aria-title="Export Tunebook as Website or Gallery">Export Website</button>' +
+        '<button class="saveaswebsite btn btn-top btn-lite-lime" id="opentuningtools" onclick="TuningTools();" title="Open Michael Eskin\'s Tuning Tools" aria-title="Open Michael Eskin\'s Tuning Tools">Tuning Tools</button>' +
+        '<button class="saveaswebsite btn btn-top btn-lite-lime" id="opentsoscraper" onclick="MustardScraper();" title="Open Michael Eskin\'s The Session Scraper" aria-title="Open Michael Eskin\'s The Session Scraper">Mustard Scraper</button>' +
       '</div>' +
       '<div id="tab_eskin" class="adv-tab-panel adv-tab-links-container">' + 
         // Michael Eskin

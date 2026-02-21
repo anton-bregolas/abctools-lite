@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Audio Input Tester" />
+  <meta property="og:description" content="3-step audio input tester for the Chromatic Tuner and RTTA utilities: background noise, level range, and continuous tone test." />
+  <meta property="og:url" content="https://abc.tunebook.app/tools/audiotest.html" />
+  <meta property="og:site_name" content="Audio Input Tester" />
+	<meta property="og:image" content="../img/abclite-icon-512x512.png" />
+	<meta name="theme-color" content="#181818">
+	<meta name="apple-mobile-web-app-title" content="Tools Lite">
+	<meta name="application-name" content="Tools Lite">
+	<link rel="icon" href="../favicon.ico" sizes="any">
+	<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+	<link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+	<link rel="manifest" href="../img/abc-manifest.json">
+
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-VM0N9HL3MK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-VM0N9HL3MK');
+  </script> -->
+
+  <title>Audio Input Tester</title>
+
+  <style>
+    :root{
+      --accent:#00f2ff;
+      --bg:#0f0f0f;
+      --panel:#1a1a1a;
+      --text:#e0e0e0;
+      --ui-max: 800px;
+
+      --ok-bg: #0c2a14;
+      --ok-br: #2bd16a;
+      --ok-tx: #caffdd;
+
+      --fail-bg: #2a0c10;
+      --fail-br: #ff3e3e;
+      --fail-tx: #ffd7d7;
+
+      --meas-bg: #201a08;
+      --meas-br: #ffd34d;
+      --meas-tx: #fff0c2;
+    }
+
+    body{
+      font-family:'Segoe UI',sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      margin:0;
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+    }
+    
+    a{
+      color:#9DFFD0;
+      text-decoration:underline;
+    }
+
+    #tuner-ui{
+      background:var(--panel);
+      border-radius:16px;
+      padding:22px;
+      box-shadow:0 20px 50px rgba(0,0,0,0.7);
+      width:100%;
+      text-align:center;
+      border:1px solid #333;
+      position:relative;
+      max-width: var(--ui-max);
+    }
+
+    /* instructions (?) button */
+    #help-btn{
+      position:absolute;
+      top:-8px;
+      left:0px;
+      width:52px;
+      height:52px;
+      border:0;
+      color:#e8e8e8;
+      font-weight:900;
+      font-size:1.75rem;
+      line-height:52px;
+      text-align:center;
+      cursor:pointer;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+      background:transparent;
+    }
+    @media (hover:hover) and (pointer:fine){
+      #help-btn{ transition: filter 125ms ease; }
+      #help-btn:hover{ filter: brightness(1.5); }
+      #help-btn:active{ filter: brightness(1.0); }
+    }
+
+    /* instructions modal */
+    #instructions-overlay{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.65);
+      z-index:9999;
+      padding:16px;
+      box-sizing:border-box;
+    }
+    #instructions-modal{
+      max-width:700px;
+      width:100%;
+      margin:0 auto;
+      background:var(--panel);
+      border:1px solid #333;
+      border-radius:16px;
+      box-shadow:0 20px 50px rgba(0,0,0,0.7);
+      padding:18px;
+      box-sizing:border-box;
+      position:relative;
+      text-align:left;
+      display:flex;
+      flex-direction:column;
+      max-height: calc(100vh - 32px - 6vh);
+    }
+    #instructions-title{
+      font-size:1.25rem;
+      font-weight:900;
+      margin:0 0 12px 0;
+      color:#e0e0e0;
+      text-align:center;
+    }
+    #instructions-scroll{
+      flex:1 1 auto;
+      overflow:auto;
+      -webkit-overflow-scrolling: touch;
+      border:1px solid #2a2a2a;
+      border-radius:12px;
+      padding:12px;
+      background:#0b0b0b;
+    }
+    #instructions-close{
+      width:100%;
+      margin-top:12px;
+      padding:14px 18px;
+      border:1px solid #333;
+      font-weight:900;
+      cursor:pointer;
+      font-size:1.15rem;
+      background:black;
+      color:#fff;
+      border-radius:12px;
+    }
+    .instructions-subtitle{
+      font-weight:900;
+      font-size:1.1rem;
+      margin:0 0 10px 0;
+      color:#f0f0f0;
+    }
+    .instructions-subbody{
+      margin:0 0 14px 0;
+      color:#e6e6e6;
+      line-height:1.6;
+      font-size:1.0rem;
+    }
+
+    /* RESULTS modal (same style as instructions) */
+    #results-overlay{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.65);
+      z-index:10000; /* above instructions */
+      padding:16px;
+      box-sizing:border-box;
+    }
+    #results-modal{
+      max-width:700px;
+      width:100%;
+      margin:0 auto;
+      background:var(--panel);
+      border:1px solid #333;
+      border-radius:16px;
+      box-shadow:0 20px 50px rgba(0,0,0,0.7);
+      padding:18px;
+      box-sizing:border-box;
+      position:relative;
+      text-align:left;
+      display:flex;
+      flex-direction:column;
+      max-height: calc(100vh - 32px - 6vh);
+      transform: translateY(66px);
+    }
+    #results-title{
+      font-size:1.25rem;
+      font-weight:900;
+      margin:0 0 12px 0;
+      color:#e0e0e0;
+      text-align:center;
+    }
+    #results-scroll{
+      flex:1 1 auto;
+      overflow:auto;
+      -webkit-overflow-scrolling: touch;
+      border:1px solid #2a2a2a;
+      border-radius:12px;
+      padding:12px;
+      background:#0b0b0b;
+    }
+    #results-ok{
+      width:100%;
+      margin-top:12px;
+      padding:14px 18px;
+      border:1px solid #333;
+      font-weight:900;
+      cursor:pointer;
+      font-size:1.15rem;
+      background:black;
+      color:#fff;
+      border-radius:12px;
+    }
+
+    /* optional summary helpers */
+    .summary-row{
+      display:grid;
+      grid-template-columns: 1fr 140px 1fr; /* label | status | details (aligned) */
+      align-items:center;
+      column-gap:14px;
+      margin: 12px 0;
+    }
+    .summary-label{
+      font-weight:900;
+      color:#e6e6e6;
+    }
+    .summary-status{
+      display:flex;
+      justify-content:flex-start;
+      align-items:center;
+      min-width:140px; /* keeps PASS/FAIL column aligned */
+    }
+    .summary-detail{
+      color:#e6e6e6;
+    }
+
+    .summary-pill{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:8px;
+      border:1px solid #333;
+      background:#0b0b0b;
+      color:#e8e8e8;
+      font-weight:900;
+      font-size:0.86rem;
+      letter-spacing:0.4px;
+      white-space:nowrap;
+      width: 128px;           /* FIXED width => vertical alignment */
+      text-align:center;      /* centered text */
+      box-sizing:border-box;
+    }
+    .summary-pill.ok{
+      background: var(--ok-bg);
+      border-color: var(--ok-br);
+      color: var(--ok-tx);
+    }
+    .summary-pill.warn{
+      background: var(--meas-bg);
+      border-color: var(--meas-br);
+      color: var(--meas-tx);
+    }
+    .summary-pill.bad{
+      background: var(--fail-bg);
+      border-color: var(--fail-br);
+      color: var(--fail-tx);
+    }
+
+    h1{
+      margin:0 0 8px 0;
+      font-size:1.6rem;
+      line-height:1.1;
+      font-weight:900;
+      letter-spacing:0.4px;
+      color:#e0e0e0;
+    }
+
+    .pillrow{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:14px;
+      margin-bottom:12px;
+    }
+    .pill{
+      display:inline-block;
+      padding:8px 12px;
+      border-radius:8px;
+      border:1px solid #333;
+      background:#0b0b0b;
+      color:#e8e8e8;
+      font-weight:900;
+      font-size:0.90rem;
+      letter-spacing:0.4px;
+      opacity:0.98;
+      min-width: 160px;
+      text-align:center;
+    }
+
+    .pill.ok{
+      background: var(--ok-bg);
+      border-color: var(--ok-br);
+      color: var(--ok-tx);
+      box-shadow: 0 0 0 2px rgba(43,209,106,0.18), 0 10px 24px rgba(0,0,0,0.35);
+    }
+    .pill.warn{
+      background: var(--meas-bg);
+      border-color: var(--meas-br);
+      color: var(--meas-tx);
+      box-shadow: 0 0 0 2px rgba(255,211,77,0.14), 0 10px 24px rgba(0,0,0,0.35);
+    }
+    .pill.bad{
+      background: var(--fail-bg);
+      border-color: var(--fail-br);
+      color: var(--fail-tx);
+      box-shadow: 0 0 0 2px rgba(255,62,62,0.18), 0 10px 24px rgba(0,0,0,0.35);
+    }
+
+    #headline{
+      font-size:1.35rem;
+      font-weight:900;
+      margin:8px 0 6px 0;
+      color:#fff;
+      text-shadow:0 0 16px rgba(0,242,255,0.18);
+    }
+    #subhead{
+      margin:0 0 12px 0;
+      color:#ddd;
+      opacity:0.9;
+      line-height:1.45;
+    }
+
+    #graphWrap{
+      border:1px solid #333;
+      background:#000;
+      border-radius:12px;
+      overflow:hidden;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
+    }
+    canvas{
+      display:block;
+      width:100%;
+      height:260px;
+    }
+
+    .legend{
+      margin-top:10px;
+      font-family:ui-monospace, Menlo, Consolas, monospace;
+      font-size:0.92rem;
+      color:#bbb;
+      text-align:left;
+      line-height:1.45;
+      padding:10px 10px;
+      border:1px solid #2a2a2a;
+      border-radius:12px;
+      background:#070707;
+      height: calc(1.45em * 5);
+      overflow: hidden;
+    }
+
+    #mic-error{
+      display:none;
+      margin: 10px 0 4px;
+      padding: 12px 12px;
+      border-radius: 12px;
+      text-align: left;
+      font-weight: 900;
+      font-size: 0.98rem;
+      line-height: 1.35;
+      color: #ffecec;
+      background: #3a0f12;
+      border: 1px solid #7a2b30;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+    }
+
+    .btnrow{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+      margin-top:12px;
+    }
+
+    button{
+      padding:14px 18px;
+      border:none;
+      border-radius:12px;
+      font-weight:900;
+      cursor:pointer;
+      transition:.2s;
+      width:100%;
+      font-size:1.15rem;
+    }
+    .btn-main{ background:var(--accent); color:#000; }
+    .btn-secondary{
+      background:#0b0b0b;
+      border:1px solid #333;
+      color:#e8e8e8;
+    }
+    button[disabled]{
+      opacity:0.55;
+      cursor:not-allowed;
+      filter: grayscale(0.15);
+    }
+
+    #stepPill,
+    #stepStatusPill{
+      font-size: 0.90rem;
+      line-height: 1.15;
+      letter-spacing: 0.4px;
+      font-weight: 900;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+
+    @media (hover:hover) and (pointer:fine){
+      .btn-main{ transition: filter 125ms ease; }
+      .btn-main:hover{ filter: brightness(1.75); }
+      .btn-main:active{ filter: brightness(1.0); }
+      .btn-secondary{ transition: filter 125ms ease; }
+      .btn-secondary:hover{ filter: brightness(1.35); }
+      .btn-secondary:active{ filter: brightness(1.0); }
+    }
+
+    @media (max-width: 600px){
+      body{ padding:12px; }
+      #tuner-ui{ padding:16px; border-radius:14px; }
+      h1{ font-size:1.25rem; }
+      canvas{ height:240px; }
+      button{ font-size:1.2rem; padding:16px 18px; }
+      #help-btn{top:-16px;left:0px; }
+      .btnrow{ grid-template-columns: 1fr; }
+      .pill{ min-width: 0; flex: 1 1 auto; }
+
+      /* On narrow screens, allow grid to wrap naturally */
+      .summary-row{
+        grid-template-columns: 1fr;
+        row-gap:8px;
+      }
+      .summary-status{
+        min-width: 0;
+      }
+      .summary-pill{
+        width: 140px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="tuner-ui">
+
+    <button id="help-btn" title="Instructions">?</button>
+
+    <!-- Instructions -->
+    <div id="instructions-overlay" aria-hidden="true">
+      <div id="instructions-modal" role="dialog" aria-modal="true" aria-label="Instructions">
+        <div id="instructions-title">Instructions</div>
+        <div id="instructions-scroll">
+          <div id="instructions-body">
+            <div class="instructions-subtitle">Purpose</div>
+            <div class="instructions-subbody">
+              This tool can be used to help you make sure that the audio input settings on your system are optimal for using the Chromatic Tuner and Real Time Tuning Analysis (RTTA) web utilities.
+            </div>
+
+            <hr style="border:0; border-top:1px solid #2a2a2a; margin: 14px 0 14px 0;"/>
+
+            <div class="instructions-subtitle">Three quick checks:</div>
+            <div class="instructions-subbody">
+              <b>Step 1:</b><br/>Stay quiet for a few seconds so the tool can measure the background noise level.<br/><br/>
+              <b>Step 2:</b><br/>Play a normal note.<br/>Only clearly clipping audio fails this step.<br/>The status will show <b>PASS</b> after the level stays in-range for <b>2.5 seconds</b>.<br/><br/>
+              <b>Step 3:</b><br/>Hold a steady tone.<br/>If the tone stays “present” for <b>2.5 seconds</b> or more, you pass.
+            </div>
+
+            <hr style="border:0; border-top:1px solid #2a2a2a; margin: 14px 0 14px 0;"/>
+
+            <div class="instructions-subtitle">What the graph shows:</div>
+            <div class="instructions-subbody">
+              The graph is the incoming audio level over time (RMS).<br/>Horizontal lines show the measured noise floor, test pass mimimum level, optimal maximum level,
+              plus a “clipping risk” line (Steps 2 and 3).
+            </div>
+
+            <hr style="border:0; border-top:1px solid #2a2a2a; margin: 14px 0 14px 0;"/>
+
+            <div class="instructions-subtitle">Why different devices can disagree:</div>
+            <div class="instructions-subbody">
+              Some phones and laptops apply their own microphone processing (noise reduction, compression, voice enhancement).<br/><br/>
+              A web app can request raw audio, but it can’t always force the device to provide it.
+            </div>
+
+            <hr style="border:0; border-top:1px solid #2a2a2a; margin: 14px 0 14px 0;"/>
+
+            <div class="instructions-subtitle">Tip Jars</div>
+            <div class="instructions-subbody">
+              This tool was created by <a href="https://michaeleskin.com" target="_blank">Michael Eskin</a>.<br/>
+              If you find it useful, please consider making a contribution via my online tip jars:<br/><br/>
+
+              <div style="text-align: center">
+                <a href="https://michaeleskin.com/abctools/tipjars.html" target="_blank">Michael Eskin's Tip Jars</a><br/><br/>
+              </div>
+            </div>
+
+            <hr style="border:0; border-top:1px solid #2a2a2a; margin: 14px 0 14px 0;"/>
+
+            <div class="instructions-subtitle">Source Code</div>
+            <div class="instructions-subbody">
+              The full source code for this tool is available on my GitHub repository.<br/>
+              The source is completely contained in the one file: <b>audiotest.html</b>:<br/><br/>
+
+              <div style="text-align: center">
+                <a href="https://github.com/seisiuneer/abctools/tree/main/tools" target="_blank">Michael Eskin's GitHub Repository</a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <button id="instructions-close" type="button">CLOSE</button>
+      </div>
+    </div>
+
+    <!-- Results Summary (shown after Step 3 completes) -->
+    <div id="results-overlay" aria-hidden="true">
+      <div id="results-modal" role="dialog" aria-modal="true" aria-label="Test Results Summary">
+        <div id="results-title">Test Results</div>
+        <div id="results-scroll">
+          <div id="results-body"></div>
+        </div>
+        <button id="results-ok" type="button">OK</button>
+      </div>
+    </div>
+
+    <h1 title="This utility was developed by Michael Eskin - https://michaeleskin.com">Audio Input Tester</h1>
+
+    <div class="pillrow">
+      <div class="pill" id="stepPill">STEP 1 of 3</div>
+      <div class="pill warn" id="stepStatusPill">Not started</div>
+    </div>
+
+    <div id="headline">Click START</div>
+    <div id="subhead">You may need to give your browser permission to access the microphone.</div>
+
+    <div id="mic-error"></div>
+
+    <div id="graphWrap">
+      <canvas id="graph" width="900" height="360"></canvas>
+    </div>
+
+    <div class="legend" id="legend">
+      Waiting…
+    </div>
+
+    <div class="btnrow">
+      <button id="next-btn" class="btn-secondary" type="button" disabled>NEXT STEP</button>
+      <button id="start-btn" class="btn-main" type="button">START</button>
+    </div>
+
+    <div class="btnrow" style="margin-top:10px;">
+      <button id="retry-btn" class="btn-secondary" type="button" disabled>RETRY STEP</button>
+      <button id="stop-btn" class="btn-secondary" type="button" disabled>STOP</button>
+    </div>
+  </div>
+
+<script>
+  // ==========
+  // CONFIG
+  // ==========
+  const STEP1_QUIET_SECONDS = 5.0;
+
+  // Step 2: only fail when clearly clipping risk
+  const CLIP_FAIL_RMS = 0.22;
+
+  // Step 2: require hearing in "pass zone" for at least 1s before showing PASS
+  const STEP2_PASS_ZONE_MIN_RMS = 0.030;     // "audible / usable" (not ultra-quiet)
+  const STEP2_PASS_ZONE_MAX_RMS = 0.160;     // still well below clip line
+  const STEP2_PASS_HOLD_SECONDS = 2.5;
+
+  // Step 3: continuous tone "present" for 2.5 seconds => PASS.
+  const TONE_CONTINUOUS_PASS_SECONDS = 2.5;
+
+  // Tone-present detection uses: max(MIN_PRESENT, noiseFloor * mult + offset)
+  const MIN_TONE_PRESENT_RMS = 0.020;
+  const TONE_PRESENT_MULT = 3.0;
+  const TONE_PRESENT_OFFSET = 0.003;
+
+  // Cap the tone-present threshold so high noise floors don't make Step 3 impossible
+  const MAX_TONE_PRESENT_THRESHOLD_RMS = 0.080;  // adjust if needed (0.07–0.10 typical)
+
+  // Graph buffer
+  const GRAPH_SECONDS = 8.0;
+  const FPS = 30;
+  const SAMPLES = Math.floor(GRAPH_SECONDS * FPS);
+
+  let iosInputGainNode = null;
+  let iosCompressorNode = null;
+
+  const IS_IOS = (() => {
+    const ua = navigator.userAgent || "";
+    const iOSUA = /iPad|iPhone|iPod/.test(ua);
+    const iPadOS = (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    return iOSUA || iPadOS;
+  })();
+
+  const IOS_INPUT_GAIN = 3.0;
+
+  // ==========
+  // DOM
+  // ==========
+  const helpBtn = document.getElementById("help-btn");
+  const instructionsOverlay = document.getElementById("instructions-overlay");
+  const instructionsClose = document.getElementById("instructions-close");
+
+  const resultsOverlay = document.getElementById("results-overlay");
+  const resultsOk = document.getElementById("results-ok");
+  const resultsBody = document.getElementById("results-body");
+
+  const startBtn = document.getElementById("start-btn");
+  const nextBtn  = document.getElementById("next-btn");
+  const retryBtn = document.getElementById("retry-btn");
+  const stopBtn  = document.getElementById("stop-btn");
+
+  const stepPill = document.getElementById("stepPill");
+  const stepStatusPill = document.getElementById("stepStatusPill");
+
+  const headline = document.getElementById("headline");
+  const subhead  = document.getElementById("subhead");
+  const legend   = document.getElementById("legend");
+  const micErrorEl = document.getElementById("mic-error");
+
+  const canvas = document.getElementById("graph");
+  const ctx = canvas.getContext("2d");
+
+  function showMicError(html){
+    micErrorEl.innerHTML = html;
+    micErrorEl.style.display = "block";
+  }
+  function hideMicError(){
+    micErrorEl.innerHTML = "";
+    micErrorEl.style.display = "none";
+  }
+  function escapeHTML(s){
+    return String(s).replace(/[&<>"']/g, ch => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[ch]));
+  }
+  function micErrorMessageFromException(err){
+    const name = (err && err.name) ? err.name : "";
+    const base = "Microphone access failed.";
+    if (name === "NotAllowedError" || name === "PermissionDeniedError") {
+      return "Microphone access permission was denied.<br/><br/>Reload the page, click <b>START</b>, and allow microphone access when asked by your browser.";
+    }
+    if (name === "NotFoundError" || name === "DevicesNotFoundError") {
+      return "No microphone was found.<br/><br/>Please connect/select a microphone and try again.";
+    }
+    if (name === "NotReadableError" || name === "TrackStartError") {
+      return "Your microphone is in use by another app or unavailable.<br/><br/>Close other apps using the mic and try again.";
+    }
+    return (err && err.message) ? `${base}<br/>${escapeHTML(err.message)}` : base;
+  }
+
+  function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
+
+  function setPillState(el, state){
+    el.classList.remove("ok","warn","bad");
+    if (state) el.classList.add(state);
+  }
+
+  // ==========
+  // Modal: Instructions
+  // ==========
+  function openInstructions(){
+    instructionsOverlay.style.display = "block";
+    instructionsOverlay.setAttribute("aria-hidden", "false");
+  }
+  function closeInstructions(){
+    instructionsOverlay.style.display = "none";
+    instructionsOverlay.setAttribute("aria-hidden", "true");
+  }
+  helpBtn.addEventListener("click", openInstructions);
+  instructionsClose.addEventListener("click", closeInstructions);
+  instructionsOverlay.addEventListener("click", (e)=>{ if (e.target === instructionsOverlay) closeInstructions(); });
+
+  // ==========
+  // Modal: Results Summary
+  // ==========
+  function openResults(){
+    resultsOverlay.style.display = "block";
+    resultsOverlay.setAttribute("aria-hidden", "false");
+  }
+  function closeResults(){
+    resultsOverlay.style.display = "none";
+    resultsOverlay.setAttribute("aria-hidden", "true");
+  }
+  resultsOk.addEventListener("click", closeResults);
+  resultsOverlay.addEventListener("click", (e)=>{ if (e.target === resultsOverlay) closeResults(); });
+
+  // Single Escape handler: close Results first (if open), otherwise close Instructions
+  document.addEventListener("keydown", (e)=>{
+    if (e.key !== "Escape") return;
+    if (resultsOverlay.style.display === "block") closeResults();
+    else closeInstructions();
+  });
+
+  // ==========
+  // Audio
+  // ==========
+  let audioCtx = null;
+  let stream = null;
+  let source = null;
+  let analyser = null;
+  let timeData = null;
+  let running = false;
+  let rafId = 0;
+
+  // ==========
+  // Graph run control: freeze when a step completes
+  // ==========
+  let graphFrozen = false;
+
+  function freezeGraph(){
+    graphFrozen = true;
+    if (rafId){
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+    }
+  }
+
+  function resumeGraph(){
+    graphFrozen = false;
+    if (running && !rafId){
+      rafId = requestAnimationFrame(tick);
+    }
+  }
+
+  async function ensureAudioContextRunning(){
+    if (!audioCtx) return;
+    try{
+      if (audioCtx.state === "suspended") await audioCtx.resume();
+    } catch(e){}
+  }
+
+  function rmsOfArray(buf){
+    let sum = 0;
+    for (let i=0;i<buf.length;i++){
+      const v = buf[i];
+      sum += v*v;
+    }
+    return Math.sqrt(sum / buf.length);
+  }
+
+  async function startAudio(){
+    hideMicError();
+
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    await ensureAudioContextRunning();
+
+    stream = await navigator.mediaDevices.getUserMedia({
+      audio: { autoGainControl:false, echoCancellation:false, noiseSuppression:false }
+    });
+    await ensureAudioContextRunning();
+
+    const track = stream.getAudioTracks()[0];
+    if (track && track.applyConstraints){
+      try{
+        await track.applyConstraints({ autoGainControl:false, echoCancellation:false, noiseSuppression:false });
+      }catch(e){}
+    }
+
+    source = audioCtx.createMediaStreamSource(stream);
+
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 4096;
+    timeData = new Float32Array(analyser.fftSize);
+
+    if (IS_IOS) {
+      // Boost low iOS mic levels BEFORE the analyser so RMS reflects it.
+      iosInputGainNode = audioCtx.createGain();
+      iosInputGainNode.gain.value = IOS_INPUT_GAIN;
+
+      // Light compression to keep loud peaks from getting too spiky.
+      iosCompressorNode = audioCtx.createDynamicsCompressor();
+      iosCompressorNode.threshold.value = -48;
+      iosCompressorNode.knee.value = 30;
+      iosCompressorNode.ratio.value = 12;
+      iosCompressorNode.attack.value = 0.003;
+      iosCompressorNode.release.value = 0.25;
+
+      source.connect(iosInputGainNode);
+      iosInputGainNode.connect(iosCompressorNode);
+      iosCompressorNode.connect(analyser);
+    } else {
+      source.connect(analyser);
+    }
+
+    // keep AudioContext alive without output
+    const silentGain = audioCtx.createGain();
+    silentGain.gain.value = 0;
+    analyser.connect(silentGain);
+    silentGain.connect(audioCtx.destination);
+  }
+
+  function stopAudio(){
+    running = false;
+
+    // Stop graph loop
+    freezeGraph();
+
+    try{
+      if (stream) stream.getTracks().forEach(t => { try{ t.stop(); }catch(e){} });
+    }catch(e){}
+    stream = null; source = null; analyser = null; timeData = null;
+
+    iosInputGainNode = null;
+    iosCompressorNode = null;
+
+    if (audioCtx){
+      try{ audioCtx.close(); }catch(e){}
+    }
+    audioCtx = null;
+  }
+
+  // ==========
+  // Calibration state
+  // ==========
+  let step = 0; // 1..3
+  let stepStartT = 0;
+
+  let noiseFloor = 0;
+  let noisePrimed = false;
+
+  // Step 2
+  let step2MaxSeen = 0;
+  let step2FailedClip = false;
+  let step2Decided = false;
+
+  // Step 2 pass-zone hold
+  let step2InZoneStartT = null;
+  let step2PassZoneHeld = false;
+
+  // Step 3
+  let tonePresentThreshold = MIN_TONE_PRESENT_RMS;
+  let toneRunStartT = null;
+  let bestToneRunSeconds = 0;
+  let step3Passed = false;
+  let step3NudgeShown = false;
+  let testsCompleted = false;
+
+  // Summary tracking
+  let resultsShown = false;
+  let step1Result = "NOT RUN";   // "PASS" | "WARN" | "NOT RUN"
+  let step2Result = "NOT RUN";   // "PASS" | "FAIL" | "NOT RUN"
+  let step3Result = "NOT RUN";   // "PASS" | "FAIL" | "NOT RUN"
+  let step1NoiseFloor = 0;
+  let step2MaxRMS = 0;
+  let step3BestRun = 0;
+
+  function resetAllResults(){
+    resultsShown = false;
+    step1Result = "NOT RUN";
+    step2Result = "NOT RUN";
+    step3Result = "NOT RUN";
+    step1NoiseFloor = 0;
+    step2MaxRMS = 0;
+    step3BestRun = 0;
+  }
+
+  function buildResultsHTML(){
+    const s1Class = (step1Result === "PASS") ? "ok" : (step1Result === "WARN") ? "warn" : "warn";
+    const s2Class = (step2Result === "PASS") ? "ok" : (step2Result === "FAIL") ? "bad" : "warn";
+    const s3Class = (step3Result === "PASS") ? "ok" : (step3Result === "FAIL") ? "bad" : "warn";
+
+    const s1Label = (step1Result === "WARN") ? "HIGH" : step1Result;
+
+    let tips = [];
+    if (step1Result === "WARN"){
+      tips.push("Step 1: Background noise is higher than ideal. Try a quieter room, move away from fans/AC, or use a different mic.");
+    }
+    if (step2Result === "FAIL"){
+      tips.push("Step 2: Clipping risk detected. Reduce system mic level, move farther from the mic, or disable mic boost.");
+    }
+    if (step3Result === "FAIL"){
+      tips.push("Step 3: Sustained tones may be getting suppressed by noise reduction/voice enhancement. Try disabling those features or use a different device/browser.");
+    }
+    if (tips.length === 0){
+      tips.push("Your audio input looks well-suited for the Chromatic Tuner and RTTA tools.");
+    }
+
+    return `
+      <div class="instructions-subtitle">Summary</div>
+      <div class="instructions-subbody">
+        Here are your results for the three checks:
+      </div>
+
+      <div class="summary-row">
+        <div class="summary-label">Step 1: Background noise</div>
+        <div class="summary-status">
+          <span class="summary-pill ${s1Class}">${escapeHTML(s1Label)}</span>
+        </div>
+        <div class="summary-detail">
+          Noise floor: <b>${escapeHTML(fmt(step1NoiseFloor || noiseFloor, 4))}</b>
+        </div>
+      </div>
+
+      <div class="summary-row">
+        <div class="summary-label">Step 2: Input level</div>
+        <div class="summary-status">
+          <span class="summary-pill ${s2Class}">${escapeHTML(step2Result)}</span>
+        </div>
+        <div class="summary-detail">
+          Max RMS seen: <b>${escapeHTML(fmt(step2MaxRMS || step2MaxSeen, 4))}</b>
+        </div>
+      </div>
+
+      <div class="summary-row">
+        <div class="summary-label">Step 3: Continuous tone</div>
+        <div class="summary-status">
+          <span class="summary-pill ${s3Class}">${escapeHTML(step3Result)}</span>
+        </div>
+        <div class="summary-detail">
+          Tone detected for: <b>${escapeHTML((step3BestRun || bestToneRunSeconds || 0).toFixed(2))}s</b>
+        </div>
+      </div>
+
+      <hr style="border:0; border-top:1px solid #2a2a2a; margin: 14px 0 14px 0;"/>
+
+      <div class="instructions-subtitle">Notes</div>
+      <div class="instructions-subbody">
+        ${tips.map(t => `• ${escapeHTML(t)}`).join("<br/>")}
+      </div>
+    `;
+  }
+
+  function cancelResultsModalDelay(){
+    if (resultsShowTimer){
+      clearTimeout(resultsShowTimer);
+      resultsShowTimer = 0;
+    }
+  }
+
+  function showResultsModalOnce(){
+    if (resultsShown) return;
+    resultsShown = true;
+    resultsBody.innerHTML = buildResultsHTML();
+    openResults();
+  }
+
+  // Delay before showing Results modal after Step 3 completes
+  const RESULTS_MODAL_DELAY_MS = 1250; 
+  let resultsShowTimer = 0;
+
+  function showResultsModalOnceDelayed(){
+    if (resultsShown) return;
+    if (resultsShowTimer) return;
+
+    resultsShowTimer = setTimeout(() => {
+      resultsShowTimer = 0;
+      showResultsModalOnce();
+    }, RESULTS_MODAL_DELAY_MS);
+  }
+
+  // Graph
+  const hist = new Array(SAMPLES).fill(0);
+  let histWrite = 0;
+
+  function clearHistory(){
+    for (let i=0;i<SAMPLES;i++) hist[i] = 0;
+    histWrite = 0;
+  }
+  function pushHistory(v){
+    hist[histWrite] = v;
+    histWrite = (histWrite + 1) % SAMPLES;
+  }
+  function getHistory(i){
+    const idx = (histWrite + i) % SAMPLES;
+    return hist[idx];
+  }
+  function fmt(x, d){
+    if (!isFinite(x)) return "--";
+    const p = Math.pow(10, d||4);
+    return (Math.round(x*p)/p).toFixed(d||4);
+  }
+
+  function updateStartButtonLabel(){
+    if (!running){
+      startBtn.textContent = "START";
+      return;
+    }
+    startBtn.textContent = (step >= 2) ? "RESTART" : "START";
+  }
+
+  function setNextCompleted(){
+    testsCompleted = true;
+    nextBtn.disabled = true;
+    nextBtn.textContent = "TESTS COMPLETED";
+  }
+
+  function resetNextDefault(){
+    testsCompleted = false;
+    nextBtn.textContent = "NEXT STEP";
+  }
+
+  function setStepUI(){
+    stepPill.textContent = `STEP ${step} of 3`;
+
+    if (step === 1){
+      headline.textContent = "Step 1: Background noise";
+      subhead.textContent = "Stay quiet for a few seconds so the tool can measure the noise floor.";
+      stepStatusPill.textContent = "MEASURING…";
+      setPillState(stepStatusPill, "warn");
+      legend.innerHTML =
+        `Noise floor will be measured over ~${STEP1_QUIET_SECONDS.toFixed(0)} seconds.<br/>` +
+        `Keep the room quiet and don’t play.`;
+    } else if (step === 2){
+      headline.textContent = "Step 2: Input level (clipping check)";
+      subhead.textContent = "Play a normal note. PASS shows after 2.5s in-range.";
+      stepStatusPill.textContent = "LISTENING…";
+      setPillState(stepStatusPill, "warn");
+      legend.innerHTML =
+        `We’re looking for obvious overload (clipping).<br/>` +
+        `PASS will appear after the level stays in-range for <b>${STEP2_PASS_HOLD_SECONDS.toFixed(1)}s</b>.`;
+    } else if (step === 3){
+      headline.textContent = "Step 3: Continuous tone (2.5 seconds)";
+      subhead.textContent = "Hold a steady tone. If it stays present for 2.5 seconds, you pass.";
+      stepStatusPill.textContent = "WAITING FOR TONE…";
+      setPillState(stepStatusPill, "warn");
+      legend.innerHTML =
+        `Pass when one continuous run reaches <b>${TONE_CONTINUOUS_PASS_SECONDS.toFixed(1)}s</b>.<br/>` +
+        `Breathing breaks are fine — restart the tone.`;
+    }
+  }
+
+  function resetStepState(){
+    stepStartT = performance.now();
+
+    if (step === 1){
+      noiseFloor = 0;
+      noisePrimed = false;
+      step1Result = "NOT RUN";
+      step1NoiseFloor = 0;
+    }
+    if (step === 2){
+      step2MaxSeen = 0;
+      step2FailedClip = false;
+      step2Decided = false;
+
+      step2InZoneStartT = null;
+      step2PassZoneHeld = false;
+
+      step2Result = "NOT RUN";
+      step2MaxRMS = 0;
+    }
+    if (step === 3){
+      const computed = Math.max(
+        MIN_TONE_PRESENT_RMS,
+        (noiseFloor * TONE_PRESENT_MULT) + TONE_PRESENT_OFFSET
+      );
+
+      // If Step 1 noise floor was high, computed can become unreachable.
+      // Clamp it so Step 3 can still detect tones.
+      tonePresentThreshold = Math.min(computed, MAX_TONE_PRESENT_THRESHOLD_RMS);
+      toneRunStartT = null;
+      bestToneRunSeconds = 0;
+      step3Passed = false;
+      step3NudgeShown = false;
+
+      step3Result = "NOT RUN";
+      step3BestRun = 0;
+    }
+  }
+
+  function passStep(msg){
+    // Record per-step results (Steps 1 and 2 primarily)
+    if (step === 1){
+      step1Result = "PASS";
+      step1NoiseFloor = noiseFloor;
+    } else if (step === 2){
+      step2Result = "PASS";
+      step2MaxRMS = step2MaxSeen;
+    }
+
+    stepStatusPill.textContent = "PASS";
+    setPillState(stepStatusPill, "ok");
+    legend.innerHTML = msg + (step < 3 ? "<br/><br/>Click <b>NEXT STEP</b>." : "");
+    retryBtn.disabled = false;
+
+    if (step < 3){
+      nextBtn.disabled = false;
+      resetNextDefault();
+    } else {
+      setNextCompleted();
+    }
+
+    // Freeze graph once step is decided
+    freezeGraph();
+  }
+
+  function failStep(msg){
+    if (step === 2){
+      step2Result = "FAIL";
+      step2MaxRMS = step2MaxSeen;
+    }
+
+    stepStatusPill.textContent = "FAIL";
+    setPillState(stepStatusPill, "bad");
+    legend.innerHTML = msg + "<br/><br/>You can click <b>RETRY STEP</b>.";
+    nextBtn.disabled = true;
+    retryBtn.disabled = false;
+    resetNextDefault();
+
+    // Freeze graph once step is decided
+    freezeGraph();
+  }
+
+  function softFailStep(msg){
+    // Step 1 "high noise" is a WARN / can continue
+    if (step === 1){
+      step1Result = "WARN";
+      step1NoiseFloor = noiseFloor;
+    }
+
+    stepStatusPill.textContent = "FAIL";
+    setPillState(stepStatusPill, "bad");
+    legend.innerHTML = msg + "<br/><br/>You can click <b>RETRY STEP</b> or <b>NEXT STEP</b>.";
+    nextBtn.disabled = false;
+    retryBtn.disabled = false;
+    resetNextDefault();
+
+    // Freeze graph once step is decided
+    freezeGraph();
+  }
+
+  function drawGraph(rmsNow){
+    const w = canvas.width;
+    const h = canvas.height;
+
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0,0,w,h);
+
+    const yMax = 0.30;
+    const xStep = w / (SAMPLES - 1);
+
+    function yFor(v){
+      const t = clamp(v / yMax, 0, 1);
+      return h - Math.round(t * (h - 1));
+    }
+
+    // grid
+    ctx.strokeStyle = "#1a1a1a";
+    for (let i=1;i<10;i++){
+      const yy = Math.round((h*i)/10);
+      ctx.beginPath();
+      ctx.moveTo(0, yy);
+      ctx.lineTo(w, yy);
+      ctx.stroke();
+    }
+
+    function drawLine(v, color, label){
+      const vClamped = clamp(v, 0, yMax);
+      const y = yFor(vClamped);
+
+      ctx.strokeStyle = color;
+      ctx.globalAlpha = 0.9;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(w, y);
+      ctx.stroke();
+      ctx.globalAlpha = 1.0;
+
+      ctx.fillStyle = color;
+      ctx.font = "14px ui-monospace, Menlo, Consolas, monospace";
+      ctx.fillText(label, 10, Math.max(16, y - 6));
+      ctx.lineWidth = 1;
+    }
+
+    if (step >= 1 && noisePrimed){
+      drawLine(noiseFloor, "#777", `noise ${fmt(noiseFloor,4)}`);
+    }
+    if (step >= 2){
+      drawLine(CLIP_FAIL_RMS, "#ff3e3e", `clip fail ${fmt(CLIP_FAIL_RMS,3)}`);
+      drawLine(STEP2_PASS_ZONE_MIN_RMS, "#2bd16a", `pass min ${fmt(STEP2_PASS_ZONE_MIN_RMS,3)}`);
+      drawLine(STEP2_PASS_ZONE_MAX_RMS, "#2bd16a", `optimal max ${fmt(STEP2_PASS_ZONE_MAX_RMS,3)}`);
+    }
+
+    // history curve
+    ctx.strokeStyle = "rgba(0,242,255,0.95)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let i=0;i<SAMPLES;i++){
+      const x = i * xStep;
+      const v = getHistory(i);
+      const y = yFor(v);
+      if (i === 0) ctx.moveTo(x,y);
+      else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+
+    // current point marker
+    const yNow = yFor(rmsNow);
+    ctx.fillStyle = "rgba(255,255,255,0.90)";
+    ctx.beginPath();
+    ctx.arc(w - 8, yNow, 3.2, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  function tick(){
+    // If frozen, do not continue scheduling frames
+    if (graphFrozen){
+      return;
+    }
+
+    if (!running || !analyser || !timeData){
+      if (!graphFrozen) rafId = requestAnimationFrame(tick);
+      return;
+    }
+
+    // If tests are complete, keep the graph frozen (we freeze on completion anyway)
+    const freezeLegend = (step === 3 && testsCompleted);
+
+    analyser.getFloatTimeDomainData(timeData);
+    const rms = rmsOfArray(timeData);
+
+    pushHistory(rms);
+    drawGraph(rms);
+
+    const now = performance.now();
+    const elapsed = (now - stepStartT) / 1000;
+
+    if (step === 1){
+      const a = 0.18;
+      if (!noisePrimed){
+        noiseFloor = rms;
+        noisePrimed = true;
+      } else {
+        noiseFloor = (a * rms) + ((1 - a) * noiseFloor);
+      }
+
+      setPillState(stepStatusPill, "warn");
+      stepStatusPill.textContent = `MEASURING… ${Math.max(0, STEP1_QUIET_SECONDS - elapsed).toFixed(1)}s`;
+
+      if (elapsed >= STEP1_QUIET_SECONDS){
+        if (noiseFloor < 0.045){
+          passStep(`Background noise looks OK.<br/>Measured noise floor: <b>${fmt(noiseFloor,4)}</b>`);
+        } else {
+          softFailStep(
+            `Background noise is high for pitch tools.<br/>Measured noise floor: <b>${fmt(noiseFloor,4)}</b><br/>` +
+            `Try a quieter room, move away from fans/AC, or use a different mic.`
+          );
+        }
+      }
+
+    } else if (step === 2){
+      step2MaxSeen = Math.max(step2MaxSeen, rms);
+      if (rms >= CLIP_FAIL_RMS) step2FailedClip = true;
+
+      const inPassZone = (rms >= STEP2_PASS_ZONE_MIN_RMS && rms < CLIP_FAIL_RMS);
+
+      if (inPassZone){
+        if (step2InZoneStartT == null) step2InZoneStartT = now;
+        const held = (now - step2InZoneStartT) / 1000;
+        if (held >= STEP2_PASS_HOLD_SECONDS) step2PassZoneHeld = true;
+      } else {
+        step2InZoneStartT = null;
+      }
+
+      if (step2FailedClip){
+        stepStatusPill.textContent = "FAIL: CLIPPING";
+        setPillState(stepStatusPill, "bad");
+      } else if (step2PassZoneHeld){
+        stepStatusPill.textContent = "PASS";
+        setPillState(stepStatusPill, "ok");
+      } else {
+        if (rms < STEP2_PASS_ZONE_MIN_RMS){
+          stepStatusPill.textContent = "TOO SOFT";
+          setPillState(stepStatusPill, "warn");
+        } else {
+          stepStatusPill.textContent = "LISTENING";
+          setPillState(stepStatusPill, "warn");
+        }
+      }
+
+      if (!step2Decided && step2FailedClip){
+        step2Decided = true;
+        retryBtn.disabled = false;
+
+        const liveMsg = `Max RMS seen: <b>${fmt(step2MaxSeen,4)}</b>`;
+        failStep(
+          `Signal looks clearly overdriven / clipping risk.<br/>${liveMsg}<br/>` +
+          `Reduce system mic level or move farther away.`
+        );
+      }
+
+      if (!step2Decided && step2PassZoneHeld){
+        step2Decided = true;
+        retryBtn.disabled = false;
+
+        const liveMsg = `Max RMS seen: <b>${fmt(step2MaxSeen,4)}</b>`;
+        passStep(
+          `Level looks usable (in-range for ≥ <b>${STEP2_PASS_HOLD_SECONDS.toFixed(1)}s</b>).<br/>${liveMsg}`
+        );
+      }
+
+      if (!step2Decided){
+        const heldSec = (step2InZoneStartT != null) ? ((now - step2InZoneStartT)/1000) : 0;
+
+        const line1 = `Play a normal note for ~2–3 seconds.`;
+        const line2 = `This step only fails if the signal is clearly clipping.`;
+        const line3 = `PASS after <b>${STEP2_PASS_HOLD_SECONDS.toFixed(1)}s</b> above the minimum and below clipping.`;
+        const line4 =
+          `Live RMS: <b>${fmt(rms,4)}</b> &nbsp; | &nbsp; Max: <b>${fmt(step2MaxSeen,4)}</b>` +
+          ` &nbsp; | &nbsp; Hold: <b>${Math.max(0, heldSec).toFixed(2)}s</b>`;
+
+        legend.innerHTML = `${line1}<br/>${line2}<br/>${line3}<br/><br/>${line4}`;
+        retryBtn.disabled = false;
+      }
+
+    } else if (step === 3){
+      const present = (rms >= tonePresentThreshold);
+
+      // If Step 3 already completed, keep legend frozen and ensure modal shown once.
+      if (testsCompleted){
+        if (step3Passed){
+          stepStatusPill.textContent = "PASS";
+          setPillState(stepStatusPill, "ok");
+        } else {
+          stepStatusPill.textContent = "FAIL";
+          setPillState(stepStatusPill, "bad");
+        }
+
+        showResultsModalOnceDelayed();
+
+        ensureAudioContextRunning();
+        if (!graphFrozen) rafId = requestAnimationFrame(tick);
+        return;
+      }
+
+      if (present){
+        if (toneRunStartT == null){
+          toneRunStartT = now;
+        }
+        const runSec = (now - toneRunStartT) / 1000;
+        bestToneRunSeconds = Math.max(bestToneRunSeconds, runSec);
+
+        if (runSec >= TONE_CONTINUOUS_PASS_SECONDS){
+          stepStatusPill.textContent = "PASS";
+          setPillState(stepStatusPill, "ok");
+        } else {
+          stepStatusPill.textContent = `HOLDING… ${runSec.toFixed(1)}s`;
+          setPillState(stepStatusPill, "warn");
+        }
+
+        if (!freezeLegend){
+          legend.innerHTML =
+            `Hold a steady tone. Pass at <b>${TONE_CONTINUOUS_PASS_SECONDS.toFixed(1)}s</b> heard continuous.<br/>` +
+            `Current run: <b>${runSec.toFixed(2)}s</b> &nbsp; Best run: <b>${bestToneRunSeconds.toFixed(2)}s</b>`;
+        }
+
+        // PASS condition => finalize Step 3 + freeze legend + show summary modal + freeze graph
+        if (!step3Passed && bestToneRunSeconds >= TONE_CONTINUOUS_PASS_SECONDS){
+          step3Passed = true;
+
+          // Record step 3 result for modal
+          step3Result = "PASS";
+          step3BestRun = bestToneRunSeconds;
+
+          setNextCompleted();
+
+          legend.innerHTML =
+            `<b>Step 3 result: PASS</b><br/>` +
+            `Continuous tone passed (≥ ${TONE_CONTINUOUS_PASS_SECONDS.toFixed(1)}s).<br/><br/><b>All tests complete.</b>`;
+
+          testsCompleted = true;
+
+          showResultsModalOnceDelayed();
+
+          // Freeze graph once step is decided
+          freezeGraph();
+        }
+
+      } else {
+        toneRunStartT = null;
+
+        if (bestToneRunSeconds >= TONE_CONTINUOUS_PASS_SECONDS){
+          stepStatusPill.textContent = "PASS";
+          setPillState(stepStatusPill, "ok");
+        } else if (bestToneRunSeconds > 0){
+          stepStatusPill.textContent = `BEST: ${bestToneRunSeconds.toFixed(1)}s`;
+          setPillState(stepStatusPill, "warn");
+        } else {
+          stepStatusPill.textContent = "NO TONE";
+          setPillState(stepStatusPill, "warn");
+        }
+
+        if (!freezeLegend){
+          legend.innerHTML =
+            `Play a steady tone. Pass at <b>${TONE_CONTINUOUS_PASS_SECONDS.toFixed(1)}s</b> continuous.<br/>` +
+            `Best run so far: <b>${bestToneRunSeconds.toFixed(2)}s</b><br/>`;
+        }
+      }
+
+      // FAIL condition (timeout / nudge) => finalize Step 3 + freeze legend + show summary modal + freeze graph
+      if (!step3Passed && !step3NudgeShown && elapsed >= 12.0 && toneRunStartT == null){
+        step3NudgeShown = true;
+        step3Passed = false;
+
+        stepStatusPill.textContent = "FAIL";
+        setPillState(stepStatusPill, "bad");
+        retryBtn.disabled = false;
+
+        // Record step 3 result for modal
+        step3Result = "FAIL";
+        step3BestRun = bestToneRunSeconds;
+
+        setNextCompleted();
+
+        legend.innerHTML =
+          `<b>Step 3 result: FAIL</b><br/>` +
+          `Not seeing a ${TONE_CONTINUOUS_PASS_SECONDS.toFixed(1)}-second continuous run.<br/>` +
+          `Best run: <b>${bestToneRunSeconds.toFixed(2)}s</b><br/>` +
+          `<b>All tests complete.</b>`;
+
+        testsCompleted = true;
+
+        showResultsModalOnceDelayed();
+
+        // Freeze graph once step is decided
+        freezeGraph();
+      }
+    }
+
+    ensureAudioContextRunning();
+    if (!graphFrozen) rafId = requestAnimationFrame(tick);
+  }
+
+  function setControlsEnabledOnRun(on){
+    startBtn.disabled = false;
+    retryBtn.disabled = !on;
+    stopBtn.disabled  = !on;
+
+    if (!on){
+      nextBtn.disabled = true;
+      nextBtn.textContent = "NEXT STEP";
+      startBtn.textContent = "START";
+      return;
+    }
+
+    updateStartButtonLabel();
+  }
+
+  function beginStep(n){
+    // Starting a fresh run at Step 1: reset stored results + modal state
+    if (n === 1){
+      resetAllResults();
+      closeResults();
+    }
+
+    cancelResultsModalDelay();
+
+    step = n;
+    setStepUI();
+    resetStepState();
+
+    // Resume graph loop for the new step
+    resumeGraph();
+
+    updateStartButtonLabel();
+
+    resetNextDefault();
+    nextBtn.disabled = true;
+  }
+
+  // ==========
+  // Buttons
+  // ==========
+  startBtn.addEventListener("click", async () => {
+    // If already running: RESTART behavior
+    if (running){
+      clearHistory();
+
+      // If user is on Step 2 or 3, restart the whole test at Step 1
+      if (step >= 2){
+        testsCompleted = false;
+        resetNextDefault();
+        nextBtn.disabled = true;
+        beginStep(1);
+      } else {
+        // Step 1: restart Step 1
+        beginStep(1);
+      }
+      return;
+    }
+
+    try{
+      startBtn.disabled = true;
+      startBtn.textContent = "STARTING…";
+
+      await startAudio();
+
+      clearHistory();
+      running = true;
+
+      // Ensure graph loop is allowed to run
+      resumeGraph();
+
+      setControlsEnabledOnRun(true);
+      beginStep(1);
+
+      // (beginStep resumes the graph and schedules tick)
+    } catch(err){
+      console.error(err);
+      showMicError(micErrorMessageFromException(err));
+      running = false;
+      setControlsEnabledOnRun(false);
+      startBtn.disabled = false;
+      startBtn.textContent = "START";
+    }
+  });
+
+  nextBtn.addEventListener("click", () => {
+    if (!running) return;
+    if (testsCompleted) return;
+
+    if (step < 3){
+      clearHistory();
+      beginStep(step + 1);
+    }
+  });
+
+  retryBtn.addEventListener("click", () => {
+    if (!running) return;
+    clearHistory();
+
+    // Retrying step 3 should allow the modal to appear again on completion
+    if (step === 3){
+      resultsShown = false;
+      closeResults();
+      step3Result = "NOT RUN";
+      step3BestRun = 0;
+    }
+
+    cancelResultsModalDelay();
+
+    beginStep(step);
+  });
+
+  stopBtn.addEventListener("click", () => {
+    stopAudio();
+    setControlsEnabledOnRun(false);
+
+    step = 0;
+    testsCompleted = false;
+    resetAllResults();
+    cancelResultsModalDelay();
+    closeResults();
+
+    stepPill.textContent = "STEP 1 of 3";
+    stepStatusPill.textContent = "Not started";
+    setPillState(stepStatusPill, "warn");
+
+    headline.textContent = "Click START";
+    subhead.textContent = "You may need to give your browser permission to access the microphone.";
+    legend.textContent = "Waiting…";
+
+    clearHistory();
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+  });
+
+  // iOS resume gestures
+  function addIOSResumeGestures(){
+    const handler = async () => { if (audioCtx) await ensureAudioContextRunning(); };
+    window.addEventListener("touchstart", handler, { passive:true });
+    window.addEventListener("mousedown", handler, { passive:true });
+    window.addEventListener("keydown", handler, { passive:true });
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden && audioCtx) ensureAudioContextRunning();
+    });
+  }
+
+  if (IS_IOS){
+    addIOSResumeGestures();
+  }
+
+  const LS_KEY_INSTRUCTIONS_SHOWN = "abctools_tester_instructions_shown_v1";
+
+  function maybeShowInstructionsOnFirstUse(){
+    try {
+      const seen = localStorage.getItem(LS_KEY_INSTRUCTIONS_SHOWN);
+      if (!seen) {
+        openInstructions();
+        localStorage.setItem(LS_KEY_INSTRUCTIONS_SHOWN, "1");
+      }
+    } catch (e) {}
+  }
+
+  // init
+  hideMicError();
+  clearHistory();
+  setControlsEnabledOnRun(false);
+  resetAllResults();
+
+  // Ensure graph is not running until START is pressed
+  freezeGraph();
+
+  ctx.fillStyle = "#000";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  // Show instructions on first run
+  setTimeout(maybeShowInstructionsOnFirstUse, 500);
+</script>
+</body>
+</html>

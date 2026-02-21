@@ -1,0 +1,2724 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Accordion Musette Tuner (MM / MMM)" />
+  <meta property="og:description" content="Accordion Musette Tuner (MM / MMM)." />
+  <meta property="og:url" content="https://abc.tunebook.app/tools/accordion-tuner.html" />
+  <meta property="og:site_name" content="Accordion Musette Tuner (MM / MMM)" />
+	<meta property="og:image" content="../img/abclite-icon-512x512.png" />
+	<meta name="theme-color" content="#181818">
+	<meta name="apple-mobile-web-app-title" content="Tools Lite">
+	<meta name="application-name" content="Tools Lite">
+	<link rel="icon" href="../favicon.ico" sizes="any">
+	<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+	<link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+	<link rel="manifest" href="../img/abc-manifest.json">
+
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-VM0N9HL3MK"></script> -->
+
+  <!-- <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-VM0N9HL3MK');
+  </script> -->
+
+  <title>Accordion Musette Tuner (MM / MMM)</title>
+
+  <style>
+
+    :root{
+      --accent:#00f2ff;
+      --bg:#0f0f0f;
+      --panel:#1a1a1a;
+      --text:#e0e0e0;
+
+      --ui-max: 800px; /* <-- pick 720–820 to taste */
+    }
+    body{
+      font-family:'Segoe UI',sans-serif; background:var(--bg); color:var(--text);
+      margin:0; padding:20px; display:flex; flex-direction:column; align-items:center;
+    }
+    #tuner-ui{
+      background:var(--panel); border-radius:16px; padding:22px;
+      box-shadow:0 20px 50px rgba(0,0,0,0.7);
+      width:100%; text-align:center; border:1px solid #333;
+      position: relative;
+      max-width: var(--ui-max);
+    }
+
+    .status-pill{
+      display:inline-block; padding:8px 14px; border-radius:999px;
+      font-size:1rem; font-weight:800; margin-bottom:10px; background:#333;
+      letter-spacing:0.2px;
+      margin-top:15px;
+    }
+    .status-off{ background:#333; color:#fff; }
+    .status-ok{ background:#28a745; color:#fff; }
+    .status-warn{ background:#8e44ad; color:#fff; }
+    .status-locked{ background:#c07b0c; color:#fff; }
+
+    .row{
+      display:grid;
+      grid-template-columns: minmax(260px, 1fr) minmax(220px, 1fr) minmax(260px, 1fr);
+      gap:10px;
+      margin:10px 0 6px;
+      align-items:start;
+    }
+    .row > * { flex:1; }
+    label { display:block; font-size:0.85rem; color:#bbb; margin-bottom:6px; text-align:left; }
+    select, .radio-box{
+      width:100%; background:#0b0b0b; color:#e8e8e8; border:1px solid #333;
+      border-radius:10px; padding:10px 10px; font-size:0.95rem;
+    }
+
+    /* Top selector row: three items on one line */
+    .row.select-row{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:12px;
+    }
+
+    /* Second line: checkboxes side-by-side (now only Live mode) */
+    .check-row{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+      margin:10px 0 6px;
+      align-items:start;
+    }
+
+    canvas{ width:100%; height:80px; background:#000; border-radius:8px; margin:10px 0 14px; border:1px solid #333; }
+
+    .note-display{
+      font-size:4.2rem; color:#fff; line-height:1; margin:0;
+      text-shadow:0 0 20px var(--accent); font-weight:900;
+    }
+    .freq-display{
+      font-size:1.1rem; color:#FEFEFE;
+      font-family:ui-monospace, Menlo, Consolas, monospace;
+      margin-top:2px;
+      margin-bottom:18px;
+    }
+
+    .meter-box{
+      width:100%; height:80px; background:#000; position:relative;
+      border-radius:10px; margin:14px 0 8px; border:1px solid #333; overflow:hidden;
+    }
+    #needle{
+      width:3px; height:100%; background:#ff3e3e; position:absolute; left:50%;
+      transform:translateX(-50%); transition:left .12s ease-out; z-index:2;
+    }
+
+    /* MMM dual needles (only shown when MMM is active) */
+    .mmm-needle{
+      width:3px;
+      height:100%;
+      position:absolute;
+      left:50%;
+      transform:translateX(-50%);
+      transition:left .12s ease-out;
+      z-index:2;
+      display:none;
+    }
+    #needle-low{ background:#7CFFB2; }   /* low offset needle (light green) */
+    #needle-high{ background:#ff3e3e; }  /* high offset needle (red) */
+
+    .center-mark{ position:absolute; left:50%; width:2px; height:100%; background:var(--accent); opacity:.55; }
+    .edge-mark{ position:absolute; top:0; height:100%; width:1px; background:#444; opacity:0.9; }
+    .edge-left{ left:10%; }
+    .edge-right{ left:90%; }
+
+    #musette-line{ margin-top:16px; font-size:1.15rem; font-weight:900; color:var(--accent);
+    font-family:ui-monospace, Menlo, Consolas, monospace; min-height:1.4em; }
+
+    button{
+      padding:14px 18px; border:none; border-radius:10px; font-weight:900; cursor:pointer;
+      transition:.2s; width:100%; margin-top:10px;
+    }
+    .btn-main{ background:var(--accent); color:#000;margin-top:14px;font-size:1.15rem; }
+    .btn-reset{ background:#444; color:#fff;margin-top:14px;font-size:1.15rem;}
+
+    /* Gentle desktop-only hover effect for START and NEXT NOTE */
+    @media (hover: hover) and (pointer: fine) {
+
+      #reset-btn.btn-reset{
+        transition: filter 125ms ease;
+      }
+
+      #reset-btn.btn-reset:hover{
+        filter: brightness(1.4);
+      }
+
+      #reset-btn.btn-reset:active{
+        filter: brightness(1.0);
+      }
+
+      #start-btn.btn-main{
+        transition: filter 125ms ease;
+      }
+
+      #start-btn.btn-main:hover{
+        filter: brightness(1.75);
+      }
+
+      #start-btn.btn-main:active{
+        filter: brightness(1.0);
+      }
+
+    }
+
+    .btn-small{
+      padding:10px 14px;
+      font-size:1.1rem;
+      margin-bottom:20px;
+      border-radius:10px;
+      background:#2a2a2a;
+      color:#fff;
+      border:1px solid #3a3a3a;
+      width:100%;
+    }
+    .btn-small:hover{ filter:brightness(1.08); }
+
+    #report-wrap{
+      width:100%;
+      max-width: var(--ui-max);
+      margin:18px auto 0;
+      background:var(--panel);
+      border-radius:12px;
+      overflow:hidden;
+    }
+    #report-table{
+      width:100%;
+      border-collapse:collapse;
+      background:transparent;
+      max-width: 100%;
+      table-layout: fixed;
+    }
+    #report-table th,
+    #report-table td{
+      padding:10px 8px;
+      border-bottom:1px solid #222;
+      font-size:1rem;
+      text-align:left;
+    }
+    #report-table td{
+      word-break: keep-all;
+    }
+    /* Add “panel-like” gutter without reducing table width */
+    #report-table th:first-child,
+    #report-table td:first-child{
+      padding-left:22px;
+    }
+
+    #report-table th:last-child,
+    #report-table td:last-child{
+      padding-right:22px;
+      line-height: 1.5rem;
+    }
+
+    #report-table th{
+      background:#222;
+      color:var(--accent);
+    }
+
+    #report-wrap{
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    #report-table th:nth-child(1),
+    #report-table td:nth-child(1){
+      width: 50px;
+      max-width: 50px;
+    }
+
+    #report-table th:nth-child(2),
+    #report-table td:nth-child(2){
+      width: 40px;
+      max-width: 40px;
+    }
+
+    #report-table th:nth-child(3),
+    #report-table td:nth-child(3){
+      width: 75px;
+      max-width: 75px;
+    }
+
+    #report-table th:nth-child(4),
+    #report-table td:nth-child(4){
+      width: 75px;
+      max-width: 75px;
+    }
+
+    #report-table th:nth-child(5),
+    #report-table td:nth-child(5){
+      width: 195px;
+      max-width: 195px;
+    }
+
+    /* iOS Safari fix: prevent header background from “bleeding” down a column */
+    #report-table td{
+      background: var(--panel);
+    }
+
+    .mono{ font-family: ui-monospace, Menlo, Consolas, monospace; }
+
+    /* Locked indicator pill (the "saved to table" one) */
+    #locked-indicator{
+      display:none;
+    }
+
+    /* Custom caret wrapper */
+    .select-wrap{
+      position: relative;
+    }
+
+    /* Hide native arrow + keep your look */
+    .select-wrap select{
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+
+      padding-right: 46px; /* room for our caret */
+      background-image: none;
+    }
+
+    /* The caret */
+    .select-wrap::after{
+      content: "▾";
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+
+      color: #e8e8e8;
+      font-size: 0.95rem;
+      line-height: 1;
+      opacity: 0.85;
+    }
+
+    /* IE/old Edge fallback */
+    .select-wrap select::-ms-expand{
+      display: none;
+    }
+
+    /* Light green links inside the Instructions modal */
+    #help-modal a{
+      color: #7CFFB2;
+      text-decoration: underline;
+    }
+
+    #help-modal a:hover{
+      color: #9DFFD0;
+      text-decoration: underline;
+    }
+
+    #freq-high-label{
+      bottom:10px;
+    }
+
+    #freq-low-label{
+      top:12px;
+    }
+
+    @media (max-width: 600px) {
+
+      body{
+        padding: 12px;
+      }
+
+      #tuner-ui{
+        padding: 16px;
+        border-radius: 14px;
+      }
+
+      #tuner-ui h1{
+        font-size: 1.25rem !important;
+        margin: 0 0 12px 0 !important;
+      }
+
+      #help-btn.btn-small{
+        font-size: 1.05rem;
+        padding: 12px 14px;
+        margin-bottom: 12px;
+        border-radius: 12px;
+      }
+
+      .row{
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+        margin: 10px 0 8px;
+      }
+
+      .check-row{
+        grid-template-columns: 1fr !important;
+        gap:14px !important;
+      }
+
+      label{
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+      }
+
+      select, .radio-box{
+        font-size: 1.05rem;
+        padding: 14px 12px;
+        border-radius: 12px;
+      }
+
+      .select-wrap select{
+        padding-right: 52px;
+      }
+
+      .select-wrap::after{
+        right: 18px;
+        font-size: 1.1rem;
+        opacity: 0.9;
+      }
+
+      .status-pill{
+        font-size: 1rem;
+        padding: 10px 14px;
+        margin-top: 12px;
+        margin-bottom: 8px;
+      }
+
+      canvas{
+        height: 56px;
+        margin: 10px 0 12px;
+        border-radius: 10px;
+      }
+
+      .note-display{
+        font-size: 4.2rem;
+        margin-top: 2px;
+      }
+
+      .freq-display{
+        font-size: 1.2rem;
+        margin-bottom: 14px;
+      }
+
+      .meter-box{
+        height: 64px;
+        margin: 18px 0 10px;
+        border-radius: 12px;
+      }
+
+      #musette-line{
+        font-size: 1.3rem;
+        min-height: 1.6em;
+        margin-top: 14px;
+      }
+
+      .btn-main,
+      .btn-reset{
+        font-size: 1.2rem;
+        padding: 16px 18px;
+        border-radius: 14px;
+      }
+
+      #start-btn,
+      #reset-btn{
+        z-index: 20;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+      }
+
+      #report-wrap{
+        border-radius: 12px;
+        margin-top: 14px;
+      }
+
+      #report-table th,
+      #report-table td{
+        font-size: 0.92rem;
+        padding: 8px 6px;
+      }
+
+      #report-table th:first-child,
+      #report-table td:first-child{
+        padding-left: 14px;
+      }
+
+      #report-table th:last-child,
+      #report-table td:last-child{
+        padding-right: 14px;
+      }
+
+      #help-modal > div{
+        width: calc(100% - 24px) !important;
+        margin: 18px auto 0 !important;
+        border-radius: 16px !important;
+        padding: 14px 14px 12px !important;
+      }
+
+      .live-mode-box{
+        padding: 14px 12px;
+        min-height: 52px;
+      }
+      #live-only{
+        width: 18px;
+        height: 18px;
+      }
+      .live-mode-label{
+        font-size: 1.05rem;
+      }
+
+      #export-csv-btn{
+        display:none !important;
+      }
+
+      #freq-high-label{
+        bottom:6px;
+      }
+
+      #freq-low-label{
+        top:7px;
+      }
+
+    }
+
+    /* --- Live mode checkbox: make it match the selects --- */
+    .live-mode-wrap{
+      margin: 0;
+      text-align: left;
+    }
+
+    .live-mode-box{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      padding: 10px 10px;
+      border-radius: 10px;
+      min-height: 44px;
+      box-sizing: border-box;
+    }
+
+    #live-only{
+      width: 16px;
+      height: 16px;
+      flex: 0 0 auto;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .live-mode-label{
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+  @media print {
+
+    *{
+      box-shadow:none !important;
+      text-shadow:none !important;
+      filter:none !important;
+    }
+
+    html, body{
+      background:#fff !important;
+      color:#000 !important;
+      margin:0 !important;
+      padding:0 !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    body *{
+      display:none !important;
+    }
+
+    #tuner-ui,
+    #tuner-ui h1,
+    #report-wrap,
+    #report-wrap *{
+      display:initial !important;
+    }
+
+    #tuner-ui{
+      background:transparent !important;
+      border:none !important;
+      box-shadow:none !important;
+      padding:0 !important;
+      margin:0 0 10pt 0 !important;
+    }
+
+    #tuner-ui h1{
+      margin:0 0 8pt 0 !important;
+      font-size:16pt !important;
+      font-weight:800 !important;
+      color:#000 !important;
+      text-align:center !important;
+    }
+
+    #report-wrap{
+      background:transparent !important;
+      border:none !important;
+      border-radius:0 !important;
+      margin:0 !important;
+      padding:0 !important;
+      overflow:visible !important;
+      max-width:none !important;
+      width:100% !important;
+    }
+
+    #report-table{
+      display:table !important;
+      width:100% !important;
+      border-collapse:collapse !important;
+      table-layout:auto !important;
+    }
+
+    #report-table thead{ display:table-header-group !important; }
+    #report-table tbody{ display:table-row-group !important; }
+
+    #report-table tr{
+      display:table-row !important;
+      page-break-inside:avoid !important;
+      break-inside:avoid !important;
+    }
+
+    #report-table th,
+    #report-table td{
+      display:table-cell !important;
+      border:1px solid #000 !important;
+      background:transparent !important;
+      color:#000 !important;
+
+      padding:2pt 5pt !important;
+      font-size:9pt !important;
+      line-height:1.05 !important;
+      vertical-align:middle !important;
+      white-space:nowrap !important;
+    }
+
+    #report-table th:last-child,
+    #report-table td:last-child{
+      white-space:pre-line !important;
+    }
+
+    #report-table th:last-child > div{
+      display:block !important;
+      margin:0 !important;
+      padding:0 !important;
+    }
+
+    #report-table th:last-child > div > div{
+      display:none !important;
+    }
+
+    #report-table th:last-child > div > span{
+      display:inline !important;
+      margin:0 !important;
+      padding:0 !important;
+      line-height:1.05 !important;
+      font-weight:700 !important;
+    }
+
+    #clear-table-btn,
+    #export-csv-btn{
+      display:none !important;
+    }
+
+  }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div id="tuner-ui">
+
+    <h1 style="margin: 0 0 18px 0; font-size: 1.6rem; font-weight: 900; letter-spacing: 0.4px; color: #e0e0e0; text-align: center; ">Accordion Musette Tuner (MM / MMM)</h1>
+
+    <button id="help-btn" class="btn-small" type="button">Instructions</button>
+
+    <div class="row select-row">
+      <div>
+        <label for="cfg">&nbsp;&nbsp;Reed configuration</label>
+        <div class="select-wrap">
+          <select id="cfg">
+            <option value="MM">MM (2 reeds):&nbsp;&nbsp;&nbsp;0 / +</option>
+            <option value="MMM_MIDDLE">MMM (3 reeds):&nbsp;&nbsp;&nbsp;- / 0 / +</option>
+            <option value="MMM_LOWEST">MMM (3 reeds):&nbsp;&nbsp;&nbsp;0 / + / +</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label for="a4ref">&nbsp;&nbsp;A4 reference (Hz)</label>
+        <div class="select-wrap">
+          <select id="a4ref">
+            <option value="438">438</option>
+            <option value="439">439</option>
+            <option value="440" selected>440</option>
+            <option value="441">441</option>
+            <option value="442">442</option>
+            <option value="443">443</option>
+            <option value="444">444</option>
+            <option value="445">445</option>
+            <option value="446">446</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Live mode moved up into this row -->
+      <div class="live-mode-wrap">
+        <div style="font-size:0.85rem; color:#bbb; margin-bottom:6px; text-align:left;">
+          &nbsp;&nbsp;If checked, don't save values
+        </div>
+        <div class="radio-box live-mode-box">
+          <input type="checkbox" id="live-only">
+          <label for="live-only" class="live-mode-label">Live mode</label>
+        </div>
+      </div>
+    </div>
+
+    <div id="status" class="status-pill status-off">Microphone off</div>
+
+    <div id="locked-indicator" class="status-pill status-locked">Saved</div>
+
+    <canvas id="scope"></canvas>
+
+    <div id="note" class="note-display">--</div>
+    <div id="freq" class="freq-display">Reference: 0.00 Hz</div>
+
+    <div class="meter-box" title="MM: needle shows musette cents above reference. MMM: needles show low/high musette cents relative to the reference reed.">
+      <div class="center-mark"></div>
+      <div class="edge-mark edge-left"></div>
+      <div class="edge-mark edge-right"></div>
+
+      <div id="needle"></div>
+
+      <div id="needle-low" class="mmm-needle"></div>
+      <div id="needle-high" class="mmm-needle"></div>
+
+      <!-- MMM: low frequency at top; high at bottom -->
+      <div id="freq-low-label" style="
+        position:absolute;
+        left:50%;
+        transform:translateX(-50%);
+        font-size:0.85rem;
+        font-family:ui-monospace, Menlo, Consolas, monospace;
+        color:black;
+        background:rgba(77,166,255,0.9);
+        padding:2px 6px;
+        border-radius:6px;
+        display:none;
+        line-height:1.2;
+        pointer-events:none;
+        z-index:100;
+        white-space:nowrap;
+      ">0.0 Hz</div>
+
+      <div id="freq-high-label" style="
+        position:absolute;
+        left:50%;
+        transform:translateX(-50%);
+        font-size:0.85rem;
+        font-family:ui-monospace, Menlo, Consolas, monospace;
+        color:black;
+        background:rgba(77,166,255,0.9);
+        padding:2px 6px;
+        border-radius:6px;
+        display:none;
+        line-height:1.2;
+        pointer-events:none;
+        z-index:100;
+        white-space:nowrap;
+      ">0.0 Hz</div>
+
+      <!-- MM: single frequency label at bottom -->
+      <div id="freq-mm-label" style="
+        position:absolute;
+        bottom:10px;
+        left:50%;
+        transform:translateX(-50%);
+        font-size:0.85rem;
+        font-family:ui-monospace, Menlo, Consolas, monospace;
+        color:black;
+        background:rgba(77,166,255,0.9);
+        padding:2px 6px;
+        border-radius:6px;
+        display:none;
+        line-height:1.2;
+        pointer-events:none;
+        z-index:100;
+        white-space:nowrap;
+      ">0.0 Hz</div>
+
+    </div>
+
+    <div id="musette-line"></div>
+
+    <button id="start-btn" class="btn-main">START</button>
+    <button id="reset-btn" class="btn-reset" style="display:none;">NEXT NOTE</button>
+  </div>
+
+  <div id="report-wrap">
+    <table id="report-table">
+      <thead>
+        <tr>
+          <th>Config</th>
+          <th>Note</th>
+          <th>ET Hz</th>
+          <th>Ref Hz</th>
+          <th>Δ from ET</th>
+          <th>
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+              <span>Musette</span>
+              <div style="display:flex; align-items:center; gap:8px; flex:0 0 auto; margin-bottom:8px;">
+                <button id="export-csv-btn"
+                  title="Export table as CSV"
+                  aria-label="Export table as CSV"
+                  style="
+                    width:20px;
+                    height:20px;
+                    padding:0;
+                    padding-right:24px;
+                    padding-bottom:3px;
+                    border-radius:50%;
+                    border:none;
+                    background:#2a2a2a;
+                    color:#0F0;
+                    font-weight:900;
+                    cursor:pointer;
+                    font-size:1rem;
+                    line-height:18px;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    flex:0 0 auto;
+                  ">CSV</button>
+                <button id="clear-table-btn"
+                  title="Clear table"
+                  aria-label="Clear table"
+                  style="
+                    width:20px;
+                    height:20px;
+                    padding:0;
+                    border-radius:50%;
+                    border:none;
+                    background:#ff3e3e;
+                    color:#000;
+                    font-weight:900;
+                    cursor:pointer;
+                    font-size:15px;
+                    line-height:18px;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    flex:0 0 auto;
+                  ">✕</button>
+              </div>
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody id="report-body"></tbody>
+    </table>
+  </div>
+
+  <!-- Help Modal -->
+  <div id="help-modal" style="
+    display:none; position:fixed; left:0; top:0; right:0; bottom:0;
+    background:rgba(0,0,0,0.65); z-index:9999;
+  ">
+    <div style="
+      max-width:720px; width:calc(100% - 40px);
+      margin: 32px auto 0;
+      background:#1c1c1c; border:1px solid #3a3a3a; border-radius:18px;
+      box-shadow:0 24px 60px rgba(0,0,0,0.75);
+      padding:18px 18px 16px;
+      color:#eaeaea;
+    ">
+
+      <div style="
+          padding:14px 14px; font-weight:900; font-size:1.55rem;
+          text-align:center; margin-bottom:18px;
+        ">Instructions</div>
+
+      <div style="max-height: 60vh; overflow-y: auto; padding-right: 24px; padding-left: 8px; text-align:left; line-height:1.75; font-size:1rem; color:#ddd; ">
+
+        <div style="margin-bottom:12px;">
+          This tool can be used to measure the in-tune note pitch and musette offsets for both<br/>MM (2 reeds/note) and MMM (3 reeds/note) configured accordions.<br/><br/>
+          This is a free open-source AI collaboration experiment.<br/><br/>
+          <span style="color:#ff5d5d">Use it at your own risk.</span><br/><br/>
+          I make no warranty as to its accuracy or usefulness.<br/><br/>
+          Please sanity-check any results against a professional accordion tuner program like Dirk's Accordion Tuner before modifying any reeds.<br/><br/>
+
+          <div style="margin-bottom:18px;">
+            <b>How to use the tuner:</b><br/><br/>
+
+            <b>1) Choose your reed configuration</b><br/>
+            <ul style="margin:8px 0 0 20px;">
+              <li style="margin-bottom:10px;">
+                <b>MM (2 reeds):&nbsp;&nbsp;&nbsp;0 / +</b><br/>
+                One reed is treated as the <b>reference reed</b> (the <b>lower</b> pitch).<br/>The other reed is the <b>musette reed</b>.<br/>
+                The musette value is the cents/beats difference between the two reeds.
+                <div style="margin-top:6px;">
+                  <b>MM needle:</b><br/>Center = reference reed, needle shows the musette reed offset (normally to the <b>right</b>).
+                </div>
+              </li>
+
+              <li>
+                <b>MMM (3 reeds)</b><br/>
+                Choose which reference basis you want using the Reed configuration dropdown:<br/>
+                <ul style="margin:6px 0 0 18px;">
+                  <li style="margin-bottom:6px;">
+                    <b>MMM (3 reeds):&nbsp;&nbsp;&nbsp;- / 0 / +</b>:<br/>The middle reed is the reference, one musette reed is below and one is above.
+                  </li>
+                  <li>
+                    <b>MMM (3 reeds):&nbsp;&nbsp;&nbsp;0 / + / +</b>:<br/>The lowest reed is the reference, both musette reeds are above.
+                  </li>
+                </ul>
+                The musette values are the cents/beats difference between the reference reed and the two reeds.<br/>
+                <div style="margin-top:6px;">
+                  <b>MMM needles:</b><br/>Center = reference reed, other two needles shows the two musette reed offsets.
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div style="margin-bottom:18px;">
+            <b>2) Select your A4 tuning</b><br/>Range is 438-446 Hz, default is 440 Hz.
+          </div>
+
+          <div style="margin-bottom:18px;">
+            <b>3) Start the tuner</b><br/>
+            Click <b>START</b> and allow microphone access when prompted.<br/>
+            For best results, play one steady note at a time.<br/>
+            Hold the note for a moment so the display stabilizes.
+            <div style="margin-top:8px;">
+              Tips: use normal bellows pressure, avoid vibrato, and tune in a quiet room.
+            </div>
+          </div>
+
+          <div style="margin-bottom:18px;">
+            <b>4) Watch the live display</b><br/>
+            While holding a steady note:
+            <ul style="margin:8px 0 0 20px;">
+              <li style="margin-bottom:6px;"><b>Note</b> shows the detected note name (based on the reference reed).</li>
+              <li style="margin-bottom:6px;"><b>Reference:</b> shows the measured frequency of the reference reed and delta in Hz and cents from ideal ET.</li>
+              <li style="margin-bottom:6px;"><b>Needle</b> shows the tuning/offset behavior described above for MM or MMM.</li>
+              <li><b>Musette</b> shows the cents and beats offset(s) of the musette reed(s) relative to the reference reed.</li>
+            </ul>
+          </div>
+
+          <div style="margin-bottom:18px;">
+            <b>5) Release the note to lock and save</b><br/>
+            When you <b>stop playing</b>, the tuner automatically <b>locks</b> and saves a row in the table.<br/>
+            The “Saved” indicator confirms the measurement was recorded.
+          </div>
+
+          <div style="margin-bottom:18px;">
+            <b>6) Understand the results table</b><br/>
+            Each saved row includes:
+            <ul style="margin:8px 0 8px 20px;">
+              <li style="margin-bottom:6px;"><b>Config</b>:<br/>MM or MMM reed configuration.</li>
+              <li style="margin-bottom:6px;"><b>Note</b>:<br/>Note name.</li>
+              <li style="margin-bottom:6px;"><b>ET Hz</b>:<br/>The equal-tempered target for the detected note.</li>
+              <li style="margin-bottom:6px;"><b>Ref Hz</b>:<br/>Measured reference reed frequency.</li>
+              <li style="margin-bottom:6px;"><b>Δ from ET</b>:<br/>Delta of the reference reed from equal temperament, shown in Hz and cents.</li>
+              <li><b>Musette</b>:<br/>Reed-to-reed offset(s) in cents and beats relative to the reference reed.</li>
+            </ul>
+            Click the red x to clear the results.
+          </div>
+
+          <div>
+            <b>7) Measure the next note</b><br/>
+            Click <b>NEXT NOTE</b> to reset and repeat for another pitch.<br/><br/>
+          </div>
+
+          <div>
+            <b>8) Live mode</b><br/>
+            Check the <b>Live mode</b> checkbox to continuously recognize notes and musette offsets without saving results.<br/><br/>
+          </div>
+
+          <div>
+            <b>9) Printing the results</b><br/>
+            You can use the Print feature in your browser to print the results table.<br/><br/>
+          </div>
+
+          <div>
+            <b>10) Export the results as a CSV file</b><br/>
+            Click <b>CSV</b> at the top of the results table to export the results as a CSV file.<br/>
+            The file will be saved into your browser's default Downloads directory.<br/><br/>
+          </div>
+
+          <div>
+            <b>Limitations</b><br/>- The tool may have difficulty detecting notes below C4.<br/>
+            - The tool may struggle to provide accurate musette measures for dry-tuned accordions.<br/><br/>
+          </div>
+
+          <div>
+            <b>Tip Jars</b><br/>
+            This tool was created by <a href="https://michaeleskin.com" target="_blank">Michael Eskin</a>.<br/>
+            If you find it useful, please consider making a contribution via my online tip jars:<br/><br/>
+          </div>
+
+          <div style="text-align: center">
+            <a href="https://michaeleskin.com/abctools/tipjars.html" target="_blank">Michael Eskin's Tip Jars</a><br/>
+          </div>
+
+          <div>
+            <br/><b>Source Code</b><br/>
+            The full source code for this tool is available on my GitHub repository.<br/>
+            The source is completely contained in the one file: <b>accordion-tuner.html</b>:<br/><br/>
+          </div>
+
+          <div style="text-align: center">
+            <a href="https://github.com/seisiuneer/abctools/tree/main/tools" target="_blank">Michael Eskin's GitHub Repository</a><br/>
+            &nbsp;
+          </div>
+
+        </div>
+
+      </div>
+
+      <button id="help-close" style="
+        width:100%; margin-top:18px; padding:12px 14px;
+        background:#2a2a2a; border:1px solid #444; border-radius:12px;
+        color:#fff; font-weight:900; cursor:pointer; font-size:1.25rem;
+      ">Close</button>
+
+    </div>
+
+  </div>
+
+<script>
+// ---------- Audio nodes ----------
+let audioCtx, streamSource;
+let analyserPitch, analyserSpec;
+let timeDataPitch, magSpec;
+let procNode = null;
+
+/* MAE 08 Jan 2026 - iOS-only input gain to address low mic levels on iOS */
+let inputGainNode = null;
+
+function isIOS(){
+  const ua = navigator.userAgent || "";
+  const iOSUA = /iPad|iPhone|iPod/.test(ua);
+  const iPadOS = (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  return iOSUA || iPadOS;
+}
+const IOS_INPUT_GAIN = 3.0;
+/* END iOS-only input gain */
+
+
+// ---------- iOS/Safari: ensure AudioContext is running ----------
+async function ensureAudioContextRunning() {
+  if (!audioCtx) return;
+
+  try {
+    if (audioCtx.state === "suspended") {
+      await audioCtx.resume();
+    }
+  } catch (e) {
+    // Safari can throw if resume() is called at an odd time; safe to ignore
+    // console.log("AudioContext resume() failed/ignored:", e);
+  }
+}
+
+// ---------- UI ----------
+const canvas = document.getElementById('scope');
+const cctx = canvas.getContext('2d');
+const needle = document.getElementById('needle');
+const needleLow = document.getElementById('needle-low');
+const needleHigh = document.getElementById('needle-high');
+const cfgSel = document.getElementById('cfg');
+const lockedIndicatorEl = document.getElementById('locked-indicator');
+
+// needle frequency labels
+const freqLowLabel = document.getElementById('freq-low-label');
+const freqHighLabel = document.getElementById('freq-high-label');
+const freqMMLabel = document.getElementById('freq-mm-label');
+
+const NOTES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+
+// ---------- Live mode ----------
+const liveOnlyCheckbox = document.getElementById('live-only');
+function isLiveOnlyEnabled(){
+  return !!(liveOnlyCheckbox && liveOnlyCheckbox.checked);
+}
+
+// ---------- Lock / state ----------
+let isLocked = false;
+let silenceTimer = null;
+
+/* MAE 06 Jan 2026 - require NEXT NOTE after config change (MM <-> MMM or basis change) */
+let needsNextNoteAfterConfigChange = false;
+
+let history = [];
+let lastStable = null;
+
+// pitch stable
+let pitchHistory = [];
+let lastF0 = 0;
+
+// note latch
+let latchedMidi = null;
+let latchCandidateCount = 0;
+
+// refined smoothing
+let refinedHistory = [];
+
+// trackers (2 for MM, 3 for MMM)
+let trackers = [];
+
+// For live mode exit
+let suppressAutoSaveAfterLiveExit = false;
+
+// stabilize note recognition to prevent semitone flips
+let midiFloatHistory = [];
+
+// ---------- Settings ----------
+const PITCH_FFT_SIZE = 4096;
+
+// coarse spectrum (hint only)
+const SPEC_FFT_SIZE_PREF = 32768;
+const SPEC_FFT_SIZE_FALLBACK = 16384;
+const SPEC_MAX_FREQ  = 2000;
+const SPEC_PEAK_DB_THRESHOLD = -110;
+const SPEC_MIN_PEAK_HZ_SEP = 0.12;
+
+const MM_WINDOW_CENTS  = 60;
+const MMM_WINDOW_CENTS = 95;
+
+const RMS_SILENCE = 0.008;
+
+const NOTE_LATCH_MIN_FRAMES = 10;
+const NOTE_LATCH_CHANGE_CENTS = 80;
+
+// musette constraints
+const MUS_ABS_MAX_CENTS = 25;
+const MUS_ABS_TOL_CENTS = 3;
+const MUS_MIN_CENTS = 0.25;
+
+// needle
+const MAX_CENTS_DISPLAY = 50;
+const NEEDLE_SCALE = 0.80;
+
+// tracker params (standard mode improvements preserved)
+const TRACK_LP_CUTOFF_HZ = 20;
+const TRACK_HP_CUTOFF_HZ = 0.3;
+const TRACK_OFFSET_MEDIAN = 21;
+const TRACK_MIN_OFFSET_SAMPLES = 9;
+const TRACK_MAX_OFFSET_HZ = 12;
+
+// harmonics sanity
+const HARMONIC_REJECT_CENTS = 25;
+const OCTAVE_STRONGER_DB = 6;
+
+// ---------- Standard gating ----------
+const GATE = {
+  pitchHist: 17,
+  pitchNeed: 9,
+  refinedHistMM: 18,
+  refinedHistMMM: 18,
+  lockAfterMs: 250
+};
+
+// MM default "High Accuracy" behavior (always on for MM)
+const MM_HIGH_ACCURACY_REFINED_MULT = 2.0;
+const MM_HIGH_ACCURACY_LOCK_MS = 450;
+
+// MMM default "High Accuracy" behavior (now also on for MMM)
+const MMM_HIGH_ACCURACY_REFINED_MULT = 2.0;
+const MMM_HIGH_ACCURACY_LOCK_MS = 450;
+
+function effectiveRmsSilence(){
+  return RMS_SILENCE;
+}
+
+function pitchNeedForCurrentF0(){
+  const f0 = lastF0 || 0;
+  if (f0 > 0 && f0 < 220) { // ~A3 and below
+    return Math.max(12, Math.floor(GATE.pitchNeed * 0.65));
+  }
+  return GATE.pitchNeed;
+}
+
+function pitchHistForCurrentF0(){
+  const f0 = lastF0 || 0;
+  if (f0 > 0 && f0 < 220) {
+    return Math.max(24, Math.floor(GATE.pitchHist * 0.75));
+  }
+  return GATE.pitchHist;
+}
+
+function refinedHistTargetForCfg(cfg){
+  // MM: always use the longer "high accuracy" averaging
+  if (cfg === "MM") {
+    return Math.round(GATE.refinedHistMM * MM_HIGH_ACCURACY_REFINED_MULT);
+  }
+  // MMM: now also use the longer "high accuracy" averaging
+  return Math.round(GATE.refinedHistMMM * MMM_HIGH_ACCURACY_REFINED_MULT);
+}
+
+function lockAfterMs(){
+  // MM/MMM: longer lock so the extra averaging can stabilize before saving
+  return (getCfgOnly() === "MM") ? MM_HIGH_ACCURACY_LOCK_MS
+       : (getCfgOnly() === "MMM") ? MMM_HIGH_ACCURACY_LOCK_MS
+       : GATE.lockAfterMs;
+}
+
+// ---------- Display smoothing (standard) ----------
+const DISPLAY_SMOOTH_DT_CAP_MS = 250;
+let gDisplaySmooth = {
+  inited: false,
+  lastTs: 0,
+  refHz: 0,
+  mmMusHz: 0,
+  mmCents: 0,
+  mmmLowHz: 0,
+  mmmHighHz: 0,
+  mmmOff1: 0,
+  mmmOff2: 0
+};
+
+function resetDisplaySmoothing(){
+  gDisplaySmooth.inited = false;
+  gDisplaySmooth.lastTs = 0;
+}
+
+function displaySmoothTauMs(){
+  return 180;
+}
+
+// --- Live mode: reset musette when note changes ---
+let gLastLiveNoteName = null;          // (UI/render tracking)
+let gLastLiveNoteNameProcess = null;   // (processing tracking)
+
+// Reset musette *before* stable calc, so we don't mix old/new note samples.
+function maybeResetLiveOnNoteChange(note){
+  if (!isLiveOnlyEnabled()) {
+    gLastLiveNoteNameProcess = null;
+    return false;
+  }
+
+  if (!note || note === "--") return false;
+
+  if (gLastLiveNoteNameProcess && note !== gLastLiveNoteNameProcess) {
+    resetMusetteOnLiveNoteChange();
+
+    // Also clear lastStable so nothing “old” can be used downstream.
+    lastStable = null;
+
+    gLastLiveNoteNameProcess = note;
+    return true;
+  }
+
+  gLastLiveNoteNameProcess = note;
+  return false;
+}
+
+function resetMusetteOnLiveNoteChange(){
+  // reset visual smoothing so old offsets don't bleed into the new note
+  resetDisplaySmoothing();
+
+  // clear musette refinement buffers so the new note starts fresh
+  refinedHistory = [];
+
+  // clear tracker histories (keep array; next onProcess will repopulate/retarget)
+  if (trackers && trackers.length){
+    trackers.forEach(tr => {
+      if (!tr) return;
+      tr.offsetHzHist = [];
+      tr.refinedHz = null;
+      tr.haveLast = false;
+      tr.lastAngle = 0;
+      tr.iLP = tr.qLP = 0;
+      tr.iMean = tr.qMean = 0;
+    });
+  }
+
+  // reset UI musette displays
+  document.getElementById('musette-line').innerText = "";
+
+  setNeedleCents(0);
+  setNeedleElCents(needleLow, 0);
+  setNeedleElCents(needleHigh, 0);
+
+  setNeedleLabelCents(freqLowLabel, 0);
+  setNeedleLabelCents(freqHighLabel, 0);
+  setNeedleLabelCents(freqMMLabel, 0);
+
+  if (freqLowLabel)  freqLowLabel.innerText  = `0.0 Hz`;
+  if (freqHighLabel) freqHighLabel.innerText = `0.0 Hz`;
+  if (freqMMLabel)   freqMMLabel.innerText   = `0.0 Hz`;
+
+  // MAE 13 Jan 2026 - Live mode: on note change, immediately clear the main display
+  // so we do not show the *previous* note/frequency while the new musette stabilizes.
+  const noteEl = document.getElementById('note');
+  const freqEl = document.getElementById('freq');
+  if (noteEl) noteEl.innerText = "--";
+  if (freqEl) freqEl.innerText = "Reference: 0.00 Hz";
+}
+
+// ---------- Utils ----------
+function smoothTo(prev, next, alpha){
+  if (!isFinite(next)) return prev;
+  if (!isFinite(prev)) return next;
+  return prev + alpha * (next - prev);
+}
+
+function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
+function median(arr){
+  if (!arr || !arr.length) return null;
+  const s = arr.slice().sort((a,b)=>a-b);
+  return s[Math.floor(s.length/2)];
+}
+
+function trimmedMean(arr, trimFrac){
+  if (!arr || !arr.length) return null;
+  const s = arr.slice().sort((a,b)=>a-b);
+  const n = s.length;
+
+  if (n < 5) {
+    return median(s);
+  }
+
+  const k = Math.floor(n * trimFrac);
+  const lo = clamp(k, 0, Math.floor((n-1)/2));
+  const hi = n - lo;
+
+  const slice = s.slice(lo, hi);
+  if (!slice.length) return median(s);
+
+  let sum = 0;
+  for (const v of slice) sum += v;
+  return sum / slice.length;
+}
+
+function robustCenter(arr){
+  const vals = (arr || []).filter(v => isFinite(v) && v > 0);
+  if (!vals.length) return null;
+
+  // MM: use trimmed mean (more stable over time, less jumpy than median)
+  if (getCfgOnly() === "MM") return trimmedMean(vals, 0.20);
+
+  // MMM: keep original median behavior
+  return median(vals);
+}
+
+let gA4RefHz = 440;
+
+function freqToMidi(freq){ return 12 * (Math.log2(freq / gA4RefHz)) + 69; }
+function midiToFreq(midi){ return gA4RefHz * Math.pow(2, (midi - 69) / 12); }
+function centsBetween(fA, fB){ return 1200 * Math.log2(fA / fB); }
+function centsToRatio(c){ return Math.pow(2, c/1200); }
+
+function midiToNoteName(midi){
+  const pc = ((midi % 12) + 12) % 12;
+  const octave = Math.floor(midi / 12) - 1;
+  return NOTES[pc] + octave;
+}
+function fmtCentsSigned(c){
+  if (c == null || !isFinite(c)) return "--";
+  const v = Math.round(c * 10) / 10;
+  return (v > 0 ? "+" : "") + v.toFixed(1);
+}
+function fmtHz(hz){
+  if (hz == null || !isFinite(hz)) return "--";
+  return hz.toFixed(2);
+}
+function fmtHzSigned(hz){
+  if (hz == null || !isFinite(hz)) return "--";
+  const v = Math.round(hz * 100) / 100;
+  return (v > 0 ? "+" : "") + v.toFixed(2);
+}
+function idealHzForLatched(){
+  if (latchedMidi == null) return null;
+  return midiToFreq(latchedMidi);
+}
+function fmtHzAndCentsDelta(refHz){
+  const ideal = idealHzForLatched();
+  if (ideal == null || !(refHz > 0)) return "--";
+
+  const deltaHz = refHz - ideal;
+  const deltaCents = centsBetween(refHz, ideal);
+
+  const hzStr = fmtHzSigned(deltaHz).replace("+", "");
+  const centsStr = fmtCentsSigned(deltaCents).replace("+", "");
+
+  return `${hzStr} Hz / ${centsStr}c`;
+}
+function beatsFromCents(refHz, cents){
+  if (!(refHz > 0) || !isFinite(cents)) return null;
+  const beats = Math.abs(refHz * (Math.pow(2, cents / 1200) - 1));
+  return beats;
+}
+function fmtBeats(beats){
+  if (beats == null || !isFinite(beats)) return "--";
+  return (Math.round(beats * 10) / 10).toFixed(1);
+}
+function rmsOfArray(buf){
+  let sum = 0;
+  for (let i=0;i<buf.length;i++){ const v = buf[i]; sum += v*v; }
+  return Math.sqrt(sum / buf.length);
+}
+
+// ---------- CSV export ----------
+function csvEscapeCell(v){
+  if (v == null) return "";
+  const s = String(v);
+  if (/[",\r\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+  return s;
+}
+
+function exportResultsTableAsCSV(){
+  const table = document.getElementById('report-table');
+  if (!table) return;
+
+  const rows = [];
+  const trs = table.querySelectorAll('tr');
+
+  trs.forEach(tr => {
+    const cells = tr.querySelectorAll('th,td');
+    const line = Array.from(cells).map(cell => {
+      let text = "";
+
+      if (cell.tagName === "TH") {
+        const label = cell.querySelector("span");
+        text = label ? label.innerText.trim() : cell.innerText.trim();
+      } else {
+        text = cell.innerText.trim();
+      }
+
+      return csvEscapeCell(
+        text
+          .replace(/\u00A0/g, " ")
+          .replace(/\r\n/g, "\n")
+          .replace(/\r/g, "\n")
+      );
+    }).join(',');
+    rows.push(line);
+  });
+
+  const csv = rows.join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+
+  const pad2 = (n) => String(n).padStart(2, '0');
+  const d = new Date();
+  const filename = `accordion_musette_tuner_${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}_${pad2(d.getHours())}${pad2(d.getMinutes())}.csv`;
+
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  setTimeout(() => URL.revokeObjectURL(url), 2500);
+}
+// ---------- END CSV export ----------
+
+// ---------- Status ----------
+const statusEl = document.getElementById('status');
+
+function setStatus(text, kind) {
+  statusEl.textContent = text;
+  statusEl.className = "status-pill " + kind;
+}
+
+function setTopStatusVisible(isVisible){
+  statusEl.style.display = isVisible ? "inline-block" : "none";
+}
+
+// ---------- Locked indicator pill ----------
+function showLockedIndicator(on){
+  lockedIndicatorEl.style.display = on ? "inline-block" : "none";
+}
+
+// ---------- Config ----------
+function getConfig() {
+  const raw = cfgSel.value;
+
+  if (raw === "MM") {
+    return { cfg: "MM", basis: "middle" };
+  }
+
+  if (raw === "MMM_LOWEST") {
+    return { cfg: "MMM", basis: "lowest" };
+  }
+
+  return { cfg: "MMM", basis: "middle" };
+}
+
+function getCfgOnly(){
+  return getConfig().cfg;
+}
+
+// ---------- Needle visibility ----------
+function setNeedleMode(cfg){
+  if (cfg === "MMM") {
+    needle.style.display = "none";
+    needleLow.style.display = "block";
+    needleHigh.style.display = "block";
+
+    if (freqMMLabel) freqMMLabel.style.display = "none";
+    if (freqLowLabel) freqLowLabel.style.display = "inline-block";
+    if (freqHighLabel) freqHighLabel.style.display = "inline-block";
+  } else {
+    needle.style.display = "block";
+    needleLow.style.display = "none";
+    needleHigh.style.display = "none";
+
+    if (freqMMLabel) freqMMLabel.style.display = "inline-block";
+    if (freqLowLabel) freqLowLabel.style.display = "none";
+    if (freqHighLabel) freqHighLabel.style.display = "none";
+  }
+}
+
+function setNeedleElCents(el, cents){
+  const needleCents = (cents == null) ? 0 : clamp(cents, -MAX_CENTS_DISPLAY, MAX_CENTS_DISPLAY);
+  const pos = 50 + (needleCents * NEEDLE_SCALE);
+  el.style.left = clamp(pos, 0, 100) + "%";
+}
+
+function setNeedleLabelCents(labelEl, cents){
+  if (!labelEl) return;
+  const needleCents = (cents == null) ? 0 : clamp(cents, -MAX_CENTS_DISPLAY, MAX_CENTS_DISPLAY);
+  const pos = 50 + (needleCents * NEEDLE_SCALE);
+  labelEl.style.left = clamp(pos, 0, 100) + "%";
+}
+
+/* MAE 06 Jan 2026 - gate listening after config change */
+function requireNextNoteAfterConfigChange(){
+  if (!audioCtx) return;
+  needsNextNoteAfterConfigChange = true;
+  isLocked = true;
+  showLockedIndicator(false);
+  clearTimeout(silenceTimer);
+  silenceTimer = null;
+  setTopStatusVisible(true);
+  setStatus("Configuration changed — Click NEXT NOTE", "status-warn");
+}
+
+// ---------- Canvas ----------
+function resizeCanvasToCSS(){
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+  canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+  cctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+window.addEventListener('resize', resizeCanvasToCSS);
+
+function drawScope(buf){
+  const rect = canvas.getBoundingClientRect();
+  const w = rect.width, h = rect.height;
+
+  cctx.clearRect(0, 0, w, h);
+  cctx.fillStyle = "#000";
+  cctx.fillRect(0, 0, w, h);
+
+  cctx.strokeStyle = "#00f2ff55";
+  cctx.lineWidth = 2;
+  cctx.beginPath();
+
+  const mid = h / 2;
+  const step = Math.max(1, Math.floor(buf.length / w));
+  let x = 0;
+  for (let i=0; i<buf.length; i+=step){
+    const y = mid + buf[i] * (h * 0.38);
+    if (i === 0) cctx.moveTo(x, y);
+    else cctx.lineTo(x, y);
+    x += 1;
+    if (x > w) break;
+  }
+  cctx.stroke();
+}
+
+// ---------- YIN Pitch ----------
+function yinPitch(buffer, sampleRate, minFreq, maxFreq, threshold) {
+  const halfSize = Math.floor(buffer.length / 2);
+
+  const minTau = Math.floor(sampleRate / maxFreq);
+  const maxTau = Math.floor(sampleRate / minFreq);
+  if (maxTau >= halfSize) return null;
+
+  const d = new Float32Array(maxTau + 1);
+  for (let tau = 1; tau <= maxTau; tau++) {
+    let sum = 0;
+    for (let i = 0; i < halfSize; i++) {
+      const delta = buffer[i] - buffer[i + tau];
+      sum += delta * delta;
+    }
+    d[tau] = sum;
+  }
+
+  const cmnd = new Float32Array(maxTau + 1);
+  cmnd[0] = 1;
+  let runningSum = 0;
+  for (let tau = 1; tau <= maxTau; tau++) {
+    runningSum += d[tau];
+    cmnd[tau] = d[tau] * tau / (runningSum || 1e-12);
+  }
+
+  let tauEstimate = -1;
+  for (let tau = Math.max(2, minTau); tau <= maxTau; tau++) {
+    if (cmnd[tau] < threshold && cmnd[tau] < cmnd[tau - 1]) {
+      while (tau + 1 <= maxTau && cmnd[tau + 1] < cmnd[tau]) tau++;
+      tauEstimate = tau;
+      break;
+    }
+  }
+  if (tauEstimate === -1) return null;
+
+  const probability = 1 - cmnd[tauEstimate];
+  if (probability < 0.75) return null;
+
+  const x0 = tauEstimate > 1 ? tauEstimate - 1 : tauEstimate;
+  const x2 = tauEstimate + 1 <= maxTau ? tauEstimate + 1 : tauEstimate;
+  const s0 = cmnd[x0], s1 = cmnd[tauEstimate], s2 = cmnd[x2];
+
+  const denom = (2 * s1 - s2 - s0);
+  let betterTau = tauEstimate;
+  if (Math.abs(denom) > 1e-12) {
+    const delta = (s2 - s0) / (2 * denom);
+    betterTau = tauEstimate + delta;
+  }
+
+  const freq = sampleRate / betterTau;
+  if (!(freq > 0) || freq < minFreq || freq > maxFreq) return null;
+
+  return { freq, probability };
+}
+
+// ---------- Note latch ----------
+function updateLatchedMidiUsingRefHz(refHz){
+  if (!(refHz > 0)) return;
+
+  const midiFloat = freqToMidi(refHz);
+  if (!isFinite(midiFloat)) return;
+
+  midiFloatHistory.push(midiFloat);
+  if (midiFloatHistory.length > 9) midiFloatHistory.shift();
+
+  const midiMed = median(midiFloatHistory);
+  if (midiMed == null || !isFinite(midiMed)) return;
+
+  const midiNow = Math.round(midiMed);
+
+  if (latchedMidi == null) {
+    latchCandidateCount++;
+    if (latchCandidateCount >= NOTE_LATCH_MIN_FRAMES) {
+      latchedMidi = midiNow;
+      latchCandidateCount = 0;
+    }
+    return;
+  }
+
+  const centsAway = centsBetween(refHz, midiToFreq(latchedMidi));
+  if (Math.abs(centsAway) > NOTE_LATCH_CHANGE_CENTS) {
+    latchCandidateCount++;
+    if (latchCandidateCount >= NOTE_LATCH_MIN_FRAMES) {
+      latchedMidi = midiNow;
+      latchCandidateCount = 0;
+      midiFloatHistory = [];
+    }
+  } else {
+    latchCandidateCount = 0;
+  }
+}
+
+// ---------- Spectrum helpers (coarse hint) ----------
+function interpolatePeakHzDbToLinear(magsDb, k, sampleRate, fftSize) {
+  const db0 = magsDb[k-1], db1 = magsDb[k], db2 = magsDb[k+1];
+  const p0 = Math.pow(10, db0/10);
+  const p1 = Math.pow(10, db1/10);
+  const p2 = Math.pow(10, db2/10);
+
+  const denom = (p0 - 2*p1 + p2);
+  let delta = 0;
+  if (Math.abs(denom) > 1e-18) delta = 0.5 * (p0 - p2) / denom;
+
+  const refined = k + clamp(delta, -0.5, 0.5);
+  return refined * (sampleRate / fftSize);
+}
+
+function getDbAtHz(hz){
+  if (!audioCtx || !analyserSpec || !magSpec) return -Infinity;
+  const sr = audioCtx.sampleRate;
+  const fftSize = analyserSpec.fftSize;
+  const bin = hz * fftSize / sr;
+  const k = clamp(Math.round(bin), 0, magSpec.length - 1);
+  return magSpec[k];
+}
+
+function findPeakHzAround(targetHz, windowCents){
+  if (!audioCtx || !analyserSpec || !magSpec) return null;
+  const sr = audioCtx.sampleRate;
+  const fftSize = analyserSpec.fftSize;
+  const binF = targetHz * fftSize / sr;
+  const ratio = Math.pow(2, windowCents / 1200);
+  const binLo = clamp(Math.floor(binF / ratio), 1, magSpec.length - 2);
+  const binHi = clamp(Math.ceil (binF * ratio), 1, magSpec.length - 2);
+
+  let kMax = binLo;
+  let vMax = -Infinity;
+  for (let k = binLo; k <= binHi; k++){
+    const v = magSpec[k];
+    if (v > vMax){ vMax = v; kMax = k; }
+  }
+
+  const y0 = magSpec[kMax - 1];
+  const y1 = magSpec[kMax];
+  const y2 = magSpec[kMax + 1];
+  const denom = (y0 - 2*y1 + y2);
+  let delta = 0;
+  if (denom !== 0){
+    delta = 0.5 * (y0 - y2) / denom;
+    delta = clamp(delta, -1, 1);
+  }
+  const kPeak = kMax + delta;
+  return (kPeak * sr) / fftSize;
+}
+
+function refineLowPitchFromHarmonic(f0){
+  const LOW_REFINE_HZ = 329.63; // E4
+  if (!(f0 > 0) || f0 > LOW_REFINE_HZ) return f0;
+  if (!audioCtx || !analyserSpec || !magSpec) return f0;
+
+  analyserSpec.getFloatFrequencyData(magSpec);
+
+  const f2 = 2 * f0;
+  if (f2 >= SPEC_MAX_FREQ) return f0;
+
+  const db1 = getDbAtHz(f0);
+  const db2 = getDbAtHz(f2);
+
+  if (!(isFinite(db1) && isFinite(db2) && (db2 > db1 + 4))) return f0;
+
+  const peak2 = findPeakHzAround(f2, 120);
+  if (!(peak2 > 0)) return f0;
+
+  const fRef = peak2 / 2;
+
+  const cents = 1200 * Math.log2(fRef / f0);
+  if (Math.abs(cents) > 80) return f0;
+
+  return fRef;
+}
+
+function isNearHarmonic(hz, f0) {
+  if (!(hz > 0 && f0 > 0)) return false;
+  for (const n of [2,3,4]) {
+    const h = n * f0;
+    const c = Math.abs(centsBetween(hz, h));
+    if (c < HARMONIC_REJECT_CENTS) return true;
+  }
+  return false;
+}
+
+function octaveCorrectF0(f0){
+  if (!audioCtx || !analyserSpec || !magSpec || !(f0 > 0)) return f0;
+
+  analyserSpec.getFloatFrequencyData(magSpec);
+
+  const LOW_UPWARD_GUARD_HZ = 277.18; // C#4
+  const fHalf = 0.5 * f0;
+  const fDbl  = 2.0 * f0;
+
+  const dbF    = getDbAtHz(f0);
+  const dbHalf = (fHalf >= 55 && fHalf < SPEC_MAX_FREQ) ? getDbAtHz(fHalf) : -Infinity;
+  const dbDbl  = (fDbl  >= 55 && fDbl  < SPEC_MAX_FREQ) ? getDbAtHz(fDbl)  : -Infinity;
+
+  if (isFinite(dbHalf) && isFinite(dbF) && (dbHalf > dbF + 4) && (dbHalf > dbDbl + 2)) {
+    return fHalf;
+  }
+
+  if (f0 <= LOW_UPWARD_GUARD_HZ) return f0;
+
+  if (isFinite(dbDbl) && isFinite(dbF) && (dbDbl > dbF + OCTAVE_STRONGER_DB) && (fDbl < SPEC_MAX_FREQ)) {
+    if (!(isFinite(dbHalf) && (dbHalf > dbF - 3))) {
+      return fDbl;
+    }
+  }
+
+  return f0;
+}
+
+function chooseMusetteF0(f0){
+  const C4_HZ = 261.625565;
+  if (!audioCtx || !analyserSpec || !magSpec || !(f0 > 0)) return { fMusette: f0, factor: 1 };
+
+  if (f0 > C4_HZ) return { fMusette: f0, factor: 1 };
+
+  const f2 = 2 * f0;
+  if (f2 >= SPEC_MAX_FREQ) return { fMusette: f0, factor: 1 };
+
+  analyserSpec.getFloatFrequencyData(magSpec);
+
+  const db1 = getDbAtHz(f0);
+  const db2 = getDbAtHz(f2);
+
+  if (isFinite(db1) && isFinite(db2) && (db2 > db1 + 6)) {
+    return { fMusette: f2, factor: 2 };
+  }
+  return { fMusette: f0, factor: 1 };
+}
+
+function collectPeaksAroundF0(f0, windowCents){
+  if (!audioCtx || !analyserSpec || !magSpec || !(f0 > 0)) return [];
+  analyserSpec.getFloatFrequencyData(magSpec);
+
+  const sr = audioCtx.sampleRate;
+  const fftSize = analyserSpec.fftSize;
+
+  const lo = Math.max(20, f0 * centsToRatio(-windowCents));
+  const hi = Math.min(SPEC_MAX_FREQ, f0 * centsToRatio(windowCents));
+
+  const kLo = clamp(Math.floor(lo * fftSize / sr), 2, magSpec.length - 3);
+  const kHi = clamp(Math.ceil(hi * fftSize / sr),  2, magSpec.length - 3);
+
+  let raw = [];
+  for (let k = kLo; k <= kHi; k++) {
+    const db = magSpec[k];
+    if (db < SPEC_PEAK_DB_THRESHOLD) continue;
+    if (db > magSpec[k-1] && db >= magSpec[k+1]) {
+      const hz = interpolatePeakHzDbToLinear(magSpec, k, sr, fftSize);
+      if (hz < lo || hz > hi) continue;
+      if (isNearHarmonic(hz, f0)) continue;
+
+      const centsFromF0 = Math.abs(centsBetween(hz, f0));
+      const score = db - 1.2 * centsFromF0;
+      raw.push({ hz, score });
+    }
+  }
+
+  raw.sort((a,b)=>b.score - a.score);
+
+  const peaks = [];
+  for (const p of raw) {
+    if (peaks.every(q => Math.abs(q - p.hz) >= SPEC_MIN_PEAK_HZ_SEP)) {
+      peaks.push(p.hz);
+      if (peaks.length >= 10) break;
+    }
+  }
+  return peaks.sort((a,b)=>a-b);
+}
+
+// MM candidate pair (coarse)
+function coarseMMCandidates(f0){
+  const peaks = collectPeaksAroundF0(f0, MM_WINDOW_CENTS);
+  if (peaks.length < 2) return null;
+
+  let best = null;
+  for (let i=0;i<peaks.length;i++){
+    for (let j=i+1;j<peaks.length;j++){
+      const a = peaks[i], b = peaks[j];
+      const off = Math.abs(centsBetween(b, a));
+      if (off < MUS_MIN_CENTS) continue;
+      if (off > (MUS_ABS_MAX_CENTS + MUS_ABS_TOL_CENTS)) continue;
+
+      const score = off + 0.12*(Math.abs(centsBetween(a,f0)) + Math.abs(centsBetween(b,f0)));
+      if (!best || score < best.score) best = { a, b, score };
+    }
+  }
+  if (!best) return null;
+
+  return [best.a, best.b].sort((x,y)=>x-y);
+}
+
+function validateMMForRefLowest(sorted2){
+  if (!sorted2 || sorted2.length !== 2) return { ok:false };
+  const ref = sorted2[0];
+  const mus = sorted2[1];
+  const off = centsBetween(mus, ref);
+  const ok = (off >= MUS_MIN_CENTS && off <= MUS_ABS_MAX_CENTS + MUS_ABS_TOL_CENTS);
+  return { ok, refIndex:0, musIndex:1, off };
+}
+
+function validateMMMForBasis(sorted3, basis){
+  if (!sorted3 || sorted3.length !== 3) return { ok:false };
+
+  if (basis === "lowest") {
+    const ref = sorted3[0];
+    const o1 = centsBetween(sorted3[1], ref);
+    const o2 = centsBetween(sorted3[2], ref);
+    const ok = (o1 >= MUS_MIN_CENTS && o1 <= MUS_ABS_MAX_CENTS + MUS_ABS_TOL_CENTS) &&
+               (o2 >= MUS_MIN_CENTS && o2 <= MUS_ABS_MAX_CENTS + MUS_ABS_TOL_CENTS);
+    return { ok, refIndex:0 };
+  } else {
+    const ref = sorted3[1];
+    const oLow = centsBetween(sorted3[0], ref);
+    const oHigh = centsBetween(sorted3[2], ref);
+    const ok = (oLow <= -MUS_MIN_CENTS && oLow >= -(MUS_ABS_MAX_CENTS + MUS_ABS_TOL_CENTS)) &&
+               (oHigh >= MUS_MIN_CENTS && oHigh <= MUS_ABS_MAX_CENTS + MUS_ABS_TOL_CENTS);
+    return { ok, refIndex:1 };
+  }
+}
+
+function coarseMMMCandidates(f0, basis){
+  const peaks = collectPeaksAroundF0(f0, MMM_WINDOW_CENTS);
+  if (peaks.length < 3) return null;
+
+  let best = null;
+  for (let i=0;i<=peaks.length-3;i++){
+    for (let j=i+1;j<=peaks.length-2;j++){
+      for (let k=j+1;k<=peaks.length-1;k++){
+        const tri = [peaks[i], peaks[j], peaks[k]].sort((a,b)=>a-b);
+        const v = validateMMMForBasis(tri, basis);
+        if (!v.ok) continue;
+
+        const span = Math.abs(centsBetween(tri[2], tri[0]));
+        const score = span + 0.12*(Math.abs(centsBetween(tri[0],f0))+Math.abs(centsBetween(tri[1],f0))+Math.abs(centsBetween(tri[2],f0)));
+        if (!best || score < best.score) best = { tri, score };
+      }
+    }
+  }
+  return best ? best.tri : null;
+}
+
+// ---------- Narrowband quadrature tracker ----------
+function makeBandpassBiquad(fs, f0, Q){
+  f0 = clamp(f0, 20, fs/2 - 100);
+  Q = clamp(Q, 2, 120);
+  const w0 = 2*Math.PI * f0 / fs;
+  const cosw0 = Math.cos(w0);
+  const sinw0 = Math.sin(w0);
+  const alpha = sinw0 / (2*Q);
+
+  let b0 = alpha, b1 = 0, b2 = -alpha;
+  let a0 = 1 + alpha, a1 = -2*cosw0, a2 = 1 - alpha;
+
+  b0 /= a0; b1 /= a0; b2 /= a0;
+  a1 /= a0; a2 /= a0;
+
+  return { b0,b1,b2,a1,a2, x1:0,x2:0,y1:0,y2:0 };
+}
+function biquadProcess(st, x){
+  const y = st.b0*x + st.b1*st.x1 + st.b2*st.x2 - st.a1*st.y1 - st.a2*st.y2;
+  st.x2 = st.x1; st.x1 = x;
+  st.y2 = st.y1; st.y1 = y;
+  return y;
+}
+function onePoleAlpha(fs, cutoffHz){
+  return Math.exp(-2*Math.PI*cutoffHz/fs);
+}
+
+function makeTracker(fs, targetHz){
+  const bpQ = 60;
+  return {
+    fs,
+    targetHz,
+    phase: 0,
+    phaseInc: 2*Math.PI*targetHz/fs,
+    bp: makeBandpassBiquad(fs, targetHz, bpQ),
+
+    lpA: onePoleAlpha(fs, TRACK_LP_CUTOFF_HZ),
+    hpA: onePoleAlpha(fs, TRACK_HP_CUTOFF_HZ),
+
+    iLP:0, qLP:0,
+    iMean:0, qMean:0,
+
+    lastAngle: 0,
+    haveLast: false,
+
+    offsetHzHist: [],
+    refinedHz: null,
+  };
+}
+
+function updateTrackerTarget(tr, newHz){
+  newHz = clamp(newHz, 30, SPEC_MAX_FREQ);
+  if (Math.abs(newHz - tr.targetHz) < 0.03) return;
+
+  tr.targetHz = newHz;
+  tr.phaseInc = 2*Math.PI*newHz/tr.fs;
+
+  tr.bp = makeBandpassBiquad(tr.fs, newHz, 60);
+
+  tr.offsetHzHist = [];
+  tr.refinedHz = null;
+  tr.haveLast = false;
+
+  tr.lpA = onePoleAlpha(tr.fs, TRACK_LP_CUTOFF_HZ);
+  tr.hpA = onePoleAlpha(tr.fs, TRACK_HP_CUTOFF_HZ);
+}
+
+function trackerProcessBlock(tr, input){
+  const fs = tr.fs;
+  for (let n=0; n<input.length; n++){
+    const x = biquadProcess(tr.bp, input[n]);
+
+    tr.phase += tr.phaseInc;
+    if (tr.phase > 1e9) tr.phase -= 1e9;
+    const c = Math.cos(tr.phase);
+    const s = Math.sin(tr.phase);
+
+    const i = x * c;
+    const q = x * s;
+
+    tr.iLP = (1-tr.lpA)*i + tr.lpA*tr.iLP;
+
+    // FIX: use lpA here (was hpA), keeps I/Q filtering consistent
+    tr.qLP = (1-tr.lpA)*q + tr.lpA*tr.qLP;
+
+    tr.iMean = (1-tr.hpA)*tr.iLP + tr.hpA*tr.iMean;
+    tr.qMean = (1-tr.hpA)*tr.qLP + tr.hpA*tr.qMean;
+
+    const iHP = tr.iLP - tr.iMean;
+    const qHP = tr.qLP - tr.qMean;
+
+    const angle = Math.atan2(qHP, iHP);
+
+    if (tr.haveLast){
+      let d = angle - tr.lastAngle;
+      if (d > Math.PI) d -= 2*Math.PI;
+      else if (d < -Math.PI) d += 2*Math.PI;
+
+      const offHz = (d * fs) / (2*Math.PI);
+
+      if (isFinite(offHz) && Math.abs(offHz) <= TRACK_MAX_OFFSET_HZ) {
+        tr.offsetHzHist.push(offHz);
+
+        if (tr.offsetHzHist.length > TRACK_OFFSET_MEDIAN) tr.offsetHzHist.shift();
+        if (tr.offsetHzHist.length >= TRACK_MIN_OFFSET_SAMPLES) {
+          const med = median(tr.offsetHzHist);
+          tr.refinedHz = tr.targetHz + med;
+        }
+      }
+    }
+
+    tr.lastAngle = angle;
+    tr.haveLast = true;
+  }
+}
+
+// ---------- UI helpers ----------
+function setNeedleCents(cents){
+  setNeedleElCents(needle, cents);
+}
+
+function updateMMMNeedles(off1, off2){
+  const lo = Math.min(off1, off2);
+  const hi = Math.max(off1, off2);
+  setNeedleElCents(needleLow, lo);
+  setNeedleElCents(needleHigh, hi);
+
+  setNeedleLabelCents(freqLowLabel, lo);
+  setNeedleLabelCents(freqHighLabel, hi);
+}
+
+function updateTable() {
+  const body = document.getElementById('report-body');
+  body.innerHTML = history.slice().reverse().map(r => `
+    <tr>
+      <td>${r.cfg}</td>
+      <td>${r.note}</td>
+      <td class="mono">${r.idealHz}</td>
+      <td class="mono">${fmtHz(r.refHz)}</td>
+      <td class="mono">${r.refDelta}</td>
+      <td class="mono">${r.musetteHTML ? r.musetteHTML : r.musette}</td>
+    </tr>
+  `).join('');
+}
+
+// ---------- Recommended lockData() ----------
+function lockData() {
+  if (!lastStable || isLocked) return;
+
+  if (isLiveOnlyEnabled()) return;
+
+  isLocked = true;
+  showLockedIndicator(true);
+
+  setTopStatusVisible(false);
+
+  const ideal = idealHzForLatched();
+  const idealStr = (ideal == null) ? "--" : fmtHz(ideal);
+
+  const haveSmooth = (typeof gDisplaySmooth !== "undefined") && !!gDisplaySmooth.inited;
+
+  const refHzSaved =
+    (haveSmooth && isFinite(gDisplaySmooth.refHz) && gDisplaySmooth.refHz > 0)
+      ? gDisplaySmooth.refHz
+      : lastStable.refHz;
+
+  const deltaStr = fmtHzAndCentsDelta(refHzSaved);
+
+  const cfg = lastStable.cfg;
+  const note = lastStable.note;
+
+  let musetteStr = lastStable.musetteStr;
+  let musetteStrHTML = lastStable.musetteStrHTML || null;
+
+  if (cfg === "MM") {
+    const cents =
+      (haveSmooth && isFinite(gDisplaySmooth.mmCents)) ? Math.max(0, gDisplaySmooth.mmCents)
+        : (isFinite(lastStable.musetteCents) ? Math.max(0, lastStable.musetteCents) : 0);
+
+    const beats = beatsFromCents(refHzSaved, cents);
+
+    musetteStr = `  ${fmtCentsSigned(cents)}c / ${fmtBeats(beats)}bps`;
+    musetteStrHTML = null;
+  } else if (cfg === "MMM") {
+    let o1 = (haveSmooth && isFinite(gDisplaySmooth.mmmOff1)) ? gDisplaySmooth.mmmOff1 : lastStable.off1;
+    let o2 = (haveSmooth && isFinite(gDisplaySmooth.mmmOff2)) ? gDisplaySmooth.mmmOff2 : lastStable.off2;
+
+    const c1 = Math.min(o1, o2);
+    const c2 = Math.max(o1, o2);
+
+    const b1 = beatsFromCents(refHzSaved, c1);
+    const b2 = beatsFromCents(refHzSaved, c2);
+
+    const cStr1 = fmtCentsSigned(c1);
+    const cStr2 = fmtCentsSigned(c2);
+
+    const bStr1 = fmtBeats(b1);
+    const bStr2 = fmtBeats(b2);
+
+    musetteStr = `  ${cStr1}c / ${cStr2}c\u00A0\u00A0${bStr1}bps / ${bStr2}bps`;
+    musetteStrHTML = `  ${cStr1}c / ${cStr2}c<br>${bStr1}bps / ${bStr2}bps`;
+  }
+
+  history.push({
+    cfg: cfg,
+    note: note,
+    idealHz: idealStr,
+    refHz: Number(refHzSaved),
+    refDelta: deltaStr,
+    musette: musetteStr,
+    musetteHTML: musetteStrHTML
+  });
+
+  updateTable();
+}
+
+function pushRefined(res){
+  refinedHistory.push(res);
+
+  const cfg = (res && res.cfg) ? res.cfg : getCfgOnly();
+  const cap = refinedHistTargetForCfg(cfg);
+  while (refinedHistory.length > cap) refinedHistory.shift();
+}
+
+function medianStableRefinedMM(){
+  const cap = refinedHistTargetForCfg("MM");
+  if (refinedHistory.length < Math.floor(cap/2)) return null;
+
+  const latest = refinedHistory[refinedHistory.length-1];
+
+  const refHz = robustCenter(refinedHistory.map(x=>x.refHz));
+  const musHz = robustCenter(refinedHistory.map(x=>x.musHz));
+  if (!(refHz > 0) || !(musHz > 0)) return null;
+
+  let musCents = centsBetween(musHz, refHz);
+  if (!isFinite(musCents)) return null;
+
+  musCents = Math.max(0, musCents);
+
+  return {
+    cfg: latest.cfg,
+    note: latest.note,
+    refHz,
+    musetteCents: musCents,
+    musHz: musHz,
+    musetteStr: `  ${fmtCentsSigned(musCents)}c / ${fmtBeats(beatsFromCents(refHz, musCents))}bps`
+  };
+}
+
+function medianStableRefinedMMM(){
+  const cap = refinedHistTargetForCfg("MMM");
+  if (refinedHistory.length < Math.floor(cap/2)) return null;
+
+  const latest = refinedHistory[refinedHistory.length-1];
+
+  // MMM: now use the same "high precision" center estimator as MM (trimmed mean)
+  const refHz  = trimmedMean(refinedHistory.map(x=>x.refHz).filter(v=>isFinite(v) && v > 0), 0.20);
+  const lowHz  = trimmedMean(refinedHistory.map(x=>x.lowHz).filter(v=>isFinite(v) && v > 0), 0.20);
+  const highHz = trimmedMean(refinedHistory.map(x=>x.highHz).filter(v=>isFinite(v) && v > 0), 0.20);
+  if (!(refHz > 0) || !(lowHz > 0) || !(highHz > 0)) return null;
+
+  let cLow  = centsBetween(lowHz,  refHz);
+  let cHigh = centsBetween(highHz, refHz);
+  if (!isFinite(cLow) || !isFinite(cHigh)) return null;
+
+  const c1 = Math.min(cLow, cHigh);
+  const c2 = Math.max(cLow, cHigh);
+
+  const b1 = beatsFromCents(refHz, c1);
+  const b2 = beatsFromCents(refHz, c2);
+
+  const cStr1 = fmtCentsSigned(c1);
+  const cStr2 = fmtCentsSigned(c2);
+
+  const bStr1 = fmtBeats(b1);
+  const bStr2 = fmtBeats(b2);
+
+  return {
+    cfg: latest.cfg,
+    note: latest.note,
+    refHz,
+    off1: c1,
+    off2: c2,
+    lowHz,
+    highHz,
+    musetteStr: `  ${cStr1}c / ${cStr2}c\u00A0\u00A0${bStr1}bps / ${bStr2}bps`,
+    musetteStrHTML: `  ${cStr1}c / ${cStr2}c<br>${bStr1}bps / ${bStr2}bps`
+  };
+}
+
+function renderRealtime(cfg, note, refHz, mmmOff1, mmmOff2, mmNeedleCents, mmMusHz, mmmLowHz, mmmHighHz){
+
+  // Track last rendered note (UI only)
+  gLastLiveNoteName = isLiveOnlyEnabled() ? note : null;
+
+  const now = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
+  let dt = gDisplaySmooth.lastTs ? (now - gDisplaySmooth.lastTs) : 16;
+  gDisplaySmooth.lastTs = now;
+  dt = clamp(dt, 1, DISPLAY_SMOOTH_DT_CAP_MS);
+
+  const alpha = 1 - Math.exp(-dt / displaySmoothTauMs());
+
+  if (!gDisplaySmooth.inited){
+    gDisplaySmooth.inited = true;
+
+    gDisplaySmooth.refHz = (isFinite(refHz) && refHz > 0) ? refHz : 0;
+
+    gDisplaySmooth.mmMusHz = (isFinite(mmMusHz) && mmMusHz > 0) ? mmMusHz : 0;
+    gDisplaySmooth.mmCents = (isFinite(mmNeedleCents)) ? mmNeedleCents : 0;
+
+    gDisplaySmooth.mmmLowHz  = (isFinite(mmmLowHz)  && mmmLowHz  > 0) ? mmmLowHz  : 0;
+    gDisplaySmooth.mmmHighHz = (isFinite(mmmHighHz) && mmmHighHz > 0) ? mmmHighHz : 0;
+    gDisplaySmooth.mmmOff1 = (isFinite(mmmOff1)) ? mmmOff1 : 0;
+    gDisplaySmooth.mmmOff2 = (isFinite(mmmOff2)) ? mmmOff2 : 0;
+  } else {
+    if (isFinite(refHz) && refHz > 0) gDisplaySmooth.refHz = smoothTo(gDisplaySmooth.refHz, refHz, alpha);
+
+    if (isFinite(mmMusHz) && mmMusHz > 0) gDisplaySmooth.mmMusHz = smoothTo(gDisplaySmooth.mmMusHz, mmMusHz, alpha);
+    if (isFinite(mmNeedleCents)) gDisplaySmooth.mmCents = smoothTo(gDisplaySmooth.mmCents, mmNeedleCents, alpha);
+
+    if (isFinite(mmmLowHz) && mmmLowHz > 0)   gDisplaySmooth.mmmLowHz  = smoothTo(gDisplaySmooth.mmmLowHz,  mmmLowHz,  alpha);
+    if (isFinite(mmmHighHz) && mmmHighHz > 0) gDisplaySmooth.mmmHighHz = smoothTo(gDisplaySmooth.mmmHighHz, mmmHighHz, alpha);
+    if (isFinite(mmmOff1)) gDisplaySmooth.mmmOff1 = smoothTo(gDisplaySmooth.mmmOff1, mmmOff1, alpha);
+    if (isFinite(mmmOff2)) gDisplaySmooth.mmmOff2 = smoothTo(gDisplaySmooth.mmmOff2, mmmOff2, alpha);
+  }
+
+  const refHzDisp = gDisplaySmooth.refHz;
+
+  document.getElementById('note').innerText = note;
+  document.getElementById('freq').innerText =
+    `Reference: ${fmtHz(refHzDisp)} Hz\u00A0\u00A0Δ from ET: ${fmtHzAndCentsDelta(refHzDisp)}`;
+
+  setNeedleMode(cfg);
+
+  if (cfg === "MMM") {
+    const s1 = gDisplaySmooth.mmmOff1;
+    const s2 = gDisplaySmooth.mmmOff2;
+
+    const c1 = Math.min(s1, s2);
+    const c2 = Math.max(s1, s2);
+
+    if (isFinite(c1) && isFinite(c2)) updateMMMNeedles(c1, c2);
+
+    const lowHzDisp  = gDisplaySmooth.mmmLowHz;
+    const highHzDisp = gDisplaySmooth.mmmHighHz;
+
+    if (freqLowLabel)  freqLowLabel.innerText  = (lowHzDisp  > 0) ? `${lowHzDisp.toFixed(1)} Hz`  : `0.0 Hz`;
+    if (freqHighLabel) freqHighLabel.innerText = (highHzDisp > 0) ? `${highHzDisp.toFixed(1)} Hz` : `0.0 Hz`;
+
+    const b1 = beatsFromCents(refHzDisp, c1);
+    const b2 = beatsFromCents(refHzDisp, c2);
+
+    const cStr1 = fmtCentsSigned(c1);
+    const cStr2 = fmtCentsSigned(c2);
+
+    const bStr1 = fmtBeats(b1);
+    const bStr2 = fmtBeats(b2);
+
+    document.getElementById('musette-line').innerText =
+      `Musette:\u00A0  ${cStr1}c / ${cStr2}c\u00A0\u00A0${bStr1}bps / ${bStr2}bps`;
+
+    return;
+  }
+
+  const mmCentsDisp = Math.max(0, gDisplaySmooth.mmCents);
+  const mmMusHzDisp = gDisplaySmooth.mmMusHz;
+
+  if (isFinite(mmCentsDisp)) {
+    setNeedleCents(mmCentsDisp);
+    setNeedleLabelCents(freqMMLabel, mmCentsDisp);
+  } else {
+    setNeedleCents(0);
+    setNeedleLabelCents(freqMMLabel, 0);
+  }
+
+  if (freqMMLabel) freqMMLabel.innerText = (mmMusHzDisp > 0) ? `${mmMusHzDisp.toFixed(1)} Hz` : `0.0 Hz`;
+
+  const beats = beatsFromCents(refHzDisp, mmCentsDisp);
+  document.getElementById('musette-line').innerText =
+    `Musette:\u00A0  ${fmtCentsSigned(mmCentsDisp)}c / ${fmtBeats(beats)}bps`;
+}
+
+// ---------- Main tick ----------
+function tick() {
+  if (!audioCtx || !analyserPitch) {
+    requestAnimationFrame(tick);
+    return;
+  }
+
+  if (!isLocked) {
+    analyserPitch.getFloatTimeDomainData(timeDataPitch);
+    drawScope(timeDataPitch);
+
+    const rms = rmsOfArray(timeDataPitch);
+
+    if (rms < effectiveRmsSilence()) {
+
+      if (isLiveOnlyEnabled()) {
+        clearTimeout(silenceTimer);
+        silenceTimer = null;
+
+        showLockedIndicator(false);
+        setTopStatusVisible(true);
+        setStatus("Listening (Live mode)", "status-ok");
+      } else {
+        if (!suppressAutoSaveAfterLiveExit) {
+          if (!silenceTimer && lastStable) {
+            setStatus("Saving", "status-ok");
+            silenceTimer = setTimeout(() => lockData(), lockAfterMs());
+          }
+        }
+      }
+
+    } else {
+      clearTimeout(silenceTimer);
+      silenceTimer = null;
+
+      suppressAutoSaveAfterLiveExit = false;
+
+      const yin = yinPitch(timeDataPitch, audioCtx.sampleRate, 55, 2000, 0.12);
+
+      if (yin && yin.freq) {
+        pitchHistory.push(yin.freq);
+        while (pitchHistory.length > pitchHistForCurrentF0()) pitchHistory.shift();
+
+        const stableF0 = median(pitchHistory);
+        if (stableF0) lastF0 = stableF0;
+      }
+
+      if (pitchHistory.length < pitchNeedForCurrentF0() || !(lastF0 > 0)) {
+        setStatus("Listening… Please hold a steady note", "status-warn");
+      } else {
+        setStatus(isLiveOnlyEnabled() ? "Listening (Live mode)" : "Listening", "status-ok");
+      }
+    }
+  }
+
+  ensureAudioContextRunning();
+
+  requestAnimationFrame(tick);
+}
+
+// ---------- ScriptProcessor ----------
+function onProcess(e){
+  if (!audioCtx || isLocked || needsNextNoteAfterConfigChange) return;
+
+  const input = e.inputBuffer.getChannelData(0);
+  if (!(rmsOfArray(input) > effectiveRmsSilence())) return;
+
+  const { cfg, basis } = getConfig();
+
+  if (!(lastF0 > 0) || pitchHistory.length < pitchNeedForCurrentF0()) return;
+
+  let f0Pitch = octaveCorrectF0(lastF0);
+  f0Pitch = refineLowPitchFromHarmonic(f0Pitch);
+  const mus = chooseMusetteF0(f0Pitch);
+  const f0 = mus.fMusette;
+  const musFactor = mus.factor;
+  const fs = audioCtx.sampleRate;
+
+  if (cfg === "MM") {
+    const coarse2 = coarseMMCandidates(f0);
+    if (!coarse2) return;
+
+    if (trackers.length !== 2){
+      trackers = [makeTracker(fs, coarse2[0]), makeTracker(fs, coarse2[1])];
+    } else {
+      updateTrackerTarget(trackers[0], coarse2[0]);
+      updateTrackerTarget(trackers[1], coarse2[1]);
+    }
+
+    trackerProcessBlock(trackers[0], input);
+    trackerProcessBlock(trackers[1], input);
+
+    if (!(trackers[0].refinedHz > 0) || !(trackers[1].refinedHz > 0)) return;
+
+    const refined2Raw = [trackers[0].refinedHz, trackers[1].refinedHz].sort((a,b)=>a-b);
+    const refined2 = (musFactor === 2) ? refined2Raw.map(hz => hz / 2) : refined2Raw;
+
+    const v = validateMMForRefLowest(refined2);
+    if (!v.ok) return;
+
+    const refHz = refined2[0];
+    const musHz = refined2[1];
+    const musCents = centsBetween(musHz, refHz);
+
+    updateLatchedMidiUsingRefHz(refHz);
+    const note = (latchedMidi == null) ? "--" : midiToNoteName(latchedMidi);
+
+    // Live mode: if note changed, reset BEFORE pushing/averaging so we don't mix notes
+    maybeResetLiveOnNoteChange(note);
+
+    pushRefined({ cfg:"MM", note, refHz, musetteCents: musCents, musHz: musHz });
+
+    const stable = medianStableRefinedMM();
+    if (stable) {
+      lastStable = stable;
+      const mmNeedle = Math.max(0, stable.musetteCents);
+      renderRealtime("MM", stable.note, stable.refHz, null, null, mmNeedle, stable.musHz, null, null);
+    }
+    return;
+  }
+
+  const coarse3 = coarseMMMCandidates(f0, basis);
+  if (!coarse3) return;
+
+  if (trackers.length !== 3){
+    trackers = [makeTracker(fs, coarse3[0]), makeTracker(fs, coarse3[1]), makeTracker(fs, coarse3[2])];
+  } else {
+    updateTrackerTarget(trackers[0], coarse3[0]);
+    updateTrackerTarget(trackers[1], coarse3[1]);
+    updateTrackerTarget(trackers[2], coarse3[2]);
+  }
+
+  trackerProcessBlock(trackers[0], input);
+  trackerProcessBlock(trackers[1], input);
+  trackerProcessBlock(trackers[2], input);
+
+  if (!(trackers[0].refinedHz > 0) || !(trackers[1].refinedHz > 0) || !(trackers[2].refinedHz > 0)) return;
+
+  const refined3Raw = [trackers[0].refinedHz, trackers[1].refinedHz, trackers[2].refinedHz].sort((a,b)=>a-b);
+  const refined3 = (musFactor === 2) ? refined3Raw.map(hz => hz / 2) : refined3Raw;
+
+  const v3 = validateMMMForBasis(refined3, basis);
+  if (!v3.ok) return;
+
+  const refHz = refined3[v3.refIndex];
+  updateLatchedMidiUsingRefHz(refHz);
+  const note = (latchedMidi == null) ? "--" : midiToNoteName(latchedMidi);
+
+  // Live mode: if note changed, reset BEFORE pushing/averaging so we don't mix notes
+  maybeResetLiveOnNoteChange(note);
+
+  let off1, off2;
+  if (basis === "lowest") {
+    off1 = centsBetween(refined3[1], refHz);
+    off2 = centsBetween(refined3[2], refHz);
+  } else {
+    off1 = centsBetween(refined3[0], refHz);
+    off2 = centsBetween(refined3[2], refHz);
+  }
+
+  let lowHz, highHz;
+  if (basis === "lowest") {
+    lowHz = refined3[1];
+    highHz = refined3[2];
+  } else {
+    lowHz = refined3[0];
+    highHz = refined3[2];
+  }
+
+  pushRefined({ cfg:"MMM", note, refHz, off1, off2, lowHz, highHz });
+
+  const stable3 = medianStableRefinedMMM();
+  if (stable3) {
+    lastStable = stable3;
+    renderRealtime("MMM", stable3.note, stable3.refHz, stable3.off1, stable3.off2, null, null, stable3.lowHz, stable3.highHz);
+  }
+}
+
+// ---------- Start/Stop ----------
+async function startAudio(){
+
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+ await ensureAudioContextRunning();
+
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: {
+      autoGainControl: false,
+      echoCancellation: false,
+      noiseSuppression: false
+    }
+  });
+await ensureAudioContextRunning();
+
+
+  const track = stream.getAudioTracks()[0];
+
+  if (track && track.applyConstraints) {
+    try {
+      await track.applyConstraints({
+        autoGainControl: false,
+        echoCancellation: false,
+        noiseSuppression: false
+      });
+    } catch (e) {
+      console.log("applyConstraints failed/ignored:", e);
+    }
+  }
+
+  streamSource = audioCtx.createMediaStreamSource(stream);
+
+  analyserPitch = audioCtx.createAnalyser();
+  analyserPitch.fftSize = PITCH_FFT_SIZE;
+  timeDataPitch = new Float32Array(analyserPitch.fftSize);
+
+  analyserSpec = audioCtx.createAnalyser();
+  analyserSpec.fftSize = (audioCtx.sampleRate >= 44100) ? SPEC_FFT_SIZE_PREF : SPEC_FFT_SIZE_FALLBACK;
+  analyserSpec.smoothingTimeConstant = 0.0;
+  magSpec = new Float32Array(analyserSpec.frequencyBinCount);
+
+  procNode = audioCtx.createScriptProcessor(1024, 1, 1);
+  procNode.onaudioprocess = onProcess;
+
+  if (isIOS()) {
+    inputGainNode = audioCtx.createGain();
+    inputGainNode.gain.value = IOS_INPUT_GAIN;
+
+    streamSource.connect(inputGainNode);
+
+    inputGainNode.connect(analyserPitch);
+    inputGainNode.connect(analyserSpec);
+    inputGainNode.connect(procNode);
+  } else {
+    streamSource.connect(analyserPitch);
+    streamSource.connect(analyserSpec);
+    streamSource.connect(procNode);
+  }
+
+  const silentGain = audioCtx.createGain();
+  silentGain.gain.value = 0;
+
+  procNode.connect(silentGain);
+  silentGain.connect(audioCtx.destination);
+
+  resizeCanvasToCSS();
+  showLockedIndicator(false);
+
+  setStatus(isLiveOnlyEnabled() ? "Listening (Live mode)" : "Listening", "status-ok");
+  setTopStatusVisible(true);
+
+  setNeedleMode(getCfgOnly());
+
+  requestAnimationFrame(tick);
+}
+
+document.getElementById('start-btn').onclick = async () => {
+  try{
+    document.getElementById('start-btn').style.display = "none";
+    document.getElementById('reset-btn').style.display = "block";
+    await startAudio();
+  }catch(err){
+    console.error(err);
+    setStatus("Microphone error", "status-warn");
+    setTopStatusVisible(true);
+    document.getElementById('start-btn').style.display = "block";
+    document.getElementById('reset-btn').style.display = "none";
+  }
+};
+
+document.getElementById('reset-btn').onclick = () => {
+
+  needsNextNoteAfterConfigChange = false;
+
+  isLocked = false;
+  showLockedIndicator(false);
+  lastStable = null;
+  lastF0 = 0;
+
+  pitchHistory = [];
+  refinedHistory = [];
+  trackers = [];
+
+  latchedMidi = null;
+  latchCandidateCount = 0;
+  midiFloatHistory = [];
+
+  resetDisplaySmoothing();
+
+  clearTimeout(silenceTimer);
+  silenceTimer = null;
+  gLastLiveNoteName = null;
+  gLastLiveNoteNameProcess = null;
+
+  document.getElementById('note').innerText = "--";
+  document.getElementById('freq').innerText = `Reference: 0.00 Hz`;
+  document.getElementById('musette-line').innerText = "";
+
+  setNeedleMode(getCfgOnly());
+  setNeedleCents(0);
+  setNeedleElCents(needleLow, 0);
+  setNeedleElCents(needleHigh, 0);
+  setNeedleLabelCents(freqLowLabel, 0);
+  setNeedleLabelCents(freqHighLabel, 0);
+  setNeedleLabelCents(freqMMLabel, 0);
+
+  if (freqLowLabel) freqLowLabel.innerText = `0.0 Hz`;
+  if (freqHighLabel) freqHighLabel.innerText = `0.0 Hz`;
+  if (freqMMLabel) freqMMLabel.innerText = `0.0 Hz`;
+
+  setStatus(isLiveOnlyEnabled() ? "Listening (Live mode)" : "Listening", "status-ok");
+  setTopStatusVisible(true);
+
+  suppressAutoSaveAfterLiveExit = false;
+
+};
+
+// A4 reference
+const a4RefSelect = document.getElementById('a4ref');
+if (a4RefSelect) {
+  gA4RefHz = parseFloat(a4RefSelect.value) || 440;
+
+  a4RefSelect.addEventListener('change', () => {
+    gA4RefHz = parseFloat(a4RefSelect.value) || 440;
+
+    refinedHistory = [];
+    trackers = [];
+    lastStable = null;
+    showLockedIndicator(false);
+    isLocked = false;
+    setTopStatusVisible(true);
+    gLastLiveNoteName = null;
+    gLastLiveNoteNameProcess = null;
+
+    setNeedleCents(0);
+    setNeedleElCents(needleLow, 0);
+    setNeedleElCents(needleHigh, 0);
+    setNeedleLabelCents(freqLowLabel, 0);
+    setNeedleLabelCents(freqHighLabel, 0);
+    setNeedleLabelCents(freqMMLabel, 0);
+
+    if (freqLowLabel) freqLowLabel.innerText = `0.0 Hz`;
+    if (freqHighLabel) freqHighLabel.innerText = `0.0 Hz`;
+    if (freqMMLabel) freqMMLabel.innerText = `0.0 Hz`;
+
+    resetDisplaySmoothing();
+
+  });
+}
+
+// Config selector
+cfgSel.addEventListener('change', () => {
+
+  refinedHistory = [];
+  trackers = [];
+  lastStable = null;
+  showLockedIndicator(false);
+  isLocked = false;
+  setTopStatusVisible(true);
+  gLastLiveNoteName = null;
+  gLastLiveNoteNameProcess = null;
+
+  setNeedleMode(getCfgOnly());
+  setNeedleCents(0);
+  setNeedleElCents(needleLow, 0);
+  setNeedleElCents(needleHigh, 0);
+  setNeedleLabelCents(freqLowLabel, 0);
+  setNeedleLabelCents(freqHighLabel, 0);
+  setNeedleLabelCents(freqMMLabel, 0);
+
+  if (freqLowLabel) freqLowLabel.innerText = `0.0 Hz`;
+  if (freqHighLabel) freqHighLabel.innerText = `0.0 Hz`;
+  if (freqMMLabel) freqMMLabel.innerText = `0.0 Hz`;
+
+  requireNextNoteAfterConfigChange();
+
+  resetDisplaySmoothing();
+
+});
+
+// Initial UI state
+setNeedleMode(getCfgOnly());
+
+// iOS/Safari: if the context gets suspended later, any user gesture will re-resume it.
+function addIOSResumeGestures() {
+  const handler = async () => {
+    if (audioCtx) await ensureAudioContextRunning();
+  };
+
+  window.addEventListener("touchstart", handler, { passive: true });
+  window.addEventListener("mousedown", handler, { passive: true });
+  window.addEventListener("keydown", handler, { passive: true });
+
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && audioCtx) ensureAudioContextRunning();
+  });
+
+}
+
+if (isIOS()){
+  addIOSResumeGestures();
+}
+
+// Live mode checkbox behavior
+if (liveOnlyCheckbox) {
+  liveOnlyCheckbox.addEventListener('change', () => {
+    clearTimeout(silenceTimer);
+    silenceTimer = null;
+
+    if (isLiveOnlyEnabled()) {
+      suppressAutoSaveAfterLiveExit = false;
+
+      isLocked = false;
+      showLockedIndicator(false);
+      setTopStatusVisible(true);
+
+      if (audioCtx) {
+        if (needsNextNoteAfterConfigChange) {
+          setStatus("Configuration changed — Click NEXT NOTE", "status-warn");
+        } else {
+          setStatus("Listening (Live mode)", "status-ok");
+        }
+      }
+    } else {
+      suppressAutoSaveAfterLiveExit = true;
+
+      showLockedIndicator(false);
+      setTopStatusVisible(true);
+      if (audioCtx) setStatus("Listening", "status-ok");
+    }
+  });
+}
+
+// Help modal
+const helpModal = document.getElementById('help-modal');
+document.getElementById('help-btn').onclick = () => { helpModal.style.display = "block"; };
+document.getElementById('help-close').onclick = () => { helpModal.style.display = "none"; };
+helpModal.addEventListener('click', (e) => {
+  if (e.target === helpModal) helpModal.style.display = "none";
+});
+
+// Clear button
+document.getElementById('clear-table-btn').onclick = () => {
+  history = [];
+  updateTable();
+};
+
+// Export CSV button
+document.getElementById('export-csv-btn').onclick = () => {
+  exportResultsTableAsCSV();
+};
+
+</script>
+</body>
+</html>

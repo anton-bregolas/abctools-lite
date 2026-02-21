@@ -10,16 +10,7 @@
 //
 //
 //
-//
-//
-//
-//
-//
-// Updated 30 Dec 2025 at 1630
-//
-//
-//
-//
+// Updated 21 Feb 2026 1100
 //
 //
 //
@@ -29,12 +20,12 @@
 //
 //
 // ABC Tools Lite:
-// Last updated on 2026-01-31
+// Last updated on 2026-02-21
 
-const cacheName = 'abctoolscache-3129';
+const cacheName = 'abctoolscache-3177';
 
 const CACHE_PREFIX = 'abctools';
-const CACHE_VERSION = 'lite-3129-11';
+const CACHE_VERSION = 'lite-3177-1';
 const CACHE_NAME_LITE = `${CACHE_PREFIX}${CACHE_VERSION}`;
 
 const contentToCache = [
@@ -66,6 +57,8 @@ const contentToCache = [
 	'lame.min.js',
 	'unmute.min.js',
 	'tab-injectors-min.js',
+    'visualscript-sdk.js',
+    'smartdraw-export-min.js',
     'acoustic_grand_piano-mp3.js',
     'percussion-mp3.js',
     'online-check.js',

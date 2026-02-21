@@ -452,12 +452,14 @@ input[type="checkbox"]:focus-visible {
   justify-content: space-evenly;
 }
 
-.btn-container-center {
-  justify-content: center;
-}
-
 .btn-container-space-between {
   justify-content: space-between;
+}
+
+.btn-container-center {
+  flex-flow: row wrap;
+  justify-content: center;
+  gap: 1.5rem;
 }
 
 .adv-tab-mixed-container,

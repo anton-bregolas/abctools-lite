@@ -7,7 +7,7 @@
  *
  * MIT License
  * 
- * Copyright (c) 2025 Michael Eskin
+ * Copyright (c) 2026 Michael Eskin
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@
  **/
 
 // Version number for the settings dialog
-var gVersionNumber = "3129_123025_1630";
+var gVersionNumber = "3177_022126_1100";
 
 var gMIDIInitStillWaiting = false;
 
@@ -6852,7 +6852,8 @@ function GetAllTuneHyperlinks(theLinks) {
       tuneWithPatch = GetABCFileHeader() + tuneWithPatch;
 
       // Create a share URL for this tune
-      var theURL = FillUrlBoxWithAbcInLZWOrDef(tuneWithPatch, false);
+      // 2 Feb 2026 - Switch to Deflate
+      var theURL = FillUrlBoxWithAbcInLZWOrDef(tuneWithPatch, false, null, true);
 
       // Test max share URL length and one-time warn if too long
       if (theURL.length >= 8100) {
@@ -7034,7 +7035,7 @@ function GetAllTuneHyperlinks(theLinks) {
       tuneWithPatch = GetABCFileHeader() + tuneWithPatch;
 
       // Create a share URL for this tune
-      var theURL = FillUrlBoxWithAbcInLZWOrDef(tuneWithPatch, false);
+      var theURL = FillUrlBoxWithAbcInLZWOrDef(tuneWithPatch, false, null, true);
 
       // MAE 11 Jul 2024 - For open in editor
       if (!gOpenInEditor) {
@@ -7739,7 +7740,7 @@ function AppendPDFTuneQRCode(thePDF, paperStyle, theABC, theTitle, callback) {
   theABC = GetABCFileHeader() + theABC;
 
   // Can we make a QR code from the current share link URL?
-  theURL = FillUrlBoxWithAbcInLZWOrDef(theABC, false);
+  theURL = FillUrlBoxWithAbcInLZWOrDef(theABC, false, null, true);
 
   // Adding play links?
   if (gAddPlaybackHyperlinks) {
@@ -7753,7 +7754,7 @@ function AppendPDFTuneQRCode(thePDF, paperStyle, theABC, theTitle, callback) {
   if (theURL.length > 2300) {
 
     // URL too long for QR code...
-    theURL = FillUrlBoxWithAbcInLZWOrDef("X:1\nT:" + theTitle + "\nT:Tune ABC was too long to generate a valid QR Code\n", false);
+    theURL = FillUrlBoxWithAbcInLZWOrDef("X:1\nT:" + theTitle + "\nT:Tune ABC was too long to generate a valid QR Code\n", false, null, true);
 
     isValidURL = false;
 
@@ -7940,7 +7941,7 @@ function AppendQRCode(thePDF, paperStyle, callback) {
   if (!gDoForceQRCodeURLOverride) {
 
     // Can we make a QR code from the current share link URL?
-    theURL = FillUrlBoxWithAbcInLZWOrDef(null, false);
+    theURL = FillUrlBoxWithAbcInLZWOrDef(null, false, null, true);
 
     if (!gAllowQRCodeSave) {
 
@@ -14849,9 +14850,29 @@ function Render(renderAll, tuneNumber) {
 
       fileSelected.innerText = gDisplayedName + "  (" + nTunes + " Tune)";
 
+      if (gDisplayedName != "No ABC file selected"){
+
+        document.title =  gDisplayedName + "  (" + nTunes + " Tune)";
+
+      }
+      else{
+
+        document.title =  nTunes + " Tune";
+
+      }
+
     } else {
 
       fileSelected.innerText = gDisplayedName + "  (" + nTunes + " Tunes)";
+
+      if (gDisplayedName != "No ABC file selected"){
+        document.title = gDisplayedName + "  (" + nTunes + " Tunes)";
+      }
+      else{
+
+        document.title =  nTunes + " Tunes";
+
+      }
 
     }
 
@@ -15261,6 +15282,8 @@ function Render(renderAll, tuneNumber) {
     var fileSelected = document.getElementById('abc-selected');
 
     fileSelected.innerText = "No ABC file selected";
+
+    document.title = "ABC Tools Lite";
 
     gDisplayedName = "No ABC file selected";
 
@@ -19091,10 +19114,64 @@ function CullTunes() {
   });
 }
 
-
 //
 // Create a set of tunes
 //
+
+//
+// Return true if every tune in abcTunes has the same *count of distinct voices*
+// (based on V: tags), otherwise false.
+//
+function allTunesHaveSameVoiceCount(abcTunes) {
+  if (!Array.isArray(abcTunes)) return false;
+
+  const counts = abcTunes.map(countVoicesFromVTags);
+
+  // Empty list → trivially true
+  if (counts.length === 0) return true;
+
+  const first = counts[0];
+  for (let i = 1; i < counts.length; i++) {
+    if (counts[i] !== first) return false;
+  }
+  return true;
+}
+
+//
+// Count distinct voices in a single ABC tune by scanning V: tags.
+// If no V: tags are found, assume a single voice.
+//
+function countVoicesFromVTags(abc) {
+  if (typeof abc !== "string") return 1;
+
+  const voices = new Set();
+
+  // Matches:
+  //   V:1
+  //   V: LH
+  //   [V:1]
+  //   [V:RH]
+  // Allows zero or more spaces after V:
+  const re = /^\s*(?:\[\s*)?V:\s*([^\s\]]+)(?:\s*\])?/gm;
+
+  let m;
+  while ((m = re.exec(abc)) !== null) {
+    // Skip comment lines
+    const lineStart = abc.lastIndexOf("\n", m.index) + 1;
+    const lineEnd = abc.indexOf("\n", m.index);
+    const line = abc.slice(
+      lineStart,
+      lineEnd === -1 ? abc.length : lineEnd
+    );
+    if (/^\s*%/.test(line)) continue;
+
+    voices.add(m[1]);
+  }
+
+  // If no V: tags found, assume one voice
+  return voices.size === 0 ? 1 : voices.size;
+}
+
 function removeExtraTags(abcText, theTag) {
 
   // Split the ABC into lines
@@ -19139,7 +19216,6 @@ function removeAllTags(abcText, theTag) {
   // Join the lines back into a single string
   return lines.join('\n');
 }
-
 
 function generateIndexedRepeatedString(str, itemCount, repeatCount) {
   let result = [];
@@ -19374,6 +19450,7 @@ function BuildTuneSetOpen(bOpenInNewTabInEditor) {
   var theABC = getABCEditorText();
   var tuneSet = "";
   var setNames = [];
+  var tunesForVoiceCheck = [];
 
   // Add selected tunes in order
   for (i = 0; i < BuildTuneSetSelectionOrder.length; ++i) {
@@ -19387,11 +19464,24 @@ function BuildTuneSetOpen(bOpenInNewTabInEditor) {
     if (index !== -1) {
       const tuneABC = getTuneByIndex(index).trim() + "\n\n";
       tuneSet += tuneABC;
+      
+      tunesForVoiceCheck.push(tuneABC);
+
       setNames.push(tuneName);
     }
 
   }
 
+  // Check that the tunes all have the same number of voices
+  if (!allTunesHaveSameVoiceCount(tunesForVoiceCheck)){
+      DayPilot.Modal.alert('<div style="text-align:center;"><p style="font-size:14pt;">Unable to Create Tune Set</p><p style="font-size:12pt;margin-top:36px;">The tunes have different number of voices.</p><p style="font-size:12pt;line-height:24px;">To fix, edit the tunes as required to make them have<br/>the same number of voices, then try again.</p></div>', {
+        theme: "modal_flat",
+        top: 230,
+        scrollWithPage: (AllowDialogsToScroll())
+      });
+      return;
+  }
+  
   tuneSet = processTuneSet(tuneSet, setNames, bRepeat, nRepeat, bIsVerbose);
 
   var tuneSetName = setNames.join(' / ');
@@ -19414,7 +19504,7 @@ function BuildTuneSetOpen(bOpenInNewTabInEditor) {
 
     result += tuneSet;
 
-    var theURL = FillUrlBoxWithAbcInLZWOrDef(result, false);
+    var theURL = FillUrlBoxWithAbcInLZWOrDef(result, false, null, true);
 
     if (bOpenInNewTabInEditor) {
 
@@ -19517,6 +19607,7 @@ function BuildTuneSetAppend() {
   var theABC = getABCEditorText();
   var tuneSet = "";
   var setNames = [];
+  var tunesForVoiceCheck = [];
 
   // Add selected tunes in order
   for (i = 0; i < BuildTuneSetSelectionOrder.length; ++i) {
@@ -19530,9 +19621,22 @@ function BuildTuneSetAppend() {
     if (index !== -1) {
       const tuneABC = getTuneByIndex(index).trim() + "\n\n";
       tuneSet += tuneABC;
+      
+      tunesForVoiceCheck.push(tuneABC);
+
       setNames.push(tuneName);
     }
 
+  }
+
+  // Check that the tunes all have the same number of voices
+  if (!allTunesHaveSameVoiceCount(tunesForVoiceCheck)){
+      DayPilot.Modal.alert('<div style="text-align:center;"><p style="font-size:14pt;">Unable to Create Tune Set</p><p style="font-size:12pt;margin-top:36px;">The tunes have different number of voices.</p><p style="font-size:12pt;line-height:24px;">To fix, edit the tunes as required to make them have<br/>the same number of voices, then try again.</p></div>', {
+        theme: "modal_flat",
+        top: 230,
+        scrollWithPage: (AllowDialogsToScroll())
+      });
+      return;
   }
 
   tuneSet = processTuneSet(tuneSet, setNames, bRepeat, nRepeat, bIsVerbose);
@@ -19634,7 +19738,6 @@ function BuildTuneSetAppend() {
     })
 
   }
-
 }
 
 function BuildTuneSetClearSelection() {
@@ -22573,6 +22676,8 @@ function SaveABCAsMusicXML(theTune, fname) {
       var fileSelected = document.getElementById('abc-selected');
       fileSelected.innerText = fname;
 
+      document.title = fname;
+
       // Clear the dirty count
       gIsDirty = false;
 
@@ -22667,6 +22772,8 @@ function doSaveABCFile(fname, theData) {
   // Update the displayed filename
   var fileSelected = document.getElementById('abc-selected');
   fileSelected.innerText = fname;
+
+  document.title = fname;
 
   // Clear the dirty count
   gIsDirty = false;
@@ -24199,7 +24306,7 @@ function InjectCustomStringedInstrumentTab() {
 
   const modal = DayPilot.Modal.form(form, theData, {
     theme: "modal_flat",
-    top: 25,
+    top: 40,
     width: 650,
     scrollWithPage: (AllowDialogsToScroll()),
     okText: "Inject",
@@ -30097,8 +30204,7 @@ function DoCeoltasTransformDialog() {
   // Lite: Customized
   // Replace inline styles with reusable classes
   var modal_msg =
-		'<div id="ceoltasanchor">' +
-		'<a href="https://michaeleskin.com/abctools/userguide.html#advanced_comhaltas" target="_blank" ' +
+		'<a id="ceoltasanchor" href="https://michaeleskin.com/abctools/userguide.html#advanced_comhaltas" target="_blank" ' +
 		'title="View documentation in new tab" ' +
 		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
 		'<h2 class="modal-header">' +
@@ -30127,8 +30233,7 @@ function TuneTitlesNumbersDialog() {
   // Lite: Customized
   // Replace inline styles with reusable classes
   var modal_msg =
-		'<div id="tunetitlesanchor">' +
-		'<a href="https://michaeleskin.com/abctools/userguide.html#advanced_injecttunetitlenumbers" target="_blank" ' +
+		'<a id="tunetitlesanchor" href="https://michaeleskin.com/abctools/userguide.html#advanced_injecttunetitlenumbers" target="_blank" ' +
 		'title="View documentation in new tab" ' +
 		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
 		'<h2 class="modal-header">' +
@@ -32388,8 +32493,7 @@ function DoInjectBoxTablature() {
   // Lite: Customized
   // Replace inline styles with reusable classes
   var modal_msg =
-		'<div id="boxtabanchor">' +
-		'<a href="https://michaeleskin.com/abctools/userguide.html#tab_irish_box" target="_blank" ' +
+		'<a id="boxtabanchor" href="https://michaeleskin.com/abctools/userguide.html#tab_irish_box" target="_blank" ' +
 		'title="View documentation in new tab" ' +
 		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
 		'<h2 class="modal-header">' +
@@ -32973,8 +33077,7 @@ function DoInjectTablature_Fiddle_Fingerings_Dialog() {
   // Lite: Customized
   // Replace inline styles with reusable classes
   var modal_msg =
-		'<div id="fiddlefingeringsanchor">' +
-		'<a href="https://michaeleskin.com/abctools/userguide.html#tab_fiddle" target="_blank" ' +
+		'<a id="fiddlefingeringsanchor" href="https://michaeleskin.com/abctools/userguide.html#tab_fiddle" target="_blank" ' +
 		'title="View documentation in new tab" ' +
 		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
 		'<h2 class="modal-header">' +
@@ -34228,13 +34331,15 @@ function ExportAll() {
   // Developer Tools tab
   // -------------------------------------------------------------------
   modal_msg += '    <div id="exportall-tab-dev" class="adv-tab-panel' + (initialTab === "exportall-tab-dev" ? ' active' : '') + '">';
-  //modal_msg += '      <p style="text-align:center;font-size:14pt;margin-top:18px;">Developer Share URL Batch Export Tools</p>';
   modal_msg += '      <p style="text-align:center;font-size:14pt;">';
   modal_msg += '        <input id="exportall_jsonbutton" class="exportall_jsonbutton btn btn-alljsondownload" onclick="BatchJSONExport();" type="button" value="Export all Share URLs as JSON" title="Saves the Share URLs for all the tunes as a JSON file">';
   modal_msg += '        <input id="exportall_csvbutton" class="exportall_csvbutton btn btn-allcsvdownload" onclick="BatchCSVExport();" type="button" value="Export all Share URLs as CSV" title="Saves the Share URLs for all the tunes as a CSV file">';
   modal_msg += '      </p>';
   modal_msg += '      <p style="text-align:center;font-size:14pt;margin-top:24px;">';
   modal_msg += '        <input id="launchcsvextractor" class="launchcsvextractor btn btn-launchcsvextractor" onclick="LaunchCSVTagExtractor();" type="button" value="Launch the ABC Tags to CSV Extractor Utility" title="Extract all ABC tags from one or more ABC files to a CSV file">';
+  modal_msg += '      </p>';
+  modal_msg += '      <p style="text-align:center;font-size:14pt;margin-top:24px;">';
+  modal_msg += '        <input id="export_smartdrawbutton" class="export_smartdrawbutton btn btn-smartdraw" onclick="SmartDrawExport();" type="button" value="SmartDraw Set List Builder" title="Build a SmartDraw set list using drag and drop">';
   modal_msg += '      </p>';
   modal_msg += '    </div>';
 
@@ -35377,7 +35482,7 @@ function BatchJSONExport() {
 
     thisTune = GetABCFileHeader() + thisTune;
 
-    var theURL = FillUrlBoxWithAbcInLZWOrDef(thisTune, false);
+    var theURL = FillUrlBoxWithAbcInLZWOrDef(thisTune, false, null, true);
 
     var titleURL = title.replaceAll("&", "");
     titleURL = titleURL.replaceAll(" ", "_");
@@ -35448,7 +35553,7 @@ function BatchCSVExport() {
 
     thisTune = GetABCFileHeader() + thisTune;
 
-    var theURL = FillUrlBoxWithAbcInLZWOrDef(thisTune, false);
+    var theURL = FillUrlBoxWithAbcInLZWOrDef(thisTune, false, null, true);
 
     var titleURL = title.replaceAll("&", "");
     titleURL = titleURL.replaceAll(" ", "_");
@@ -36379,9 +36484,9 @@ function DownloadMP3(callback, val) {
       if (elem) {
         elem.value = "Encoding .MP3";
       }
-    }
 
-    showTheSpinner();
+      showTheSpinner("Encoding .MP3");
+    }
 
     // Give the UI a chance to update
     setTimeout(async function() {
@@ -36431,9 +36536,9 @@ function DownloadMP3(callback, val) {
             elem.value = "Save as .MP3";
           }
 
-        }
+          hideTheSpinner();
 
-        hideTheSpinner();
+        }
 
         gInDownloadMP3 = false;
 
@@ -36467,9 +36572,10 @@ function DownloadMP3(callback, val) {
         elem.value = "Save as .MP3";
       }
 
+      hideTheSpinner();
+
     }
 
-    hideTheSpinner();
 
     gInDownloadMP3 = false;
 
@@ -37771,7 +37877,7 @@ function ProcessSelectRegionForPlay(theABC) {
   }
 
   // Doesn't work for multivoice tunes
-  if (theABC.indexOf("V:") != -1) {
+  if (isMultiVoiceTune(theABC)){
     return theABC;
   }
 
@@ -44935,6 +45041,10 @@ function TrainerPhraseBuilder(e){
   function phrase_builder_callback(thePhrases){
 
     if (thePhrases){
+
+      // Inject any default instruments, volumes, and other settings if required      
+      thePhrases = PreProcessPlayABC(thePhrases);
+
       gPlayerLooperProcessed = thePhrases;
     }
 
@@ -49659,7 +49769,7 @@ function SharingControlsDialog() {
   modal_msg += '<textarea id="urltextbox" rows="10" cols="80" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="URL for sharing will appear here" >';
   modal_msg += '</textarea>';
   modal_msg += '<p id="shareurlcaption">Share URL</p>';
-  modal_msg += '<p style="text-align:center;margin-top:36px;"><input id="addautoplay" class="urlcontrols btn btn-urlcontrols" onclick="AddAutoPlay()" type="button" value="Add Auto-Play" title="Adds &play=1 to the ShareURL.&nbsp;&nbsp;Tune will open in the player."><input id="addopenineditor" class="urlcontrols btn btn-urlcontrols" onclick="AddOpenInEditor()" type="button" value="Add Open in Editor" title="Adds &editor=1 to the ShareURL.&nbsp;&nbsp;Share links will load in the editor.&nbsp;&nbsp;This setting overrides Add Auto-Play."><input id="adddisableediting" class="urlcontrols btn btn-urlcontrols" onclick="AddDisableEditing()" type="button" value="Add Disable Editing" title="Adds &dx=1 to the ShareURL.&nbsp;&nbsp;Entering the editor from the full screen tune view will be disabled.&nbsp;&nbsp;Also overrides Add Open in Editor."><input id="addnoui" class="urlcontrolslast btn btn-urlcontrols" onclick="AddNoUI()" type="button" value="Add Hide UI" title="Adds &noui to the ShareURL for responsive iframe embedding.&nbsp;&nbsp;When the link is opened, hides the UI.&nbsp;&nbsp;Overrides Add Open in Editor and Add Auto-Play.">&nbsp;&nbsp;&nbsp;&nbsp;<input id="urlallowdef" type="checkbox" checked style="margin-top:-5px;margin-bottom:0px;" title="When checked uses Deflate instead of LZW for compressing the ABC in the Share URL resulting in a shorter link"/>&nbsp;Use Deflate</p>';
+  modal_msg += '<p style="text-align:center;margin-top:36px;"><input id="addautoplay" class="urlcontrols btn btn-urlcontrols" onclick="AddAutoPlay()" type="button" value="Add Auto-Play" title="Adds &play=1 to the ShareURL.&nbsp;&nbsp;Tune will open in the player."><input id="addopenineditor" class="urlcontrols btn btn-urlcontrols" onclick="AddOpenInEditor()" type="button" value="Add Open in Editor" title="Adds &editor=1 to the ShareURL.&nbsp;&nbsp;Share links will load in the editor.&nbsp;&nbsp;This setting overrides Add Auto-Play."><input id="adddisableediting" class="urlcontrols btn btn-urlcontrols" onclick="AddDisableEditing()" type="button" value="Add Disable Editing" title="Adds &dx=1 to the ShareURL.&nbsp;&nbsp;Entering the editor from the full screen tune view will be disabled.&nbsp;&nbsp;Also overrides Add Open in Editor."><input id="addnoui" class="urlcontrolslast btn btn-urlcontrols" onclick="AddNoUI()" type="button" value="Add Hide UI" title="Adds &noui to the ShareURL for responsive iframe embedding.&nbsp;&nbsp;When the link is opened, hides the UI.&nbsp;&nbsp;Overrides Add Open in Editor and Add Auto-Play.">&nbsp;&nbsp;&nbsp;&nbsp;<input id="urlallowdef" type="checkbox" style="margin-top:-5px;margin-bottom:0px;" title="When checked uses Deflate instead of LZW for compressing the ABC in the Share URL resulting in a shorter link" checked/>&nbsp;Use Deflate</p>';
 
   modal_msg += '</div>';
 
@@ -50757,7 +50867,7 @@ function Do_Browser_PDF_Export() {
 
           thisTune = GetABCFileHeader() + thisTune;
 
-          var theURL = FillUrlBoxWithAbcInLZWOrDef(thisTune, false);
+          var theURL = FillUrlBoxWithAbcInLZWOrDef(thisTune, false, null, true);
 
           var titleURL = title.replaceAll(" ", "_");
           titleURL = titleURL.replaceAll("#", "^");
@@ -52985,12 +53095,14 @@ function ConfigureToolSettings() {
             '<button type="button" class="adv-tab-btn" data-tab="tab_tabs">Tabs &amp; Layout</button>' +
             '<button type="button" class="adv-tab-btn" data-tab="tab_playback">Playback</button>' +
             '<button type="button" class="adv-tab-btn" data-tab="tab_midi">MIDI Input</button>' +
+            '<button type="button" class="adv-tab-btn" data-tab="tab_update">Update</button>' +
           '</div>' +
           '<div class="adv-tab-panels configure-settings-tab-panels">' +
             '<div id="tab_editor" class="adv-tab-panel"><div id="tab_editor_fields"></div></div>' +
             '<div id="tab_tabs" class="adv-tab-panel"><div id="tab_tabs_fields"></div></div>' +
             '<div id="tab_playback" class="adv-tab-panel"><div id="tab_playback_fields"></div></div>' +
             '<div id="tab_midi" class="adv-tab-panel"><div id="tab_midi_fields"></div></div>' +
+            '<div id="tab_update" class="adv-tab-panel"><div id="tab_update_fields"></div></div>' +
           '</div>' +
         '</div>'
     });
@@ -53005,11 +53117,13 @@ function ConfigureToolSettings() {
             '<button type="button" class="adv-tab-btn" data-tab="tab_editor">Editor</button>' +
             '<button type="button" class="adv-tab-btn" data-tab="tab_tabs">Tabs &amp; Layout</button>' +
             '<button type="button" class="adv-tab-btn" data-tab="tab_playback">Playback</button>' +
+            '<button type="button" class="adv-tab-btn" data-tab="tab_update">Update</button>' +
           '</div>' +
           '<div class="adv-tab-panels configure-settings-tab-panels">' +
             '<div id="tab_editor" class="adv-tab-panel"><div id="tab_editor_fields"></div></div>' +
             '<div id="tab_tabs" class="adv-tab-panel"><div id="tab_tabs_fields"></div></div>' +
             '<div id="tab_playback" class="adv-tab-panel"><div id="tab_playback_fields"></div></div>' +
+            '<div id="tab_update" class="adv-tab-panel"><div id="tab_update_fields"></div></div>' +
           '</div>' +
         '</div>'
     });
@@ -53235,6 +53349,25 @@ function ConfigureToolSettings() {
     form.push({ html: '</div>' }); // end tab_midi
 
   }
+
+  // For testing only
+  //gUpdateAvailable = true;
+
+  // =============== TAB: Update ===============
+  form.push({ html: '<div id="tab_update" class="adv-tab-panel">' });
+  if (gUpdateAvailable){
+    form.push({
+        html: '<p style="text-align:center;font-size:12pt;margin-top:120px;">Click the button below to force an update to the latest version of the tool:</p><p style="text-align:center;"><input id="abcplayer_updatebutton_d" class="abcplayer_updatebutton_d btn btn-configuresettingsfromhelp" onclick="UpdateToLatestVersion();" type="button" value="Update to the Latest Version" title="Forces an update of the tool to the latest available version."></p><p style="text-align:center;font-size:12pt;line-height:18pt;margin-top:24px;color:red;">Latest version: ' + gUpdateVersion + '<br/>Installed version: ' + gVersionNumber + '</p>'
+      });  
+  }
+  else{
+    form.push({
+        html: '<p style="text-align:center;font-size:12pt;margin-top:120px;">Click the button below to force an update to the latest version of the tool:</p><p style="text-align:center;"><input id="abcplayer_updatebutton_d" class="abcplayer_updatebutton_d btn btn-configuresettingsfromhelp" onclick="UpdateToLatestVersion();" type="button" value="Update to the Latest Version" title="Forces an update of the tool to the latest available version."></p><p style="text-align:center;font-size:12pt;line-height:18pt;margin-top:24px;">You have the latest version:<br/>Version: ' + gVersionNumber + '</p>'
+      });  
+
+  }  
+
+  form.push({ html: '</div>' }); // end tab_update
 
   // Close tab panels + tabs wrapper
   form.push({ html: '</div></div>' });
@@ -53794,8 +53927,11 @@ function MoveConfigureSettingsFieldsToTabs() {
     moveByName("configure_allow_midi_input", "tab_midi_fields");
     moveByName("configure_midi_chromatic", "tab_midi_fields");
   }
-}
 
+  // ---- Update tab ----
+  moveButtonByValueContains("Update to the Latest Version", "tab_update_fields");
+
+}
 
 
 // 
@@ -54344,6 +54480,55 @@ function checkForMissingXMLHeader(input){
 }
 
 //
+// Do text encoding conversion if required
+//
+function decodeFileToUnicodeString(arrayBuffer) {
+  const bytes = new Uint8Array(arrayBuffer);
+
+  // --- 1) BOM checks (most reliable) ---
+  // UTF-8 BOM
+  if (bytes.length >= 3 && bytes[0] === 0xEF && bytes[1] === 0xBB && bytes[2] === 0xBF) {
+    return new TextDecoder("utf-8").decode(bytes.subarray(3));
+  }
+
+  // UTF-16 LE BOM
+  if (bytes.length >= 2 && bytes[0] === 0xFF && bytes[1] === 0xFE) {
+    return new TextDecoder("utf-16le").decode(bytes.subarray(2));
+  }
+
+  // UTF-16 BE BOM
+  if (bytes.length >= 2 && bytes[0] === 0xFE && bytes[1] === 0xFF) {
+    // TextDecoder supports utf-16be in modern browsers, but not all.
+    // If unsupported, you can swap bytes manually (rare for your use case).
+    try {
+      return new TextDecoder("utf-16be").decode(bytes.subarray(2));
+    } catch (e) {
+      // Fallback: swap bytes and decode as LE
+      const swapped = new Uint8Array(bytes.length - 2);
+      for (let i = 2, j = 0; i + 1 < bytes.length; i += 2, j += 2) {
+        swapped[j] = bytes[i + 1];
+        swapped[j + 1] = bytes[i];
+      }
+      return new TextDecoder("utf-16le").decode(swapped);
+    }
+  }
+
+  // --- 2) Strict UTF-8 attempt (fail fast if invalid) ---
+  try {
+    return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+  } catch (e) {
+    // not valid UTF-8 -> fall through
+  }
+
+  // --- 3) Common legacy fallback(s) ---
+  // For ABC files from Windows-era tools: cp1252 is overwhelmingly common.
+  // If you also expect MacRoman or other encodings, you can add them here,
+  // but keep the list short to avoid mis-decoding real UTF-8.
+  return new TextDecoder("windows-1252").decode(bytes);
+}
+
+
+//
 // Shared functionality for all file reads
 //
 function DoReadCommon(theText, callback) {
@@ -54717,44 +54902,35 @@ function DoFileRead(file, callback) {
 
     // Not MXL or MIDI, just read the file
     // If XML, decode
+    
     const reader = new FileReader();
 
-    reader.addEventListener('load', (event) => {
+    reader.addEventListener("load", (event) => {
+      // Read as bytes first
+      const arrayBuffer = event.target.result;
 
-      var theText = event.target.result;
+      // Decode with detection + fallback
+      let theText = decodeFileToUnicodeString(arrayBuffer);
 
-      // MAE 16 Nov 2025
-      // Check for MusicXML missing an XML header
+      // Optional: normalize Unicode (helps with mixed composed/combining accents)
+      // This can reduce “weird” accent behavior when comparing strings.
+      theText = theText.normalize("NFC");
+
+      // Your existing logic
       theText = checkForMissingXMLHeader(theText);
 
-      // Check for MusicXML format
       if (isXML(theText)) {
-
-        // Keep track of actions
-        //sendGoogleAnalytics("action", "DoFileRead_XML");
-
         theText = importMusicXML(theText, gDisplayedName);
-
-      } else
-        // Importing BWW?
-        if (isBWWFile(theText)) {
-
-          // Keep track of actions
-          //sendGoogleAnalytics("action", "DoFileRead_BWW");
-
-          theText = convert_bww_to_abc(theText);
-
-        }
-      // else {
-      //   // Keep track of actions
-      //   sendGoogleAnalytics("action", "DoFileRead_ABC");
-      // }
+      } else if (isBWWFile(theText)) {
+        theText = convert_bww_to_abc(theText);
+      }
 
       DoReadCommon(theText, callback);
-
     });
 
-    reader.readAsText(file);
+    // IMPORTANT: read as ArrayBuffer, not text
+    reader.readAsArrayBuffer(file);
+
   } else {
     // Unsupported file extension, just callback immediately
     if (typeof callback === "function") {
@@ -56527,7 +56703,7 @@ function initMIDI() {
 }
 
 //
-// Show the Happy New Year-themed What's New screen
+// Show the What's New screen
 //
 function showWhatsNewScreen() {
 
@@ -56538,70 +56714,32 @@ function showWhatsNewScreen() {
   var modal_msg = '';
   modal_msg += '<div style=" line-height:16pt;">';
 
-  // Header (New Year banner)
+  // Header
   modal_msg += '<div style="text-align:center; padding:14px 10px; border-radius:12px;';
-  modal_msg += 'background: linear-gradient(135deg, #0b1f4a 0%, #5b2aa8 55%, #d4a62a 100%);';
+  modal_msg += 'background: linear-gradient(135deg, #b00020 0%, #d62828 70%, #fcbf49 100%);';
   modal_msg += 'box-shadow: 0 6px 16px rgba(0,0,0,0.14); color:#fff;">';
   modal_msg += '<div style="font-size:20pt; line-height:24pt; font-weight:bold;">What&apos;s New</div>';
-  modal_msg += '<div style="font-size:11pt; opacity:0.92; margin-top:3px;">Version ' + gVersionNumber + '</div>';
+  modal_msg += '<div style="font-size:11pt; opacity:0.92; margin-top:3px;">Version ' + gVersionNumber + ' released 21 February 2026</div>';
   modal_msg += '</div>';
 
   // Short intro
   modal_msg += '<p style="margin:14px 4px 10px 4px; font-size:12pt;">';
-  modal_msg += 'Starting the new year with fresh updates — here’s what’s new in my ABC Transcription Tools:';
+  modal_msg += 'Here’s what’s new in the ABC Transcription Tools:';
   modal_msg += '</p>';
 
   // Feature card
   modal_msg += '<div style="margin:10px 0 6px 0; padding:12px 12px; border-radius:12px;';
   modal_msg += 'background:#fff; border:1px solid #e7e7e7; box-shadow: 0 2px 10px rgba(0,0,0,0.06);">';
 
-  modal_msg += '<div style="font-size:14pt; font-weight:bold; margin-bottom:12px;">';
-  modal_msg += '✨ Phrase-by-phrase practice inside the Tune Trainer</div>';
-
-  modal_msg += '<p style="margin:6px 0 8px 0; font-size:12pt; margin-bottom:12px;">';
-  modal_msg += 'You can now do <strong>phrase-by-phrase practice</strong> from right inside the <strong>Tune Trainer</strong>!';
-  modal_msg += '</p>';
-
-  // Steps
-  modal_msg += '<div style="margin:8px 0 0 0; padding:10px 10px; border-radius:10px;';
-  modal_msg += 'background:#f6f7ff; border:1px solid #e3e6ff;">';
-
-  modal_msg += '<div style="font-size:12pt; font-weight:bold; margin-bottom:6px;">How it works</div>';
-  modal_msg += '<p style="margin:6px 0; font-size:12pt;">';
-  modal_msg += '1) Click <strong>Train</strong> to launch the <strong>Tune Trainer</strong>.</p>';
-
-  modal_msg += '<p style="margin:6px 0; font-size:12pt;">';
-  modal_msg += '2) Click <strong>Phrase Builder</strong> to break the tune into phrases of a specified number of measures, followed by the same number of measures of rests.</p>';
-
-  modal_msg += '<p style="margin:6px 0; font-size:12pt;">';
-  modal_msg += '3) Play the tune, listen to each phrase, then play along during the rests.</p>';
-
-  modal_msg += '<p style="margin:6px 0; font-size:12pt;">';
-  modal_msg += '<strong>Tip:</strong> Turn on the metronome to help keep a steady tempo.</p>';
-
-  modal_msg += '</div>'; // end how-it-works block
-  modal_msg += '</div>'; // end feature card
-
-  // More info link (New Year accent)
-  modal_msg += '<p style="margin:12px 4px 8px 4px; font-size:12pt; text-align:center;">';
-  modal_msg += 'For more information on the <strong>Tune Trainer</strong>, ';
-  modal_msg += '<a href="https://michaeleskin.com/abctools/userguide.html#tune_trainer" ';
-  modal_msg += 'target="_blank" style="color:#5b2aa8; text-decoration:none; font-weight:bold;">';
-  modal_msg += 'click here</a>.';
-  modal_msg += '</p>';
-
-  // New sample tune (New Year highlight)
-  modal_msg += '<div style="margin-top:10px; padding:10px 12px; border-radius:12px;';
-  modal_msg += 'background:#fff8db; border:1px solid #ffe39a;">';
-
-  modal_msg += '<div style="font-size:12pt; font-weight:bold; margin-bottom:6px;">Updated or changed features:</div>';
-  modal_msg += '<p style="margin:6px 0; font-size:12pt;">There is now a dedicated <strong>Train</strong> button on the top button bar that brings up the <strong>Tune Trainer</strong> loaded with the currently selected tune.</p>';
-  modal_msg += '<p style="margin:6px 0; font-size:12pt;">The ☰ dropdown menu has been simplified, added <strong>Copy All Tunes</strong>, and moved many less commonly used  features to the <strong>More ABC Tools</strong> dialog.</p>';
+  modal_msg += '<p style="margin:6px 0; font-size:12pt;">Added <strong>thesession.org Tune Scraper</strong> to the <strong>☰</strong> dropdown menu.<br/><br/>Brings up the <strong>thesession.org Tune Settings Scraper</strong> utility in a new browser tab.</p>';
   modal_msg += '</div>';
 
-  // Footer (New Year)
-  modal_msg += '<p style="text-align:center; margin:14px 0 0 0; font-size:11pt; color:#666;">';
-  modal_msg += '🎉 Happy New Year — Happy Practicing! 🎶</p>';
+  modal_msg += '<div style="margin:10px 0 6px 0; padding:12px 12px; border-radius:12px;';
+  modal_msg += 'background:#fff; border:1px solid #e7e7e7; box-shadow: 0 2px 10px rgba(0,0,0,0.06);">';
+  
+  modal_msg += '<p style="margin:6px 0; font-size:12pt;">Share links are now created using <b>Deflate</b> as the compression algorithm for the ABC instead of <b>LZW</b>.<br/><br/>Deflate creates share links that can be as much as 50% smaller than LZW.<br/><br/>This is particularly helpful for large tunes in PDF files intended to be opened by Adobe Acrobat which has a relatively small limit for hyperlink length.<br/><br/>The only exception is that LZW is still used for <b>Full Featured Websites</b> that include a dropdown tab/instrument selector since the LZW code is included in the source code for the sites to instrument and tablature change on-the-fly.</p>';
+
+  modal_msg += '</div>';
 
   modal_msg += '</div>'; // wrapper
 
@@ -60531,6 +60669,51 @@ function LaunchQuickEditorHelp() {
   window.open(url, '_blank');
 }
 
+// Open the Chromatic tuner
+function LaunchChromaticTuner(){
+
+  sendGoogleAnalytics("action", "LaunchChromaticTuner");
+
+  var url = "https://abc.tunebook.app/tools/tuner.html";
+  window.open(url, '_blank');
+}
+
+// Open the RTTA tuner
+function LaunchRTTA(){
+
+  sendGoogleAnalytics("action", "LaunchRTTA");
+
+  var url = "https://abc.tunebook.app/tools/rtta.html";
+  window.open(url, '_blank');
+}
+
+// Open the RTTVA tuner
+function LaunchRTTVA(){
+
+  sendGoogleAnalytics("action", "LaunchRTTVA");
+
+  var url = "https://abc.tunebook.app/tools/rttva.html";
+  window.open(url, '_blank');
+}
+
+// Open the tone generator
+function LaunchToneGen(){
+
+  sendGoogleAnalytics("action", "LaunchToneGen");
+
+  var url = "https://abc.tunebook.app/tools/tonegen.html";
+  window.open(url, '_blank');
+}
+
+// Open the audio tester
+function LaunchAudioTester(){
+  
+  sendGoogleAnalytics("action", "LaunchAudioTester");
+
+  var url = "https://abc.tunebook.app/tools/audiotest.html";
+  window.open(url, '_blank');
+}
+
 //
 // Check if an update is available
 // Lite: Customized
@@ -60902,8 +61085,8 @@ function SetupContextMenu(showUpdateItem) {
             AdvancedSettings();
           }
         }, {}, {
-          name: 'Launch Standard Editor',
-          fn: function(target) {
+        name: 'Launch Standard Editor',
+        fn: function(target) {
             LaunchStandardEditor();
           }
         }, {}, {
@@ -64334,7 +64517,7 @@ function PhraseBuilder(theTrainerTune,callback){
       html: '<p style="margin-top:24px;margin-bottom:24px;font-size:12pt;line-height:18pt;">Tunes with V: tags or other ABC tags at the start of lines outside the header will be skipped.</p>'
   }, 
   {
-    name: "Phrase length:",
+    name: "Phrase length in measures:",
     id: "phraseLength",
     type: "number",
     cssClass: "configure_phrase_length"
@@ -64747,8 +64930,7 @@ function openInExternalTool(theABC){
   // Lite: Customized
   // Replace inline styles with reusable classes
   var modal_msg =
-		'<div id="ceoltasanchor">' +
-		'<a href="https://michaeleskin.com/abctools/userguide.html#external_tools" target="_blank" ' +
+		'<a id="ceoltasanchor" href="https://michaeleskin.com/abctools/userguide.html#external_tools" target="_blank" ' +
 		'title="View documentation in new tab" ' +
 		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
 		'<h2 class="modal-header">' +
@@ -64767,18 +64949,97 @@ function openInExternalTool(theABC){
   });
 
   var elem = document.getElementById("external_pureocarinas");
-
-  elem.onclick = function(){
+  if (elem) elem.onclick = function(){
     OpenInPureOcarinas(theABC);
-  }
+  };
 
-  var elem = document.getElementById("external_abcjs");
-
-  elem.onclick = function(){
+  elem = document.getElementById("external_abcjs");
+  if (elem) elem.onclick = function(){
     OpenInABCJSQuickEditor(theABC);
-  }
-
+  };
 }
+
+// Open thesession.org Tune Scraper in a new browser tab
+function MustardScraper(){
+  sendGoogleAnalytics("action", "MustardScraper");
+
+  var url = "https://abc.tunebook.app/tools/mustard_scraper.html";
+  window.open(url, '_blank');
+}
+
+function TuningTools(){
+
+  // Keep track of dialogs
+  sendGoogleAnalytics("dialog", "TuningTools");
+
+  var modal_msg =
+  	'<a id="tuningtoolsanchor" href="https://michaeleskin.com/abctools/userguide.html#external_tools" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+    'Tuning Tools&nbsp;&nbsp;' +
+		'</h2>' +
+    '<h3 class="modal-subheader">' +
+    'Michael Eskin\'s web-based tools built in collaboration with AI<br/>to help tune and characterize the overall tuning of instruments.' +
+    '</h3>'
+  
+  + '    <div class="btn-container-center">'
+
+  + '      <button class="tuning-tool btn-lite" style="text-align:center; width:180px;">'
+  + '        <img id="tuning_tools_tuner" src="img/tool_tuner_1.jpg" title="Simple chromatic instrument tuner. Needle and strobe views. Adjustable temperament (ET, Just Intonation, Pythagorean, Fiddle Sweetened), A4 reference, and input boost." alt="Chromatic Tuner"'
+  + '             style="width:150px;height:auto;cursor:pointer;">'
+  + '        <span style="font-size:1rem; margin-top:6px; height:3.2em; display:flex; align-items:center; justify-content:center; line-height:1.2em;">Chromatic Tuner</span>'
+  + '      </button>'
+
+  + '      <button class="tuning-tool btn-lite" style="text-align:center; width:180px;">'
+  + '        <img id="tuning_tools_rtta" src="img/tool_rtta_1.jpg" title="Real-time tuning analysis (box-plot style) from live mic input. Adjustable temperament (ET, Just Intonation, Pythagorean, Fiddle Sweetened), A4 reference, and input boost." alt="Real Time Tuning Analysis (RTTA)"'
+  + '             style="width:150px;height:auto;cursor:pointer;">'
+  + '        <span style="font-size:1rem; margin-top:6px; height:3.2em; display:flex; align-items:center; justify-content:center; line-height:1.2em;">Real Time Tuning Analysis (RTTA)</span>'
+  + '      </button>'
+
+  + '      <button class="tuning-tool btn-lite" style="text-align:center; width:180px;">'
+  + '        <img id="tuning_tools_rttva" src="img/tool_rttva_1.jpg" title="Real-time tuning and volume analysis (box-plot style) from live mic input. Adjustable temperament (ET, Just Intonation, Pythagorean, Fiddle Sweetened), A4 reference, and input boost." alt="Real Time Tuning / Volume Analysis (RTTVA)"'
+  + '             style="width:150px;height:auto;cursor:pointer;">'
+  + '        <span style="font-size:1rem; margin-top:6px; height:3.2em; display:flex; align-items:center; justify-content:center; line-height:1.2em;">Real Time Tuning / Volume Analysis (RTTVA)</span>'
+  + '      </button>'
+
+  + '      <button class="tuning-tool btn-lite" style="text-align:center; width:180px;">'
+  + '        <img id="tuning_tools_tonegen" src="img/tool_tonegen_1.jpg" title="Simple chromatic instrument tuner with tone generator. Needle and strobe views. Adjustable temperament (ET, Just Intonation, Pythagorean, Fiddle Sweetened), A4 reference, and input boost." alt="Chromatic Tuner / Tone Generator"'
+  + '             style="width:150px;height:auto;cursor:pointer;">'
+  + '        <span style="font-size:1rem; margin-top:6px; height:3.2em; display:flex; align-items:center; justify-content:center; line-height:1.2em;">Chromatic Tuner / Tone Generator</span>'
+  + '      </button>'
+
+  + '      <button class="tuning-tool btn-lite" style="text-align:center; width:180px;">'
+  + '        <img id="tuning_tools_tester" src="img/tool_audiotester_1.jpg" title="3-step audio input tester for the Chromatic Tuner and RTTA utilities: background noise, level range, and continuous tone test." alt="Audio Input Tester"'
+  + '             style="width:150px;height:auto;cursor:pointer;">'
+  + '        <span style="font-size:1rem; margin-top:6px; height:3.2em; display:flex; align-items:center; justify-content:center; line-height:1.2em;">Audio Input Tester</span>'
+  + '      </button>'
+
+  + '    </div>'
+
+  DayPilot.Modal.alert(modal_msg, {
+    theme: "modal_flat",
+    top: 50,
+    width: 700,
+    scrollWithPage: (AllowDialogsToScroll())
+  });
+
+  var elem = document.getElementById("tuning_tools_tuner");
+  if (elem) elem.onclick = function(){ LaunchChromaticTuner(); };
+
+  elem = document.getElementById("tuning_tools_rtta");
+  if (elem) elem.onclick = function(){ LaunchRTTA(); };
+
+  elem = document.getElementById("tuning_tools_rttva");
+  if (elem) elem.onclick = function(){ LaunchRTTVA(); };
+
+  elem = document.getElementById("tuning_tools_tonegen");
+  if (elem) elem.onclick = function(){ LaunchToneGen(); };
+
+  elem = document.getElementById("tuning_tools_tester");
+  if (elem) elem.onclick = function(){ LaunchAudioTester(); };
+}
+
 
 // abcjs Custom CSS Generator
 // Returns %%begincss{...%%endcss} with ONLY non-black rules, defaults all black, reset to black.

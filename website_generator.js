@@ -8,6 +8,10 @@
 // Michael Eskin
 // https://michaeleskin.com
 //
+// Lite: Customized
+// Replaced scripted notation centering with flexible layout
+// Arrow navigation loops through to first / last tune
+// Minor style tweaks
 
 //
 // Load Website settings
@@ -495,7 +499,7 @@ function BatchJSONExportForWebGenerator(theABC,allowDeflate){
 
         thisTune = GetABCFileHeader() + thisTune;
 
-        var theURL = FillUrlBoxWithAbcInLZWOrDef(thisTune,false,format,false);
+        var theURL = FillUrlBoxWithAbcInLZWOrDef(thisTune,false,format,allowDeflate);
 
         var titleURL = title.replaceAll("&","");
         titleURL = titleURL.replaceAll(" ","_");
@@ -568,7 +572,7 @@ function BatchJSONExportForWebGalleryGenerator(theABC){
 
         thisTune = GetABCFileHeader() + thisTune;
 
-        var theURL = FillUrlBoxWithAbcInLZWOrDef(thisTune,false,format,false);
+        var theURL = FillUrlBoxWithAbcInLZWOrDef(thisTune,false,format,true);
 
         var titleURL = title.replaceAll("&","");
         titleURL = titleURL.replaceAll(" ","_");
@@ -707,7 +711,20 @@ function generateAndSaveWebsiteFull() {
         return;
     }
 
-    var theJSON = BatchJSONExportForWebGenerator(theABC,false);
+    var theJSON;
+
+    if (gWebsiteTabSelector){
+
+        theJSON = BatchJSONExportForWebGenerator(theABC,false);
+
+    }
+    else{
+
+        // Allow Deflate if no tab selector
+        theJSON = BatchJSONExportForWebGenerator(theABC,true);
+
+    }
+
 
     hideTheSpinner();
 
@@ -1608,7 +1625,7 @@ function generateAndSaveWebsiteSimple() {
         return;
     }
 
-    var theJSON = BatchJSONExportForWebGenerator(theABC,false);
+    var theJSON = BatchJSONExportForWebGenerator(theABC,true);
 
     hideTheSpinner();
 

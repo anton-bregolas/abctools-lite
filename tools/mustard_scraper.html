@@ -1,0 +1,2384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <link rel="profile" href="http://gmpg.org/xfn/11">
+  <title>thesession.org Tune Settings Scraper</title>
+  <link rel='dns-prefetch' href='//fonts.googleapis.com' />
+  <link rel='dns-prefetch' href='//s.w.org' />
+  <link rel='preconnect' href='https://secureservercdn.net' crossorigin />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="thesession.org Tune Settings Scraper" />
+  <meta property="og:description" content="thesession.org Tune Settings Scraper" />
+  <meta property="og:url" content="https://abc.tunebook.app/tools/mustard_scraper.html" />
+  <meta property="og:site_name" content="thesession.org Tune Settings Scraper" />
+	<meta property="og:image" content="../img/abclite-icon-512x512.png" />
+	<meta name="theme-color" content="#181818">
+	<meta name="apple-mobile-web-app-title" content="Tools Lite">
+	<meta name="application-name" content="Tools Lite">
+	<link rel="icon" href="../favicon.ico" sizes="any">
+	<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+	<link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+	<link rel="manifest" href="../img/abc-manifest.json">
+
+  <style>
+    :root{
+      color-scheme: light;
+
+      /* Responsive typography (bigger overall, still mobile-safe) */
+      --fs-base: clamp(15px, 1.05vw + 12px, 17px);
+      --fs-small: clamp(13px, 0.7vw + 11px, 14.5px);
+      --fs-h2: clamp(20px, 1.2vw + 16px, 24px);
+
+      /* Page padding */
+      --page-pad: 32px;
+    }
+
+    html, body{
+      height:100%;
+      margin:0;
+    }
+
+    *, *::before, *::after{ box-sizing:border-box; }
+
+    body{
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+
+      padding:
+        calc(var(--page-pad) + env(safe-area-inset-top))
+        calc(var(--page-pad) + env(safe-area-inset-right))
+        calc(var(--page-pad) + env(safe-area-inset-bottom))
+        calc(var(--page-pad) + env(safe-area-inset-left));
+
+      box-sizing:border-box;
+      overflow:hidden;
+
+      font-size:var(--fs-base);
+      line-height:1.35;
+      -webkit-text-size-adjust:100%;
+    }
+
+    .app, .main, .left, .right, .card, .taWrap{ min-width:0; }
+
+    .app{
+      height: calc(100vh - (2 * var(--page-pad)));
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      overflow:hidden;
+      min-height:0;
+    }
+
+    @supports (height: 100dvh){
+      .app{
+        height: calc(
+          100dvh
+          - (2 * var(--page-pad))
+          - env(safe-area-inset-top)
+          - env(safe-area-inset-bottom)
+        );
+      }
+    }
+
+    h2{
+      margin:0 0 8px 0;
+      font-size:var(--fs-h2);
+    }
+
+    p{ margin:0; }
+
+    .row{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+      min-width:0;
+    }
+
+    input, textarea, button{
+      font:inherit;
+      color:inherit;
+      max-width:100%;
+    }
+
+    input[type="text"]{
+      -webkit-appearance:none;
+      appearance:none;
+
+      border:1px solid rgba(127,127,127,.35);
+      background: rgba(127,127,127,.06);
+      color:inherit;
+
+      border-radius:10px;
+      padding:10px 12px;
+      line-height:1.2;
+
+      flex: 3 1 360px;
+      min-width: 0;
+      width:auto;
+    }
+
+    button{
+      -webkit-appearance:none;
+      appearance:none;
+
+      border:1px solid rgba(127,127,127,.35);
+      background: rgba(127,127,127,.12);
+      color:inherit;
+
+      border-radius:12px;
+      padding:10px 14px;
+      line-height:1.15;
+      font-weight:600;
+
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+
+      cursor:pointer;
+      user-select:none;
+      -webkit-tap-highlight-color:transparent;
+
+      max-width:100%;
+      min-width:0;
+    }
+
+    button:active{ transform: translateY(0.5px); }
+
+    button:disabled{
+      opacity:0.4;
+      cursor:default;
+      transform:none;
+    }
+
+    .row button{
+      white-space:normal;
+      text-align:center;
+      flex: 1 1 180px;
+    }
+
+    #btnFetch{
+      flex: 0 0 180px;   /* narrower */
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    #btnOpenInTools{ flex-basis: 100%; }
+
+    .muted{
+      opacity:0.75;
+      line-height:2.0;
+    }
+    .small{ font-size:var(--fs-small); }
+
+    .card{
+      border:1px solid rgba(127,127,127,.35);
+      border-radius:12px;
+      padding:14px;
+      overflow:hidden;
+      min-width:0;
+    }
+
+    .status{
+      white-space:pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      overflow:auto;
+      max-height:300px;
+
+      font-size:0.95em;
+      line-height:1.45;
+
+      overflow-wrap:anywhere;
+      word-break:break-word;
+
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .main{
+      flex:1;
+      display:flex;
+      gap:14px;
+      overflow:hidden;
+      min-height:0;
+      min-width:0;
+    }
+
+    .left, .right{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      overflow:hidden;
+      min-height:0;
+      min-width:0;
+    }
+
+    .taWrap{
+      flex:1;
+      min-height:0;
+      border-radius:10px;
+      overflow:hidden;
+      border:1px solid rgba(127,127,127,.35);
+      background:Canvas;
+      min-width:0;
+      display:flex;      /* makes textarea flex sizing reliable in Chrome */
+      padding: 1px;      /* keeps the anti-clipping fix */
+    }
+
+    textarea{
+      /* REPLACE the width/height sizing with flex sizing */
+      flex: 1 1 auto;
+      min-height: 0;
+
+      width: auto;       /* optional, but avoids some Chrome quirks */
+      height: auto;      /* important: don't use height:100% in this layout */
+
+      padding:12px;
+      border:0;
+      border-radius:0;
+      background:transparent;
+      resize:none;
+      overflow:auto;
+
+      font-size:0.98em;
+      line-height:1.35;
+
+      overflow-wrap:anywhere;
+      -webkit-overflow-scrolling: touch;
+
+      box-sizing:border-box;
+      display:block;
+    }
+
+    .rightHeader{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-bottom:8px;
+      min-width:0;
+    }
+
+    code{
+      background: rgba(127,127,127,.15);
+      padding:2px 5px;
+      border-radius:4px;
+      font-size:0.95em;
+    }
+
+    /* Checkbox row */
+    .checkRow{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-top:10px;
+      flex-wrap:wrap;
+    }
+    .checkRow label{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .checkRow input[type="checkbox"]{
+      width: 18px;
+      height: 18px;
+      accent-color: auto;
+    }
+
+    .modal_flat_background{
+      background-color:#000;
+      opacity:0.4;
+    }
+
+    .modal_flat_main{
+      border:1px solid #333;
+      box-shadow:0 0 15px -2px rgba(0,0,0,0.75);
+    }
+
+    .modal_flat_main,
+    .modal_flat_main input,
+    .modal_flat_main button{
+      font-size:16px;
+    }
+
+    .modal_flat_main input,
+    .modal_flat_main button{
+      padding:6px;
+      box-sizing:border-box;
+    }
+
+    .modal_flat_inner{
+      padding:16px;
+      background:#fff;
+      color:#000;
+    }
+
+    .modal_flat_content{
+      font-family: Helvetica, Arial, sans-serif;
+      margin:20px 0;
+    }
+
+    .modal_flat_input{ margin:20px 0; }
+
+    .modal_flat_buttons{
+      text-align:center;
+      margin-top:40px;
+    }
+
+    .modal_flat_main button{
+      background-color:#ccc;
+      color:#000;
+      padding:10px 20px;
+      border:0;
+      cursor:pointer;
+      outline:none;
+      width:100px;
+      border-radius:10px;
+    }
+
+    .modal_flat_cancel{ margin-left:6px; }
+
+    .exampleLink{
+      color: inherit;
+      text-decoration: underline;
+      cursor: pointer;
+      word-break: break-all;
+    }
+
+    .instructions{
+      font-size: clamp(14.5px, 0.9vw + 13px, 16.5px);
+      line-height: 2.0;
+    }
+
+    .instructions a.exampleLink{
+      font-weight: 500;
+    }
+
+    /* Bottom Help button */
+    #btnHelp{
+      width: 100%;
+    }
+
+    select{
+      -webkit-appearance:none;
+      appearance:none;
+
+      font:inherit;
+      color:#000;              /* black text */
+      background:#fff;         /* white background */
+
+      border:1px solid rgba(127,127,127,.35);
+      border-radius:10px;
+
+      padding:10px 52px 10px 12px;  /* more space for larger arrow */
+      line-height:1.2;
+
+      cursor:pointer;
+
+      /* Larger black triangle */
+      background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%3E%3Cpolygon%20points%3D%276%2C9%2018%2C9%2012%2C17%27%20fill%3D%27%23000%27%2F%3E%3C%2Fsvg%3E");
+      background-repeat:no-repeat;
+      background-position:right 16px center;
+      background-size:22px 22px;   /* bigger */
+    }
+
+    /* Disabled */
+    select:disabled{
+      cursor:not-allowed;
+      opacity:0.45;
+    }
+
+    @media (max-width: 980px){
+      body{
+        overflow:auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: calc(var(--page-pad) + env(safe-area-inset-bottom) + 12px);
+      }
+
+      .app{
+        height:auto;
+        overflow:visible;
+        min-height:0;
+      }
+
+      .main{
+        flex-direction:column;
+        overflow:visible;
+        min-height:auto;
+      }
+
+      .left, .right{
+        overflow:visible;
+        min-height:auto;
+      }
+
+      .taWrap{
+        height: 55vh;
+        min-height: 320px;
+      }
+
+      #btnFetch{
+        flex: 1 0 100% !important;
+        width: 100% !important;
+      }
+
+      #instructions_div{
+        margin-bottom: calc(env(safe-area-inset-bottom) + var(--page-pad));
+      }
+    }
+
+    @media (max-width: 720px){
+      .row{ gap:10px; }
+      .row button{ flex-basis:100%; }
+      input[type="text"]{ flex-basis:100%; }
+      .taWrap{ height: 60vh; min-height: 300px; }
+      #btnFetch{
+        flex: 1 0 100% !important;
+        width: 100% !important;
+      }
+      .instructions a.exampleLink{
+        font-size: 0.92em;     /* slightly smaller than surrounding text */
+      }
+      #instructions_div{
+        margin-bottom: calc(env(safe-area-inset-bottom) + var(--page-pad));
+      }
+      .checkRow.sortRow label{
+        display:flex;
+        flex-wrap:wrap;
+        align-items:flex-start;
+        gap:10px;
+        width:100%;
+      }
+
+      .checkRow.sortRow label > span{
+        flex: 1 0 100%;     /* force the label text to its own line */
+        min-width: 0;
+      }
+
+      .checkRow.sortRow select,
+      .checkRow.sortRow button{
+        flex: 1 0 100%;     /* put each control on a new line */
+        width: 100%;
+      }
+      
+      /* Constrain the outer modal box to the viewport */
+      .modal_flat_main{
+        width: calc(100vw - 24px) !important;
+        max-width: calc(100vw - 24px) !important;
+
+        max-height: calc(100dvh - 24px) !important; /* iOS-friendly */
+        overflow: hidden !important;                /* keep scrolling inside */
+      }
+
+      /* Make the inner area scroll if needed */
+      .modal_flat_inner{
+        max-height: calc(100dvh - 24px) !important;
+        overflow: auto !important;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* Keep the OK button area visible */
+      .modal_flat_buttons{
+        margin-top: 16px !important;
+        position: sticky;
+        bottom: 0;
+        background: #fff;
+        padding: 12px 0 6px 0;
+      }
+    }
+
+    @media (min-width: 721px){
+      /* DayPilot modal outer box */
+      .modal_flat_main{
+        width: min(740px, calc(100vw - 80px)) !important;   /* wider on desktop */
+        max-width: min(740px, calc(100vw - 80px)) !important;
+      }
+    }
+
+  </style>
+
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-VM0N9HL3MK"></script>
+  <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-VM0N9HL3MK');
+  </script> -->
+</head>
+
+<body>
+  <div class="app">
+    <div>
+      <h2>thesession.org Tune Settings Scraper</h2>
+      <p class="muted small instructions" style="margin-top:6px">
+        Enter a thesession.org Tune URL like:<br/>
+        <a title="Click to load the example tune URL into thesession.org URL field" href="https://thesession.org/tunes/1" class="exampleLink" data-fill-url="https://thesession.org/tunes/1">https://thesession.org/tunes/1</a>
+        <br/>
+        or a Member's URL like (will fetch all member submitted tune settings or bookmarked tune settings):<br/>
+        <a title="Click to load the example member's URL into thesession.org URL field"href="https://thesession.org/members/12799" class="exampleLink" data-fill-url="https://thesession.org/members/12799">https://thesession.org/members/12799</a>
+      </p>
+    </div>
+
+    <div class="main">
+      <!-- LEFT COLUMN -->
+      <div class="left">
+
+        <div class="card">
+          <div class="row">
+            <button title="Opens the thesession.org tune search page in a new browser tab" id="btnTune">Open Tunes Search Page</button>
+            <button title="Opens the thesession.org members search page in a new browser tab" id="btnMembers">Open Members Search Page</button>
+            <button title="Launches the ABC Transcription Tools in a new browser tab" id="btnABCTools">ABC Transcription Tools</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="row">
+            <label for="tuneUrl"><strong>thesession.org URL:</strong></label>
+            <input title="Enter a thesession.org tune or member page URL" id="tuneUrl" type="text" value="https://thesession.org/tunes/1" />
+            <button title="Fetches either all the specified tune settings or the members's bookmarked tune settings depending on the URL and checkboxes below" id="btnFetch">Fetch</button>
+          </div>
+
+          <div class="checkRow">
+            <label for="memberUseTunes">
+              <input title="When checked and a member URL is entered, fetch that member's bookmarked tune settings instead of submitted tune settings" id="memberUseTunes" type="checkbox" />
+              <span title="When checked and a member URL is entered, fetch that member's bookmarked tune settings instead of submitted tune settings">For member URLs, get bookmarked tune settings instead of submitted tune settings</span>
+            </label>
+          </div>
+
+          <div class="checkRow">
+            <label for="onlyChords">
+              <input title="When checked, only fetches tune settings that have chords" id="onlyChords" type="checkbox" />
+              <span title="When checked, only fetches tune settings that have chords">Only include tune settings that have chords</span>
+            </label>
+          </div>
+
+          <div class="checkRow sortRow">
+            <label for="memberSort">
+              <span style="min-width:160px;"><strong>Sort member tune settings results:</strong></span>
+
+              <select id="memberSort" title="Sorting applies only to member bookmarks/submitted settings results">
+                <option value="orig" selected>Original chronological order</option>
+                <option value="title">Sorted by title (T:)</option>
+                <option value="key">Sorted by key (K:)</option>
+                <option value="rhythm">Sorted by rhythm (R:)</option>
+              </select>
+
+              <button id="btnResort"
+                      title="Re-sort the existing results using the current sort option"
+                      disabled
+                      style="padding:10px 14px;">
+                Re-sort
+              </button>
+            </label>
+          </div>
+
+          <div class="row" style="margin-top:10px">
+            <button title="Copies all the fetched ABC tune settings to the clipboard" id="btnCopy" disabled>Copy ABC</button>
+            <button title="Saves all the fetched ABC tune settings to a file" id="btnDownload" disabled>Download .abc File</button>
+            <button title="Opens all the fetched ABC tune settings in the ABC Transcription Tools" id="btnOpenInTools" disabled>Open All Settings in the ABC Transcription Tools</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <strong>Status</strong>
+          <div id="status" class="status muted" style="margin-top:8px">Ready.</div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="right">
+        <div class="card" style="flex:1; display:flex; flex-direction:column; min-height:0;">
+          <div class="rightHeader">
+            <strong>ABC Tune Settings</strong>
+          </div>
+          <div class="taWrap">
+            <textarea id="out" spellcheck="false"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="instructions_div" class="card">
+      <button title="Click to show the instructions" id="btnHelp">Instructions</button>
+    </div>
+  </div>
+
+<script>
+
+
+/* ============================================================
+   Runtime environment checks
+   ============================================================ */
+//
+
+// Are we on iOS?
+//
+function isIOS() {
+  if (/iPad|iPhone|iPod/.test(navigator.platform)) {
+    return true;
+  } else {
+    return navigator.maxTouchPoints &&
+      navigator.maxTouchPoints > 2 &&
+      /MacIntel/.test(navigator.platform);
+  }
+}
+
+const gIsIOS = isIOS();
+
+//
+// Is local storage available
+//
+let gLocalStorageAvailable = false;
+
+if (window.localStorage) {
+  gLocalStorageAvailable = true;
+}
+
+/* ============================================================
+   Status accumulation helpers
+   ============================================================ */
+
+const $ = (id) => document.getElementById(id);
+const statusEl = $("status");
+const outEl = $("out");
+const tuneUrlInput = $("tuneUrl");
+const onlyChordsEl = $("onlyChords");
+const memberUseTunesEl = $("memberUseTunes"); 
+
+/* ============================================================
+   Sorting helpers (used by member result sorting)
+   ============================================================ */
+
+function parseHeaderLine(abcText, tagLetter) {
+  // Reads first occurrence of e.g. "T:" at start of a line.
+  const re = new RegExp(`^\\s*${tagLetter}\\s*:\\s*(.*)$`, "mi");
+  const m = String(abcText || "").match(re);
+  return m ? String(m[1] || "").trim() : "";
+}
+
+function normKeyForSort(kLine) {
+  // keep simple: uppercase, remove spaces
+  return String(kLine || "").trim().toUpperCase().replace(/\s+/g, "");
+}
+
+function canonicalRhythmForSort(r) {
+  return String(r || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .replace(/\u2011|\u2012|\u2013|\u2014/g, "-");
+}
+
+const RHYTHM_SORT_ORDER = [
+  "reel",
+  "hornpipe",
+  "barndance",
+  "barn dance",
+  "strathspey",
+  "march",
+  "jig",
+  "slip jig",
+  "slipjig",
+  "hop jig",
+  "hopjig",
+  "slide",
+  "polka",
+  "waltz",
+  "mazurka",
+  "three-two",
+  "three two",
+  "3-2",
+  "3/2"
+];
+
+const RHYTHM_SORT_RANK = (() => {
+  const m = new Map();
+  for (let i = 0; i < RHYTHM_SORT_ORDER.length; i++) {
+    m.set(canonicalRhythmForSort(RHYTHM_SORT_ORDER[i]), i);
+  }
+  return m;
+})();
+
+function rhythmRank(rLine) {
+  const rr = canonicalRhythmForSort(rLine);
+  return RHYTHM_SORT_RANK.has(rr) ? RHYTHM_SORT_RANK.get(rr) : 9999;
+}
+
+function stableSort(arr, compareFn) {
+  return arr
+    .map((v, i) => ({ v, i }))
+    .sort((a, b) => {
+      const c = compareFn(a.v, b.v);
+      return c !== 0 ? c : (a.i - b.i);
+    })
+    .map(o => o.v);
+}
+
+// Click-to-fill example links
+document.addEventListener("click", (e) => {
+  const a = e.target.closest("a.exampleLink");
+  if (!a) return;
+
+  e.preventDefault();
+
+  const urlToFill = a.getAttribute("data-fill-url") || a.getAttribute("href") || "";
+  if (!urlToFill) return;
+
+  tuneUrlInput.value = urlToFill;
+  tuneUrlInput.focus();
+  tuneUrlInput.select(); // handy on mobile/desktop
+});
+
+function clearStatus(msg) {
+  statusEl.textContent = (msg == null ? "" : String(msg));
+  statusEl.scrollTop = statusEl.scrollHeight;
+}
+
+function appendStatus(msg) {
+  const s = String(msg == null ? "" : msg);
+  if (!s) return;
+
+  if (statusEl.textContent && !statusEl.textContent.endsWith("\n")) {
+    statusEl.textContent += "\n";
+  }
+  statusEl.textContent += s + "\n";
+  statusEl.scrollTop = statusEl.scrollHeight;
+}
+
+async function fetchMemberNameById(memberId) {
+  const id = String(memberId || "").trim();
+  if (!id) return "";
+
+  const url = `https://thesession.org/members/${encodeURIComponent(id)}?format=json`;
+
+  try {
+    const res = await fetch(url, { method: "GET", mode: "cors", cache: "no-store" });
+    if (!res.ok) return "";
+
+    const data = await res.json();
+    const name = (data && typeof data.name === "string") ? data.name.trim() : "";
+    return name;
+  } catch {
+    return "";
+  }
+}
+
+function updateResortEnabled() {
+  const btnResort = $("btnResort");
+  if (!btnResort) return;
+
+  const url = ($("tuneUrl") && $("tuneUrl").value) ? $("tuneUrl").value.trim() : "";
+  const isTune = isSessionTuneUrl(url);
+
+  const can =
+    !fetchInProgress &&
+    !!lastResult &&
+    !isTune &&
+    Array.isArray(lastResult.includedUnsorted) &&
+    lastResult.includedUnsorted.length > 0;
+
+  btnResort.disabled = !can;
+}
+
+
+/* ============================================================
+   Core entry (tune URL OR member bookmarks/tunes URL)
+   ============================================================ */
+
+/* ============================================================
+   - Implements:
+     * title article-moving rule for title comparisons (processTitleForSorting)
+     * key/rhythm primary sorts
+     * within same key/rhythm: subsort by title (also article-processed)
+     * title ties (and any remaining ties): subsort by setting number from S: (#settingNNN)
+     * stableSort preserves original order if still tied
+   ============================================================ */
+
+function sortIncludedForMember(includedUnsorted, sortMode) {
+  const included = (includedUnsorted || []).slice();
+  const mode = String(sortMode || "orig");
+
+  const titleKey = (it) => processTitleForSorting(it.tuneTitle || "");
+
+  const getSettingNumberForSortFromSUrl = (sUrl) => {
+    const m = String(sUrl || "").match(/#setting-?(\d+)\b/i);
+    return m ? parseInt(m[1], 10) : 0;
+  };
+
+  const settingNum = (it) => getSettingNumberForSortFromSUrl(it.sourceSettingUrl);
+
+  // Compare by title (article-shifted), then by setting number
+  const cmpTitleThenSetting = (a, b) => {
+    const t = titleKey(a).localeCompare(titleKey(b), undefined, { sensitivity: "base" });
+    if (t !== 0) return t;
+
+    const sa = settingNum(a);
+    const sb = settingNum(b);
+    if (sa !== sb) return sa - sb;
+
+    return 0; // stableSort will preserve original order
+  };
+
+  if (mode === "title") {
+    return stableSort(included, cmpTitleThenSetting);
+  }
+
+  if (mode === "key") {
+    return stableSort(included, (a, b) => {
+      // 1) key
+      const ka = normKeyForSort(normalizeKValue((a.setting && a.setting.key) ? a.setting.key : ""));
+      const kb = normKeyForSort(normalizeKValue((b.setting && b.setting.key) ? b.setting.key : ""));
+      const k = ka.localeCompare(kb, undefined, { sensitivity: "base" });
+      if (k !== 0) return k;
+
+      // 2) title (article-shifted)
+      // 3) setting number (from S:)
+      return cmpTitleThenSetting(a, b);
+    });
+  }
+
+  if (mode === "rhythm") {
+    return stableSort(included, (a, b) => {
+      // 1) rhythm rank
+      const ra = rhythmRank(a.tuneType || "");
+      const rb = rhythmRank(b.tuneType || "");
+      if (ra !== rb) return ra - rb;
+
+      // 2) title (article-shifted)
+      // 3) setting number (from S:)
+      return cmpTitleThenSetting(a, b);
+    });
+  }
+
+  // "orig"
+  return included;
+}
+
+/* ============================================================
+   - Rebuilds the combined ABC from an already-fetched included array
+   - Used both by fetch (after sorting) and by the Re-sort button
+   ============================================================ */
+
+function buildMemberABCFromIncluded(included, sourceLabel) {
+  const built = [];
+
+  for (let j = 0; j < included.length; j++) {
+    const it = included[j];
+
+    const xNum = j + 1;
+
+    const rLine = it.tuneType || "reel";
+    const mLine = defaultMForRhythm(rLine) || "4/4";
+    const lLine = "1/8";
+    const qVal  = defaultQForRhythm(rLine);
+
+    const tLine = it.tuneTitle;
+
+    const kRaw = (typeof it.setting.key === "string") ? it.setting.key : "";
+    const kLine = normalizeKValue(kRaw) || "Dmaj";
+
+    const settingMemberName =
+      (it.setting && it.setting.member && typeof it.setting.member.name === "string")
+        ? it.setting.member.name.trim()
+        : "";
+
+    const header =
+      `X:${xNum}\n` +
+      `T:${tLine}\n` +
+      `R:${rLine}\n` +
+      `M:${mLine}\n` +
+      `L:${lLine}\n` +
+      `Q:${qVal}\n` +
+      `K:${kLine}\n` +
+      `S:${it.sourceSettingUrl}\n` +
+      (settingMemberName ? `Z:${settingMemberName}\n` : "");
+
+    built.push(header + it.bodyNormalized + "\n");
+  }
+
+  return {
+    combined: built.join("\n"),
+    settingsCount: included.length,
+    memberSourceLabel: sourceLabel
+  };
+}
+async function fetchTuneOrBookmarksAsABC(inputUrl, opts) {
+  opts = opts || {};
+  const onlyChords = !!opts.onlyChords;
+  const memberUseTunes = !!opts.memberUseTunes;
+
+  // member sort mode: "orig" | "title" | "key" | "rhythm"
+  const memberSortMode = String(opts.memberSortMode || "orig");
+
+  let url = String(inputUrl || "").trim();
+  if (!url) throw new Error("Error: Please enter a URL.");
+
+  // Normalize member URLs to either /bookmarks or /tunes based on checkbox
+  url = normalizeMembersUrl(url, memberUseTunes);
+
+  // Single-tune flow
+  if (isSessionTuneUrl(url)) {
+    clearStatus("Fetching all tune settings");
+    return await fetchAllTuneVersionsAsABC(url, opts);
+  }
+
+  if (!isSessionBookmarksUrl(url) && !isSessionMemberTunesUrl(url)) {
+    throw new Error("Error: URL must be a thesession.org tune URL (/tunes/####) or a member URL (/members/####).");
+  }
+
+  const sourceLabel = isSessionMemberTunesUrl(url) ? "Settings" : "Bookmarks";
+
+  // Fetch member name from base member JSON (before paging)
+  const memberId = extractMemberIdFromSessionUrl(url);
+  const memberName = memberId ? await fetchMemberNameById(memberId) : "";
+  const who = memberName ? `${memberName}'s` : "member's";
+
+  if (sourceLabel === "Settings") {
+    clearStatus(`Fetching ${who} submitted tune settings`);
+  } else {
+    clearStatus(`Fetching ${who} bookmarked tune settings`);
+  }
+
+  const items = await fetchAllMemberItemsPaged(url, sourceLabel);
+  if (!items.length) throw new Error(`Member: ${memberName} - No tune ${sourceLabel.toLowerCase()} found.`);
+
+  const settingItems = [];
+
+  // /members/{id}/tunes => JSON has "settings" array
+  if (isSessionMemberTunesUrl(url)) {
+    for (const s of items) {
+      const settingUrl = (s && typeof s.url === "string") ? s.url.trim() : "";
+      if (!settingUrl) continue;
+
+      const tuneName =
+        (s && s.tune && typeof s.tune.name === "string") ? s.tune.name.trim() : "";
+
+      settingItems.push({
+        url: settingUrl,
+        displayName: tuneName
+      });
+    }
+  }
+  // /members/{id}/bookmarks => JSON has "items" array with item.object
+  else {
+    for (const it of items) {
+      const obj = (it && it.object) ? it.object : null;
+      const objType = (obj && typeof obj.objectType === "string") ? obj.objectType : "";
+      if (objType !== "setting") continue;
+
+      const objUrl = (obj && typeof obj.url === "string") ? obj.url.trim() : "";
+      if (!objUrl) continue;
+
+      const displayName =
+        (obj && typeof obj.displayName === "string") ? obj.displayName.trim() : "";
+
+      settingItems.push({
+        url: objUrl,
+        displayName
+      });
+    }
+  }
+
+  if (!settingItems.length) {
+    throw new Error(`Member: ${memberName} - No ${sourceLabel.toLowerCase()} tune settings found.`);
+  }
+
+  // De-dupe by URL (preserves order)
+  const seen = new Set();
+  const uniqSettingItems = [];
+  for (const si of settingItems) {
+    if (seen.has(si.url)) continue;
+    seen.add(si.url);
+    uniqSettingItems.push(si);
+  }
+
+  appendStatus(`Found ${uniqSettingItems.length} tune setting(s).`);
+
+  // Cache per tuneId (and in-flight dedupe)
+  const tuneCache = new Map();        // tuneId -> { tuneData, tuneUrlNoHash, tuneTitle, tuneType, failed }
+  const tuneInFlight = new Map();     // tuneId -> Promise<cachedObj>
+
+  let included = [];
+  let skippedNoChords = 0;
+  let skippedNotFound = 0;
+
+  // Ordered slots to preserve initial fetched order (before optional sorting)
+  const resultsByIndex = new Array(uniqSettingItems.length);
+
+  // Buffer per-index status details (so status stays in the same order as sequential)
+  const logsByIndex = new Array(uniqSettingItems.length);
+
+  async function getTuneCached(tuneId, statusTuneNameForFallback, log) {
+    // Already cached?
+    const cached = tuneCache.get(tuneId);
+    if (cached) return cached;
+
+    // Already fetching this tuneId?
+    const inflight = tuneInFlight.get(tuneId);
+    if (inflight) return await inflight;
+
+    const tuneUrlNoHash = `https://thesession.org/tunes/${encodeURIComponent(tuneId)}`;
+    const tuneJsonUrl = normalizeToJsonUrl(tuneUrlNoHash);
+
+    const p = (async () => {
+      try {
+        const tr = await fetch(tuneJsonUrl, { method: "GET", mode: "cors", cache: "no-store" });
+
+        if (!tr.ok) {
+          const failObj = { failed: true };
+          tuneCache.set(tuneId, failObj);
+          return failObj;
+        }
+
+        const tuneData = await tr.json();
+
+        const tuneTitle =
+          (tuneData && tuneData.name) ? String(tuneData.name) :
+          (statusTuneNameForFallback || `Tune ${tuneId}`);
+
+        const tuneType =
+          (tuneData && tuneData.type) ? normalizeTuneType(String(tuneData.type)) : "";
+
+        const okObj = { tuneData, tuneUrlNoHash, tuneTitle, tuneType, failed: false };
+        tuneCache.set(tuneId, okObj);
+        return okObj;
+
+      } catch (e) {
+        const failObj = { failed: true, error: e };
+        tuneCache.set(tuneId, failObj);
+        return failObj;
+      } finally {
+        tuneInFlight.delete(tuneId);
+      }
+    })();
+
+    tuneInFlight.set(tuneId, p);
+    return await p;
+  }
+
+  async function processOne(index) {
+    const logs = [];
+    const log = (m) => logs.push(String(m));
+
+    const settingItem = uniqSettingItems[index];
+    const settingUrl = settingItem.url;
+    const statusTuneName = settingItem.displayName || "";
+
+    const tuneId = extractTuneIdFromSettingUrl(settingUrl);
+    const settingId = extractSettingIdFromSettingUrl(settingUrl);
+
+    if (!tuneId || !settingId) {
+      skippedNotFound++;
+      log(`Skip: could not parse tune/setting from ${settingUrl}`);
+      logsByIndex[index] = logs;
+      return;
+    }
+
+    const cached = await getTuneCached(tuneId, statusTuneName, log);
+
+    if (!cached || cached.failed) {
+      skippedNotFound++;
+      const msg =
+        (cached && cached.error && cached.error.message)
+          ? cached.error.message
+          : "network/HTTP error";
+      log(`Skip: tune ${tuneId} failed to load (${msg}).`);
+      logsByIndex[index] = logs;
+      return;
+    }
+
+    const picked = findSettingById(cached.tuneData, cached.tuneUrlNoHash, settingId);
+    if (!picked || typeof picked.abc !== "string" || !picked.abc.trim()) {
+      skippedNotFound++;
+      log(`Skip: setting ${settingId} not found in tune ${statusTuneName}`);
+      logsByIndex[index] = logs;
+      return;
+    }
+
+    const rawAbc = picked.abc;
+
+    const bodyNormalized = extractBody(rawAbc)
+      .split(/\r?\n/)
+      .map(line => line.trim())
+      .join("\n")
+      .trimEnd();
+
+    if (onlyChords && !abcBodyHasChords(bodyNormalized)) {
+      skippedNoChords++;
+      logsByIndex[index] = logs;
+      return;
+    }
+
+    resultsByIndex[index] = {
+      setting: picked,
+      bodyNormalized,
+      tuneTitle: cached.tuneTitle,
+      tuneType: cached.tuneType,
+      sourceSettingUrl: settingUrl
+    };
+
+    logsByIndex[index] = logs;
+  }
+
+  // ---- CONCURRENCY LIMIT (2 at a time), while keeping sequential-like ordering ----
+  // NOTE: DO NOT CHANGE THIS VALUE
+  // Making this larger is not friendly to thesession.org database connections
+  const CONCURRENCY = 2;
+  const running = new Set();
+
+  async function runLimited(i) {
+    while (running.size >= CONCURRENCY) {
+      await Promise.race(running);
+    }
+    // IMPORTANT: emit the progress line in strict index order (here, in the for-loop below)
+    const p = processOne(i).finally(() => running.delete(p));
+    running.add(p);
+  }
+
+  // Schedule in order (this keeps "Loading setting i of N" in order)
+  for (let i = 0; i < uniqSettingItems.length; i++) {
+    const statusTuneName = uniqSettingItems[i].displayName || "";
+    appendStatus(`Loading setting ${i + 1} of ${uniqSettingItems.length}: ${statusTuneName}`);
+    await runLimited(i);
+  }
+
+  // Wait for remaining
+  await Promise.all(Array.from(running));
+
+  // Flush any per-index detail logs in order (so status reads like sequential)
+  for (let i = 0; i < logsByIndex.length; i++) {
+    const logs = logsByIndex[i];
+    if (logs && logs.length) {
+      for (const line of logs) appendStatus(line);
+    }
+  }
+
+  // Convert ordered slots -> included array (in original fetched order)
+  for (let i = 0; i < resultsByIndex.length; i++) {
+    if (resultsByIndex[i]) included.push(resultsByIndex[i]);
+  }
+
+  if (!included.length) {
+    if (onlyChords) {
+      throw new Error(`Member: ${memberName} - No ${sourceLabel.toLowerCase()} tune settings contained chords.`);
+    }
+    throw new Error(`Member: ${memberName} - No ${sourceLabel.toLowerCase()} tune settings could be loaded.`);
+  }
+
+  // Baseline for UI re-sort (original fetched order)
+  const includedUnsorted = included.slice();
+
+  // Apply sort for member URLs only
+  included = sortIncludedForMember(includedUnsorted, memberSortMode);
+
+  appendStatus(`Building ABC for ${included.length} ${sourceLabel.toLowerCase()} tune setting(s)…`);
+
+  // Build output
+  const rebuilt = buildMemberABCFromIncluded(included, sourceLabel);
+
+  return {
+    combined: rebuilt.combined,
+    tuneTitle: sourceLabel,
+    tuneType: "",
+    tuneId: "",
+    settingsCount: rebuilt.settingsCount,
+    skippedNoChords,
+    skippedNotFound,
+    bookmarkItemsCount: items.length,
+    bookmarkSettingsCount: uniqSettingItems.length,
+    memberSourceLabel: sourceLabel,
+    memberItemsCount: items.length,
+    memberSettingsCount: uniqSettingItems.length,
+    memberName: memberName || "",
+    memberSortMode,          // for status display
+    includedUnsorted         // enables re-sorting without refetch
+  };
+}
+
+/* ============================================================
+   Member list paging (works for /bookmarks AND /tunes)
+   - Requests page=1,2,3,... with format=json
+   - Stops when:
+     - items array is empty, OR
+     - fetch fails (non-2xx), OR
+     - safety max page reached
+   ============================================================ */
+
+async function fetchAllMemberItemsPaged(listUrl, sourceLabel) {
+  const all = [];
+  const base = new URL(String(listUrl));
+  base.hash = ""; // ignore
+
+  const MAX_PAGES = 250; // safety (prevents infinite loops)
+
+  // If the endpoint tells us total pages, we can stop earlier.
+  let knownTotalPages = null;
+
+  for (let page = 1; page <= MAX_PAGES; page++) {
+    if (knownTotalPages != null && page > knownTotalPages) break;
+
+    const pageUrl = new URL(base.toString());
+    pageUrl.searchParams.set("format", "json");
+    pageUrl.searchParams.set("page", String(page));
+    pageUrl.searchParams.set("perpage", "50");
+
+    appendStatus(`- Fetching ${sourceLabel.toLowerCase()} page ${page}…`);
+
+    let res;
+    try {
+      res = await fetch(pageUrl.toString(), { method: "GET", mode: "cors", cache: "no-store" });
+    } catch (e) {
+      appendStatus(`  Stop: fetch error on page ${page}.`);
+      break;
+    }
+
+    if (!res.ok) {
+      appendStatus(`  Stop: HTTP ${res.status} on page ${page}.`);
+      break;
+    }
+
+    const data = await res.json();
+
+    // Bookmarks JSON shape:
+    //   { items: [...] }
+    // Member tunes JSON shape:
+    //   { settings: [...], pages: N, page: P, total: T }
+    const items = (data && Array.isArray(data.items)) ? data.items : null;
+    const settings = (data && Array.isArray(data.settings)) ? data.settings : null;
+
+    if (knownTotalPages == null && data && typeof data.pages === "number" && isFinite(data.pages)) {
+      knownTotalPages = data.pages;
+    }
+
+    if (items) {
+      if (!items.length) {
+        appendStatus(`  All ${sourceLabel.toLowerCase()} tune settings fetched!`);
+        break;
+      }
+      all.push.apply(all, items);
+      continue;
+    }
+
+    if (settings) {
+      if (!settings.length) {
+        appendStatus(`  All ${sourceLabel.toLowerCase()} tune settings fetched!`);
+        break;
+      }
+      all.push.apply(all, settings);
+      continue;
+    }
+
+    // Unknown/unexpected shape
+    appendStatus(`  Stop: Unexpected JSON format on page ${page}.`);
+    break;
+  }
+
+  return all;
+}
+
+/* ============================================================
+   Existing: fetch all tune settings from /tunes/{id}?format=json
+   + chord filter with correct counts
+   ============================================================ */
+
+async function fetchAllTuneVersionsAsABC(tuneUrl, opts) {
+  opts = opts || {};
+  const onlyChords = !!opts.onlyChords;
+
+  const tuneId = extractTuneIdFromSessionUrl(tuneUrl);
+  if (!tuneId) throw new Error("Error: Could not extract tunes from: " + tuneUrl);
+
+  const apiUrl = `https://thesession.org/tunes/${encodeURIComponent(tuneId)}?format=json`;
+  const res = await fetch(apiUrl, { method: "GET", mode: "cors", cache: "no-store" });
+  if (!res.ok) throw new Error(`Error: The Session fetch failed: ${res.status} ${apiUrl}`);
+
+  const data = await res.json();
+
+  const tuneTitle = (data && data.name) ? String(data.name) : `Tune ${tuneId}`;
+  const tuneType  = (data && data.type) ? normalizeTuneType(String(data.type)) : "";
+
+  const settings = (data && Array.isArray(data.settings)) ? data.settings : [];
+  if (!settings.length) throw new Error("Error: No settings found for tune: " + tuneUrl);
+
+  const included = [];
+  let skippedNoChords = 0;
+
+  for (let i = 0; i < settings.length; i++) {
+    const setting = settings[i] || {};
+    const rawAbc = typeof setting.abc === "string" ? setting.abc : "";
+    if (!rawAbc.trim()) continue;
+
+    // IMPORTANT: body only; do NOT read headers from ABC
+    const bodyNormalized = extractBody(rawAbc)
+      .split(/\r?\n/)
+      .map(line => line.trim())
+      .join("\n")
+      .trimEnd();
+
+    if (onlyChords && !abcBodyHasChords(bodyNormalized)) {
+      skippedNoChords++;
+      continue;
+    }
+
+    included.push({ setting, bodyNormalized });
+  }
+
+  if (!included.length) {
+    if (onlyChords) {
+      if (settings.length > 1) throw new Error(settings.length + " tune settings available but no settings contained chords.");
+      throw new Error(settings.length + " tune setting available but it did not contain chords.");
+    }
+    throw new Error("Error: Settings had no ABC text.");
+  }
+
+  const totalIncluded = included.length;
+  const built = [];
+
+  // IMPORTANT: Headers are NEVER read from the ABC
+  const rLine = tuneType || "reel";
+  const mLine = defaultMForRhythm(rLine) || "4/4";
+  const lLine = "1/8";
+  const qVal  = defaultQForRhythm(rLine);
+
+  for (let j = 0; j < included.length; j++) {
+    const { setting, bodyNormalized } = included[j];
+
+    const xNum = j + 1;
+    const tLine = tuneTitle + (totalIncluded > 1 ? ` (${xNum} of ${totalIncluded})` : "");
+
+    const kRaw = (typeof setting.key === "string") ? setting.key : "";
+    const kLine = normalizeKValue(kRaw) || "Dmaj";
+
+    const memberName =
+      (setting && setting.member && typeof setting.member.name === "string")
+        ? setting.member.name.trim()
+        : "";
+    const zLine = memberName;
+
+    // Use per-setting URL (if provided by the API) for the S: tag.
+    // Fallback to the base tune URL if missing.
+    let sUrl = "";
+    if (setting && typeof setting.url === "string" && setting.url.trim()) {
+      sUrl = setting.url.trim();
+    } else {
+      sUrl = tuneUrl;
+    }
+
+    const header =
+      `X:${xNum}\n` +
+      `T:${tLine}\n` +
+      `R:${rLine}\n` +
+      `M:${mLine}\n` +
+      `L:${lLine}\n` +
+      `Q:${qVal}\n` +
+      `K:${kLine}\n` +
+      `S:${sUrl}\n` +
+      (zLine ? `Z:${zLine}\n` : "");
+
+    built.push(header + bodyNormalized + "\n");
+  }
+
+  return {
+    combined: built.join("\n"),
+    tuneTitle,
+    tuneType,
+    tuneId,
+    settingsCount: totalIncluded,
+    skippedNoChords
+  };
+}
+
+/* ============================================================
+   URL detection + JSON URL
+   ============================================================ */
+
+function isSessionTuneUrl(s) {
+  try {
+    const u = new URL(String(s));
+    return /^\/tunes\/\d+\b/.test(u.pathname);
+  } catch {
+    return /\/tunes\/\d+\b/.test(String(s));
+  }
+}
+
+function isSessionBookmarksUrl(s) {
+  try {
+    const u = new URL(String(s));
+    return /^\/members\/\d+\/bookmarks\/?$/.test(u.pathname);
+  } catch {
+    return /\/members\/\d+\/bookmarks\/?$/.test(String(s));
+  }
+}
+
+function isSessionMemberTunesUrl(s) {
+  try {
+    const u = new URL(String(s));
+    return /^\/members\/\d+\/tunes\/?$/.test(u.pathname);
+  } catch {
+    return /\/members\/\d+\/tunes\/?$/.test(String(s));
+  }
+}
+
+function extractMemberIdFromSessionUrl(s) {
+  try {
+    const u = new URL(String(s));
+    const m = u.pathname.match(/^\/members\/(\d+)\b/i);
+    return m ? m[1] : null;
+  } catch {
+    const m = String(s).match(/\/members\/(\d+)\b/i);
+    return m ? m[1] : null;
+  }
+}
+
+function normalizeToJsonUrl(url) {
+  const u = new URL(String(url));
+  u.searchParams.set("format", "json");
+  return u.toString();
+}
+
+function extractTuneIdFromSettingUrl(s) {
+  try {
+    const u = new URL(String(s));
+    const m = u.pathname.match(/^\/tunes\/(\d+)\b/);
+    return m ? m[1] : null;
+  } catch {
+    const m = String(s).match(/\/tunes\/(\d+)\b/);
+    return m ? m[1] : null;
+  }
+}
+
+function extractSettingIdFromSettingUrl(s) {
+  const m = String(s).match(/#setting-?(\d+)\b/i);
+  return m ? m[1] : null;
+}
+
+// Prefer matching by numeric setting.id, fallback to URL equivalence.
+function findSettingById(tuneData, tuneUrlNoHash, settingIdStr) {
+  const settings = (tuneData && Array.isArray(tuneData.settings)) ? tuneData.settings : [];
+  const targetId = String(settingIdStr || "");
+  if (!targetId) return null;
+
+  for (const s of settings) {
+    if (s && (String(s.id) === targetId)) return s;
+  }
+
+  const targetUrl = `${String(tuneUrlNoHash).replace(/\?.*$/, "")}#setting${targetId}`;
+  for (const s of settings) {
+    if (!s) continue;
+    const sid = (s.id != null) ? String(s.id) : "";
+    if (sid && (`${String(tuneUrlNoHash).replace(/\?.*$/, "")}#setting${sid}` === targetUrl)) return s;
+  }
+
+  return null;
+}
+
+/* ============================================================
+   Chord detection (ABC)
+   ============================================================ */
+
+function abcBodyHasChords(bodyText) {
+  const s = String(bodyText || "");
+  if (s.indexOf('"') === -1) return false;
+
+  const chordRe = /"[^"\r\n]{1,20}"/g;
+  const matches = s.match(chordRe);
+  if (!matches) return false;
+
+  for (const token of matches) {
+    const inner = token.slice(1, -1).trim();
+    if (!inner) continue;
+
+    if (/^(N\.?C\.?|NC)$/i.test(inner)) return true;
+
+    if (/^[A-Ga-g](?:#|b)?(?:m|min|maj|dim|aug|sus|add)?\d{0,2}(?:\([^)]*\))?(?:[\/][A-Ga-g](?:#|b)?)?$/.test(inner)) {
+      return true;
+    }
+
+    if (/^[A-Ga-g](?:#|b)?/.test(inner)) return true;
+  }
+  return false;
+}
+
+/* ============================================================
+   Helpers (ABC parsing + defaults)
+   ============================================================ */
+
+function extractTuneIdFromSessionUrl(s) {
+  try {
+    const u = new URL(String(s));
+    const m = u.pathname.match(/^\/tunes\/(\d+)\b/);
+    return m ? m[1] : null;
+  } catch {
+    const m = String(s).match(/\/tunes\/(\d+)\b/);
+    return m ? m[1] : null;
+  }
+}
+
+function normalizeTuneType(type) {
+  return String(type || "").trim().toLowerCase();
+}
+
+function canonicalRhythm(r) {
+  return String(r || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .replace(/\u2011|\u2012|\u2013|\u2014/g, "-");
+}
+
+function defaultMForRhythm(r) {
+  const rr = canonicalRhythm(r);
+
+  if (rr === "reel" || rr === "hornpipe" || rr === "barndance" || rr === "barn dance" ||
+      rr === "strathspey" || rr === "march") return "4/4";
+  if (rr === "jig") return "6/8";
+  if (rr === "slip jig" || rr === "slipjig") return "9/8";
+  if (rr === "hop jig" || rr === "hopjig") return "9/8";
+  if (rr === "slide") return "12/8";
+  if (rr === "waltz" || rr === "mazurka") return "3/4";
+  if (rr === "polka") return "2/4";
+  if (rr === "three-two" || rr === "three two" || rr === "3-2" || rr === "3/2") return "3/2";
+  return "";
+}
+
+function defaultQForRhythm(r) {
+  const rr = canonicalRhythm(r);
+
+  if (rr === "jig" || rr === "slip jig" || rr === "slipjig" || rr === "slide" || rr === "hop jig" || rr === "hopjig")
+    return "3/8=120";
+  if (rr === "reel") return "1/2=90";
+  if (rr === "hornpipe" || rr === "march"  || rr === "barndance" || rr === "barn dance") return "1/2=80";
+  if (rr === "strathspey") return "1/2=70";
+  if (rr === "polka") return "1/4=120";
+  if (rr === "waltz" || rr === "mazurka") return "1/4=120";
+  if (rr === "three-two" || rr === "three two" || rr === "3-2" || rr === "3/2") return "1/2=80";
+  return "1/2=90";
+}
+
+function extractHeader(abcText, tagLetter) {
+  const re = new RegExp(`^\\s*${tagLetter}\\s*:\\s*(.*)$`, "mi");
+  const m = String(abcText).match(re);
+  return m ? m[1] : "";
+}
+
+function replaceBangSpaceWithNewlinePreservingDecorations(s) {
+  s = String(s || "");
+
+  let out = "";
+  let inDecoration = false; // toggles on '!' ... off on next '!'
+
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+
+    if (ch !== "!") {
+      out += ch;
+      continue;
+    }
+
+    const next = (i + 1 < s.length) ? s[i + 1] : "";
+
+    // If this is "!<whitespace>":
+    // - If we're currently inside a decoration, this '!' is the closing '!' -> KEEP IT.
+    // - If we're NOT inside a decoration, treat it like your delimiter bang -> convert to newline and consume the whitespace.
+    if (next && /\s/.test(next)) {
+      if (inDecoration) {
+        out += "!";
+        inDecoration = false; // close the decoration
+      } else {
+        out += "\n";
+        i++; // consume the whitespace char that followed '!' (matches old /\!\s/ behavior)
+      }
+      continue;
+    }
+
+    // Otherwise, it's a normal decoration delimiter: toggle state and keep '!'
+    out += "!";
+    inDecoration = !inDecoration;
+  }
+
+  return out;
+}
+
+function processTitleForSorting(thisTitle) {
+
+  thisTitle = String(thisTitle || "").trim();
+
+  const prefixMap = {
+    "The ": ", The",
+    "Da ": ", Da",
+    "An ": ", An",
+    "A ": ", A",
+    "Le ": ", Le",
+    "La ": ", La",
+    "Ye ": ", Ye",
+    "Les ": ", Les",
+    "an ": ", an",
+    "Der ": ", Der",
+    "Die ": ", Die",
+    "Das ": ", Das",
+    "Ein ": ", Ein",
+    "Eine ": ", Eine"
+  };
+
+  for (const [prefix, suffix] of Object.entries(prefixMap)) {
+    if (thisTitle.startsWith(prefix)) {
+      return thisTitle.slice(prefix.length) + suffix;
+    }
+  }
+
+  return thisTitle;
+}
+
+
+function extractBody(abcText) {
+  // Pass through everything, including "*:" header/tag lines, as-is.
+  // But convert the delimiter form "!<whitespace>" to newline,
+  // while preserving real ABC decorations like !fine! and !coda!.
+  const body = replaceBangSpaceWithNewlinePreservingDecorations(
+      String(abcText || "").replace(/^\uFEFF/, "")
+    )
+    .split(/\r?\n/)
+    .map(l => l.trim())
+    .join("\n")
+    .trim();
+
+  return body ? (body + "\n") : "\n";
+}
+
+/* ============================================================
+   K: tag normalization (input like "Eminor" -> "Emin")
+   ============================================================ */
+
+function normalizeKValue(k) {
+  k = String(k || "").trim();
+  if (!k) return "";
+
+  const tonicMatch = k.match(/^([A-Ga-g])\s*([#b]?)(.*)$/);
+  if (!tonicMatch) return k;
+
+  const tonic = tonicMatch[1].toUpperCase() + (tonicMatch[2] || "");
+  let rest = (tonicMatch[3] || "").trim().toLowerCase();
+
+  if (!rest) return tonic + "maj";
+  rest = rest.replace(/^[:\s]+/, "");
+
+  const shortToken = rest.match(/^(maj|min|dor|mix|phr|lyd|loc)\b/);
+  if (shortToken) return tonic + shortToken[1];
+
+  const mode = normalizeMode(rest);
+  return tonic + (mode || "maj");
+}
+
+function normalizeMode(mode) {
+  mode = String(mode || "").trim().toLowerCase();
+  if (!mode) return "";
+
+  if (mode === "major" || mode === "maj" || mode === "ionian") return "maj";
+  if (mode === "minor" || mode === "min" || mode === "aeolian") return "min";
+  if (mode === "dorian" || mode === "dor") return "dor";
+  if (mode === "mixolydian" || mode === "mix") return "mix";
+  if (mode === "phrygian" || mode === "phr") return "phr";
+  if (mode === "lydian" || mode === "lyd") return "lyd";
+  if (mode === "locrian" || mode === "loc") return "loc";
+
+  if (/^(maj|min|dor|mix|phr|lyd|loc)$/.test(mode)) return mode;
+
+  if (mode.includes("minor")) return "min";
+  if (mode.includes("major")) return "maj";
+  if (mode.includes("dorian")) return "dor";
+  if (mode.includes("mixolyd")) return "mix";
+  if (mode.includes("phryg")) return "phr";
+  if (mode.includes("lyd")) return "lyd";
+  if (mode.includes("locr")) return "loc";
+
+  return "";
+}
+
+/* ============================================================
+   Member URL normalization
+   - If input is /members/### (or /members/###/anything),
+     normalize to /members/###/bookmarks OR /members/###/tunes
+     depending on wantTunes.
+   ============================================================ */
+
+function normalizeMembersUrl(inputUrl, wantTunes) {
+  const s = String(inputUrl || "").trim();
+  if (!s) return s;
+
+  const targetTail = wantTunes ? "bookmarks" : "tunes";
+
+  try {
+    const u = new URL(s);
+
+    if (!/thesession\.org$/i.test(u.hostname)) return s;
+
+    const path = u.pathname || "";
+    const m = path.match(/^\/members\/(\d+)(?:\/([^?#]*))?\/?$/i);
+    if (!m) return s;
+
+    const memberId = m[1];
+    const trailing = (m[2] || "").toLowerCase();
+
+    if (trailing.startsWith("bookmarks") || trailing.startsWith("tunes")) return u.toString();
+
+    u.pathname = `/members/${memberId}/${targetTail}`;
+    u.hash = "";
+    return u.toString();
+  } catch {
+    const m = s.match(/^(https?:\/\/thesession\.org)?(\/members\/(\d+))(\/[^?#]*)?/i);
+    if (!m) return s;
+
+    const prefix = m[1] || "https://thesession.org";
+    const memberId = m[3];
+
+    if (/\/members\/\d+\/(bookmarks|tunes)\b/i.test(s)) {
+      return s.startsWith("http") ? s : (prefix + s);
+    }
+
+    return `${prefix}/members/${memberId}/${targetTail}`;
+  }
+}
+
+/* ============================================================
+   UI wiring
+   ============================================================ */
+
+let lastResult = null;
+
+let fetchInProgress = false;
+
+function setFetchBusy(busy) {
+  fetchInProgress = !!busy;
+
+  // Disable the fetch button + prevent Enter re-triggering
+  $("btnFetch").disabled = fetchInProgress;
+  $("tuneUrl").disabled = fetchInProgress;
+  $("onlyChords").disabled = fetchInProgress;
+  $("memberUseTunes").disabled = fetchInProgress;
+  $("btnFetch").textContent = fetchInProgress ? "Fetching…" : "Fetch";
+  $("memberSort").disabled = fetchInProgress;
+
+  updateResortEnabled();
+}
+
+function safeFilename(s) {
+  return String(s || "tune")
+    .replace(/[^\w\-]+/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 80) || "tune";
+}
+
+function enableActions(on) {
+  $("btnCopy").disabled = !on;
+  $("btnDownload").disabled = !on;
+  $("btnOpenInTools").disabled = !on;
+}
+
+function capitalizeFirst(str) {
+  if (!str) return str;
+  const [first, ...rest] = str;
+  return first.toUpperCase() + rest.join("");
+}
+
+$("btnTune").addEventListener("click", async () => {
+
+  sendGoogleAnalytics("action", "open_tunes");
+
+  window.open("https://thesession.org/tunes", "_blank","noopener,noreferrer");
+});
+
+$("btnMembers").addEventListener("click", async () => {
+  
+  sendGoogleAnalytics("action", "open_members");
+
+  window.open("https://thesession.org/members", "_blank","noopener,noreferrer");
+});
+
+$("btnABCTools").addEventListener("click", async () => {
+  
+  sendGoogleAnalytics("action", "open_abctools");
+
+  window.open("https://michaeleskin.com/abctools/abctools.html", "_blank","noopener,noreferrer");
+});
+
+$("btnFetch").addEventListener("click", async () => {
+
+  // ---- NON-REENTRANT GUARD ----
+  if (fetchInProgress) {
+    appendStatus("Fetch already in progress…");
+    return;
+  }
+
+  setFetchBusy(true);
+
+  const url = $("tuneUrl").value.trim();
+  const onlyChords = !!onlyChordsEl.checked;
+  const memberUseTunes = !!memberUseTunesEl.checked;
+  const memberSortModeEl = $("memberSort"); 
+  const memberSortMode = memberSortModeEl ? String(memberSortModeEl.value || "orig") : "orig";
+
+  enableActions(false);
+  outEl.value = "";
+  lastResult = null;
+
+  try {
+    const result = await fetchTuneOrBookmarksAsABC(url, { onlyChords, memberUseTunes, memberSortMode });
+    lastResult = result;
+
+    outEl.value =
+      "%\n% Make S: tag hyperlinks in the rendered ABC notation clickable\n%\n%enable_hyperlinks\n%\n\n" +
+      result.combined;
+
+    // Status summary
+    clearStatus("Success!\n");
+    if (!isSessionTuneUrl(url)) {
+      const memberLine = (result && result.memberName) ? result.memberName : "";
+      appendStatus(`Member: ${memberLine}`);  // <-- requested one-line status (no leading "-")
+    }
+
+    if (isSessionTuneUrl(url)) {
+
+      sendGoogleAnalytics("action", "tune_settings");
+
+      appendStatus(`- Title: ${result.tuneTitle}`);
+      appendStatus(`- Type: ${capitalizeFirst((result.tuneType || "(varies / not provided)"))}`);
+    } else {
+
+      const label = (result && result.memberSourceLabel) ? result.memberSourceLabel : "Bookmarks";
+
+      sendGoogleAnalytics("action", "user_"+label.toLowerCase());
+
+      const itemsCount = (result.memberItemsCount != null) ? result.memberItemsCount : result.bookmarkItemsCount;
+      const settingsCount = (result.memberSettingsCount != null) ? result.memberSettingsCount : result.bookmarkSettingsCount;
+
+      // Bin the analytics
+      if ((settingsCount > 0) &&  (settingsCount <=50)){
+        sendGoogleAnalytics("action", "user_s_"+label.toLowerCase());
+      }
+      else if (settingsCount <= 100 ){
+        sendGoogleAnalytics("action", "user_m_"+label.toLowerCase());
+      }
+      else if (settingsCount <= 200 ){
+        sendGoogleAnalytics("action", "user_l_"+label.toLowerCase());
+      }
+      else if (settingsCount <= 500 ){
+        sendGoogleAnalytics("action", "user_xl_"+label.toLowerCase());
+      }
+      else if (settingsCount <= 1000 ){
+        sendGoogleAnalytics("action", "user_xxl_"+label.toLowerCase());
+      }
+      else {
+        sendGoogleAnalytics("action", "user_xxxl_"+label.toLowerCase());
+      }
+
+      if (result && result.memberSortMode) {
+        const sortLabel =
+          result.memberSortMode === "orig" ? "Original chronological order" :
+          result.memberSortMode === "title" ? "Sorted by title (T:)" :
+          result.memberSortMode === "key" ? "Sorted by key (K:)" :
+          result.memberSortMode === "rhythm" ? "Sorted by rhythm (R:)" :
+          "Original chronological order";
+        appendStatus(`- Member results sort: ${sortLabel}`);
+      }
+
+      if (label === "Settings") {
+        if (itemsCount != null) appendStatus(`- Submitted settings fetched: ${itemsCount}`);
+        if (settingsCount != null) appendStatus(`- ${label} found: ${settingsCount}`);
+      } else {
+        if (itemsCount != null) appendStatus(`- Bookmarks items fetched: ${itemsCount}`);
+        if (settingsCount != null) appendStatus(`- ${label} tune settings found: ${settingsCount}`);
+      }
+    }
+
+    if (onlyChords) appendStatus(`- Skipped (no chords): ${result.skippedNoChords || 0}`);
+    if (result.skippedNotFound != null && result.skippedNotFound > 0) {
+      appendStatus(`- Skipped (missing tune setting): ${result.skippedNotFound}`);
+    }
+
+    appendStatus(`- Final # of settings added to results: ${result.settingsCount}`);
+
+    appendStatus("");
+
+    // Test URL length and enable/disable the open in ABC Transcriptions Tool button as required
+    if (testOpenInAbcTools(outEl.value)) {
+      enableActions(true);
+      appendStatus("You can now copy or download the ABC tune settings or open them in the ABC Transcription Tools.");
+    } else {
+      enableActions(true);
+      $("btnOpenInTools").disabled = true;
+      appendStatus("You can now copy or download the ABC tune settings.");
+    }
+
+  } catch (e) {
+    console.error(e);
+    clearStatus(e && e.message ? e.message : String(e));
+  } finally {
+    setFetchBusy(false);
+  }
+});
+
+$("btnResort").addEventListener("click", () => {
+  if (!lastResult || !Array.isArray(lastResult.includedUnsorted) || !lastResult.includedUnsorted.length) {
+    return;
+  }
+
+  const mode = String(($("memberSort") && $("memberSort").value) || "orig");
+
+  sendGoogleAnalytics("action", "resort_"+mode);
+
+  const sourceLabel = lastResult.memberSourceLabel || "Bookmarks";
+
+  const sorted = sortIncludedForMember(lastResult.includedUnsorted, mode);
+  const rebuilt = buildMemberABCFromIncluded(sorted, sourceLabel);
+
+  // Update lastResult + textarea
+  lastResult = {
+    ...lastResult,
+    combined: rebuilt.combined,
+    settingsCount: rebuilt.settingsCount,
+    memberSortMode: mode
+  };
+
+  outEl.value =
+    "%\n% Make S: tag hyperlinks in the rendered ABC notation clickable\n%\n%enable_hyperlinks\n%\n\n" +
+    lastResult.combined;
+
+  // Status summary
+  clearStatus("Re-sorted!\n");
+  if (lastResult.memberName) appendStatus(`Member: ${lastResult.memberName}`);
+
+  const sortLabel =
+    mode === "orig" ? "Original chronological order" :
+    mode === "title" ? "Sorted by title (T:)" :
+    mode === "key" ? "Sorted by key (K:)" :
+    mode === "rhythm" ? "Sorted by rhythm (R:)" :
+    "Original chronological order";
+
+  appendStatus(`- Member results sort: ${sortLabel}`);
+  appendStatus(`- Final # of settings added to results: ${lastResult.settingsCount}`);
+  appendStatus("");
+
+  // Re-check Open-in-tools length and enable/disable accordingly
+  if (testOpenInAbcTools(outEl.value)) {
+    enableActions(true);
+  } else {
+    enableActions(true);
+    $("btnOpenInTools").disabled = true;
+  }
+
+  appendStatus("Done.");
+
+  updateResortEnabled();
+});
+
+
+$("btnCopy").addEventListener("click", async () => {
+
+  sendGoogleAnalytics("action", "copy");
+
+  try {
+    await navigator.clipboard.writeText(outEl.value);
+    appendStatus("ABC tune settings copied to the clipboard.");
+  } catch (e) {
+    appendStatus("ABC tune settings copy failed (browser permission). You can still select-all and copy manually.");
+  }
+});
+
+$("btnDownload").addEventListener("click", () => {
+
+  sendGoogleAnalytics("action", "download");
+
+  if (!lastResult) return;
+
+  const originalUrl = $("tuneUrl").value.trim();
+  const memberId = extractMemberIdFromSessionUrl(originalUrl);
+
+  let baseName;
+
+  // Tune URL case
+  if (isSessionTuneUrl(originalUrl)) {
+    baseName =
+      (lastResult.tuneTitle && lastResult.tuneTitle !== "Bookmarks" && lastResult.tuneTitle !== "Settings")
+        ? lastResult.tuneTitle
+        : "tune";
+  }
+  // Member URL case
+  else if (memberId) {
+    const label =
+      lastResult.memberSourceLabel === "Settings"
+        ? "settings"
+        : "bookmarks";
+
+    baseName = `${label}_member_${memberId}`;
+  }
+  else {
+    baseName = "thesession";
+  }
+
+  const blob = new Blob([outEl.value], { type: "text/plain;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+
+  var fname =  `${safeFilename(baseName)}` +
+    (lastResult.tuneId ? `_${lastResult.tuneId}` : "") +
+    `.abc`;
+
+  a.download = fname;
+
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  setTimeout(function(){
+    URL.revokeObjectURL(a.href);
+  }, 1000);
+
+  appendStatus("ABC tune settings saved to "+fname);
+
+});
+
+$("btnOpenInTools").addEventListener("click", () => {
+
+  sendGoogleAnalytics("action", "abctools_shareurl");
+
+  try {
+    if (!lastResult) return;
+    openInAbcTools(outEl.value);
+    appendStatus("ABC tune settings opened in the ABC Transcription Tools.");
+  } catch (e) {
+    console.error(e);
+    appendStatus("Open tune settings in ABC Transcription Tools failed: " + (e && e.message ? e.message : String(e)));
+  }
+});
+
+/* ============================================================
+   Base64/Base64URL helpers for Deflate mode
+   ============================================================ */
+
+function def_bytesToBase64(bytes) {
+  var binary = "";
+  var len = bytes.length;
+  for (var i = 0; i < len; i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary);
+}
+
+function def_bytesToBase64URL(bytes) {
+  return def_bytesToBase64(bytes)
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+}
+
+/* ============================================================
+   Open the tunes in the ABC Transcription Tools
+   ============================================================ */
+
+function testOpenInAbcTools(theABC) {
+  var m = String(theABC).match(/^\s*T\s*:\s*(.+)\s*$/m);
+  var tuneTitle = (m && m[1]) ? m[1].trim() : "tune";
+  tuneTitle = encodeURIComponent(tuneTitle.replace(/\s+/g, "_"));
+
+  var encoder = new TextEncoder();
+  var utf8Bytes = encoder.encode(theABC);
+  var deflated = pako.deflate(utf8Bytes, { level: 6 });
+  var abc_compressed = def_bytesToBase64URL(deflated);
+
+  var url =
+    "https://michaeleskin.com/abctools/abctools.html?def=" + abc_compressed +
+    "&format=noten&ssp=0" +
+    "&name=" + tuneTitle +
+    "&editor=1";
+
+  if (url.length < 8100) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function openInAbcTools(theABC) {
+  var m = String(theABC).match(/^\s*T\s*:\s*(.+)\s*$/m);
+  var tuneTitle = (m && m[1]) ? m[1].trim() : "tune";
+  tuneTitle = encodeURIComponent(tuneTitle.replace(/\s+/g, "_"));
+
+  var encoder = new TextEncoder();
+  var utf8Bytes = encoder.encode(theABC);
+  var deflated = pako.deflate(utf8Bytes, { level: 6 });
+  var abc_compressed = def_bytesToBase64URL(deflated);
+
+  var url =
+    "https://michaeleskin.com/abctools/abctools.html?def=" + abc_compressed +
+    "&format=noten&ssp=0" +
+    "&name=" + tuneTitle +
+    "&editor=1";
+
+  if (url.length < 8100) {
+    window.open(url, "_blank", "noopener,noreferrer");
+  } else {
+    DayPilot.Modal.alert(
+      '<p style="text-align:center;font-family:helvetica;font-size:12pt;">The Share URL is too long to open in ABC Transcription Tools.<br/><br/>Instead, copy and paste the ABC or save it to an ABC file and load it from the tools.</p>',
+      { theme: "modal_flat", top: 230, scrollWithPage: false }
+    );
+  }
+}
+
+tuneUrlInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    $("btnFetch").click();
+  }
+});
+
+// Instructions modal
+$("btnHelp").addEventListener("click", () => {
+
+  sendGoogleAnalytics("action", "instructions");
+
+  // scrollable inner content
+  const content =
+    '  <div style="margin-bottom:16px;">' +
+    '    You can open thesession.org tune or members search pages in a new browser tab by clicking the <b>Open Tune Search Page</b> or <b>Open Members Search Page</b> buttons.' +
+    '  </div>' +
+    '  <div style="margin-bottom:16px;">' +
+    '    You can launch the ABC Transcription Tools in a new browser tab by clicking the <b>ABC Transcription Tools</b> button.' +
+    '  </div>' +
+    '  <div style="margin-bottom:16px;">' +
+    '    Enter either a thesession.org <b>tune URL</b> or a <b>member URL</b> into the <b>thesession.org URL</b> field, then click <b>Fetch</b>.' +
+    '  </div>' +
+    '  <div style="margin-bottom:16px;">' +
+    '    You can copy the fetched ABC tune settings to the clipboard, save them to a .ABC file, or if the generated ShareURL is less than 8100 characters, open the tune settings directly in the <a href="https://michaeleskin.com/abctools/abctools.html" target="_blank" rel="noopener noreferrer">ABC Transcription Tools.</a>' +
+    '  </div>' +
+    '  <div style="margin-bottom:16px;">' +
+    '    For <b>member URLs</b>, the tool can fetch either:' +
+    '    <ul style="margin:10px 0 0 10px;">' +
+    '      <li>Member submitted tune settings (default)</li>' +
+    '      <li>Bookmarked tune settings</li>' +
+    '    </ul>' +
+    '  </div>' +
+
+    '  <div style="margin-bottom:16px;">' +
+    '    <div style="font-weight:700; margin-bottom:6px;">Examples (click to fill the thesession.org URL field):</div>' +
+    '    <div style="margin-bottom:6px;">' +
+    '      <a href="https://thesession.org/tunes/1" class="exampleLink" data-fill-url="https://thesession.org/tunes/1">https://thesession.org/tunes/1</a>' +
+    '    </div>' +
+    '    <div style="margin-bottom:6px;">' +
+    '      <a href="https://thesession.org/members/12799" class="exampleLink" data-fill-url="https://thesession.org/members/12799">https://thesession.org/members/12799</a>' +
+    '      <span style="opacity:0.8;"></span>' +
+    '    </div>' +
+    '  </div>' +
+
+    '  <div style="margin-bottom:16px;">' +
+    '    <div style="font-weight:700; margin-bottom:6px;">Member URL source option</div>' +
+    '    <div>' +
+    '      If <b>“For member URLs, get bookmarked tune settings instead of submitted tune settings”</b> is checked, ' +
+    '      the tool will fetch the member\'s bookmarked tune settings instead of submitted tune settings.' +
+    '    </div>' +
+    '  </div>' +
+
+    '  <div style="margin-bottom:16px;">' +
+    '    <div style="font-weight:700; margin-bottom:6px;">Guitar chords filter</div>' +
+    '    <div>' +
+    '      If <b>“Only include tune settings that have chords”</b> is checked, the tool will ' +
+    '      include only settings that contain guitar-style chord annotations ' +
+    '      (for example, <code>"Em"</code>, <code>"D"</code>, <code>"G/B"</code>, etc.) in the ABC.' +
+    '    </div>' +
+    '    <div style="opacity:0.8; margin-top:6px;">' +
+    '      This is useful if you want to quickly collect settings with chords ' +
+    '      and skip melody-only versions.' +
+    '    </div>' +
+    '  </div>' +
+
+    '  <div style="margin-bottom:16px;">' +
+    '    <div style="font-weight:700; margin-bottom:6px;">Sorting member tune settings results</div>' +
+    '    <div>' +
+    '      For <b>member URLs</b>, you can choose how the fetched member tune settings are sorted using the <b>Sort member tune settings results</b> options.' +
+    '    </div>' +
+    '    <div style="margin-top:10px;">' +
+    '      <ul style="margin:10px 0 0 10px;">' +
+    '        <li><b>Original chronological order</b>: Newest settings or bookmarks first (the default order returned by thesession.org)</li>' +
+    '        <li><b>Sorted by title (T:)</b>: Sorted alphabetically by tune title, using the title sorting rules described below</li>' +
+    '        <li><b>Sorted by key (K:)</b>: Grouped by key in alphabetical key order, and within each key, sorted by title using the same title sorting rules</li>' +
+    '        <li><b>Sorted by tune rhythm (R:)</b>: Grouped by rhythm (reel, jig, etc.), and within each rhythm, sorted by title using the same title sorting rules</li>' +
+    '      </ul>' +
+    '    </div>' +
+    '  </div>' +
+    '  <div style="margin-bottom:16px;">' +
+    '     <div style="margin-top:10px;">' +
+    '       After results have been fetched, you can change the sort option and click the <b>Re-sort</b> button to re-order the existing results instantly without re-fetching the data again from thesession.org.' +
+    '     </div>' +
+    '  </div>' +
+    '  <div style="margin-bottom:16px;">' +
+    '    <div style="font-weight:700; margin-bottom:6px;">Title sorting rules</div>' +
+    '    <div>' +
+    '      When sorting by title (and when sub-sorting titles within a key or rhythm), common leading articles are ignored by moving them to the end.' +
+    '      For example:' +
+    '      <ul style="margin:10px 0 0 10px;">' +
+    '        <li><b>The</b> Silver Spear → Silver Spear, The</li>' +
+    '        <li><b>An</b> Bhean Udaí Thall → Bhean Udaí Thall, An</li>' +
+    '        <li><b>A</b> Fig for a Kiss → Fig for a Kiss, A</li>' +
+    '      </ul>' +
+    '      The tune title shown in the ABC (<code>T:</code>) is <b>not changed</b>; this only affects sorting.' +
+    '    </div>' +
+    '  </div>' +
+
+    '  <div style="margin-bottom:16px;">' +
+    '    <div style="font-weight:700; margin-bottom:6px;">Rhythm sort order</div>' +
+    '    <div>' +
+    '      When sorting by rhythm, rhythms are ordered using a standard session-friendly list. ' +
+    '      Items with unknown or uncommon rhythms are placed after the known types.' +
+    '    </div>' +
+    '    <div style="margin-top:10px;">' +
+    '      <div style="opacity:0.95;">Rhythm sorting order:</div>' +
+    '      <div style="margin-top:6px; padding-left:10px; line-height:1.8;">' +
+    '        Reel, Hornpipe, Barndance, Strathspey, March, Jig, Slip Jig, Hop Jig, Slide, Polka, Waltz, Mazurka, Three-Two' +
+    '      </div>' +
+    '    </div>' +
+    '  </div>' +
+
+    '  <hr style="border:0; border-top:1px solid #ccc; margin:18px 0;">' +
+
+    '  <div style="text-align:center; font-size:15pt; font-weight:700; margin-bottom:10px;">Tip Jars</div>' +
+    '  <div style="text-align:center; margin-bottom:12px;">' +
+    '    If you find this tool useful, please consider buying me a beer<br/>' +
+    '    by tossing a few bucks into one of my virtual tip jars:' +
+    '  </div>' +
+
+    '  <div style="text-align:center; margin-bottom:10px;">' +
+    '    <div style="font-weight:700;">PayPal</div>' +
+    '    <div><a href="https://paypal.me/MichaelEskin" target="_blank" rel="noopener noreferrer">https://paypal.me/MichaelEskin</a></div>' +
+    '  </div>' +
+
+    '  <div style="text-align:center; margin-bottom:16px;">' +
+    '    <div style="font-weight:700;">Venmo</div>' +
+    '    <div>@MichaelEskin</div>' +
+    '  </div>' +
+
+    '  <hr style="border:0; border-top:1px solid #ccc; margin:18px 0;">' +
+
+    '  <div style="margin-bottom:6px; text-align:center;"><b>The source code for this tool is available on GitHub:</b></div>' +
+    '  <div style="margin-bottom:6px; text-align:center;">' +
+    '    <a href="https://github.com/seisiuneer/abctools/blob/main/tools/mustard_scraper.html" target="_blank" rel="noopener noreferrer">' +
+    '      mustard_scraper.html' +
+    '    </a>' +
+    '  </div>';
+
+  const html =
+    '<div style="font-family:Helvetica, Arial, sans-serif; font-size:12.5pt; line-height:1.6;">' +
+    '  <div style="text-align:center; font-size:16pt; font-weight:700; margin-bottom:14px;">Instructions</div>' +
+
+    // scroll container (keeps dialog from getting super tall)
+    '<div style="' +
+      'width:100%;' +
+      'max-height:min(60vh, 520px);' +
+      'overflow:auto;' +
+      '-webkit-overflow-scrolling:touch;' +
+      'padding:0 12px 2px 12px;' +
+      'padding-left:30px;' +
+      'box-sizing:border-box;' +
+    '">' +
+    content +
+    '  </div>' +
+    '</div>';
+
+  DayPilot.Modal.alert(html, {
+    theme: "modal_flat",
+    top: 50,
+    scrollWithPage: false
+  });
+});
+
+function resetUIToDefaults() {
+  // Clear app state
+  lastResult = null;
+  fetchInProgress = false;
+
+  // Reset controls (set these defaults to whatever you want)
+  $("tuneUrl").value = "https://thesession.org/tunes/1";
+  $("onlyChords").checked = false;
+  $("memberUseTunes").checked = false;
+  $("memberSort").value = "orig";
+
+  // Clear results
+  outEl.value = "";
+  clearStatus("Ready.");
+
+  // Disable actions
+  enableActions(false);
+  $("btnOpenInTools").disabled = true;
+
+  // Button text and enabled state
+  $("btnFetch").textContent = "Fetch";
+  $("btnFetch").disabled = false;
+  $("tuneUrl").disabled = false;
+  $("onlyChords").disabled = false;
+  $("memberUseTunes").disabled = false;
+  $("memberSort").disabled = false;
+
+  // If you added the Re-sort button earlier
+  if ($("btnResort")) $("btnResort").disabled = true;
+}
+
+// Run on normal page load
+document.addEventListener("DOMContentLoaded", () => {
+  resetUIToDefaults();
+});
+
+// Run when coming from bfcache (common in Firefox)
+window.addEventListener("pageshow", (e) => {
+  if (e.persisted) {
+    resetUIToDefaults();
+  }
+});
+
+//
+// Send gtag analytics
+//
+function sendGoogleAnalytics(theCategory, theAction, theLabel) {
+
+  //console.log("sendGoogleAnalytics category: "+theCategory+" action: "+theAction+" label: "+theLabel);
+
+  // Don't send analytics if offline
+  if (!navigator.onLine) {
+    //console.log("sendGoogleAnalytics - Offline: Not sending info ")
+    return;
+  }
+
+  // Don't send analytics on iOS Safari
+  if (gIsIOS) {
+    return;
+  }
+
+  // Don't send analytics if local storage not available
+  if (!gLocalStorageAvailable) {
+    return;
+  }
+
+  if (typeof gtag !== "undefined") {
+
+    if ((gtag) && (gtag instanceof Function)) {
+
+      if (!theLabel) {
+        theLabel = "none";
+      }
+
+      gtag('event', 'must_' + theCategory + "_" + theAction, {
+          event_category: theCategory,
+          event_action: theAction,
+          event_label: theLabel
+        });
+    }
+  }
+}
+
+</script>
+
+<script type="text/javascript" src="pako.min.js?v=11"></script>
+<script type="text/javascript" src="daypilot-modal.min-3.10.1.js?v=11"></script>
+
+</body>
+</html>
