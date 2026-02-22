@@ -25,7 +25,7 @@
 const cacheName = 'abctoolscache-3177';
 
 const CACHE_PREFIX = 'abctools';
-const CACHE_VERSION = 'lite-3177-1';
+const CACHE_VERSION = 'lite-3177-2';
 const CACHE_NAME_LITE = `${CACHE_PREFIX}${CACHE_VERSION}`;
 
 const contentToCache = [
@@ -82,20 +82,10 @@ const contentToCache = [
     'fonts/FiraMono-Regular.woff2',
     'fonts/FiraMono-Medium.woff2',
     'fonts/FiraMono-Bold.woff2',
-    'img/zoomin.png',
-    'img/zoomout.png',
-    'img/helpbutton.png',
-    'img/playbutton.png',
-    'img/pdfbutton.png',
-    'img/jumpbutton.png',
-    'img/qerewindbutton.png',
-    'img/qetempobutton.png',
-    'img/michael2.jpg',
-    'img/michael240.jpg',
-    'img/settings.png',
+    'img/michael150.webp',
+    'img/michael240.webp',
     'img/pureocarinas.png',
     'img/abcjs_logo.png',
-    'img/external_share.png',
     'img/abclite-icon-192x192.png',
     'img/abclite-icon-512x512.png',
     'img/abclite-icon-maskable-192x192.png',
