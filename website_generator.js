@@ -1,15 +1,22 @@
 //
 // website_generator.js
 //
-// ABC Tools Player Website Generator
+// ABC Tools Lite Player Website Generator
 //
 // Opens a ABC tune collection file and creates a website that can play each of the tunes
 //
 // Michael Eskin
 // https://michaeleskin.com
 //
+// Optimized for ABC Tools Lite by Anton Zille
+// https://abc.tunebook.app/
+//
 // Lite: Customized
-// Replaced scripted notation centering with flexible layout
+// Replaced LZString ABC encoding with Deflate encoding (pako) for Full-Featured Website
+// Replaced LZString library with Deflate encoding (native) for Full-Featured Website
+// Rebalanced MIDI chords/bass and MIDI instrument volumes for Full-Featured Website
+// Added custom MIDI instrument option for Full-Featured Website: ClaviZouki
+// Replaced notation centering scripts with flexible layout
 // Arrow navigation loops through to first / last tune
 // Minor style tweaks
 
@@ -76,7 +83,7 @@ function LoadWebsiteSettings(){
             gWebsiteBassVolume = val;
         }
         else{
-            gWebsiteBassVolume = 64;
+            gWebsiteBassVolume = 55;
         }
 
         val = localStorage.WebsiteChordVolume;
@@ -84,7 +91,7 @@ function LoadWebsiteSettings(){
             gWebsiteChordVolume = val;
         }
         else{
-            gWebsiteChordVolume = 64;
+            gWebsiteChordVolume = 55;
         }
 
         val = localStorage.WebsiteMelodyInstrument;
@@ -713,18 +720,18 @@ function generateAndSaveWebsiteFull() {
 
     var theJSON;
 
-    if (gWebsiteTabSelector){
+    // if (gWebsiteTabSelector){
 
-        theJSON = BatchJSONExportForWebGenerator(theABC,false);
+    //     theJSON = BatchJSONExportForWebGenerator(theABC,false);
 
-    }
-    else{
+    // }
+    // else{
 
-        // Allow Deflate if no tab selector
-        theJSON = BatchJSONExportForWebGenerator(theABC,true);
+    // Lite: Customized
+    // Allow Deflate for all export websites
+    theJSON = BatchJSONExportForWebGenerator(theABC,true);
 
-    }
-
+    // }
 
     hideTheSpinner();
 
@@ -996,12 +1003,12 @@ function generateAndSaveWebsiteFull() {
         theOutput +='            <button id="fullscreenbutton">Full Screen</button>\n';
     }
 
-    var gotTitle = false;
+    let gotTitle = false;
     if (gWebsiteTitle && (gWebsiteTitle != "")){
         theOutput +="            <h1 id=\"title\">"+gWebsiteTitle+"</h1>\n";
         gotTitle = true;
     }
-    var gotSubTitle = false;
+    let gotSubTitle = false;
     if (gWebsiteSubtitle && (gWebsiteSubtitle != "")){
         theOutput +="            <h2 id=\"subtitle\">"+gWebsiteSubtitle+"</h2>\n";
         gotSubTitle = true;
@@ -1038,7 +1045,7 @@ function generateAndSaveWebsiteFull() {
         }
         theOutput +='               <option value="-1">--Select an instrument--</option>\n';
 
-        var instrumentName = getInstrumentNameForWebSelector(gWebsiteMelodyInstrumentInject);
+        let instrumentName = getInstrumentNameForWebSelector(gWebsiteMelodyInstrumentInject);
 
         theOutput +='               <option value="0">'+instrumentName+' - Notation</option>\n';
         theOutput +='               <option value="1">'+instrumentName+' - Note Names</option>\n';
@@ -1052,6 +1059,7 @@ function generateAndSaveWebsiteFull() {
         theOutput +='               <option value="9">Accordion</option>\n';
         theOutput +='               <option value="10">Concertina</option>\n';
         theOutput +='               <option value="11">Hammered Dulcimer</option>\n';
+        theOutput +='               <option value="12">ClaviZouki</option>\n';
         theOutput +='            </select>\n'
     }
 
@@ -1062,7 +1070,7 @@ function generateAndSaveWebsiteFull() {
     theOutput +='            <iframe id="tuneFrame" src=""></iframe>\n';        
     theOutput +="        </main>\n";
     theOutput +="        <footer>\n";
-    var gotFooter = false;
+    let gotFooter = false;
     if (gWebsiteFooter1 && (gWebsiteFooter1 != "")){
         theOutput +='        <p id="footer1">'+gWebsiteFooter1+'</p>\n';
         gotFooter = true;
@@ -1087,29 +1095,76 @@ function generateAndSaveWebsiteFull() {
     theOutput +="\n";
     theOutput +="\n";
     theOutput +="    // Set this to false to disable state persistence\n";
-    theOutput +="    var gAllowStatePersistence = true;\n";
+    theOutput +="    let gAllowStatePersistence = true;\n";
     theOutput +="\n";
     theOutput +="    // Set this to false to hide previous and next tune buttons\n";
-    theOutput +="    var gAllowPreviousNextButtons = true;\n";
-    theOutput +="\n";     
-    if (gWebsiteTabSelector){
-        // Add LZW library
-        theOutput +='    var LZString=function(){function o(o,r){if(!t[o]){t[o]={};for(var n=0;n<o.length;n++)t[o][o.charAt(n)]=n}return t[o][r]}var r=String.fromCharCode,n="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",e="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$",t={},i={compressToBase64:function(o){if(null==o)return"";var r=i._compress(o,6,function(o){return n.charAt(o)});switch(r.length%4){default:case 0:return r;case 1:return r+"===";case 2:return r+"==";case 3:return r+"="}},decompressFromBase64:function(r){return null==r?"":""==r?null:i._decompress(r.length,32,function(e){return o(n,r.charAt(e))})},compressToUTF16:function(o){return null==o?"":i._compress(o,15,function(o){return r(o+32)})+" "},decompressFromUTF16:function(o){return null==o?"":""==o?null:i._decompress(o.length,16384,function(r){return o.charCodeAt(r)-32})},compressToUint8Array:function(o){for(var r=i.compress(o),n=new Uint8Array(2*r.length),e=0,t=r.length;t>e;e++){var s=r.charCodeAt(e);n[2*e]=s>>>8,n[2*e+1]=s%256}return n},decompressFromUint8Array:function(o){if(null===o||void 0===o)return i.decompress(o);for(var n=new Array(o.length/2),e=0,t=n.length;t>e;e++)n[e]=256*o[2*e]+o[2*e+1];var s=[];return n.forEach(function(o){s.push(r(o))}),i.decompress(s.join(""))},compressToEncodedURIComponent:function(o){return null==o?"":i._compress(o,6,function(o){return e.charAt(o)})},decompressFromEncodedURIComponent:function(r){return null==r?"":""==r?null:(r=r.replace(/ /g,"+"),i._decompress(r.length,32,function(n){return o(e,r.charAt(n))}))},compress:function(o){return i._compress(o,16,function(o){return r(o)})},_compress:function(o,r,n){if(null==o)return"";var e,t,i,s={},p={},u="",c="",a="",l=2,f=3,h=2,d=[],m=0,v=0;for(i=0;i<o.length;i+=1)if(u=o.charAt(i),Object.prototype.hasOwnProperty.call(s,u)||(s[u]=f++,p[u]=!0),c=a+u,Object.prototype.hasOwnProperty.call(s,c))a=c;else{if(Object.prototype.hasOwnProperty.call(p,a)){if(a.charCodeAt(0)<256){for(e=0;h>e;e++)m<<=1,v==r-1?(v=0,d.push(n(m)),m=0):v++;for(t=a.charCodeAt(0),e=0;8>e;e++)m=m<<1|1&t,v==r-1?(v=0,d.push(n(m)),m=0):v++,t>>=1}else{for(t=1,e=0;h>e;e++)m=m<<1|t,v==r-1?(v=0,d.push(n(m)),m=0):v++,t=0;for(t=a.charCodeAt(0),e=0;16>e;e++)m=m<<1|1&t,v==r-1?(v=0,d.push(n(m)),m=0):v++,t>>=1}l--,0==l&&(l=Math.pow(2,h),h++),delete p[a]}else for(t=s[a],e=0;h>e;e++)m=m<<1|1&t,v==r-1?(v=0,d.push(n(m)),m=0):v++,t>>=1;l--,0==l&&(l=Math.pow(2,h),h++),s[c]=f++,a=String(u)}if(""!==a){if(Object.prototype.hasOwnProperty.call(p,a)){if(a.charCodeAt(0)<256){for(e=0;h>e;e++)m<<=1,v==r-1?(v=0,d.push(n(m)),m=0):v++;for(t=a.charCodeAt(0),e=0;8>e;e++)m=m<<1|1&t,v==r-1?(v=0,d.push(n(m)),m=0):v++,t>>=1}else{for(t=1,e=0;h>e;e++)m=m<<1|t,v==r-1?(v=0,d.push(n(m)),m=0):v++,t=0;for(t=a.charCodeAt(0),e=0;16>e;e++)m=m<<1|1&t,v==r-1?(v=0,d.push(n(m)),m=0):v++,t>>=1}l--,0==l&&(l=Math.pow(2,h),h++),delete p[a]}else for(t=s[a],e=0;h>e;e++)m=m<<1|1&t,v==r-1?(v=0,d.push(n(m)),m=0):v++,t>>=1;l--,0==l&&(l=Math.pow(2,h),h++)}for(t=2,e=0;h>e;e++)m=m<<1|1&t,v==r-1?(v=0,d.push(n(m)),m=0):v++,t>>=1;for(;;){if(m<<=1,v==r-1){d.push(n(m));break}v++}return d.join("")},decompress:function(o){return null==o?"":""==o?null:i._decompress(o.length,32768,function(r){return o.charCodeAt(r)})},_decompress:function(o,n,e){var t,i,s,p,u,c,a,l,f=[],h=4,d=4,m=3,v="",w=[],A={val:e(0),position:n,index:1};for(i=0;3>i;i+=1)f[i]=i;for(p=0,c=Math.pow(2,2),a=1;a!=c;)u=A.val&A.position,A.position>>=1,0==A.position&&(A.position=n,A.val=e(A.index++)),p|=(u>0?1:0)*a,a<<=1;switch(t=p){case 0:for(p=0,c=Math.pow(2,8),a=1;a!=c;)u=A.val&A.position,A.position>>=1,0==A.position&&(A.position=n,A.val=e(A.index++)),p|=(u>0?1:0)*a,a<<=1;l=r(p);break;case 1:for(p=0,c=Math.pow(2,16),a=1;a!=c;)u=A.val&A.position,A.position>>=1,0==A.position&&(A.position=n,A.val=e(A.index++)),p|=(u>0?1:0)*a,a<<=1;l=r(p);break;case 2:return""}for(f[3]=l,s=l,w.push(l);;){if(A.index>o)return"";for(p=0,c=Math.pow(2,m),a=1;a!=c;)u=A.val&A.position,A.position>>=1,0==A.position&&(A.position=n,A.val=e(A.index++)),p|=(u>0?1:0)*a,a<<=1;switch(l=p){case 0:for(p=0,c=Math.pow(2,8),a=1;a!=c;)u=A.val&A.position,A.position>>=1,0==A.position&&(A.position=n,A.val=e(A.index++)),p|=(u>0?1:0)*a,a<<=1;f[d++]=r(p),l=d-1,h--;break;case 1:for(p=0,c=Math.pow(2,16),a=1;a!=c;)u=A.val&A.position,A.position>>=1,0==A.position&&(A.position=n,A.val=e(A.index++)),p|=(u>0?1:0)*a,a<<=1;f[d++]=r(p),l=d-1,h--;break;case 2:return w.join("")}if(0==h&&(h=Math.pow(2,m),m++),f[l])v=f[l];else{if(l!==d)return null;v=s+s.charAt(0)}w.push(v),f[d++]=s+v.charAt(0),h--,s=v,0==h&&(h=Math.pow(2,m),m++)}}};return i}();"function"==typeof define&&define.amd?define(function(){return LZString}):"undefined"!=typeof module&&null!=module&&(module.exports=LZString);\n';
+    theOutput +="    let gAllowPreviousNextButtons = true;\n";
+    theOutput +="\n";
 
+    // Lite: Customized
+    // Remove LZString library
+    // Add deflate compression / decompression
+    // Add helper functions for ULR-safe encoding
+    // Add custom MIDI instrument option: ClaviZouki
+    // Rebalance MIDI chord/bass & instrument volumes
+    if (gWebsiteTabSelector){
+
+        theOutput +="    // Compress ABC text using browser-native deflate algorithm\n";
+        theOutput +="    // Make the encoded text URL-safe using base64 helpers\n";
+        theOutput +="    async function deflateCompress(abcRaw) {\n";
+        theOutput +="        const data = new TextEncoder().encode(abcRaw);\n";
+        theOutput +="        const stream = new Blob([data]).stream();\n";
+        theOutput +="        const compressedStream = stream.pipeThrough(new CompressionStream('deflate'));\n";
+        theOutput +="        const compressedBuffer = await new Response(compressedStream).arrayBuffer();\n";
+        theOutput +="        return arrayBufferToBase64Url(compressedBuffer);\n";
+        theOutput +="    }\n";
+        theOutput +="\n";
+        theOutput +="    // Decompress URL-safe ABC text encoded by deflate algorithm\n";
+        theOutput +="    async function deflateDecompress(abcEncoded) {\n";
+        theOutput +="        const compressedBuffer = base64UrlToArrayBuffer(abcEncoded);\n";
+        theOutput +="        const stream = new Blob([compressedBuffer]).stream();\n";
+        theOutput +="        const decompressedStream = stream.pipeThrough(new DecompressionStream('deflate'));\n";
+        theOutput +="        const decompressedBuffer = await new Response(decompressedStream).arrayBuffer();\n";
+        theOutput +="        return new TextDecoder().decode(decompressedBuffer);\n";
+        theOutput +="    }\n";
+        theOutput +="\n";
+        theOutput +="    // Convert ArrayBuffer to URL-safe Base64\n";
+        theOutput +="    function arrayBufferToBase64Url(buffer) {\n";
+        theOutput +="        let binary = '';\n";
+        theOutput +="        const bytes = new Uint8Array(buffer);\n";
+        theOutput +="        for (let i = 0; i < bytes.byteLength; i++) {\n";
+        theOutput +="            binary += String.fromCharCode(bytes[i]);\n";
+        theOutput +="        }\n";
+        theOutput +="        return btoa(binary).replace(/\\+/g, '-').replace(/\\//g, '_').replace(/=+$/, '');\n";
+        theOutput +="    }\n";
+        theOutput +="\n";
+        theOutput +="    // Convert URL-safe Base64 to ArrayBuffer\n";
+        theOutput +="    function base64UrlToArrayBuffer(base64url) {\n";
+        theOutput +="        let base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');\n";
+        theOutput +="        const padLen = (4 - (base64.length % 4)) % 4;\n";
+        theOutput +="        base64 += '='.repeat(padLen);\n";
+        theOutput +="        const binary = atob(base64);\n";
+        theOutput +="        const bytes = new Uint8Array(binary.length);\n";
+        theOutput +="        for (let i = 0; i < binary.length; i++) {\n";
+        theOutput +="            bytes[i] = binary.charCodeAt(i);\n";
+        theOutput +="        }\n";
+        theOutput +="        return bytes.buffer;\n";
+        theOutput +="    }\n";
         theOutput +="\n";
         theOutput +="    // Set this to false to disable changing instruments when switching tablature\n";
-        theOutput +="    var gAllowInstrumentChanges = true;\n";
+        theOutput +="    let gAllowInstrumentChanges = true;\n";
         theOutput +="\n";       
-        theOutput +="    var isBanjo = false;\n";
-        theOutput +="    var isFlute = false;\n";
-        theOutput +="    var isAccordion = false;\n";
-        theOutput +="    var isConcertina = false;\n";
-        theOutput +="    var isDulcimer = false;\n";
+        theOutput +="    let isBanjo = false;\n";
+        theOutput +="    let isFlute = false;\n";
+        theOutput +="    let isAccordion = false;\n";
+        theOutput +="    let isConcertina = false;\n";
+        theOutput +="    let isDulcimer = false;\n";
+        theOutput +="    let isClaviZouki = false;\n";
         theOutput +="\n";
     }
 
     if (gWebsiteAddFullscreen){
-        theOutput +='    var lastURL = "";\n';
+        theOutput +='    let lastURL = "";\n';
         theOutput +="\n";
     }
 
@@ -1157,9 +1212,9 @@ function generateAndSaveWebsiteFull() {
     theOutput +="           });\n";
     theOutput +="\n";
     theOutput +="           // Update iframe src when an option is selected\n";
-    theOutput +="           tuneSelector.addEventListener('change', () => {\n";
+    theOutput +="           tuneSelector.addEventListener('change', async() => {\n";
     theOutput +="\n";
-    theOutput +="               var theURL = tuneSelector.value;\n";
+    theOutput +="               let theURL = tuneSelector.value;\n";
     theOutput +="\n";
     theOutput +='               if (theURL == "")return;\n';
     if (gWebsiteTabSelector){
@@ -1167,7 +1222,7 @@ function generateAndSaveWebsiteFull() {
         theOutput +="               theURL = theURL.replace(/&format=([^&]+)/g,\"&format=\"+tabStyle);\n";   
         theOutput +="\n";
         theOutput +="               if (gAllowInstrumentChanges){\n";   
-        theOutput +="                  theURL = injectInstrument(theURL);\n";
+        theOutput +="                  theURL = await injectInstrument(theURL);\n";
         theOutput +="               }\n"; 
     }
     theOutput +="\n";
@@ -1184,7 +1239,7 @@ function generateAndSaveWebsiteFull() {
     theOutput +="                       localStorage.lastTuneName_"+postFix+" = tuneSelector.options[tuneSelector.selectedIndex].text;\n";
     if (gWebsiteTabSelector){
         theOutput +="\n";
-        theOutput +="                       var theLastTuneTab = document.getElementById('displayOptions').value;\n";
+        theOutput +="                       let theLastTuneTab = document.getElementById('displayOptions').value;\n";
         theOutput +="                       localStorage.lastTab_"+postFix+" = theLastTuneTab;\n";
         theOutput +="\n";
     }
@@ -1203,7 +1258,7 @@ function generateAndSaveWebsiteFull() {
     theOutput +="               document.getElementById('previous_tune').addEventListener('click', previousTune);\n";
     theOutput +="\n";
     theOutput +="               function nextTune(){ \n";     
-    theOutput +="                   var tuneIndex = tuneSelector.selectedIndex;\n";
+    theOutput +="                   let tuneIndex = tuneSelector.selectedIndex;\n";
     theOutput +="                   tuneIndex++;\n";
     theOutput +="                   if (tuneIndex > tunes.length){\n";
     theOutput +="                    tuneIndex = 1\n";
@@ -1213,7 +1268,7 @@ function generateAndSaveWebsiteFull() {
     theOutput +="               }\n";
     theOutput +="\n";
     theOutput +="               function previousTune(){\n";
-    theOutput +="                   var tuneIndex = tuneSelector.selectedIndex;\n";
+    theOutput +="                   let tuneIndex = tuneSelector.selectedIndex;\n";
     theOutput +="                   tuneIndex--;\n";
     theOutput +="                   if (tuneIndex < 1){\n";
     theOutput +="                       tuneIndex = tunes.length;;\n";
@@ -1235,9 +1290,9 @@ function generateAndSaveWebsiteFull() {
     theOutput +="           document.getElementById('next_tune').style.display=\"none\";\n";
     theOutput +="           document.getElementById('previous_tune').style.display=\"none\";\n";
     theOutput +="\n";
-    theOutput +="           setTimeout(function(){\n"; 
+    theOutput +="           setTimeout(async() => {\n"; 
     theOutput +="\n";
-    theOutput +="             var theURL = tunes[0].URL;\n"
+    theOutput +="             let theURL = tunes[0].URL;\n"
     theOutput +="\n";
     theOutput +='             if (theURL == "")return;\n';
 
@@ -1246,7 +1301,7 @@ function generateAndSaveWebsiteFull() {
         theOutput +="             theURL = theURL.replace(/&format=([^&]+)/g,\"&format=\"+tabStyle);\n";    
         theOutput +="\n";
         theOutput +="             if (gAllowInstrumentChanges){\n";   
-        theOutput +="                 theURL = injectInstrument(theURL);\n";
+        theOutput +="                 theURL = await injectInstrument(theURL);\n";
         theOutput +="             }\n"; 
     }
 
@@ -1266,67 +1321,89 @@ function generateAndSaveWebsiteFull() {
 
     if (gWebsiteTabSelector){
 
-        theOutput +="        var tabStyle = \"noten\";\n";
+        theOutput +="        let tabStyle = \"noten\";\n";
 
         theOutput +="\n";
 
         theOutput +="        //\n";
-        theOutput +="        // Decompress the tune LZW, replace the instrument and volumes\n";
+        theOutput +="        // Decompress the deflated tune, replace the instrument and volumes\n";
         theOutput +="        //\n";
         theOutput +="\n";
-        theOutput +="        function extractLZWParameter(url) {\n";
-        theOutput +="           // Use a regular expression to find the part starting with &lzw= followed by any characters until the next &\n";
-        theOutput +="            const match = url.match(/lzw=([^&]*)/);\n";
+        theOutput +="        function extractDefParameter(url) {\n";
+        theOutput +="           // Use a regular expression to find the part starting with &def= followed by any characters until the next &\n";
+        theOutput +="            const match = url.match(/def=([^&]*)/);\n";
         theOutput +="\n";
-        theOutput +="            // If a match is found, return the part after &lzw=\n";
+        theOutput +="            // If a match is found, return the part after &def=\n";
         theOutput +="            return match ? match[0] : null;\n";
         theOutput +="        }\n";
         theOutput +="\n";
-        theOutput +="        function injectInstrument(theURL){\n";
+        theOutput +="        async function injectInstrument(theURL){\n";
         theOutput +="\n";
-        theOutput +="            var originalAbcInLZW = extractLZWParameter(theURL);\n";
+        theOutput +="            let originalAbcInDef = extractDefParameter(theURL);\n";
         theOutput +="\n";
-        theOutput +='            originalAbcInLZW = originalAbcInLZW.replace("lzw=","");\n';
+        theOutput +='            originalAbcInDef = originalAbcInDef.replace("def=","");\n';
         theOutput +="\n";
-        theOutput +="            var abcInLZW = LZString.decompressFromEncodedURIComponent(originalAbcInLZW);\n";
+        theOutput +="            let abcInDef = await deflateDecompress(originalAbcInDef);\n";
+        theOutput +="\n";
+        theOutput +="            const abcMIDIBassVol = abcInDef.match(/(%%MIDI bassvol\\s*)(\\d+)$/m);\n";
+        theOutput +="\n";
+        theOutput +="            const abcMIDIChordVol = abcInDef.match(/(%%MIDI chordvol\\s*)(\\d+)$/m);\n";
+        theOutput +="\n";
+        theOutput +="            const isLoudBassVol = abcMIDIBassVol && abcMIDIBassVol[2] >= 55;\n";
+        theOutput +="\n";
+        theOutput +="            const isLoudChordVol = abcMIDIChordVol && abcMIDIChordVol[2] >= 55;\n";
         theOutput +="\n";
         theOutput +="            switch (tabStyle){\n";
         theOutput +='                case "mandolin":\n';
         theOutput +='                    if (isBanjo){\n';
-        theOutput +='                        abcInLZW = abcInLZW.replace("%%MIDI program '+gWebsiteMelodyInstrumentInject+'","%%MIDI program 105");\n';
+        theOutput +='                        abcInDef = abcInDef.replace("%%MIDI program '+gWebsiteMelodyInstrumentInject+'","%%MIDI program 105")\n';
+        theOutput +='                        if (isLoudBassVol) abcInDef = abcInDef.replace(abcMIDIBassVol[0], abcMIDIBassVol[1] + "45");\n';
+        theOutput +='                        if (isLoudChordVol) abcInDef = abcInDef.replace(abcMIDIChordVol[0], abcMIDIChordVol[1] + "45");\n';
         theOutput +="                    }\n";
         theOutput +="                    else{\n";
-        theOutput +='                        abcInLZW = abcInLZW.replace("%%MIDI program '+gWebsiteMelodyInstrumentInject+'","%%MIDI program 141");\n';                       
+        theOutput +='                        abcInDef = abcInDef.replace("%%MIDI program '+gWebsiteMelodyInstrumentInject+'","%%MIDI program 141");\n';                       
         theOutput +="                    }\n";
         theOutput +="                    break;\n";
         theOutput +='                case "gdad":\n';
-        theOutput +='                    abcInLZW = abcInLZW.replace("%%MIDI program '+gWebsiteMelodyInstrumentInject+'","%%MIDI program 140");\n';
+        theOutput +='                    abcInDef = abcInDef.replace("%%MIDI program '+gWebsiteMelodyInstrumentInject+'","%%MIDI program 140")\n';
+        theOutput +='                    if (isLoudBassVol) abcInDef = abcInDef.replace(abcMIDIBassVol[0], abcMIDIBassVol[1] + "45");\n';
+        theOutput +='                    if (isLoudChordVol) abcInDef = abcInDef.replace(abcMIDIChordVol[0], abcMIDIChordVol[1] + "45");\n';
         theOutput +="                    break;\n";
         theOutput +='                case "guitare":\n';
         theOutput +='                case "guitard":\n';
-        theOutput +='                    abcInLZW = abcInLZW.replace("%%MIDI program '+gWebsiteMelodyInstrumentInject+'","%%MIDI program 24\\n%%MIDI transpose -12");\n';
+        theOutput +='                    abcInDef = abcInDef.replace("%%MIDI program '+gWebsiteMelodyInstrumentInject+'","%%MIDI program 24\\n%%MIDI transpose -12");\n';
         theOutput +="                    break;\n";
         theOutput +='                case "whistle":\n';
         theOutput +="                    if (isFlute){\n";
-        theOutput +='                        abcInLZW = abcInLZW.replace("%%MIDI program '+gWebsiteMelodyInstrumentInject+'","%%MIDI program 73");\n';
+        theOutput +='                        abcInDef = abcInDef.replace("%%MIDI program '+gWebsiteMelodyInstrumentInject+'","%%MIDI program 73");\n';
         theOutput +="                    }\n";
         theOutput +="                    else{\n";
-        theOutput +='                        abcInLZW = abcInLZW.replace("%%MIDI program '+gWebsiteMelodyInstrumentInject+'","%%MIDI program 78");\n';
+        theOutput +='                        abcInDef = abcInDef.replace("%%MIDI program '+gWebsiteMelodyInstrumentInject+'","%%MIDI program 78");\n';
         theOutput +="                    }\n";
-        theOutput +='                    abcInLZW = abcInLZW.replace("%%MIDI bassvol '+gWebsiteBassVolume+'","%%MIDI bassvol 64");\n';
-        theOutput +='                    abcInLZW = abcInLZW.replace("%%MIDI chordvol '+gWebsiteChordVolume+'","%%MIDI chordvol 64");\n';
+        theOutput +='                    if (isLoudBassVol) abcInDef = abcInDef.replace(abcMIDIBassVol[0], abcMIDIBassVol[1] + "45");\n';
+        theOutput +='                    if (isLoudChordVol) abcInDef = abcInDef.replace(abcMIDIChordVol[0], abcMIDIChordVol[1] + "45");\n';
         theOutput +="                    break;\n";
         theOutput +='                case "noten":\n';
         theOutput +="                    if (isAccordion){\n";
-        theOutput +='                        abcInLZW = abcInLZW.replace("%%MIDI program '+gWebsiteMelodyInstrumentInject+'","%%MIDI program 21");\n';
+        theOutput +='                        abcInDef = abcInDef.replace("%%MIDI program '+gWebsiteMelodyInstrumentInject+'","%%MIDI program 21");\n';
         theOutput +="                    }\n";
         theOutput +="                    else\n";
         theOutput +="                    if (isConcertina){\n";
-        theOutput +='                        abcInLZW = abcInLZW.replace("%%MIDI program '+gWebsiteMelodyInstrumentInject+'","%%MIDI program 133");\n';
+        theOutput +='                        abcInDef = abcInDef.replace("%%MIDI program '+gWebsiteMelodyInstrumentInject+'","%%MIDI program 133");\n';
         theOutput +="                    }\n";
         theOutput +="                    else\n";
         theOutput +="                    if (isDulcimer){\n";
-        theOutput +='                        abcInLZW = abcInLZW.replace("%%MIDI program '+gWebsiteMelodyInstrumentInject+'","%%MIDI program 15");\n';
+        theOutput +='                        abcInDef = abcInDef.replace("%%MIDI program '+gWebsiteMelodyInstrumentInject+'","%%MIDI program 15")\n';
+        theOutput +='                    if (isLoudBassVol) abcInDef = abcInDef.replace(abcMIDIBassVol[0], abcMIDIBassVol[1] + "40");\n';
+        theOutput +='                    if (isLoudChordVol) abcInDef = abcInDef.replace(abcMIDIChordVol[0], abcMIDIChordVol[1] + "40");\n';
+        theOutput +="                    }\n";
+        theOutput +="                    else\n";
+        theOutput +="                    if (isClaviZouki){\n";
+        theOutput +='                        abcInDef = abcInDef.replace("%%MIDI program 0","%%MIDI program 139");\n';
+        theOutput +='                        abcInDef = abcInDef.replace("%%MIDI bassprog 0", "%%MIDI bassprog 7");\n';
+        theOutput +='                        abcInDef = abcInDef.replace("%%MIDI chordprog 0", "%%MIDI chordprog 7");\n';
+        theOutput +='                    if (abcMIDIBassVol && abcMIDIBassVol[2] > 55) abcInDef = abcInDef.replace(abcMIDIBassVol[0], abcMIDIBassVol[1] + "55");\n';
+        theOutput +='                    if (abcMIDIChordVol && abcMIDIChordVol[2] > 25) abcInDef = abcInDef.replace(abcMIDIChordVol[0], abcMIDIChordVol[1] + "25");\n';
         theOutput +="                    }\n";
         theOutput +="                    else{\n";
         theOutput +="                        return theURL;\n";
@@ -1334,11 +1411,13 @@ function generateAndSaveWebsiteFull() {
         theOutput +="                    break;\n";
         theOutput +="            }\n";
         theOutput +="\n";
-        theOutput +='            var newLZWparam = "lzw="+LZString.compressToEncodedURIComponent(abcInLZW);\n';
+        theOutput +="            let deflatedAbc = await deflateCompress(abcInDef);\n";
         theOutput +="\n";
-        theOutput +='            originalAbcInLZW = "lzw="+originalAbcInLZW;\n';
+        theOutput +='            let newDefParam = "def="+deflatedAbc;\n';
         theOutput +="\n";
-        theOutput +="            theURL = theURL.replace(originalAbcInLZW,newLZWparam);\n";
+        theOutput +='            originalAbcInDef = "def="+originalAbcInDef;\n';
+        theOutput +="\n";
+        theOutput +="            theURL = theURL.replace(originalAbcInDef,newDefParam);\n";
         theOutput +="\n";
         theOutput +="            return theURL;\n";
         theOutput +="        }\n";
@@ -1347,10 +1426,10 @@ function generateAndSaveWebsiteFull() {
         // Update iframe src when an option is selected
         theOutput +="        const displayOptions = document.getElementById('displayOptions');\n";
         theOutput +="\n";
-        theOutput +="          displayOptions.addEventListener('change', () => {\n";
+        theOutput +="          displayOptions.addEventListener('change', async() => {\n";
         theOutput +="\n";
 
-        theOutput +="             var origTabStyle = tabStyle;\n";
+        theOutput +="             let origTabStyle = tabStyle;\n";
         theOutput +="\n";
 
         theOutput +="             if (displayOptions.value == \"-1\"){\n";
@@ -1362,6 +1441,7 @@ function generateAndSaveWebsiteFull() {
         theOutput +="             isAccordion = false;\n";
         theOutput +="             isConcertina = false;\n";
         theOutput +="             isDulcimer = false;\n";
+        theOutput +="             isClaviZouki = false;\n";
         theOutput +="\n";
         theOutput +="             switch (displayOptions.value){\n";
         theOutput +="                 case \"0\": // Standard notation\n";
@@ -1405,12 +1485,16 @@ function generateAndSaveWebsiteFull() {
         theOutput +="                     isDulcimer = true;\n";
         theOutput +="                     tabStyle = \"noten\";\n";
         theOutput +="                     break;\n";
+        theOutput +="                 case \"12\": // ClaviZouki\n";
+        theOutput +="                     isClaviZouki = true;\n";
+        theOutput +="                     tabStyle = \"noten\";\n";
+        theOutput +="                     break;\n";
         theOutput +="                 default:\n";
         theOutput +="                     tabStyle = \"noten\";\n";
         theOutput +="                     break;\n";
         theOutput +="             }\n";
         theOutput +="\n";
-        theOutput +="             var theURL;\n";
+        theOutput +="             let theURL;\n";
         theOutput +="\n";
         theOutput +="             if (tunes.length > 1){\n";
         theOutput +="                theURL = tuneSelector.value;\n";
@@ -1424,7 +1508,7 @@ function generateAndSaveWebsiteFull() {
         theOutput +="             theURL = theURL.replace(/&format=([^&]+)/g,\"&format=\"+tabStyle);\n";
         theOutput +="\n";
         theOutput +="             if (gAllowInstrumentChanges){\n";   
-        theOutput +="                 theURL = injectInstrument(theURL);\n";
+        theOutput +="                 theURL = await injectInstrument(theURL);\n";
         theOutput +="             }\n"; 
         theOutput +="\n";
         theOutput +="             tuneFrame.src = theURL;\n";
@@ -1442,7 +1526,7 @@ function generateAndSaveWebsiteFull() {
         theOutput +="                         localStorage.lastTuneName_"+postFix+" = tuneSelector.options[tuneSelector.selectedIndex].text;\n";
         theOutput +="                     }\n";
         theOutput +="\n";
-        theOutput +="                     var theLastTuneTab = document.getElementById('displayOptions').value;\n";
+        theOutput +="                     let theLastTuneTab = document.getElementById('displayOptions').value;\n";
         theOutput +="                     localStorage.lastTab_"+postFix+" = theLastTuneTab;\n";
         theOutput +="                 }\n";
         theOutput +="\n";   
@@ -1453,9 +1537,9 @@ function generateAndSaveWebsiteFull() {
         theOutput +="        });\n";
         theOutput +="\n";
     }
-    // ABC Tools Lite: Customized (cut resizeIframe)
+    // Lite: Customized (cut resizeIframe)
     theOutput +="       function setSelectedTuneByName(optionText) {\n";
-    theOutput +="           var gotMatch = false;\n";
+    theOutput +="           let gotMatch = false;\n";
     theOutput +="           for (let i = 0; i < tuneSelector.options.length; i++) {\n";
     theOutput +="               if (tuneSelector.options[i].text === optionText) {\n";
     theOutput +="                   tuneSelector.selectedIndex = i;\n";
@@ -1468,7 +1552,7 @@ function generateAndSaveWebsiteFull() {
     theOutput +="           }\n";
     theOutput +="       }\n";
     theOutput +="\n";
-    // ABC Tools Lite: Customized (cut resizeIframe)
+    // Lite: Customized (cut resizeIframe)
     theOutput +="       // Restore state\n";
     theOutput +="       if (gAllowStatePersistence){\n";
     theOutput +="\n";
@@ -1477,9 +1561,9 @@ function generateAndSaveWebsiteFull() {
     theOutput +="              setTimeout(function(){\n";
     if (gWebsiteTabSelector){
         theOutput +="\n";
-        theOutput +="                var theLastTuneTab = localStorage.lastTab_"+postFix+";\n";
+        theOutput +="                let theLastTuneTab = localStorage.lastTab_"+postFix+";\n";
         theOutput +='                if (theLastTuneTab && (theLastTuneTab != "")){\n';
-        theOutput +="                    var elem = document.getElementById('displayOptions');\n";
+        theOutput +="                    let elem = document.getElementById('displayOptions');\n";
         theOutput +="                    elem.value = theLastTuneTab;\n";
         theOutput +="                    elem.dispatchEvent(new Event('change'));\n";
         theOutput +="                }\n";
@@ -1487,7 +1571,7 @@ function generateAndSaveWebsiteFull() {
     theOutput +="\n";
     theOutput +="                if (tunes.length > 1){\n";
     theOutput +="\n";
-    theOutput +="                   var theLastTuneName = localStorage.lastTuneName_"+postFix+";\n";
+    theOutput +="                   let theLastTuneName = localStorage.lastTuneName_"+postFix+";\n";
     theOutput +='                   if (theLastTuneName && (theLastTuneName != "")){\n';
     theOutput +="                       setSelectedTuneByName(theLastTuneName);\n";
     theOutput +="                   }\n";
@@ -1508,7 +1592,7 @@ function generateAndSaveWebsiteFull() {
     theOutput +="\n";
     theOutput +="</html>\n";
 
-    var theData = theOutput
+    let theData = theOutput
 
     if (theData.length == 0) {
 
@@ -3462,8 +3546,8 @@ var gWebsiteBassInstrument = 1;
 var gWebsiteBassInstrumentInject = 1;
 var gWebsiteChordInstrument = 1;
 var gWebsiteChordInstrumentInject = 1;
-var gWebsiteBassVolume = 64;
-var gWebsiteChordVolume = 64;
+var gWebsiteBassVolume = 55;
+var gWebsiteChordVolume = 55;
 var gWebsiteMelodyInstrument = 1;
 var gWebsiteMelodyInstrumentInject = 1;
 var gWebsiteTitle = "ABC Tools Lite Generated Website";
