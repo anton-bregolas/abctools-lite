@@ -19,19 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const userFontCode = localStorage.abcLitePrefersFontCode;
   const userFontUi = localStorage.abcLitePrefersFontUi;
 
-  if ((!userTheme &&
-      window.matchMedia &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches) ||
-      userTheme === "dark") {
-      
-      document.body.dataset.theme = "dark";
-  }
-
-  if (userTheme === "subdued") {
-
-    document.body.dataset.theme = "subdued";
-  }
-
   if (userFontUi && userFontUi !== 'Fira Sans') {
 
     document.body.style.setProperty("--abctools-font-ui", userFontUi);
@@ -40,6 +27,20 @@ document.addEventListener('DOMContentLoaded', () => {
   if (userFontCode && userFontCode !== 'Fira Mono') {
 
     document.body.style.setProperty("--abctools-font-code", userFontCode);
+  }
+
+  if ((!userTheme &&
+      window.matchMedia &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches) ||
+      userTheme === "dark") {
+      
+    document.body.dataset.theme = "dark";
+    return;
+  }
+
+  if (userTheme) {
+
+    document.body.dataset.theme = userTheme;
   }
 });
 

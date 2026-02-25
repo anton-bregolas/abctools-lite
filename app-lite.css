@@ -22,7 +22,7 @@ body {																											/* vanilla abc tools settings */
   --abctools-ui-btn-flarecolor: transparent;								/* #ffffff */
   --abctools-ui-btn-hovercolor: #a5fb98;									 /* palegreen */
   --abctools-ui-btn-outlinecolor: slateblue;              /* none */
-	--abctools-ui-btn-textcolor: #000000;									 /* #000000 */
+	--abctools-ui-btn-textcolor: #000;			    						 /* #000000 */
   --abctools-ui-input-bordercolor: #767676;               /* #767676 */
 	--abctools-ui-float-btn-height: 3.5rem;									  /* 48px */
 	--abctools-ui-float-btn-padding: 0.25rem;									/* 4px */
@@ -31,6 +31,13 @@ body {																											/* vanilla abc tools settings */
   --abctools-ui-modal-btn-width: 2.2rem;
   --abctools-ui-tab-btn-bgcolor: #d5ebfdba;               /* #ffffff */
   --abctools-notation-fullscreen-scaling: 50%;              /* 50% */
+
+  --abctools-bgcolor-primary: #fff;                       /* white */
+  --abctools-bgcolor-secondary: #d8d8d8;
+  --abctools-bgcolor-contrast: #181818;
+  --abctools-textcolor-primary: #000;                     /* black */
+  --abctools-textcolor-secondary: #111;
+  --abctools-textcolor-contrast: #fafafa;
 
   --abctools-color-attention: #8ac716;                    /* red */
   --abctools-color-update: #1c741c;                       /* red */
@@ -186,6 +193,11 @@ body {																											/* vanilla abc tools settings */
   font-family: var(--abctools-font-fallback-code) !important;
 }
 
+.CodeMirror:is(:focus-within) {
+  outline: 1px solid black;
+  border-radius: 0.25rem;
+}
+
 /*//////////////////////////////////////////
 // APP LITE: CONTEXT MENU
 /////////////////////////////////////////*/
@@ -194,6 +206,30 @@ body {																											/* vanilla abc tools settings */
   font-family: var(--abctools-font-fallback-ui);
   font-size: var(--abctools-font-size-contextmenu);
 }
+
+.ContextMenu button {
+  width: 100%;
+  text-align: left;
+}
+
+#morecommands {
+  position: relative;
+}
+
+/* @supports (position-anchor: --test) {
+
+  #context-menu-anchor {
+    anchor-name: --cm-anchor;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+  }
+
+  .ContextMenu {
+    position-anchor: --cm-anchor;
+    position-area: bottom left;
+  }
+} */
 
 /*//////////////////////////////////////////
 // APP LITE: MODAL DIALOGS
@@ -238,18 +274,53 @@ div.modal_flat_form_item_label {
   margin: 1em 0;
 }
 
+.modal-header-settings,
+.modal-header-updates,
+.modal-header-help {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
 .modal-header-offset {
   margin: 2em 0 1em;
 }
 
 .modal-header-settings {
-  font-size: 1.5rem;
-  font-weight: 600;
   margin-left: 15px;
 }
 
 .modal-header-spaced {
   margin-bottom: 2.25em;
+}
+
+.modal-header-updates {
+  margin: 0 0 0.25em;
+}
+
+.modal-header-updates-container {
+  /* color: #ffd324; */
+  /* background: linear-gradient(90deg, #003300 25%, #663399 100%); */
+  color: var(--abctools-textcolor-contrast);
+  background-color: var(--abctools-bgcolor-contrast);
+  border-radius: 0.75rem;
+  text-align: center;
+  padding: 1em;
+}
+
+.modal-subheader {
+  font-size: 1.125rem;
+  font-weight: 400;
+  text-align: center;
+  margin: 0 0 1em;
+}
+
+.modal-subheader-updates {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.modal-subheader-intro {
+  padding: 0 0.8em;
 }
 
 .modal-header-ui {
@@ -262,6 +333,10 @@ div.modal_flat_form_item_label {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.modal-header-ui:focus-visible {
+  border-radius: 50%;
 }
 
 .modal_flat_x {
@@ -300,11 +375,32 @@ div.modal_flat_form_item_label {
   top: 0.3rem;
 }
 
-.modal-subheader {
+.modal-section-updates {
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid #e7e7e7;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+
+.modal-section-updates h4 {
   font-size: 1.125rem;
-  font-weight: 400;
+  margin: 0.5em 0 0.5em;
   text-align: center;
-  margin: 0 0 1em;
+}
+
+.modal-section-updates ul {
+  line-height: 1.4;
+  padding-inline-start: 0.75rem;
+  list-style-type: square;
+}
+
+.modal-section-summary ul {
+  list-style-type: "✦";
+  text-indent: 0.5rem;
+}
+
+.modal-section-updates li {
+  margin-bottom: 0.5em;
 }
 
 .modal-text-updated {
@@ -326,9 +422,20 @@ div.modal_flat_form_item_label {
   font-size: var(--abctools-font-size-header-m-18);
 }
 
+.modal-textgroup-explanation ~ h4 {
+  font-weight: 400;
+  margin: 1em 0 1em;
+}
+
+.modal-textgroup-explanation ~ h4,
+.modal-textgroup-explanation ~ ul,
 .modal-textgroup-explanation ~ p {
   font-size: var(--abctools-font-size-label-l-14);
   line-height: 1.57;
+}
+
+.modal-textgroup-explanation ~ ul {
+  padding-inline-start: 1.75rem;
 }
 
 .modal-table-row-octavelabel {
@@ -346,11 +453,25 @@ div.modal_flat_form_item_label {
   font-size: 0.167rem;
 }
 
+.modal-wrapper-centered-column {
+  display: grid;
+  grid-template-columns: 1fr;
+  box-sizing: border-box;
+  padding: 0.65em 1.1em 0;
+  width: 100%;
+  gap: 1rem;
+}
+
 /*//////////////////////////////////////////
 // APP LITE: UI ELEMENTS
 /////////////////////////////////////////*/
 
 /* UI: Common Elements */
+
+a {
+  text-decoration-style: dotted;
+  text-underline-offset: 0.12rem;
+}
 
 .btn,
 .btn-lite,
@@ -371,6 +492,7 @@ textarea:not(.abc) {
   border-radius: 0.17rem;
 }
 
+a:focus-visible,
 button:focus-visible,
 button[type="button"]:focus-visible,
 label:has(input[type="file"]):focus-within,
@@ -392,6 +514,7 @@ input[type="checkbox"]:focus-visible {
   outline-width: 0.15rem;
 }
 
+a:focus-visible,
 .abc:focus-visible,
 .abcjs-btn:focus-visible {
   border-radius: 0.17rem;
@@ -427,6 +550,11 @@ input[type="checkbox"]:focus-visible {
 
 .btn.btn-lite-lime {
   background-color: var(--abctools-color-litelime);
+}
+
+.btn.btn-padded {
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .adv-tab-links-container {
@@ -576,6 +704,23 @@ input[type="checkbox"]:focus-visible {
   height: 75%;
 }
 
+/* UI: Notation Placeholder */
+
+ul.notation-placeholder-text,
+.notation-placeholder-buttons {
+  margin: 30px 0 0;
+}
+
+ul.notation-placeholder-text {
+  list-style-type: none;
+  line-height: 3;
+  padding: 0;
+}
+
+.notation-placeholder-buttons {
+  gap: 1.4rem;
+}
+
 /* UI: Settings Menu */
 
 .lite-custom-setting {
@@ -674,6 +819,12 @@ input[type="checkbox"]:focus-visible {
 		left: calc(50% - 850px);
 		margin-left: 0;
 	}
+
+  /* Notation Placeholder :: Viewport >= 1798px */
+
+  #notation-placeholder-text {
+    margin-top: 136px;
+  }
 }
 
 /*
@@ -681,6 +832,12 @@ input[type="checkbox"]:focus-visible {
 // APP LITE: CUSTOM FORCED STYLES
 ////////////////////////////////////////////
 */
+
+/* Fixed Mobile Layout Styles */
+
+[data-layout*="mobile"] .desktop-use-message {
+  display: none;
+}
 
 /* Always Two Columns Mode (Formerly iPad Two-Column) */
 
@@ -709,8 +866,8 @@ input[type="checkbox"]:focus-visible {
   display: none;
 }
 
-[data-mode="always-two-columns"] #transpose-controls {
-  display: inline-block;
+[data-mode="always-two-columns"] #notenrechts {
+  display: block;
 }
 
 [data-mode="always-two-columns"][data-notation="minimized"] #notation-container {

@@ -1783,30 +1783,24 @@ width:850px;
 background-color:white;
 }
 
-.notation-placeholder-text {
+/* .notation-placeholder-text {
 margin-top: 64px;
-font-family: var(--abctools-font-fallback-ui);
-font-size: var(--abctools-font-size-label-m-12);
-}
+} */
 
-.notation-placeholder-text-2 {
+/* .notation-placeholder-text-2 {
 margin-top: 40px;
-font-family: var(--abctools-font-fallback-ui);
-font-size: var(--abctools-font-size-label-m-12);
 }
 
 .desktop_use_message {
 margin-top: 40px;
-font-family: var(--abctools-font-fallback-ui);
-font-size: var(--abctools-font-size-label-m-12);
-}
+} */
 
-.notation-placeholder-button {
+/* .notation-placeholder-button {
 margin-top:40px;
 margin-left: 0;
 margin-right: 0;
 opacity:1.0;
-}
+} */
 
 /* Spinner */
 /* Overlay (dims the background) */

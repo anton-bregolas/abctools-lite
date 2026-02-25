@@ -51,13 +51,13 @@
 
 			<div id="uioverlay" class="uioverlay hidden-print">
 
-				<button id="helpbutton" class="btn-lite btn-uioverlay helpbutton" title="Open ABC Transcription Tools User Guide" aria-title="Open ABC Transcription Tools User Guide">
+				<button id="helpbutton" class="btn-lite btn-uioverlay helpbutton" title="Open Help Dialog. Shift-click to open ABC Tools Lite Readme on Github. Alt-click to open ABC Transcription Tools User Guide" aria-title="Open ABC Tools Lite Help Dialog. Shift-click to open ABC Tools Lite Readme on Github. Alt-click to open ABC Transcription Tools User Guide">
 					<svg aria-hidden="true"><use href="#lite-icon-help"></use></svg>
 				</button>
 				<button id="jumpbutton" class="btn-lite btn-uioverlay jumpbutton" title="Open Jump to Tune Dialog" aria-title="Open Jump to Tune Dialog">
 					<svg aria-hidden="true"><use href="#lite-icon-tunelist"></use></svg>
 				</button>
-				<button id="zoombutton" class="btn-lite btn-uioverlay zoombutton" title="Toggle Between ABC Editor and Standalone Notation.&nbsp;&nbsp;Alt-Click to Enter Presentation Mode." aria-title="Toggle Between ABC Editor and Standalone Notation. Alt-Click to Enter Presentation Mode">
+				<button id="zoombutton" class="btn-lite btn-uioverlay zoombutton" title="Toggle Between ABC Editor View and Notation View.&nbsp;&nbsp;Alt-Click to Enter Presentation Mode." aria-title="Toggle Between ABC Editor View and Notation View. Alt-Click to Enter Presentation Mode">
 					<svg aria-hidden="true"><use href="#lite-icon-edit"></use></svg>
 				</button>
 				<button id="pdfbuttonicon" class="btn-lite btn-uioverlay pdfbuttonicon" title="Open PDF Export Dialog" aria-title="Open PDF Export Dialog">
@@ -83,7 +83,7 @@
 						<div id="statuspdfname"></div>
 						<div id="statustunecount"></div>
 						<div id="pagestatustext"></div>
-						<input class="cancelpdf btn btn-cancelpdf" id="cancelpdf" onclick="CancelPDF();" type="button" value="Cancel"/>
+						<button class="cancelpdf btn btn-cancelpdf" id="cancelpdf" onclick="CancelPDF();">Cancel</button>
 
 					</div>
 
@@ -121,20 +121,39 @@
 					<div id="fileoperations" class="fileoperations btn-container-space-between">
 						<input type="file" id="selectabcfile" class="selectabcfile" accept=".abc,.txt,.ABC,.TXT,.xml,.XML,.musicxml,.mxl,.MXL,.mid,.MID,.midi,.MIDI,.bww,.BWW" hidden multiple /> 
 						<!--our custom abc file upload button-->
-						<input class="abcupload btn btn-top" id="openabcfile" onclick="fileOpenIntercept(event);" type="button" value="Open" title="Open file in ABC, MusicXML, BWW, or MIDI format.&nbsp;&nbsp;Drag-and-drop ABC, MusicXML, BWW, or MIDI files on the Editor area to add them" aria-title="Open file in ABC, MusicXML, BWW, or MIDI format.&nbsp;&nbsp;Drag-and-drop ABC, MusicXML, BWW, or MIDI files on the Editor area to add them"/>
-						<input class="newabcfile btn btn-top" id="newabcfile" onclick="AddABC();" type="button" value="Add" title="Add tunes from file, restore from saved snapshot, search for tunes, add example tunes or song templates to ABC input" aria-title="Add tunes from file, restore from saved snapshot, search for tunes, add example tunes or song templates to ABC input"/>
-						<input disabled class="saveabcfiledisabled btn btn-top" id="saveabcfile" onclick="SaveABC();" type="button" value="Save" title="Save current ABC text to file" aria-title="Save current ABC text to file"/>
-						<input disabled class="saveaspdfdisabled btn btn-top" id="saveaspdf" onclick="PDFExportDialog();" type="button" value="Export PDF" title="Export Tunebook in PDF format" aria-title="Export Tunebook in PDF format"/>
-						<input disabled class="saveaswebsitedisabled btn btn-top" id="saveaswebsite" onclick="generateWebsite();" type="button" value="Export Website" title="Export Tunebook as Website or Gallery" aria-title="Export Tunebook as Website or Gallery"/>
-						<input style="padding-left:20px;padding-right:20px;" disabled class="playbuttondisabled btn btn-play" id="playbutton" onclick="PlayABC(event);" type="button" value="Play" title="Open ABC Player with selected tune.&nbsp;&nbsp;Press F4 to play / pause. Press F3 to rewind.&nbsp;&nbsp;Alt-click to play a random tune from Tunebook" aria-title="Open ABC Player with selected tune.&nbsp;&nbsp;Press F4 to play / pause. Press F3 to rewind.&nbsp;&nbsp;Alt-click to play a random tune from Tunebook"/>
-						<input style="padding-left:20px;padding-right:20px;" disabled class="playbuttondisabled btn btn-train" id="tunetrainerbutton" onclick="TuneTrainerTopBar();" type="button" value="Train" title="Open Tune Trainer with currently selected tune" aria-title="Open Tune Trainer with currently selected tune"/>
-						<input disabled class="rawmodebuttondisabled btn btn-rawmode-off" id="rawmodebutton" onclick="ToggleRawMode()" type="button" value="Highlighting" title="Toggle Highlighting mode. When ON, select ABC text to highlight notation or click on notation to highlight ABC text" aria-title="Toggle Highlighting mode. When ON, select ABC text to highlight notation or click on notation to highlight ABC text"/>
-						<input style="padding-left:20px;padding-right:20px" class="morecommands btn btn-top context-menu" id="morecommands" type="button" value="☰" title="Open Context Menu with additional useful commands" aria-title="Open Context Menu with additional useful commands"/>
+						<button class="abcupload btn btn-top" id="openabcfile" onclick="fileOpenIntercept(event);" title="Open file in ABC, MusicXML, BWW, or MIDI format.&nbsp;&nbsp;Drag-and-drop ABC, MusicXML, BWW, or MIDI files on the Editor area to add them" aria-title="Open file in ABC, MusicXML, BWW, or MIDI format.&nbsp;&nbsp;Drag-and-drop ABC, MusicXML, BWW, or MIDI files on the Editor area to add them">
+							Open 
+						</button>
+						<button class="newabcfile btn btn-top" id="newabcfile" onclick="AddABC();" title="Add tunes from file, restore from saved snapshot, search for tunes, add example tunes or song templates to ABC input" aria-title="Add tunes from file, restore from saved snapshot, search for tunes, add example tunes or song templates to ABC input">
+							Add
+						</button>
+						<button disabled class="saveabcfiledisabled btn btn-top" id="saveabcfile" onclick="SaveABC();" title="Save current ABC text to file" aria-title="Save current ABC text to file">
+							Save
+						</button>
+						<button disabled class="saveaspdfdisabled btn btn-top" id="saveaspdf" onclick="PDFExportDialog();" title="Export Tunebook in PDF format" aria-title="Export Tunebook in PDF format">
+							Export PDF
+						</button>
+						<button disabled class="saveaswebsitedisabled btn btn-top" id="saveaswebsite" onclick="generateWebsite();" title="Export Tunebook as Website or Gallery" aria-title="Export Tunebook as Website or Gallery">
+							Export Website
+						</button>
+						<button disabled class="playbuttondisabled btn btn-play btn-padded" id="playbutton" onclick="PlayABC(event);" title="Open ABC Player with selected tune.&nbsp;&nbsp;Press F4 to play / pause. Press F3 to rewind.&nbsp;&nbsp;Alt-click to play a random tune from Tunebook" aria-title="Open ABC Player with selected tune.&nbsp;&nbsp;Press F4 to play / pause. Press F3 to rewind.&nbsp;&nbsp;Alt-click to play a random tune from Tunebook">
+							Play
+						</button>
+						<button disabled class="playbuttondisabled btn btn-train btn-padded" id="tunetrainerbutton" onclick="TuneTrainerTopBar();" title="Open Tune Trainer with currently selected tune" aria-title="Open Tune Trainer with currently selected tune">
+							Train
+						</button>
+						<button disabled class="rawmodebuttondisabled btn btn-rawmode-off" id="rawmodebutton" onclick="ToggleRawMode()" title="Toggle Highlighting mode. When ON, select ABC text to highlight notation or click on notation to highlight ABC text" aria-title="Toggle Highlighting mode. When ON, select ABC text to highlight notation or click on notation to highlight ABC text">
+							Highlighting
+						</button>
+						<button class="morecommands btn btn-top context-menu btn-padded" id="morecommands" title="Open Context Menu with additional useful commands" aria-title="Open Context Menu with additional useful commands">
+							☰
+							<span id="context-menu-anchor"></span>
+						</button>
 					</div>
 
 					<div id="inputarea" class="inputarea">
 
-						<textarea id="abc" class="abc" rows="12" cols="72" placeholder="Enter ABC or drag-and-drop ABC, MusicXML, BWW, or MIDI files here" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
+						<textarea id="abc" class="abc" name="abc" rows="12" cols="72" placeholder="Enter ABC or drag-and-drop ABC, MusicXML, BWW, or MIDI files here" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
 
 					</div>
 
@@ -166,13 +185,29 @@
 							<label for="b9" class="btn btn-tab" id="b9label" title="Show Tin Whistle (D) tablature">Whistle</label>
 						</div>
 						<div id="transpose-controls" class="transpose-controls btn-container-space-between">
-							<input class="transposedown btn btn-transpose" id="transposedown" onclick="TransposeDown(event)" type="button" value="Transpose Down" title="Transpose the selected tunes down one semitone.&nbsp;&nbsp; Shift-click transposes down one full step.&nbsp;&nbsp;Alt-click transposes down one octave"/>
-							<input class="transposeup btn btn-transpose" id="transposeup" onclick="TransposeUp(event)" type="button" value="Transpose Up" title="Transpose the selected tunes up one semitone.&nbsp;&nbsp;Shift-click transposes up one full step.&nbsp;&nbsp;Alt-click transposes up one octave"/>
-							<input class="snapshotbutton btn btn-snapshotbutton" id="snapshotbutton" onclick="SaveSnapshot(event);" type="button" value="Snapshot" title="Save a Snapshot of the contents of the ABC editor to browser storage.&nbsp;&nbsp;Click for Snapshot #1, Shift-click for Snapshot #2, Alt-click for Snapshot #3, Shift-Alt-click for Snapshot #4"/>
-							<input class="restorebutton btn btn-restorebutton" id="restorebutton" onclick="RestoreSnapshot(event,false,false);" type="button" value="Restore" title="Replace the contents of the ABC editor with a Snapshot saved in browser storage.&nbsp;&nbsp;Click for Snapshot #1, Shift-click for Snapshot #2, Alt-click for Snapshot #3, Shift-Alt-click for Snapshot #4"/>
-							<input class="toggleadvancedcontrols btn btn-toggleadvancedcontrols" id="toggleadvancedcontrols" onclick="AdvancedControlsDialog()" type="button" value="More Tools" title="Show More ABC Tools dialog: Strip chords and annotations, inject instrument tablature, perform various operations with current ABC"/>
-							<input class="togglesharecontrols btn btn-togglesharecontrols" id="togglesharecontrols" onclick="SharingControlsDialog()" type="button" value="Sharing"  title="Show the Sharing dialog"/>
-							<input class="clearbutton btn btn-clearbutton" id="clearbutton" onclick="Clear()" type="button" value="Clear" title="Clear all ABC text"/>
+
+							<button class="transposedown btn btn-transpose" id="transposedown" onclick="TransposeDown(event)" title="Transpose the selected tunes down one semitone.&nbsp;&nbsp; Shift-click transposes down one full step.&nbsp;&nbsp;Alt-click transposes down one octave">
+								Transpose Down
+							</button>
+							<button class="transposeup btn btn-transpose" id="transposeup" onclick="TransposeUp(event)" title="Transpose the selected tunes up one semitone.&nbsp;&nbsp;Shift-click transposes up one full step.&nbsp;&nbsp;Alt-click transposes up one octave">
+								Transpose Up
+							</button>
+							<button class="snapshotbutton btn btn-snapshotbutton" id="snapshotbutton" onclick="SaveSnapshot(event);" title="Save a Snapshot of the contents of the ABC editor to browser storage.&nbsp;&nbsp;Click for Snapshot #1, Shift-click for Snapshot #2, Alt-click for Snapshot #3, Shift-Alt-click for Snapshot #4">
+								Snapshot
+							</button>
+							<button class="restorebutton btn btn-restorebutton" id="restorebutton" onclick="RestoreSnapshot(event,false,false);" title="Replace the contents of the ABC editor with a Snapshot saved in browser storage.&nbsp;&nbsp;Click for Snapshot #1, Shift-click for Snapshot #2, Alt-click for Snapshot #3, Shift-Alt-click for Snapshot #4">
+								Restore
+							</button>
+							<button class="toggleadvancedcontrols btn btn-toggleadvancedcontrols" id="toggleadvancedcontrols" onclick="AdvancedControlsDialog()" title="Show More ABC Tools dialog: Strip chords and annotations, inject instrument tablature, perform various operations with current ABC">
+								More Tools
+							</button>
+							<button class="togglesharecontrols btn btn-togglesharecontrols" id="togglesharecontrols" onclick="SharingControlsDialog()" title="Show the Sharing dialog">
+								Sharing
+							</button>
+							<button class="clearbutton btn btn-clearbutton" id="clearbutton" onclick="Clear()" title="Clear all ABC text">
+								Clear
+							</button>
+
 						</div>
 
 				</div>
@@ -185,15 +220,24 @@
 			
 				<div id="notation-placeholder" class="notation-placeholder hidden-print relativebox">
 
-				<p id="notation-placeholder-text" class="notation-placeholder-text"><strong>Notation will appear here when you enter some ABC.</strong><br><br><br>Click <strong>Open</strong> to open ABC, MusicXML, BWW, or MIDI files.<br><br>Click <strong>Add</strong> to add ABC, MusicXML, BWW, MIDI files or a tune template.</p>
+				<ul id="notation-placeholder-text" class="notation-placeholder-text">
+						<li><strong>Notation will appear here when you enter some ABC.</strong></li>
+						<li>Press <strong>Open</strong> to open ABC, MusicXML, BWW, or MIDI files.</li>
+						<li class="desktop-use-message">Press <strong>Add</strong> or <strong>Shift + F2</strong> to add files, ABC tunes and song templates.</li>
+						<li>Press <strong title="Question mark button" aria-label="Question mark button">?</strong><span class="desktop-use-message"> or <strong>Shift + F1</strong></span> to open <strong>Help</strong> contents depending on the current view.</span></li>
+						<li class="desktop-use-message"><strong>Drag-and-drop</strong> ABC, MusicXML, BWW, or MIDI files on the editor area to add them.</li>
+						<li class="desktop-use-message"><strong>Resize</strong> the editor dragging its lower right corner; <strong>zoom out</strong> with <strong>Ctrl -</strong>/<strong>⌘ -</strong></li>
+						<li>Press <strong title="Hamburger menu button or Control + Shift + F10" aria-label="Hamburger menu button or Control + Shift + F10">☰</strong> to open <strong>context menu</strong> with actions and links.</li>
+				</ul>
 
-				<p id="desktop_use_message" class="desktop_use_message"><strong>Drag-and-drop</strong> ABC, MusicXML, BWW, or MIDI files on the editor area to add them.<br><br><br><strong>Resize the ABC Editor</strong> by clicking and dragging its lower right corner.</p>
-
-					<p id="notation-placeholder-text-2" class="notation-placeholder-text-2">Click <strong>Search for Tunes</strong> to find tunes by name.</p>
-
-				<input class="notation-placeholder-button btn btn-placeholder" style="margin-right:18px" onclick="showWelcomeScreen();" type="button" value="Introduction" title="Show Welcome Screen Instructions"/>
-				
-				<input class="notation-placeholder-button btn btn-placeholder" onclick="showWhatsNewScreen();" type="button" value="What's New" title="Show the latest update info dialog"/>
+				<div class="notation-placeholder-buttons btn-container-center">
+					<button class="notation-placeholder-button btn btn-placeholder" onclick="showWelcomeScreen();" title="Show Welcome Screen Instructions" aria-title="Show Welcome Screen Instructions">
+						Introduction
+					</button>
+					<button class="notation-placeholder-button btn btn-placeholder" onclick="showWhatsNewScreen();" title="Show the latest update info dialog" aria-title="Show the latest update info dialog">
+						What's New
+					</button>
+				</div>
 			
 			</div>
 			

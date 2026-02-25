@@ -2053,7 +2053,7 @@ function ShowHighlightingExplanation() {
   modal_msg += '<p>Click any element in the notation to select the corresponding ABC text in the editor.</p>';
   modal_msg += '<p>Highlighting requires redrawing all tunes on each change to the ABC.</p>';
   modal_msg += '<p>This may be slow on large numbers of tunes.</p>';
-  modal_msg += '<p>All pre-processing of the ABC at notation drawing time is turned off. Any hiding of Annotations/Text/Chords selected in the Advanced dialog as well as automatic injection of staff separation space will be disabled. Your settings will be restored when you turn highlighting off.</p>';
+  modal_msg += '<p>All pre-processing of the ABC at notation drawing time is turned off. Any hiding of Annotations / Text / Chords selected in the Advanced Dialog as well as automatic injection of staff separation space will be disabled. Your settings will be restored when you turn highlighting off.</p>';
 
   DayPilot.Modal.alert(modal_msg, {
     theme: "modal_flat",
@@ -2115,7 +2115,10 @@ function ToggleRawMode() {
     // If it is the first time using Highlighting, show the one-time help
     if (gRawFirstTime) {
 
-      ShowHighlightingExplanation();
+      setTimeout(() => {
+        
+        ShowHighlightingExplanation();
+      }, 50);
 
       gRawFirstTime = false;
 
@@ -19712,6 +19715,10 @@ function BuildTuneSetAppend() {
           }
           else{
             // Scroll the tune ABC into view
+            // Lite: Customized
+            // Fix uncaught error in notation view
+            if (gIsMaximized) return;
+              
             ScrollABCTextIntoView(gTheABC, tuneOffset, tuneOffset, 10);
 
             gTheABC.blur();
@@ -20205,7 +20212,7 @@ function AddABC() {
   // Make Add dialog wider
   DayPilot.Modal.alert(modal_msg, {
     theme: "modal_flat",
-    top: 50,
+    top: isMobileBrowser()? 25 : 50,
     width: 720,
     scrollWithPage: false
   });
@@ -50026,7 +50033,7 @@ function PDFExportDialog() {
     name: "  Courier (Latin)",
     id: "Courier"
   }, {
-    name: "  Fira Sans (⤓ 0.5MB)",
+    name: "  Fira Sans (⤓ 2MB)",
     id: "Fira-Sans"
   }, {
     name: "  Noto Sans (⤓ 9MB)",
@@ -52216,7 +52223,7 @@ function AdvancedSettings() {
         if (gFullScreenScaling < 25) gFullScreenScaling = 25;
         if (gFullScreenScaling > 100) gFullScreenScaling = 100;
 
-        setAutoScaleNotation();
+        liteSetAutoScaleNotation();
       }
 
       gPlayerStatusOnLeft = args.result.configure_player_status_on_left;
@@ -53466,9 +53473,9 @@ function ConfigureToolSettings() {
       gAutoScaleNotation = args.result.configure_auto_scale_notation;
 
       if (gAutoScaleNotation && !gAlwaysTwoColumns) {
-        setAutoScaleNotation();
+        liteSetAutoScaleNotation();
       } else if (isAutoScaleNotationApplied()) {
-        resetAutoScaleNotation();
+        liteResetAutoScaleNotation();
       }
 
       // Sanity check the player scaling
@@ -55318,13 +55325,14 @@ function restoreStateFromLocalStorage() {
   }
 
   // If first time, show a welcome message
-  // Lite: Customized (disable auto-display of welcome screen to prevent frame blocking in embedded Tools)
+  // Lite: Customized
+  // Disable auto-display of welcome screen in maximized state
+  // to prevent frame blocking in shared link / embedded Tools
   if (gIsFirstRun) {
 
     UpdateLocalStorage();
 
-    // showWelcomeScreen();
-
+    if (!gIsMaximized) showWelcomeScreen();
   }
 
 }
@@ -55710,11 +55718,15 @@ function HideZoomBannerForever(e) {
 
 //
 // Set the margins on window resize
+//
 // Lite: Customized
+// Handle more styles in CSS for transparency
 //
 function HandleWindowResize() {
 
-  // Lite: TO DO: Responsive design core based on viewport size, not browser platform 
+  // Lite: Customized
+  // WIP towards responsive design based on viewport size, not browser platform 
+
   // if (isDesktopBrowser()) {
   const isDesktopUser = isDesktopBrowser();
 
@@ -55758,13 +55770,14 @@ function HandleWindowResize() {
           }
         }
 
-        elem = document.getElementById("notation-placeholder-text");
-        elem.style.marginTop = "64px";
+        // elem = document.getElementById("notation-placeholder-text");
+        // elem.style.marginTop = "64px";
       }
 
-      } else {
-
-        // Two column display
+    } else {
+        //
+        // Two column display (windowWidth >= 1798)
+        //
 
         // var elem = document.getElementById("app-container");
 
@@ -55785,7 +55798,9 @@ function HandleWindowResize() {
           }
         }
 
-        // if (isDesktopUser) { // Lite: Customized (testing: allow for all browsers)
+        // Lite: Customized
+        // Experimental: allow for all browsers
+        // if (isDesktopUser) {
           // We should have more room, resize the editor
           var windowHeight = window.innerHeight;
 
@@ -55829,8 +55844,8 @@ function HandleWindowResize() {
           // Hide the zoom suggestion banner
           document.getElementById("zoombanner").style.display = "none";
 
-          elem = document.getElementById("notation-placeholder-text");
-          elem.style.marginTop = "136px";
+          // elem = document.getElementById("notation-placeholder-text");
+          // elem.style.marginTop = "136px";
         // }
       }
 
@@ -56704,11 +56719,18 @@ function initMIDI() {
 
 //
 // Show the What's New screen
+// Lite: Customized
+// Open ABC Tools Lite: Latest dialog
+// Keep upstream update details for reference
 //
 function showWhatsNewScreen() {
 
   // Keep track of dialogs
   sendGoogleAnalytics("dialog", "showWhatsNewScreen");
+
+  liteOpenToolsLatestScreen();
+
+  return;
 
   // --- Inline styles to keep this self-contained like your existing dialog ---
   var modal_msg = '';
@@ -56753,42 +56775,67 @@ function showWhatsNewScreen() {
 }
 
 //
-// Show the first run welcome screen
+// Show Welcome Screen
 // Lite: Customized
+// Now serves as Help Dialog
+// in Blank Editor state
 //
 function showWelcomeScreen() {
 
   // Keep track of dialogs
   sendGoogleAnalytics("dialog", "showWelcomeScreen");
+
+  const userAction =
+    isPureDesktopBrowser()? 'Click' : 'Press';
+
   // Lite: Customized
   // Replace inline styles with reusable classes
-  var modal_msg = '<h2 class="modal-header">Welcome to ABC Tools Lite, an unofficial fork of Michael Eskin’s ABC Transcription Tools</h2>';
-  modal_msg += '<p style="font-size:12pt;line-height:16pt;"><strong>Please visit <a href="https://michaeleskin.com/abctools/userguide.html" target="_blank" title="ABC Transcription Tools User Guide">ABC Transcription Tools User Guide</a> page for complete instructions and demo videos on how to use the tools.</strong></p>';
-  if (gIsQuickEditor) {
-    modal_msg += '<p style="font-size:12pt;line-height:16pt;">The Quick Editor is optimized for editing and playback of larger tunebooks.</p>';
-  }
+  var modal_msg = '';
 
-  modal_msg += '<p style="font-size:12pt;line-height:16pt;">To begin, type or paste tunes in ABC format into the text area.</p>';
-  modal_msg += '<p style="font-size:12pt;line-height:16pt;">Each ABC tune <strong>must</strong> begin with an X: tag.</p>';
-  modal_msg += '<p style="font-size:12pt;line-height:16pt;">Notation updates instantly as you make changes to the ABC.</p>';
-  modal_msg += '<p style="font-size:12pt;line-height:16pt;">Click "Open" to open ABC, MusicXML, BWW, or MIDI files from your system.</p>';
-  modal_msg += '<p style="font-size:12pt;line-height:16pt;">Click "Add" to add ABC MusicXML, BWW, or MIDI files or tune templates.</p>';
-  if (isPureDesktopBrowser()) {
-    modal_msg += '<p style="font-size:12pt;line-height:16pt;">You may drag-and-drop ABC, MusicXML, BWW, or MIDI files onto the editor area to add them.</p>';
+  modal_msg += '<h2 class="modal-header modal-header-help">Welcome to ABC Tools Lite, a custom fork of Michael Eskin’s ABC Transcription Tools</h2>';
+  
+  modal_msg += '<h3 class="modal-subheader modal-textgroup-explanation">';
+  modal_msg += 'Begin by opening, pasting or typing ABC with an <strong>X:</strong> tag';
+  modal_msg += '</h3>';
+
+  modal_msg += '<p>';
+  if (gIsQuickEditor) {
+
+    modal_msg += 'The <strong>Quick Editor</strong> is optimized for editing and playback of larger tunebooks. ';
+    modal_msg += 'It renders notation one item at a time which can dramatically speed up the viewing of big ABC collections.';
+  } else {
+    
+    modal_msg += 'This is an <strong>unofficial</strong>, <strong>experimental</strong> fork of ABC Transcription Tools with additional features ';
+    modal_msg += 'developed by <a href="https://github.com/anton-bregolas" target="_blank" title="Anton Zille on GitHub" aria-title="Anton Zille on GitHub"><strong>Anton Zille</strong></a>.';
   }
-  modal_msg += '<p style="font-size:12pt;line-height:16pt;">Click "Search for Tunes" to find tunes by name.</p>';
-  modal_msg += '<p style="font-size:12pt;line-height:16pt;"><strong>Once ABC has been entered and notation is displayed:</strong></p>';
-  modal_msg += '<p style="font-size:12pt;line-height:16pt;">• Click the Zoom-Out arrows at the top-right to view the notation full screen.</p>';
-  modal_msg += '<p style="font-size:12pt;line-height:16pt;">• Click "Save" to save all the ABC text to an ABC text file.</p>';
-  if (!gIsQuickEditor) {
-    modal_msg += '<p style="font-size:12pt;line-height:16pt;">• Click "Export PDF" to export your tunebook in PDF format.</p>';
-    modal_msg += '<p style="font-size:12pt;line-height:16pt;">• Click "Export Website" to export your tunebook as a website.</p>';
-  }
-  modal_msg += '<p style="font-size:12pt;line-height:16pt;">• Click "Play" to play or train on the tune currently being edited.</p>';
+  modal_msg += '</p>';
+
+  modal_msg += '<h4>' + userAction + ' <strong>Open</strong> or <strong>Add</strong> to import the following file types:</h4>';
+  modal_msg += '<ul>';
+  modal_msg += '<li>ABC / BWW / MIDI / MusicXML / TXT with valid ABC</li>';
+  modal_msg += '</ul>';
+
+  modal_msg += '<p>';
+  modal_msg += 'Browse <strong>Add Dialog</strong> tabs for examples of tunes in ABC, song and backing templates, or get tunes from the <strong>Search Database</strong>. You may also drag-and-drop files onto the editor area to add them.';
+  modal_msg += '</p>';
+
+   modal_msg += '<p>';
+  modal_msg += userAction + ' <strong title="Question mark button" aria-label="Question mark button">?</strong><span class="desktop-use-message"> or press <strong>Shift + F1</strong></span> ';
+  modal_msg += ' after loading the tunes to view <strong>Help Tips</strong> which are auto-adjusted to the current view and layout.';
+  modal_msg += '</p>';
+
+  modal_msg += '<p>';
+  modal_msg += userAction + ' <strong title="Hamburger menu button or Control + Shift + F10" aria-label="Hamburger menu button or Control + Shift + F10">☰</strong> to open <strong>Context Menu</strong> with <b>Actions</b>, <b>Links</b> and <b>Settings</b>. ';
+  modal_msg += '</p>';
+
+  modal_msg += '<p>';
+  modal_msg += 'Visit <a href="https://github.com/anton-bregolas/abctools-lite#abc-tools-lite" target="_blank" title="ABC Tools Lite README" aria-title="ABC Tools Lite README"><strong>ABC Tools Lite Readme</strong></a> page on GitHub for<span class="desktop-use-message"> the full list of keyboard shortcuts and</span> info about custom new features. ';
+  modal_msg += 'Visit Michael Eskin\'s original <a href="https://michaeleskin.com/abctools/userguide.html" target="_blank" title="ABC Transcription Tools User Guide" aria-title="ABC Transcription Tools User Guide"><strong><span class="desktop-use-message">ABC Tools </span>User Guide</strong></a> for detailed instructions and demo videos<span class="desktop-use-message"> on how to use the Tools</span>.';
+  modal_msg += '</p>';
 
   DayPilot.Modal.alert(modal_msg, {
     theme: "modal_flat",
-    top: 50,
+    top: isMobileBrowser()? 25 : 50,
     scrollWithPage: (AllowDialogsToScroll())
   });
 
@@ -56796,45 +56843,45 @@ function showWelcomeScreen() {
 
 //
 // Show the first run zoom screen
-// Lite: Customized
+// Lite: Customized (reduntant, handled by showWelcomeScreen)
 //
-function showZoomInstructionsScreen() {
+// function showZoomInstructionsScreen() {
 
-  // Keep track of dialogs
-  sendGoogleAnalytics("dialog", "showZoomInstructionsScreen");
-  // Lite: Customized
-  // Replace inline styles with reusable classes
-  var modal_msg = '<h2 class="modal-header">Welcome to ABC Tools Lite, an unofficial fork of Michael Eskin’s ABC Transcription Tools</h2>';
-  modal_msg += '<p style="font-size:12pt;line-height:16pt;">Since this is your first time using the tools, here is some useful information to help you get started:</p>';
-  modal_msg += '<p style="font-size:12pt;line-height:16pt;">In this view, you may scroll through the tune notation.</p>';
+//   // Keep track of dialogs
+//   sendGoogleAnalytics("dialog", "showZoomInstructionsScreen");
+//   // Lite: Customized
+//   // Replace inline styles with reusable classes
+//   var modal_msg = '<h2 class="modal-header">Welcome to ABC Tools Lite, an unofficial fork of Michael Eskin’s ABC Transcription Tools</h2>';
+//   modal_msg += '<p style="font-size:12pt;line-height:16pt;">Since this is your first time using the tools, here is some useful information to help you get started:</p>';
+//   modal_msg += '<p style="font-size:12pt;line-height:16pt;">In this view, you may scroll through the tune notation.</p>';
 
-  if (!gIsQuickEditor) {
-    modal_msg += '<p style="font-size:12pt;line-height:16pt;">Click the Play button at the bottom-right to play or train on the current tune.</p>';
-    modal_msg += '<p style="font-size:12pt;line-height:16pt;">From the Player you can also export the tune image or audio in multiple formats.</p>';
-    modal_msg += '<p style="font-size:12pt;line-height:16pt;">Click the PDF button at the bottom-left to export the tunes in PDF format.</p>';
-  }
+//   if (!gIsQuickEditor) {
+//     modal_msg += '<p style="font-size:12pt;line-height:16pt;">Click the Play button at the bottom-right to play or train on the current tune.</p>';
+//     modal_msg += '<p style="font-size:12pt;line-height:16pt;">From the Player you can also export the tune image or audio in multiple formats.</p>';
+//     modal_msg += '<p style="font-size:12pt;line-height:16pt;">Click the PDF button at the bottom-left to export the tunes in PDF format.</p>';
+//   }
 
-  if (!gDisableEditFromPlayLink) {
+//   if (!gDisableEditFromPlayLink) {
 
-    modal_msg += '<p style="font-size:12pt;line-height:16pt;">If you would like to edit the ABC for these tunes:</p>';
-    modal_msg += '<p style="font-size:12pt;line-height:16pt;">Click the Zoom-In arrows at the top-right to close the full screen notation view and open the ABC editor.</p>';
-    modal_msg += '<p style="font-size:12pt;line-height:16pt;">The ABC for all the tunes will be loaded in the editor.</p>';
-    modal_msg += '<p style="font-size:12pt;line-height:16pt;">In the ABC editor, click the Zoom-Out arrows at the top-right to view notation full screen.</p>';
-  }
+//     modal_msg += '<p style="font-size:12pt;line-height:16pt;">If you would like to edit the ABC for these tunes:</p>';
+//     modal_msg += '<p style="font-size:12pt;line-height:16pt;">Click the Zoom-In arrows at the top-right to close the full screen notation view and open the ABC editor.</p>';
+//     modal_msg += '<p style="font-size:12pt;line-height:16pt;">The ABC for all the tunes will be loaded in the editor.</p>';
+//     modal_msg += '<p style="font-size:12pt;line-height:16pt;">In the ABC editor, click the Zoom-Out arrows at the top-right to view notation full screen.</p>';
+//   }
 
-  modal_msg += '<p style="font-size:12pt;line-height:16pt;">Please visit <a href="https://michaeleskin.com/abctools/userguide.html" target="_blank" title="ABC Transcription Tools User Guide">ABC Transcription Tools User Guide</a> page for complete instructions and demo videos on how to use the tools.</p>';
+//   modal_msg += '<p style="font-size:12pt;line-height:16pt;">Please visit <a href="https://michaeleskin.com/abctools/userguide.html" target="_blank" title="ABC Transcription Tools User Guide">ABC Transcription Tools User Guide</a> page for complete instructions and demo videos on how to use the tools.</p>';
 
-  DayPilot.Modal.alert(modal_msg, {
-    theme: "modal_flat",
-    top: 50,
-    scrollWithPage: (AllowDialogsToScroll())
-  });
+//   DayPilot.Modal.alert(modal_msg, {
+//     theme: "modal_flat",
+//     top: 50,
+//     scrollWithPage: (AllowDialogsToScroll())
+//   });
 
-}
+// }
 
 //
 // Show the tip jar reminder
-// Lite: Customized
+// Lite: Customized (disabled)
 // TO DO: Find a less intrusive way to remind about tipping
 //
 function TipJarReminderDialog() {
@@ -56847,7 +56894,7 @@ function TipJarReminderDialog() {
   // modal_msg += '<p style="font-size:14pt;line-height:18pt;text-align:center;margin-top:36px;">If so, please consider dropping something in one of Michael Eskin’s </p>';
   // modal_msg += '<p style="font-size:14pt;line-height:18pt;text-align:center;"><strong><a href="tipjars.html" target="_blank" title="Michael Eskin’s Virtual Tip Jars">Virtual Tip Jars</a></strong></p>';
   // modal_msg += '<p style="font-size:14pt;line-height:18pt;text-align:center;margin-top:36px;">Cheers and thanks!</p>';
-  // modal_msg += '<div style="text-align:center"><img style="width:150px;" src="img/michael2.jpg"/></div>';
+  // modal_msg += '<div style="text-align:center"><img style="width:150px;" src="img/michael150.webp"/></div>';
   // modal_msg += '<p style="font-size:14pt;line-height:18pt;text-align:center;">Michael Eskin</p>';
 
   // DayPilot.Modal.alert(modal_msg, {
@@ -56877,7 +56924,7 @@ function TinyURLReminderDialog() {
   modal_msg += '<p style="font-size:12pt;line-height:14pt;text-align:center;">More details here:</p>';
   modal_msg += '<p style="font-size:12pt;line-height:14pt;text-align:center;"><strong><a href="https://michaeleskin.com/abctools/userguide.html#private_tinyurl_token" target="_blank" title="Private TinyURL Token">Using a Private TinyURL API Token</a></strong></p>';
   modal_msg += '<p style="font-size:12pt;line-height:14pt;text-align:center;margin-top:36px;">Cheers and thanks!</p>';
-  modal_msg += '<div style="text-align:center"><img style="width:150px;" src="img/michael2.jpg"/></div>';
+  modal_msg += '<div style="text-align:center"><img style="width:150px;" src="img/michael150.webp"/></div>';
   modal_msg += '<p style="font-size:12pt;line-height:14pt;text-align:center;">Michael Eskin</p>';
 
   DayPilot.Modal.alert(modal_msg, {
@@ -56887,43 +56934,138 @@ function TinyURLReminderDialog() {
   });
 
 }
+
 //
-// Show help when in fullscreen mode
+// Show Help Dialog
+// Lite: Customized
+// Customize Help dialog messages for
+// Blank / Editor View / Notation View
 //
 function ShowHelp() {
 
   // Keep track of dialogs
   sendGoogleAnalytics("dialog", "ShowHelp");
 
-  if (gIsMaximized) {
-    // Lite: Customized
-    // Replace inline styles with reusable classes
-    var modal_msg = '<h2 class="modal-header">About the Full Screen Notation View</h2>';
+  const abcState = document.body.dataset.abc;
 
-    modal_msg += '<p style="font-size:12pt;line-height:16pt;">In this view, you may scroll through the tune notation.</p>';
-    modal_msg += '<p style="font-size:12pt;line-height:16pt;">Click the Play button at the bottom-right to play or train on the current tune.</p>';
-    modal_msg += '<p style="font-size:12pt;line-height:16pt;">From the Player you can also export the tune image or audio in multiple formats.</p>';
-    modal_msg += '<p style="font-size:12pt;line-height:16pt;">Click the PDF button at the bottom-left to export the tunes in PDF format.</p>';
+  const isAbcLoaded = abcState && abcState === "rendered";
 
-    if (!gDisableEditFromPlayLink) {
-      modal_msg += '<p style="font-size:12pt;line-height:16pt;">If you would like to edit the ABC for these tunes:</p>';
-      modal_msg += '<p style="font-size:12pt;line-height:16pt;">Click the Zoom-In arrows at the top-right to close the full screen notation view and open the tunes in the ABC editor.</p>';
-      modal_msg += '<p style="font-size:12pt;line-height:16pt;">The ABC for all the tunes will be loaded in the editor.</p>';
-      modal_msg += '<p style="font-size:12pt;line-height:16pt;">In the ABC editor, click the Zoom-Out arrows at the top-right to view the notation full screen.</p>';
-    }
+  // Show Welcome Screen if Blank Editor
+  if (!isAbcLoaded) {
 
-    modal_msg += '<p style="font-size:12pt;line-height:16pt;">Please visit Michael Eskin\'s <a href="https://michaeleskin.com/abctools/userguide.html" target="_blank" title="ABC Transcription Tools User Guide">User Guide</a> page for complete instructions and demo videos on how to use the tools.</p>';
-
-    DayPilot.Modal.alert(modal_msg, {
-      theme: "modal_flat",
-      top: 50,
-      scrollWithPage: (AllowDialogsToScroll())
-    });
-  } else {
-    // Open the user guide in a new tab
-    window.open("https://michaeleskin.com/abctools/userguide.html");
+    showWelcomeScreen();
+    return;
   }
 
+  // Lite: Customized
+  // Replace inline styles with reusable classes
+  // Group instructions for clearer presentation
+  // Vary instructions depending on current view
+  // Hide or show instructions depending on mode
+
+  const userAction =
+    isPureDesktopBrowser()? 'Click' : 'Press';
+
+  var modal_msg = '';
+
+  if (gIsMaximized) {
+
+    modal_msg += '<h2 class="modal-header modal-header-help">About the Notation View</h2>';
+    modal_msg += '<h3 class="modal-subheader modal-textgroup-explanation">Scroll through tune notation, play back tunes and more</h3>';
+  
+  } else {
+
+    modal_msg += '<h2 class="modal-header modal-header-help">About the Editor View</h2>';
+    modal_msg += '<h3 class="modal-subheader modal-textgroup-explanation">Open and edit ABC, MusicXML, BWW, or MIDI files</h3>';
+  }
+
+  if (!gIsMaximized && !gDisableEditFromPlayLink) {
+
+    modal_msg += '<p>';
+    modal_msg += '<strong>OPEN & ADD:</strong> ' + userAction + ' the <strong>Open</strong> button to import one or multiple files to the ABC Editor. ';
+    modal_msg += userAction + ' the <strong>Add</strong> button<span class="desktop-use-message"> or press <strong>Shift + F2</strong></span> to open Add ABC Dialog with examples, templates and search.';
+    modal_msg += '</p>';
+  }
+
+  modal_msg += '<p>';
+  modal_msg += '<strong>PLAY:</strong> ' + userAction + ' the <strong>Play</strong> button ';
+  if (gIsMaximized || !isMobileBrowser()) {
+    modal_msg += 'at the bottom-right ';
+  }
+  modal_msg += '<span class="desktop-use-message">or press <strong>F4</strong></span> to play the current tune. ';
+  modal_msg += '<span class="desktop-use-message"><strong>Shift-click</strong> on the <strong>Play</strong> button to open the Tune Trainer. </span>';
+  if (isMobileBrowser() && !gDisableEditFromPlayLink) {
+    modal_msg += `To open the Tune Trainer, press ${gIsMaximized? '<strong>Edit</strong> and then ': ''}the <strong>Train</strong> button. `;
+  }
+  modal_msg += 'Open Player Settings from the Player Dialog.';
+  modal_msg += '</p>';
+
+  if (gIsMaximized && !gDisableEditFromPlayLink) {
+
+    modal_msg += '<p>';
+    modal_msg += '<strong>EDIT:</strong> ';
+    modal_msg += userAction + ' the <strong>Edit</strong> button at the top-right<span class="desktop-use-message"> or press <strong>Shift + F11</strong></span> to close the notation view and open tunes in the ABC Editor. ';
+    modal_msg += '<span class="desktop-use-message">Press <strong>Shift + F4</strong> to focus on the ABC. </span>';
+    modal_msg += userAction + ' the <strong>Notation</strong> button <span class="desktop-use-message"> or press <strong>Shift + F11</strong> again</span> to go back to the notation view.';
+    modal_msg += '</p>';
+  }
+
+  if (!gIsMaximized) {
+
+    modal_msg += '<p>';
+    modal_msg += '<strong>VIEW:</strong> ';
+    modal_msg += userAction + ' the <strong>Notation</strong> button on the right <span class="desktop-use-message"> or press <strong>Shift + F11</strong></span> to enter the notation view. ';
+    modal_msg += userAction + ' the top-right <strong>Edit</strong> button<span class="desktop-use-message"> or press <strong>Shift + F11</strong> again</span> to reopen tunes in the ABC Editor.';
+    modal_msg += '</p>';
+  }
+
+  modal_msg += '<p>';
+  modal_msg += '<strong>SAVE:</strong> ';
+
+  if (!gDisableEditFromPlayLink) {
+
+    modal_msg += userAction + ` ${gIsMaximized? '<strong>Edit</strong> and then' : 'the'}`;
+    modal_msg += ' <strong>Save</strong>' + `${gIsMaximized? '' : ' button'}`;
+    modal_msg += '<span class="desktop-use-message">';
+    modal_msg += ` or press <strong>${(isMac() || isIOS())? '⌘' : 'Ctrl'} + S</strong>`;
+    modal_msg += '</span>';
+    modal_msg += ' to download the ABC as a text file. ';
+  }
+
+  modal_msg += userAction + ' <strong>Export PDF</strong> button to export a PDF tunebook. ';
+  modal_msg += 'Use <strong>Export Media</strong> in the Player Dialog';
+  if (!gIsMaximized) {
+    modal_msg += '<span class="desktop-use-message"> or click <strong>Export All Tunes</strong> in More ABC Tools</span>';
+  }
+  modal_msg += ' to export images or audio.';
+  modal_msg += '</p>';
+
+  modal_msg += '<p>';
+  modal_msg += '<strong>HELP:</strong> ';
+  modal_msg += 'Open <a href="https://github.com/anton-bregolas/abctools-lite#abc-tools-lite" target="_blank" title="ABC Tools Lite README" aria-title="ABC Tools Lite README"><strong>ABC Tools Lite Readme</strong></a> page on GitHub for<span class="desktop-use-message"> the full list of keyboard shortcuts and</span> general info about custom new features. ';
+  modal_msg += 'Visit Michael Eskin\'s original <a href="https://michaeleskin.com/abctools/userguide.html" target="_blank" title="ABC Transcription Tools User Guide" aria-title="ABC Transcription Tools User Guide"><strong><span class="desktop-use-message">ABC Tools </span>User Guide</strong></a> for detailed instructions and demo videos<span class="desktop-use-message"> on how to use the Tools</span>.';
+  modal_msg += '</p>';
+
+  if (gIsMaximized && gDisableEditFromPlayLink) {
+    modal_msg += '<p>';
+    modal_msg += '<strong>EDIT: The author of this tunebook has disabled editing.</strong>';
+    modal_msg += '</p>';
+  }
+
+  DayPilot.Modal.alert(modal_msg, {
+    theme: "modal_flat",
+    top: isMobileBrowser()? 25 : 50,
+    scrollWithPage: (AllowDialogsToScroll())
+  });
+
+  return;
+
+  // Lite: Customized
+  // Use Alt-click to open User Guide
+  // Use Shift-click to open Lite Readme
+  //
+  // Open the user guide in a new tab
+  // window.open("https://michaeleskin.com/abctools/userguide.html");
 }
 
 //
@@ -60988,7 +61130,7 @@ function SetupContextMenu(showUpdateItem) {
         var theAbcToolsLinks = {
           name: 'Open ABC Tools Links',
           fn: function(target) {
-            openAbcToolsLinks();
+            liteOpenToolsLinks();
           }
         };
 
@@ -60999,7 +61141,7 @@ function SetupContextMenu(showUpdateItem) {
         { // Lite: Customized
           name: 'Open ABC Tools Links',
           fn: function(target) {
-            openAbcToolsLinks();
+            liteOpenToolsLinks();
           }
         },{},
         {
@@ -61293,7 +61435,7 @@ function SetupContextMenu(showUpdateItem) {
         var theAbcToolsLinks = {
           name: 'Open ABC Tools Links',
           fn: function(target) {
-            openAbcToolsLinks();
+            liteOpenToolsLinks();
           }
         };
 
@@ -61305,7 +61447,7 @@ function SetupContextMenu(showUpdateItem) {
         { // Lite: Customized
           name: 'Open ABC Tools Links',
           fn: function(target) {
-            openAbcToolsLinks();
+            liteOpenToolsLinks();
           }
         },{},
         {
@@ -61423,7 +61565,7 @@ function SetupContextMenu(showUpdateItem) {
         { // Lite: Customized
           name: 'Open ABC Tools Links',
           fn: function(target) {
-            openAbcToolsLinks();
+            liteOpenToolsLinks();
           }
         },{},
       {
@@ -61538,7 +61680,7 @@ function SetupContextMenu(showUpdateItem) {
         { // Lite: Customized
           name: 'Open ABC Tools Links',
           fn: function(target) {
-            openAbcToolsLinks();
+            liteOpenToolsLinks();
           }
         },{},
       {
@@ -61988,9 +62130,11 @@ function DoStartup() {
   // iOS and Android styling adaptation
   //
   // Single column stacked blocks by default
-  // Optional fixed two column mode for all devices
+  // Optional fixed-two-column mode for all devices
   //
   if (isMobileBrowser() || gAlwaysTwoColumns) {
+
+    document.body.dataset.layout = "mobile-fixed";
 
     // Add little extra room at the top
     var elem = document.getElementById("notenlinks");
@@ -62472,7 +62616,18 @@ function DoStartup() {
 
   // Hook up the help button
   document.getElementById("helpbutton").onclick =
-    function() {
+    function(e) {
+
+      if (e.shiftKey) {
+        e.preventDefault();
+        liteOpenGitHubReadme();
+        return;
+      }
+      if (e.altKey) {
+        e.preventDefault();
+        window.open("https://michaeleskin.com/abctools/userguide.html", "_blank");
+        return;
+      }
       ShowHelp();
     };
 
@@ -62552,7 +62707,7 @@ function DoStartup() {
   // Add notation auto-scaling data if setting enabled
   if (gAutoScaleNotation && !gAlwaysTwoColumns) {
 
-    setAutoScaleNotation();
+    liteSetAutoScaleNotation();
   }
 
   // Not from a share, show the UI
@@ -62696,7 +62851,7 @@ function DoStartup() {
       HandleWindowResize();
 
       if (!gIsMaximized) {
-        // Lite: Customized (allow CodeMirror to stetch to container width)
+        // Lite: Customized (allow CodeMirror to stretch to container width)
         if (gEnableSyntax){
           let wrapper = gTheCM.getWrapperElement();
 
@@ -62801,7 +62956,7 @@ function DoStartup() {
   else {
 
     // Hide the desktop zoom message
-    document.getElementById("desktop_use_message").style.display = "none";
+    // document.getElementById("desktop_use_message").style.display = "none";
 
     if (!gEnableSyntax){
       // Disable dragging the text inside the text area
@@ -62814,9 +62969,12 @@ function DoStartup() {
 
 
   //
-  // Add text area mouse handlers on desktop browsers 
+  // Add text area mouse handlers
+  // Lite: Customized
+  // Experimental: Allow keyboard shortcuts & drag-to-open
+  // on all platforms, including Android & iOS
   //
-  if (isPureDesktopBrowser()) {
+  // if (isPureDesktopBrowser()) {
 
     if (gEnableSyntax){
       let wrapper = gTheCM.getWrapperElement();
@@ -62884,206 +63042,50 @@ function DoStartup() {
     // Raw mode is enabled by default
     gAllowRawMode = true;
 
-    if (isMac()) {
+  // Lite: Customized
+  // Handle custom Shift + Function Key shorcuts
+  document.addEventListener('keydown', liteHandleKeyDownEvents);
 
-      var elem = document.getElementById("saveabcfile");
-      elem.title = "Saves the current ABC text to a file (⌘+S)"
+  // Lite: Customized
+  // MacOS / iOS
+  //
+  if (isMac() || isIOS()) {
 
-      document.addEventListener('keydown', function(event) {
+    var elem = document.getElementById("saveabcfile");
+    elem.title = "Saves the current ABC text to a file (⌘+S)"
 
-        //console.log("event.key = "+event.key);
+    document.addEventListener('keydown', function(event) {
 
-        // F3 resets the player
-        if (event.key === 'F3') {
+      //console.log("event.key = "+event.key);
+
+      // F3 resets the player
+      if (event.key === 'F3') {
+
+        if (event.shiftKey) return;
+
+        event.preventDefault();
+
+        const button = document.querySelector('button.abcjs-midi-reset');
+        if (button) {
+
+          button.click();
+          button.focus();
+        }
+      } else
+        // F4 toggles the player state
+        if (event.key === 'F4') {
+
+          if (event.shiftKey) return;
+
           event.preventDefault();
-          const button = document.querySelector('button.abcjs-midi-reset');
+
+          const button = document.querySelector('button.abcjs-midi-start');
           if (button) {
 
             button.click();
             button.focus();
-          }
-        } else
-          // F4 toggles the player state
-          if (event.key === 'F4') {
-            event.preventDefault();
 
-            // Lite: Customized
-            // Shift + F4 focuses on ABC
-            if (event.shiftKey) {
-              doFocusAbc();
-              return;
-            }
-
-            const button = document.querySelector('button.abcjs-midi-start');
-            if (button) {
-
-              button.click();
-              button.focus();
-
-              if (!isSafari()) {
-                setTimeout(function() {
-
-                  var audioContext = ABCJS.synth.activeAudioContext();
-
-                  if (audioContext && (audioContext.state == 'suspended')) {
-
-                    button.classList.remove("abcjs-loading");
-
-                    var modal_msg = '<p style="text-align:center;font-size:18pt;">Click OK to Play</p>';
-                    modal_msg += '<p style="font-size:14pt;line-height:18pt;margin-top:36px;text-align:center;">Your browser requires a click before you can use F4 to play the tune.</p>';
-                    modal_msg += '<p style="font-size:14pt;line-height:18pt;margin-top:18px;text-align:center;">Please click OK to play the tune.</p>';
-
-                    DayPilot.Modal.alert(modal_msg, {
-                      theme: "modal_flat",
-                      top: 200,
-                      width: 700,
-                      scrollWithPage: (AllowDialogsToScroll())
-                    }).then(function() {
-
-                      audioContext.resume();
-
-                    });
-
-                  }
-
-                }, 250);
-              }
-
-            } else {
-
-              const button = document.getElementById('playbutton');
-
-              if (button) {
-                button.click();
-                setTimeout(() => {
-                  doPlayerFocus();
-                }, 50);
-              }
-
-            }
-          }
-        else
-          // Check if the Command key (on Mac) is pressed with the "F" key
-          if (event.metaKey && event.key === 'f') {
-
-            //console.log("Got Command F");
-
-            event.preventDefault(); // Prevent the default browser find action
-
-            var modalDivs = document.querySelector('.modal_flat_main');
-
-            if ((!modalDivs) && (!gRenderingPDF)) {
-
-              // Launch find and replace
-              FindAndReplace();
-
-            }
-
-          }
-        else
-        if (event.metaKey && event.key === 'j') {
-
-          //console.log("Got Command J");
-
-          event.preventDefault(); // Prevent the default browser find action
-
-          var modalDivs = document.querySelector('.modal_flat_main');
-
-          if ((!modalDivs) && (!gRenderingPDF)) {
-
-            // Launch jump to tune
-            JumpToTune();
-
-          }
-
-        } else
-          // Check if the Command key (on Mac) is pressed with the "\" key
-          if (event.metaKey && event.key === '\\') {
-
-            //console.log("Got Command \");
-
-            event.preventDefault(); // Prevent the default browser action
-
-            var modalDivs = document.querySelector('.modal_flat_main');
-
-            if ((!modalDivs) && (!gRenderingPDF)) {
-
-              // Do measure align
-              AlignMeasures(false);
-
-            }
-
-          }
-        else
-          /// Check if the Command key (on Mac) is pressed with the "/" key
-          if (event.metaKey && event.key === '/') {
-
-            //console.log("Got Command /");
-
-            event.preventDefault(); // Prevent the default browser action
-
-            var modalDivs = document.querySelector('.modal_flat_main');
-
-            if ((!modalDivs) && (!gRenderingPDF)) {
-
-              // Do build tune set
-              BuildTuneSet();
-
-            }
-
-          }
-        else
-          /// Check if the Command key (on Mac) is pressed with the "S" key
-          if (event.metaKey && event.key === 's') {
-
-            //console.log("Got Command S");
-
-            event.preventDefault(); // Prevent the default browser action
-
-            var modalDivs = document.querySelector('.modal_flat_main');
-
-            if ((!modalDivs) && (!gRenderingPDF)) {
-
-              SaveABC_KB();
-
-            }
-
-          }
-
-      }, true);
-    } else {
-
-      var elem = document.getElementById("saveabcfile");
-      elem.title = "Saves the current ABC text to a file (Ctrl+S)"
-
-      document.addEventListener('keydown', function(event) {
-
-        // F3 resets the player
-        if (event.key === 'F3') {
-          event.preventDefault();
-          const button = document.querySelector('button.abcjs-midi-reset');
-          if (button) {
-            button.click();
-            button.focus();
-          }
-        } else
-          // F4 toggles the player state
-          if (event.key === 'F4') {
-            event.preventDefault();
-
-            // Lite: Customized
-            // Shift + F4 focuses on ABC
-            if (event.shiftKey) {
-              doFocusAbc();
-              return;
-            }
-
-            const button = document.querySelector('button.abcjs-midi-start');
-            if (button) {
-
-              button.click();
-              button.focus();
-
+            if (!isSafari()) {
               setTimeout(function() {
 
                 var audioContext = ABCJS.synth.activeAudioContext();
@@ -63109,113 +63111,311 @@ function DoStartup() {
 
                 }
 
-              }, 100);
-            } else {
+              }, 250);
+            }
 
-              const button = document.getElementById('playbutton');
+          } else {
 
-              if (button) {
-                button.click();
-                setTimeout(() => {
-                  doPlayerFocus();
-                }, 50);
+            const button = document.getElementById('playbutton');
+
+            if (button) {
+              button.click();
+              setTimeout(() => {
+                doPlayerFocus();
+              }, 50);
+            }
+
+          }
+        }
+      else
+        // Check if the Command key (on Mac) is pressed with the "F" key
+        if (event.metaKey && event.key === 'f') {
+
+          // Prevent Find & Replace if tunebook author disabled editing
+          if (gDisableEditFromPlayLink) return;
+
+          // Prevent captured of expected Command + F behavior outside of ABC textarea / Notation View
+          const activeElName = document.activeElement.name;
+          
+          if (!gIsMaximized && (!activeElName || activeElName !== 'abc')) return;
+
+          //console.log("Got Command F");
+
+          event.preventDefault(); // Prevent the default browser find action
+
+          var modalDivs = document.querySelector('.modal_flat_main');
+
+          if ((!modalDivs) && (!gRenderingPDF)) {
+
+            // Launch find and replace
+            FindAndReplace();
+
+          }
+
+        }
+      else
+      if (event.metaKey && event.key === 'j') {
+
+        //console.log("Got Command J");
+
+        event.preventDefault(); // Prevent the default browser find action
+
+        var modalDivs = document.querySelector('.modal_flat_main');
+
+        if ((!modalDivs) && (!gRenderingPDF)) {
+
+          // Launch jump to tune
+          JumpToTune();
+
+        }
+
+      } else
+        // Check if the Command key (on Mac) is pressed with the "\" key
+        if (event.metaKey && event.key === '\\') {
+
+          // Prevent accidental presses and capture of Command + \ outside of ABC textarea
+          const activeElName = document.activeElement.name;
+
+          if (gIsMaximized || !activeElName || activeElName !== 'abc') return;
+
+          //console.log("Got Command \");
+
+          event.preventDefault(); // Prevent the default browser action
+
+          var modalDivs = document.querySelector('.modal_flat_main');
+
+          if ((!modalDivs) && (!gRenderingPDF)) {
+
+            // Do measure align
+            AlignMeasures(false);
+
+          }
+
+        }
+      else
+        /// Check if the Command key (on Mac) is pressed with the "/" key
+        if (event.metaKey && event.key === '/') {
+
+          //console.log("Got Command /");
+
+          event.preventDefault(); // Prevent the default browser action
+
+          var modalDivs = document.querySelector('.modal_flat_main');
+
+          if ((!modalDivs) && (!gRenderingPDF)) {
+
+            // Do build tune set
+            BuildTuneSet();
+
+          }
+
+        }
+      else
+        /// Check if the Command key (on Mac) is pressed with the "S" key
+        if (event.metaKey && event.key === 's') {
+
+          // Prevent save ABC if tunebook author disabled editing
+          if (gDisableEditFromPlayLink) return;
+
+          //console.log("Got Command S");
+
+          event.preventDefault(); // Prevent the default browser action
+
+          var modalDivs = document.querySelector('.modal_flat_main');
+
+          if ((!modalDivs) && (!gRenderingPDF)) {
+
+            SaveABC_KB();
+
+          }
+
+        }
+
+    }, true);
+
+  // Lite: Customized
+  // Windows / Linux / Android etc.
+  //
+  } else {
+
+    var elem = document.getElementById("saveabcfile");
+    elem.title = "Saves the current ABC text to a file (Ctrl+S)"
+
+    document.addEventListener('keydown', function(event) {
+
+      // F3 resets the player
+      if (event.key === 'F3') {
+
+        if (event.shiftKey) return;
+
+        event.preventDefault();
+        const button = document.querySelector('button.abcjs-midi-reset');
+        if (button) {
+          button.click();
+          button.focus();
+        }
+      } else
+        // F4 toggles the player state
+        if (event.key === 'F4') {
+
+          if (event.shiftKey) return;
+
+          event.preventDefault();
+
+          const button = document.querySelector('button.abcjs-midi-start');
+          if (button) {
+
+            button.click();
+            button.focus();
+
+            setTimeout(function() {
+
+              var audioContext = ABCJS.synth.activeAudioContext();
+
+              if (audioContext && (audioContext.state == 'suspended')) {
+
+                button.classList.remove("abcjs-loading");
+
+                var modal_msg = '<p style="text-align:center;font-size:18pt;">Click OK to Play</p>';
+                modal_msg += '<p style="font-size:14pt;line-height:18pt;margin-top:36px;text-align:center;">Your browser requires a click before you can use F4 to play the tune.</p>';
+                modal_msg += '<p style="font-size:14pt;line-height:18pt;margin-top:18px;text-align:center;">Please click OK to play the tune.</p>';
+
+                DayPilot.Modal.alert(modal_msg, {
+                  theme: "modal_flat",
+                  top: 200,
+                  width: 700,
+                  scrollWithPage: (AllowDialogsToScroll())
+                }).then(function() {
+
+                  audioContext.resume();
+
+                });
+
               }
 
-            }
-          }
-        else
-          // Check if the Control key (on Windows/Linux) is pressed with the "F" key
-          if (event.ctrlKey && event.key === 'f') {
+            }, 100);
+          } else {
 
-            //console.log("Got Control F");
+            const button = document.getElementById('playbutton');
 
-            event.preventDefault(); // Prevent the default browser find action
-
-            var modalDivs = document.querySelector('.modal_flat_main');
-
-            if ((!modalDivs) && (!gRenderingPDF)) {
-
-              // Launch find and replace
-              FindAndReplace();
-
+            if (button) {
+              button.click();
+              setTimeout(() => {
+                doPlayerFocus();
+              }, 50);
             }
 
           }
-        else
-          // Check if the Control key (on Windows/Linux) is pressed with the "J" key
-          if (event.ctrlKey && event.key === 'j') {
+        }
+      else
+        // Check if the Control key (on Windows/Linux) is pressed with the "F" key
+        if (event.ctrlKey && event.key === 'f') {
 
-            //console.log("Got Control J");
+          // Prevent Find & Replace if tunebook author disabled editing
+          if (gDisableEditFromPlayLink) return;
 
-            event.preventDefault(); // Prevent the default browser find action
+          // Prevent capture of expected Ctrl + F behavior outside of ABC textarea / Notation View
+          const activeElName = document.activeElement.name;
 
-            var modalDivs = document.querySelector('.modal_flat_main');
+          if (!gIsMaximized && (!activeElName || activeElName !== 'abc')) return;
 
-            if ((!modalDivs) && (!gRenderingPDF)) {
+          //console.log("Got Control F");
 
-              // Launch jump to tune
-              JumpToTune();
+          event.preventDefault(); // Prevent the default browser find action
 
-            }
+          var modalDivs = document.querySelector('.modal_flat_main');
 
-          }
-        else
-          // Check if the Control key (on Windows/Linux) is pressed with the "\" key
-          if (event.ctrlKey && event.key === '\\') {
+          if ((!modalDivs) && (!gRenderingPDF)) {
 
-            //console.log("Got Control \");
-
-            event.preventDefault(); // Prevent the default browser action
-
-            var modalDivs = document.querySelector('.modal_flat_main');
-
-            if ((!modalDivs) && (!gRenderingPDF)) {
-
-              // Do measure align
-              AlignMeasures(false);
-
-            }
-
-          }
-        else
-          // Check if the Control key (on Windows/Linux) is pressed with the "/" key
-          if (event.ctrlKey && event.key === '/') {
-
-            //console.log("Got Control /");
-
-            event.preventDefault(); // Prevent the default browser action
-
-            var modalDivs = document.querySelector('.modal_flat_main');
-
-            if ((!modalDivs) && (!gRenderingPDF)) {
-
-              // Do build tune set
-              BuildTuneSet();
-
-            }
-
-          }
-        else
-          /// Check if the Control key (on Windows/Linux) is pressed with the "S" key
-          if (event.ctrlKey && event.key === 's') {
-
-            //console.log("Got Control S");
-
-            event.preventDefault(); // Prevent the default browser action
-
-            var modalDivs = document.querySelector('.modal_flat_main');
-
-            if ((!modalDivs) && (!gRenderingPDF)) {
-
-              SaveABC_KB();
-
-            }
+            // Launch find and replace
+            FindAndReplace();
 
           }
 
-      }, true);
-    }
+        }
+      else
+        // Check if the Control key (on Windows/Linux) is pressed with the "J" key
+        if (event.ctrlKey && event.key === 'j') {
+
+          //console.log("Got Control J");
+
+          event.preventDefault(); // Prevent the default browser find action
+
+          var modalDivs = document.querySelector('.modal_flat_main');
+
+          if ((!modalDivs) && (!gRenderingPDF)) {
+
+            // Launch jump to tune
+            JumpToTune();
+
+          }
+
+        }
+      else
+        // Check if the Control key (on Windows/Linux) is pressed with the "\" key
+        if (event.ctrlKey && event.key === '\\') {
+
+          // Prevent accidental presses and capture of Ctrl + \ outside of ABC textarea
+          const activeElName = document.activeElement.name;
+
+          if (gIsMaximized || !activeElName || activeElName !== 'abc') return;
+
+          //console.log("Got Control \");
+
+          event.preventDefault(); // Prevent the default browser action
+
+          var modalDivs = document.querySelector('.modal_flat_main');
+
+          if ((!modalDivs) && (!gRenderingPDF)) {
+
+            // Do measure align
+            AlignMeasures(false);
+
+          }
+
+        }
+      else
+        // Check if the Control key (on Windows/Linux) is pressed with the "/" key
+        if (event.ctrlKey && event.key === '/') {
+
+          //console.log("Got Control /");
+
+          event.preventDefault(); // Prevent the default browser action
+
+          var modalDivs = document.querySelector('.modal_flat_main');
+
+          if ((!modalDivs) && (!gRenderingPDF)) {
+
+            // Do build tune set
+            BuildTuneSet();
+
+          }
+
+        }
+      else
+        /// Check if the Control key (on Windows/Linux) is pressed with the "S" key
+        if (event.ctrlKey && event.key === 's') {
+
+          // Prevent save ABC if tunebook author disabled editing
+          if (gDisableEditFromPlayLink) return;
+
+          //console.log("Got Control S");
+
+          event.preventDefault(); // Prevent the default browser action
+
+          var modalDivs = document.querySelector('.modal_flat_main');
+
+          if ((!modalDivs) && (!gRenderingPDF)) {
+
+            SaveABC_KB();
+
+          }
+
+        }
+
+    }, true);
   }
+  // }
 
   // Is the tool being run from thesource?
   var isRunningFromDisk = false;
@@ -63351,19 +63551,27 @@ function DoStartup() {
   if (!isFromShare) doFocusAbc();
 
   // Show update message?
-  // if (gLocalStorageAvailable && (!isFromShare)){
+  // Lite: Customized
+  // Prevent an avalanche of popup messages on first run
+  // Prevent maximized notation from being blocked
+  if (
+    gLocalStorageAvailable &&
+    !isFromShare &&
+    !gIsMaximized &&
+    !gIsFirstRun
+  ) {
 
-  //   var updatePresented = localStorage.sawUpdate_26dec2025;
+    var updatePresented = localStorage.sawUpdate022026;
 
-  //   if (updatePresented != "true") {
+    if (updatePresented != "true") {
 
-  //     showWhatsNewScreen();
+      showWhatsNewScreen();
 
-  //     localStorage.sawUpdate_26dec2025 = true;
+      localStorage.sawUpdate022026 = true;
 
-  //   }
+    }
 
-  // }
+  }
 
 }
 
@@ -64986,31 +65194,31 @@ function TuningTools(){
   + '    <div class="btn-container-center">'
 
   + '      <button class="tuning-tool btn-lite" style="text-align:center; width:180px;">'
-  + '        <img id="tuning_tools_tuner" src="img/tool_tuner_1.jpg" title="Simple chromatic instrument tuner. Needle and strobe views. Adjustable temperament (ET, Just Intonation, Pythagorean, Fiddle Sweetened), A4 reference, and input boost." alt="Chromatic Tuner"'
+  + '        <img id="tuning_tools_tuner" src="img/tool_tuner.webp" title="Simple chromatic instrument tuner. Needle and strobe views. Adjustable temperament (ET, Just Intonation, Pythagorean, Fiddle Sweetened), A4 reference, and input boost." alt="Chromatic Tuner"'
   + '             style="width:150px;height:auto;cursor:pointer;">'
   + '        <span style="font-size:1rem; margin-top:6px; height:3.2em; display:flex; align-items:center; justify-content:center; line-height:1.2em;">Chromatic Tuner</span>'
   + '      </button>'
 
   + '      <button class="tuning-tool btn-lite" style="text-align:center; width:180px;">'
-  + '        <img id="tuning_tools_rtta" src="img/tool_rtta_1.jpg" title="Real-time tuning analysis (box-plot style) from live mic input. Adjustable temperament (ET, Just Intonation, Pythagorean, Fiddle Sweetened), A4 reference, and input boost." alt="Real Time Tuning Analysis (RTTA)"'
+  + '        <img id="tuning_tools_rtta" src="img/tool_rtta.webp" title="Real-time tuning analysis (box-plot style) from live mic input. Adjustable temperament (ET, Just Intonation, Pythagorean, Fiddle Sweetened), A4 reference, and input boost." alt="Real Time Tuning Analysis (RTTA)"'
   + '             style="width:150px;height:auto;cursor:pointer;">'
   + '        <span style="font-size:1rem; margin-top:6px; height:3.2em; display:flex; align-items:center; justify-content:center; line-height:1.2em;">Real Time Tuning Analysis (RTTA)</span>'
   + '      </button>'
 
   + '      <button class="tuning-tool btn-lite" style="text-align:center; width:180px;">'
-  + '        <img id="tuning_tools_rttva" src="img/tool_rttva_1.jpg" title="Real-time tuning and volume analysis (box-plot style) from live mic input. Adjustable temperament (ET, Just Intonation, Pythagorean, Fiddle Sweetened), A4 reference, and input boost." alt="Real Time Tuning / Volume Analysis (RTTVA)"'
+  + '        <img id="tuning_tools_rttva" src="img/tool_rttva.webp" title="Real-time tuning and volume analysis (box-plot style) from live mic input. Adjustable temperament (ET, Just Intonation, Pythagorean, Fiddle Sweetened), A4 reference, and input boost." alt="Real Time Tuning / Volume Analysis (RTTVA)"'
   + '             style="width:150px;height:auto;cursor:pointer;">'
   + '        <span style="font-size:1rem; margin-top:6px; height:3.2em; display:flex; align-items:center; justify-content:center; line-height:1.2em;">Real Time Tuning / Volume Analysis (RTTVA)</span>'
   + '      </button>'
 
   + '      <button class="tuning-tool btn-lite" style="text-align:center; width:180px;">'
-  + '        <img id="tuning_tools_tonegen" src="img/tool_tonegen_1.jpg" title="Simple chromatic instrument tuner with tone generator. Needle and strobe views. Adjustable temperament (ET, Just Intonation, Pythagorean, Fiddle Sweetened), A4 reference, and input boost." alt="Chromatic Tuner / Tone Generator"'
+  + '        <img id="tuning_tools_tonegen" src="img/tool_tonegen.webp" title="Simple chromatic instrument tuner with tone generator. Needle and strobe views. Adjustable temperament (ET, Just Intonation, Pythagorean, Fiddle Sweetened), A4 reference, and input boost." alt="Chromatic Tuner / Tone Generator"'
   + '             style="width:150px;height:auto;cursor:pointer;">'
   + '        <span style="font-size:1rem; margin-top:6px; height:3.2em; display:flex; align-items:center; justify-content:center; line-height:1.2em;">Chromatic Tuner / Tone Generator</span>'
   + '      </button>'
 
   + '      <button class="tuning-tool btn-lite" style="text-align:center; width:180px;">'
-  + '        <img id="tuning_tools_tester" src="img/tool_audiotester_1.jpg" title="3-step audio input tester for the Chromatic Tuner and RTTA utilities: background noise, level range, and continuous tone test." alt="Audio Input Tester"'
+  + '        <img id="tuning_tools_tester" src="img/tool_audiotester.webp" title="3-step audio input tester for the Chromatic Tuner and RTTA utilities: background noise, level range, and continuous tone test." alt="Audio Input Tester"'
   + '             style="width:150px;height:auto;cursor:pointer;">'
   + '        <span style="font-size:1rem; margin-top:6px; height:3.2em; display:flex; align-items:center; justify-content:center; line-height:1.2em;">Audio Input Tester</span>'
   + '      </button>'
@@ -65996,8 +66204,8 @@ function wireAbcDragDrop()
     // Requires addon: codemirror/addon/display/placeholder.js
     gTheCM.setOption("placeholder", "Enter the ABC for your tunes here");
 
-    const msg = document.getElementById("desktop_use_message");
-    if (msg) msg.style.display = "none";
+    // const msg = document.getElementById("desktop_use_message");
+    // if (msg) msg.style.display = "none";
 
     wrapper.addEventListener("dragstart", e => e.preventDefault());
   }
