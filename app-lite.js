@@ -6,7 +6,7 @@
 ///////////////////////////////////////////////////////////////////////
 
 // Custom global variables / constants
-var gLiteVersionNumber = 'lite-3177-6';
+var gLiteVersionNumber = 'lite-3177-7';
 
 var ABC_TOOLS_BASE_URL =
   window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
@@ -176,6 +176,20 @@ function liteHandleKeyDownEvents(event) {
         break;
     }
     return;
+  }
+}
+
+// Handle counting events with GoatCounter
+
+function liteGoatCountEvent(eventPath, eventTitle) {
+
+  if (window.goatcounter && navigator.onLine) {
+
+    window.goatcounter.count({
+        path: `${eventPath}`,
+        title: `${eventTitle}`,
+        event: true,
+    });
   }
 }
 
@@ -475,7 +489,7 @@ function liteOpenToolsLatestScreen() {
   modal_msg += '<ul>';
   modal_msg += '<li><strong>ABC Tools Lite</strong>: Full keyboard navigation support for editor and notation view.</li>';
   modal_msg += '<li><strong>ABC Tools Lite</strong>: New <a href="https://github.com/anton-bregolas/abctools-lite#tools-lite-new-keyboard-shortcuts" target="_blank" title="View Full List of Keyboard Shortcuts on ABC Tools Lite GitHub">keyboard shortcuts</a> and <a href="https://github.com/anton-bregolas/abctools-lite#tools-lite-new-customization-options" target="_blank" title="View Full List of New Customization Options on ABC Tools Lite GitHub">customization options</a> added.</li>';
-  modal_msg += '<li><strong>ABC Tools Lite</strong>: Custom new <a href="https://github.com/anton-bregolas/abctools-lite#work-in-progress-ui--features-roadmap" target="_blank" title="View Full List of Custom UI Features on ABC Tools Lite GitHub">fonts, icons and styles</a> added to UI components.</li>';
+  modal_msg += '<li><strong>ABC Tools Lite</strong>: Custom new <a href="https://github.com/anton-bregolas/abctools-lite#ui-fixes--features-roadmap" target="_blank" title="View Full List of Custom UI Features on ABC Tools Lite GitHub">fonts, icons and styles</a> added to UI components.</li>';
   modal_msg += '<li><strong>ABC Transcription Tools</strong> updated to version <b>' + gVersionNumber + '</b>.</li>';
   modal_msg += '</ul>';
   modal_msg += '</section>';

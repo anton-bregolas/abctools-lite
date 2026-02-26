@@ -167,7 +167,7 @@ class ContextMenu {
         }
         else{
           item.name = item.name.replace("*","");
-          btn.className = 'ContextMenu-item-red';
+          btn.className = 'ContextMenu-item-red btn-lite';
           btn.textContent = item.name;
           btn.setAttribute('data-contextmenuitem', index);
           btn.setAttribute('tabindex', -1);

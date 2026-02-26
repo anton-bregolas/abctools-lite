@@ -57600,8 +57600,13 @@ function makeCenteredPromptString(thePrompt) {
 //
 // Send a Google analytics event
 // Lite: Customized
+// Use GoatCounter, a simple privacy-oriented click counter
 //
 function sendGoogleAnalytics(theCategory, theAction, theLabel) {
+
+  // Handle counting events with GoatCounter (largely for catching potential issues)
+
+  liteGoatCountEvent(`abcToolsLite__${theAction}`, `#${theCategory}`);
 
   // Turn off Google analytics for the fork
   return;
