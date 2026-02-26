@@ -1,6 +1,8 @@
 const gCM_instances = [];
 let gCM_nextId = 0;
 
+const hamburgerMenuBtn = document.getElementById('morecommands');
+
 // Tiny polyfill for Element.matches() for IE
 if (!Element.prototype.matches) {
   Element.prototype.matches = Element.prototype.msMatchesSelector;
@@ -14,6 +16,35 @@ function getSibling(el, selector, direction = 1) {
     return sibling;
   }
   return getSibling(sibling, selector, direction);
+}
+
+// Gets an element's next/previous sibling's child that matches the given selector
+function getSiblingWithChild(el, selector, direction = 1) {
+
+  const menu = el.closest('menu');
+
+  let currentLi = el.closest('li');
+  
+  if (!menu || !currentLi) return null;
+
+  const menuList = Array.from(menu.children);
+
+  let currentIndex = menuList.indexOf(currentLi);
+
+  // Wrap around if we go out of bounds
+  // Prevent infinite loop by checking menu length
+  for (let i = 0; i < menuList.length; i++) {
+
+    currentIndex = (currentIndex + direction + menuList.length) % menuList.length;
+    
+    const sibling = menuList[currentIndex];
+
+    const target = sibling.querySelector(selector);
+    
+    if (target) return target;
+  }
+
+  return null;
 }
 
 // Fires custom event on given element
@@ -48,26 +79,49 @@ class ContextMenu {
   }
 
   // Creates DOM elements, sets up event listeners
+  // Lite: Customized
+  // Enable expected context menu keyboard controls
+  // Home / End should select First / Last menu item
+  // Arrow keys should move focus but not scroll
+  // Space and Enter must click menu items (free button properties)
+  // Escape and Tab keys should hide the menu and shift focus
   create() {
-    // Create root <ul>
-    this.menu = document.createElement('ul');
+    // Create root <ul> / <menu>
+    this.menu = document.createElement('menu');
+    this.menu.role = 'menu';
     this.menu.className = 'ContextMenu';
     this.menu.setAttribute('data-contextmenu', this.id);
     this.menu.setAttribute('tabindex', -1);
-    this.menu.addEventListener('keyup', (e) => {
-      switch (e.which) {
-        case 38:
+    this.menu.addEventListener('keydown', (e) => {
+      const cm = e.currentTarget;
+      const btns = cm.querySelectorAll('button');
+      switch (e.code) {
+        case 'Home':
+          e.preventDefault();
+          btns[0].focus();
+          break;
+        case 'End':
+          e.preventDefault();
+          btns[btns.length - 1].focus();
+          break;
+        case 'ArrowUp':
+        case 'ArrowLeft':
+          e.preventDefault();
           this.moveFocus(-1);
           break;
-        case 40:
+        case 'ArrowDown':
+        case 'ArrowRight':
+          e.preventDefault();
           this.moveFocus(1);
           break;
-        case 27:
+        case 'Escape':
+        case 'Tab':
           this.hide();
+          hamburgerMenuBtn.focus();
           break;
         default:
-        // do nothing
-      }
+          return;
+      }      
     });
 
     if (!this.options.minimalStyling) {
@@ -79,41 +133,53 @@ class ContextMenu {
         .forEach((cls) => this.menu.classList.add(cls));
     }
 
-    // Create <li>'s for each menu item
+    // Create <li> / <button> elements for each menu item
+    // Lite: Customized
+    // Create separator elements or nested buttons
+    // Assign correct ARIA roles to each element
     this.items.forEach((item, index) => {
+
       const li = document.createElement('li');
+      li.role = 'presentation';
 
       if (!('name' in item)) {
+
         // Insert a divider
         li.className = 'ContextMenu-divider';
+
       } else {
 
+        const btn = document.createElement('button');
+        btn.role = 'menuitem';
+
         if (item.name.indexOf("*") == -1){
-          li.className = 'ContextMenu-item';
-          li.textContent = item.name;
-          li.setAttribute('data-contextmenuitem', index);
-          li.setAttribute('tabindex', 0);
-          li.addEventListener('click', this.select.bind(this, li));
-          li.addEventListener('keyup', (e) => {
-            if (e.which === 13) {
-              this.select(li);
-            }
-          });
+          btn.className = 'ContextMenu-item btn-lite';
+          btn.textContent = item.name;
+          btn.role = "menuitem";
+          btn.setAttribute('data-contextmenuitem', index);
+          if (index !== 0) btn.setAttribute('tabindex', -1);
+          btn.addEventListener('click', () => this.select(btn));
+          // btn.addEventListener('keyup', (e) => {
+          //   if (e.code === "Space") {
+          //     this.select(btn);
+          //   }
+          // });
         }
         else{
           item.name = item.name.replace("*","");
-          li.className = 'ContextMenu-item-red';
-          li.textContent = item.name;
-          li.setAttribute('data-contextmenuitem', index);
-          li.setAttribute('tabindex', 0);
-          li.addEventListener('click', this.select.bind(this, li));
-          li.addEventListener('keyup', (e) => {
-            if (e.which === 13) {
-              this.select(li);
-            }
-          });
-
+          btn.className = 'ContextMenu-item-red';
+          btn.textContent = item.name;
+          btn.setAttribute('data-contextmenuitem', index);
+          btn.setAttribute('tabindex', -1);
+          btn.addEventListener('click', () => this.select(btn));
+          // btn.addEventListener('keyup', (e) => {
+          //   if (e.code === "Space") {
+          //     this.select(btn);
+          //   }
+          // });
         }
+
+        li.appendChild(btn);
       }
 
       this.menu.appendChild(li);
@@ -126,21 +192,50 @@ class ContextMenu {
   }
 
   // Shows context menu
+  //
+  // Lite: Customized
+  // Handle with CSS Anchor Positioning
+  // Fall back to JS if not supported
+  // Fall back to center-top if no 
+  // click coordinates (shortcut pressed)
   show(e) {
 
-    // Keep the context menu from going off the right of the screen
-    if (isMobileBrowser()){
-      this.menu.style.left = `${e.pageX-200}px`;
-      this.menu.style.top = `${e.pageY}px`;
+    const isAnchorPositioningSupported =
+      CSS.supports('position-anchor: --test');
+
+    if (!isAnchorPositioningSupported) {
+
+      // Keep the context menu from going off the right of the screen
+      if (e.pageX && isMobileBrowser()){
+        this.menu.style.left = `${e.pageX-200}px`;
+        this.menu.style.top = `${e.pageY}px`;
+      }
+      else if (e.pageX) {
+        this.menu.style.left = `${e.pageX}px`;
+        this.menu.style.top = `${e.pageY}px`;     
+      }
+      else {
+        this.menu.style.left = `calc(50% - 218px / 2)`;
+        this.menu.style.top = `50px`;
+      }
     }
-    else{
-      this.menu.style.left = `${e.pageX}px`;
-      this.menu.style.top = `${e.pageY}px`;     
-    }
+
     this.menu.classList.add('is-open');
     this.target = e.target;
+
     // Give context menu focus
-    this.menu.focus();
+    // Lite: Customized
+    // Focus on the first button if press coming from keyboard
+
+    if (e.pointerType === '') { 
+
+      this.menu.querySelector('button').focus(); 
+
+    } else {
+
+      this.menu.focus();
+    }
+
     // Disable native context menu
     e.preventDefault();
 
@@ -171,7 +266,7 @@ class ContextMenu {
     let next;
 
     if (focused) {
-      next = getSibling(focused, '[data-contextmenuitem]', direction);
+      next = getSiblingWithChild(focused, '[data-contextmenuitem]', direction);
     }
 
     if (!next) {

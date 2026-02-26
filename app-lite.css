@@ -216,7 +216,7 @@ body {																											/* vanilla abc tools settings */
   position: relative;
 }
 
-/* @supports (position-anchor: --test) {
+@supports (position-anchor: --test) {
 
   #context-menu-anchor {
     anchor-name: --cm-anchor;
@@ -229,7 +229,7 @@ body {																											/* vanilla abc tools settings */
     position-anchor: --cm-anchor;
     position-area: bottom left;
   }
-} */
+}
 
 /*//////////////////////////////////////////
 // APP LITE: MODAL DIALOGS
