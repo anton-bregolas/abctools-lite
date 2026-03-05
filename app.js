@@ -65152,7 +65152,17 @@ function openInExternalTool(theABC){
 
   // Lite: Customized
   // Convert non-interactive elements into proper buttons
-  modal_msg += '<p style="text-align:center;"><button class="btn-lite external-tool" style="display:inline-block; margin-right:48px;margin-bottom:12px;"> <img id="external_pureocarinas" src="img/pureocarinas.png" title="Open the ABC in the Pure Ocarinas Phrase-by-phrase ABC tune practice tool" alt="Pure Ocarinas Phrase-by-phrase ABC practice tool"><br> <span style="font-size:1.2em;">Phrase-by-phrase ABC practice tool</span></button><button class="btn-lite external-tool" style="display:inline-block;margin-bottom:12px;"> <img id="external_abcjs" src="img/abcjs_logo.png" title="Open the ABC in the abcjs quick editor" alt="abcjs quick editor"><br> <span style="font-size:1.2em;">abcjs quick editor</span> </button> </p>';
+  modal_msg += '<p class="btn-container btn-container-center"  style="text-align:center;">';
+  modal_msg += '<button class="btn-lite external-tool">';
+  modal_msg += '<img id="external_pureocarinas" src="img/pureocarinas.png" title="Open the ABC in the Pure Ocarinas Phrase-by-phrase ABC tune practice tool" alt="Pure Ocarinas Phrase-by-phrase ABC practice tool"><br> <span style="font-size:1.2em;">Phrase-by-phrase ABC practice tool</span>';
+  modal_msg += '</button>';
+  modal_msg += '<button class="btn-lite external-tool">';
+  modal_msg += '<img id="external_abcjs" src="img/abcjs_logo.png" title="Open the ABC in the abcjs quick editor" alt="abcjs quick editor"><br> <span style="font-size:1.2em;">abcjs quick editor</span>';
+  modal_msg += '</button>';
+  modal_msg += '<button class="btn-lite external-tool">';
+  modal_msg += '<img id="external_abcencoder" src="img/abc-encoder-logo.svg" title="Export the tunes to Anton Zille\'s ABC Encoder for auto-formatting headers and sorting sets of tunes or ABC collections" aria-title="Export the tunes to Anton Zille\'s ABC Encoder for auto-formatting headers and sorting sets of tunes or ABC collections"><br> <span style="font-size:1.2em;">N.S.S.S. ABC Encoder</span>';
+  modal_msg += '</button>';
+  modal_msg += '</p>';
 
   DayPilot.Modal.alert(modal_msg, {
     theme: "modal_flat",
@@ -65169,6 +65179,11 @@ function openInExternalTool(theABC){
   elem = document.getElementById("external_abcjs");
   if (elem) elem.onclick = function(){
     OpenInABCJSQuickEditor(theABC);
+  };
+
+  elem = document.getElementById("external_abcencoder");
+  if (elem) elem.onclick = function(){
+    liteOpenInABCEncoder(theABC);
   };
 }
 

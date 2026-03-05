@@ -6,7 +6,7 @@
 ///////////////////////////////////////////////////////////////////////
 
 // Custom global variables / constants
-var gLiteVersionNumber = 'lite-3177-7';
+var gLiteVersionNumber = 'lite-3177-8';
 
 var ABC_TOOLS_BASE_URL =
   window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
@@ -202,6 +202,34 @@ function liteGoatCountEvent(eventPath, eventTitle) {
 function liteOpenGitHubReadme() {
 
   window.open(ABC_TOOLS_LITE_README_URL, "_blank");
+}
+
+// Export ABC text to Anton Zille's ABC Encoder
+
+function liteOpenInABCEncoder(abcText){
+
+    sendGoogleAnalytics("action", "liteOpenInABCEncoder");
+
+    var encoder = new TextEncoder();
+    var utf8Bytes = encoder.encode(abcText);
+    var deflated = pako.deflate(utf8Bytes, { level: 6 });
+    var theDef = def_bytesToBase64URL(deflated);
+
+    var theURL = "https://ns.tunebook.app/abc-encoder.html?def="+theDef;
+
+    if (theURL.length < 8100)
+    {
+      var w = window.open(theURL);
+    }
+    else{
+
+      DayPilot.Modal.alert('<p style="text-align:center;font-size:12pt;">Share URL is too long to open in the Pure Ocarinas tool.</p>', {
+        theme: "modal_flat",
+        top: 230,
+        scrollWithPage: (AllowDialogsToScroll())
+      });
+
+    }
 }
 
 // Switch between Editor and Quick Editor
