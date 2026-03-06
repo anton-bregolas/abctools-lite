@@ -86,6 +86,7 @@ const contentToCache = [
     'img/michael240.webp',
     'img/pureocarinas.png',
     'img/abcjs_logo.png',
+    'img/abc-encoder-logo.svg',
     'img/abclite-icon-192x192.png',
     'img/abclite-icon-512x512.png',
     'img/abclite-icon-maskable-192x192.png',
