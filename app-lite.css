@@ -671,7 +671,15 @@ a:focus-visible,
 /* UI: Top Button Bar */
 
 .fileoperations {
-  margin: 0.75rem 1.72rem 0;
+  margin: 0.75rem 0.9rem 0;
+}
+
+.btn.copybutton {
+  background-color: var(--abctools-color-liteviolet);
+}
+
+.btn.pastebutton {
+  background-color: var(--abctools-color-litepurple);
 }
 
 /* UI: Bottom Button Bar */
@@ -838,6 +846,10 @@ ul.notation-placeholder-text {
 [data-layout*="mobile"] .desktop-use-message {
   display: none;
 }
+
+/* [data-layout="mobile-fixed"] .fileoperations {
+  padding: 0 1rem;
+} */
 
 /* Always Two Columns Mode (Formerly iPad Two-Column) */
 

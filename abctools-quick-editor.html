@@ -55,25 +55,25 @@
 
 			<div id="uioverlay" class="uioverlay hidden-print">
 
-				<button id="helpbutton" class="btn-lite btn-uioverlay helpbutton" title="Open Help Dialog. Shift-click to open ABC Tools Lite Readme on Github. Alt-click to open ABC Transcription Tools User Guide" aria-title="Open ABC Tools Lite Help Dialog. Shift-click to open ABC Tools Lite Readme on Github. Alt-click to open ABC Transcription Tools User Guide">
+				<button id="helpbutton" class="btn-lite btn-uioverlay helpbutton" title="Open Help Dialog. Shift-click to open ABC Tools Lite Readme on Github. Alt-click to open ABC Transcription Tools User Guide" aria-label="Open ABC Tools Lite Help Dialog. Shift-click to open ABC Tools Lite Readme on Github. Alt-click to open ABC Transcription Tools User Guide">
 					<svg aria-hidden="true"><use href="#lite-icon-help"></use></svg>
 				</button>
-				<button id="jumpbutton" class="btn-lite btn-uioverlay jumpbutton" title="Open Jump to Tune Dialog" aria-title="Open Jump to Tune Dialog">
+				<button id="jumpbutton" class="btn-lite btn-uioverlay jumpbutton" title="Open Jump to Tune Dialog" aria-label="Open Jump to Tune Dialog">
 					<svg aria-hidden="true"><use href="#lite-icon-tunelist"></use></svg>
 				</button>
-				<button id="zoombutton" class="btn-lite btn-uioverlay zoombutton" title="Toggle Between ABC Editor View and Notation View.&nbsp;&nbsp;Alt-Click to Enter Presentation Mode" aria-title="Toggle Between ABC Editor View and Notation View. Alt-Click to Enter Presentation Mode">
+				<button id="zoombutton" class="btn-lite btn-uioverlay zoombutton" title="Toggle Between ABC Editor View and Notation View.&nbsp;&nbsp;Alt-Click to Enter Presentation Mode" aria-label="Toggle Between ABC Editor View and Notation View. Alt-Click to Enter Presentation Mode">
 					<svg aria-hidden="true"><use href="#lite-icon-edit"></use></svg>
 				</button>
-				<button id="pdfbuttonicon" class="btn-lite btn-uioverlay pdfbuttonicon" title="Open PDF Export Dialog&nbsp;Shift-Click to Export as Website" aria-title="Open PDF Export Dialog. Shift-Click to Export as Website">
+				<button id="pdfbuttonicon" class="btn-lite btn-uioverlay pdfbuttonicon" title="Open PDF Export Dialog&nbsp;Shift-Click to Export as Website" aria-label="Open PDF Export Dialog. Shift-Click to Export as Website">
 					<svg aria-hidden="true"><use href="#lite-icon-pdf"></use></svg>
 				</button>
-				<button id="qetempobutton" class="btn-lite btn-uioverlay qetempobutton" title="Set Tempo&nbsp;&nbsp;Shift-Click to Reset Tempo" aria-title="Set Tempo. Shift-Click to Reset Tempo">
+				<button id="qetempobutton" class="btn-lite btn-uioverlay qetempobutton" title="Set Tempo&nbsp;&nbsp;Shift-Click to Reset Tempo" aria-label="Set Tempo. Shift-Click to Reset Tempo">
 					<svg aria-hidden="true"><use href="#lite-icon-tempo"></use></svg>
 				</button>
-				<button id="qerewindbutton" class="btn-lite btn-uioverlay qerewindbutton" title="Rewind (F3)&nbsp;&nbsp;Shift-Click to Toggle Looped Play" aria-title="Rewind. Shortcut: Press F3. Shift-Click to Toggle Looped Play">
+				<button id="qerewindbutton" class="btn-lite btn-uioverlay qerewindbutton" title="Rewind (F3)&nbsp;&nbsp;Shift-Click to Toggle Looped Play" aria-label="Rewind. Shortcut: Press F3. Shift-Click to Toggle Looped Play">
 					<svg aria-hidden="true"><use href="#lite-icon-rewind"></use></svg>
 				</button>
-				<button id="playbuttonicon" class="btn-lite btn-uioverlay playbuttonicon" title="Play / Pause (F4)" aria-title="Play / Pause. Shortcut: Press F4">
+				<button id="playbuttonicon" class="btn-lite btn-uioverlay playbuttonicon" title="Play / Pause (F4)" aria-label="Play / Pause. Shortcut: Press F4">
 					<svg aria-hidden="true"><use href="#lite-icon-play"></use></svg>
 				</button>
 
@@ -131,28 +131,34 @@
 					<div id="fileoperations" class="fileoperations btn-container-space-between">
 						<input type="file" id="selectabcfile" class="selectabcfile" accept=".abc,.bww,.mid,.midi,.musicxml,.mxl,.txt,.xml" hidden multiple /> 
 						<!--our custom abc file upload button-->
-						<button class="abcupload btn btn-top" id="openabcfile" title="Open file in ABC, MusicXML, BWW, or MIDI format.&nbsp;&nbsp;Drag-and-drop ABC, MusicXML, BWW, or MIDI files on the Editor area to add them" aria-title="Open file in ABC, MusicXML, BWW, or MIDI format.&nbsp;&nbsp;Drag-and-drop ABC, MusicXML, BWW, or MIDI files on the Editor area to add them" onclick="fileOpenIntercept(event);">
+						<button class="abcupload btn btn-top" id="openabcfile" title="Open file in ABC, MusicXML, BWW, or MIDI format.&nbsp;&nbsp;Drag-and-drop ABC, MusicXML, BWW, or MIDI files on the Editor area to add them" aria-label="Open file in ABC, MusicXML, BWW, or MIDI format.&nbsp;&nbsp;Drag-and-drop ABC, MusicXML, BWW, or MIDI files on the Editor area to add them" onclick="fileOpenIntercept(event);">
 							Open
 						</button>
-						<button class="newabcfile btn btn-top" id="newabcfile" onclick="AddABC();" title="Add tunes from file, restore from saved snapshot, search for tunes, add example tunes or song templates to ABC input" aria-title="Add tunes from file, restore from saved snapshot, search for tunes, add example tunes or song templates to ABC input">
+						<button class="newabcfile btn btn-top" id="newabcfile" onclick="AddABC();" title="Add tunes from file, restore from saved snapshot, search for tunes, add example tunes or song templates to ABC input" aria-label="Add tunes from file, restore from saved snapshot, search for tunes, add example tunes or song templates to ABC input">
 							Add
 						</button>
-						<button disabled class="saveabcfiledisabled btn btn-top" id="saveabcfile" onclick="SaveABC();" title="Save current ABC text to file" aria-title="Save current ABC text to file">
+						<button disabled class="saveabcfiledisabled btn btn-top" id="saveabcfile" onclick="SaveABC();" title="Save current ABC text to file" aria-label="Save current ABC text to file">
 							Save
 						</button>
-						<button disabled class="saveaswebsitedisabled btn btn-top" id="saveaswebsite" onclick="generateWebsite();" title="Export Tunebook as Website or Gallery" aria-title="Export Tunebook as Website or Gallery">
+						<button disabled class="saveaswebsitedisabled btn btn-top" id="saveaswebsite" onclick="generateWebsite();" title="Export Tunebook as Website or Gallery" aria-label="Export Tunebook as Website or Gallery" hidden aria-hidden="true">
 							Export Website
 						</button>
-						<button disabled class="playbuttondisabled btn btn-play btn-padded" id="playbutton" onclick="PlayABC(event);" title="Open ABC Player with selected tune.&nbsp;&nbsp;Press F4 to play / pause. Press F3 to rewind.&nbsp;&nbsp;Alt-click to play a random tune from Tunebook" aria-title="Open ABC Player with selected tune.&nbsp;&nbsp;Press F4 to play / pause. Press F3 to rewind.&nbsp;&nbsp;Alt-click to play a random tune from Tunebook">
+						<button class="copybutton btn btn-top" id="copybutton" onclick="CopyABC();" title="Copy all ABC text" aria-label="Copy all ABC text">
+							Copy
+						</button>
+						<button class="pastebutton btn btn-top" id="pastebutton" onclick="litePasteToABC();" title="Paste text from clipboard" aria-label="Paste text from clipboard">
+							Paste
+						</button>
+						<button disabled class="playbuttondisabled btn btn-play btn-padded" id="playbutton" onclick="PlayABC(event);" title="Open ABC Player with selected tune.&nbsp;&nbsp;Press F4 to play / pause. Press F3 to rewind.&nbsp;&nbsp;Alt-click to play a random tune from Tunebook" aria-label="Open ABC Player with selected tune.&nbsp;&nbsp;Press F4 to play / pause. Press F3 to rewind.&nbsp;&nbsp;Alt-click to play a random tune from Tunebook">
 							Play
 						</button>
-						<button disabled class="playbuttondisabled btn btn-train btn-padded" id="tunetrainerbutton" onclick="TuneTrainerTopBar();" title="Open Tune Trainer with currently selected tune" aria-title="Open Tune Trainer with currently selected tune">
+						<button disabled class="playbuttondisabled btn btn-train btn-padded" id="tunetrainerbutton" onclick="TuneTrainerTopBar();" title="Open Tune Trainer with currently selected tune" aria-label="Open Tune Trainer with currently selected tune">
 							Train
 						</button>
 						<button disabled class="rawmodebuttondisabled btn btn-rawmode-off" id="rawmodebutton" onclick="ToggleRawMode()" title="Toggle Highlighting mode. When ON, select ABC text to highlight notation or click on notation to highlight ABC text">
 							Highlighting
 						</button>
-						<button class="morecommands btn btn-top context-menu btn-padded" id="morecommands" title="Open Context Menu with additional useful commands" aria-title="Open Context Menu with additional useful commands">
+						<button class="morecommands btn btn-top context-menu btn-padded" id="morecommands" title="Open Context Menu with additional useful commands" aria-label="Open Context Menu with additional useful commands">
 							☰
 							<span id="context-menu-anchor"></span>
 						</button>
@@ -245,10 +251,10 @@
 				</ul>
 
 				<div class="notation-placeholder-buttons btn-container-center">
-					<button class="notation-placeholder-button btn btn-placeholder" onclick="showWelcomeScreen();" title="Show Welcome Screen Instructions" aria-title="Show Welcome Screen Instructions">
+					<button class="notation-placeholder-button btn btn-placeholder" onclick="showWelcomeScreen();" title="Show Welcome Screen Instructions" aria-label="Show Welcome Screen Instructions">
 						Introduction
 					</button>
-					<button class="notation-placeholder-button btn btn-placeholder" onclick="showWhatsNewScreen();" title="Show the latest update info dialog" aria-title="Show the latest update info dialog">
+					<button class="notation-placeholder-button btn btn-placeholder" onclick="showWhatsNewScreen();" title="Show the latest update info dialog" aria-label="Show the latest update info dialog">
 						What's New
 					</button>
 				</div>

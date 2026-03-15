@@ -15012,9 +15012,9 @@ function Render(renderAll, tuneNumber) {
     }
 
     // Enable the website generation button
-    document.getElementById("saveaswebsite").classList.remove("saveaswebsitedisabled");
-    document.getElementById("saveaswebsite").removeAttribute("disabled");
-    document.getElementById("saveaswebsite").classList.add("saveaswebsite");
+    // document.getElementById("saveaswebsite").classList.remove("saveaswebsitedisabled");
+    // document.getElementById("saveaswebsite").removeAttribute("disabled");
+    // document.getElementById("saveaswebsite").classList.add("saveaswebsite");
     gAllowWebExport = true;
 
     // Enable the copy button
@@ -15199,9 +15199,9 @@ function Render(renderAll, tuneNumber) {
     }
 
     // Disable the generate website button
-    document.getElementById("saveaswebsite").classList.remove("saveaswebsite");
-    document.getElementById("saveaswebsite").classList.add("saveaswebsitedisabled");
-    document.getElementById("saveaswebsite").setAttribute("disabled", '');
+    // document.getElementById("saveaswebsite").classList.remove("saveaswebsite");
+    // document.getElementById("saveaswebsite").classList.add("saveaswebsitedisabled");
+    // document.getElementById("saveaswebsite").setAttribute("disabled", '');
     gAllowWebExport = false;
 
     // Disable the control display toggle
@@ -20264,12 +20264,6 @@ function AddBodhranReelTemplate() {
   // Stuff in some default ABC with additional options explained
   var theValue = ""
 
-  var nTunes = CountTunes();
-
-  if (nTunes > 0) {
-    theValue += "\n";
-  }
-
   theValue += "X:1\n";
   theValue += "T:Reel Bodhran Template\n";
   theValue += "R:Reel\n";
@@ -20324,7 +20318,7 @@ function AddBodhranReelTemplate() {
   theValue += "|: ^d2AA B2AA | ^A=C=FC ACFC | =G/G/G GA ^G2^AA | ^d^A=AA =G2AA |\n";
   theValue += "   ^d2AA B2AA | ^A=C=FC ACFC | =G/G/G GA ^G2^AA | ^d^A=AA =G2AA :| \n";
   theValue += "|: ^d=CCe DD=f^D | ^A=C=FC ^A2=AA | A3d =c2AA | =G^GAA e2GG |\n";
-  theValue += "   ^d=CCe DD=f^D | ^A=C=FC ^A2=AA | A3d =c2AA | =G^GAA e2GG :|\n";
+  theValue += "   ^d=CCe DD=f^D | ^A=C=FC ^A2=AA | A3d =c2AA | =G^GAA e2GG :|";
 
   // Lite: Customized
   // Close the prompt window
@@ -20343,12 +20337,6 @@ function AddBodhranJigTemplate() {
 
   // Stuff in some default ABC with additional options explained
   var theValue = ""
-
-  var nTunes = CountTunes();
-
-  if (nTunes > 0) {
-    theValue += "\n";
-  }
 
   theValue += "X:1\n";
   theValue += "T:Jig Bodhran Template\n";
@@ -20400,7 +20388,7 @@ function AddBodhranJigTemplate() {
   theValue += "|: ^d=CC =FCC | ^d2=C AEA | ^A2=C =FCC|^d=CC AEA |\n";
   theValue += "   ^d=CC =FCC | ^d2=C AEA | ^A2=C =FCC|^d=CC AEA :|\n";
   theValue += "|: ^d=CC =F/F/FC | ^A2d =F=C=A | d=c/=B/^A ^d=C=F | AEE d3 |\n";
-  theValue += "   ^d=CC =F/F/FC | ^A2d =F=C=A | d=c/=B/^A ^d=C=F | AEE d3 :| \n";
+  theValue += "   ^d=CC =F/F/FC | ^A2d =F=C=A | d=c/=B/^A ^d=C=F | AEE d3 :|";
 
   // Lite: Customized
   // Close the prompt window
@@ -20419,12 +20407,6 @@ function AddBodhranSlipJigTemplate() {
 
   // Stuff in some default ABC with additional options explained
   var theValue = ""
-
-  var nTunes = CountTunes();
-
-  if (nTunes > 0) {
-    theValue += "\n";
-  }
 
   theValue += "X:1\n";
   theValue += "T:Slip Jig Bodhran Template\n";
@@ -20472,7 +20454,7 @@ function AddBodhranSlipJigTemplate() {
   theValue += "|: =F,zD, F,=C,C, !>!=F,3 | =F,zD, F,=C,C, F,C,C, | =F,zD, F,=C,C, !>!F,3 | =F,zD, F,=C,C, F,C,C, |\n";
   theValue += "   =F,zD, F,=C,C, !>!=F,3 | =F,zD, F,=C,C, F,C,C, | =F,zD, F,=C,C, !>!F,3 | =F,zD, F,=C,C, F,C,C, :|\n";
   theValue += "|: ^d=CC =FCC FCC | ^d2=C =FCC AEA | ^A2=C =FCC A2A | ^d=CC =FCF A3 |\n";
-  theValue += "   ^d=CC =FCC FCC | ^d2=C =FCC AEA | ^A2=C =FCC A2A | ^d=CC =FCF A3 :|\n";
+  theValue += "   ^d=CC =FCC FCC | ^d2=C =FCC AEA | ^A2=C =FCC A2A | ^d=CC =FCF A3 :|";
 
   // Lite: Customized
   // Close the prompt window
@@ -20491,12 +20473,6 @@ function AddBodhranSlideTemplate() {
 
   // Stuff in some default ABC with additional options explained
   var theValue = ""
-
-  var nTunes = CountTunes();
-
-  if (nTunes > 0) {
-    theValue += "\n";
-  }
 
   theValue += "X:1\n";
   theValue += "T:Slide Bodhran Template\n";
@@ -20544,7 +20520,7 @@ function AddBodhranSlideTemplate() {
   theValue += "|: =F,zD, F,=C,C, F,C,C, !>!F,3 | =F,zD, F,=C,C, F,C,C, !>!F,3 |\n";
   theValue += "   =F,zD, F,=C,C, F,C,C, !>!F,3 | =F,zD, F,=C,C, F,C,C, !>!F,3 :|\n";
   theValue += "|: ^A2=F ^dF^A =d2=A ^c2^G | ^A2=F ^dF^A =B3 B2^F |\n";
-  theValue += "   ^A2=F ^dF^A =d2=A ^c2^G | ^A=C=F ^dF^A F3 ^A3 :|\n";
+  theValue += "   ^A2=F ^dF^A =d2=A ^c2^G | ^A=C=F ^dF^A F3 ^A3 :|";
 
   // Lite: Customized
   // Close the prompt window
@@ -20563,12 +20539,6 @@ function AddBodhranPolkaTemplate() {
 
   // Stuff in some default ABC with additional options explained
   var theValue = ""
-
-  var nTunes = CountTunes();
-
-  if (nTunes > 0) {
-    theValue += "\n";
-  }
 
   theValue += "X:1\n";
   theValue += "T:Polka Bodhran Template\n";
@@ -20615,7 +20585,7 @@ function AddBodhranPolkaTemplate() {
   theValue += "|: =C,2 C,=F, | =C,=F, C,F, | =C,=F, C,F, | =C,2 =F,2 |\n";
   theValue += "   =C,2 C,=F, | =C,=F, C,F, | =C,=F, C,F, | =C,2 =F,2 :|\n";
   theValue += "|: ^A/A/A =C^A | ^F^A =CA | ^A=A/A/ =FA | ^A2E^c |\n";
-  theValue += "   ^A/A/A =C^A | ^F^A =CA | ^A=A/A/ =FA | ^A2E^c :|\n";
+  theValue += "   ^A/A/A =C^A | ^F^A =CA | ^A=A/A/ =FA | ^A2E^c :|";
 
   // Lite: Customized
   // Close the prompt window
@@ -20634,12 +20604,6 @@ function AddBodhranHornpipeTemplate() {
 
   // Stuff in some default ABC with additional options explained
   var theValue = ""
-
-  var nTunes = CountTunes();
-
-  if (nTunes > 0) {
-    theValue += "\n";
-  }
 
   theValue += "X:1\n";
   theValue += "T:Hornpipe Bodhran Template\n";
@@ -20687,7 +20651,7 @@ function AddBodhranHornpipeTemplate() {
   theValue += "|: =F,=C, F,C, F,C, F,C, | =F,=C, (3!>!F,C,C, !>!F,z F,C, | =F,=C, F,C, F,C, F,C, |=F,=C, (3F,C,C, !>!F,z F,C, |\n";
   theValue += "   =F,=C, F,C, F,C, F,C, | =F,=C, (3!>!F,C,C, !>!F,z F,C, | =F,=C, F,C, F,C, F,C, | =F,=C, (3F,C,C, !>!F,z F,C, :|\n";
   theValue += "|: =F,=C, F,C, F,C, F,C, | =F,=C, F,C, F,C, F,C, | =F,=C, F,C, F,C, F,C, | =F,=C, (3!>!F,C,C, !>!F,z F,C, |\n";
-  theValue += "   =F,=C, F,C, F,C, F,C, | =F,=C, F,C, F,C, F,C, | =F,=C, F,C, F,C, F,C, | =F,=C, (3!>!F,C,C, !>!F,z F,C, :|\n";
+  theValue += "   =F,=C, F,C, F,C, F,C, | =F,=C, F,C, F,C, F,C, | =F,=C, F,C, F,C, F,C, | =F,=C, (3!>!F,C,C, !>!F,z F,C, :|";
 
   // Lite: Customized
   // Close the prompt window
@@ -20711,12 +20675,6 @@ function AppendSampleReel() {
 
   // Stuff in some default ABC with additional options explained
   var theValue = ""
-
-  var nTunes = CountTunes();
-
-  if (nTunes > 0) {
-    theValue += "\n";
-  }
 
   theValue += "X: 1\n";
   theValue += "T: Cooley's\n";
@@ -20745,7 +20703,7 @@ function AppendSampleReel() {
   theValue += '|:"Em"EBBA B2 EB|B2 AB dBAG|"D"F/E/D AD BDAD|F/E/D AD BAGF|\n';
   theValue += '"Em"EBBA B2 EB|B2 AB defg|"D"afge dBAF|1 DEFD "Em"E3D:|2 DEFD "Em"E2gf||\n';
   theValue += '|:"Em"eB (3BBB eBgf|eBB2 gedB|"D"A/A/A FA DAFA|A/A/A FA defg|\n';
-  theValue += '"Em"eB (3BBB eBgf|eBBB defg|"D"afge dBAF|1 DEFD "Em"E2gf:|2 DEFD "Em"E4|]\n';
+  theValue += '"Em"eB (3BBB eBgf|eBBB defg|"D"afge dBAF|1 DEFD "Em"E2gf:|2 DEFD "Em"E4|]';
 
   // Lite: Customized
   // Refocus on the button after ABC added
@@ -20766,12 +20724,6 @@ function AppendSampleJig() {
 
   // Stuff in some default ABC with additional options explained
   var theValue = ""
-
-  var nTunes = CountTunes();
-
-  if (nTunes > 0) {
-    theValue += "\n";
-  }
 
   theValue += "X: 1\n";
   theValue += "T: The Kesh\n";
@@ -20800,7 +20752,7 @@ function AppendSampleJig() {
   theValue += '|:"G"GAG GAB|"D"ABA ABd|"G"edd gdd|"C"edB "D"dBA|\n';
   theValue += '"G"GAG GAB|"D"ABA ABd|"G"edd gdB|"D"AGF "G"G3:|\n';
   theValue += '|:"G"BAB dBd|"C"ege "D"dBA|"G"BAB dBG|"D"ABA AGA|\n';
-  theValue += '"G"BAB dBd|"C"ege "G"dBd|"C"gfg "D"aga|"G"bgf g3:|\n';
+  theValue += '"G"BAB dBd|"C"ege "G"dBd|"C"gfg "D"aga|"G"bgf g3:|';
 
   // Lite: Customized
   // Refocus on the button after ABC added
@@ -20822,12 +20774,6 @@ function AppendSampleHornpipe() {
 
   // Stuff in some default ABC with additional options explained
   var theValue = ""
-
-  var nTunes = CountTunes();
-
-  if (nTunes > 0) {
-    theValue += "\n";
-  }
 
   theValue += 'X: 1\n';
   theValue += 'T: Alexander\'s\n';
@@ -20856,7 +20802,7 @@ function AppendSampleHornpipe() {
   theValue += '|:(3gfe|"D"dAFA DFAd|fdcd Adef|"G"g2 ge "D"fdcd|"A"(3efe (3dcB A2 (3gfe|\n';
   theValue += '"D"dAFA DFAd|fdcd Adef|"G"g2 ge "D"fdcd|"A"(3efe dc"D"d2:|\n';
   theValue += '|:AG|"D"FAdA FAdA|"G"GBdB GBdB|"A"Acec Acec|"D"dfaf "A"(3gfe (3dAG|\n';
-  theValue += '"D"FAdA FAdA|"G"GBdB GBdB|"A"Acef gecd|(3efe dc"D"d2:|\n';
+  theValue += '"D"FAdA FAdA|"G"GBdB GBdB|"A"Acef gecd|(3efe dc"D"d2:|';
 
   // Lite: Customized
   // Refocus on the button after ABC added
@@ -20876,12 +20822,6 @@ function AppendTuneTempate() {
 
   // Stuff in some default ABC with additional options explained
   var theValue = ""
-
-  var nTunes = CountTunes();
-
-  if (nTunes > 0) {
-    theValue += "\n";
-  }
 
   theValue += 'X: 1\n';
   theValue += 'T: Tune Title\n';
@@ -20915,7 +20855,7 @@ function AppendTuneTempate() {
   theValue += '%%MIDI bassprog 38\n';
   theValue += '%\n';
   theValue += "% Add your tune's ABC below:\n";
-  theValue += '"C"C2 D2 E2 F2| G2 A2 B2 c2|]\n';
+  theValue += '"C"C2 D2 E2 F2| G2 A2 B2 c2|]';
 
   // Lite: Customized
   // Refocus on the button after ABC added
@@ -20935,12 +20875,6 @@ function AppendSongTemplate() {
 
   // Stuff in some default ABC with additional options explained
   var theValue = ""
-
-  var nTunes = CountTunes();
-
-  if (nTunes > 0) {
-    theValue += "\n";
-  }
 
   theValue += "% Stripped-down self-documenting song in ABC, by Linda Eskin\n";
   theValue += "% Replace the WORDS IN UPPER-CASE with your own information.\n";
@@ -20998,7 +20932,7 @@ function AppendSongTemplate() {
   theValue += "W: Here we have another verse, another verse, another verse.\n";
   theValue += "W: Now we have reached the end - this is the last verse of this song.\n";
   theValue += "%\n";
-  theValue += "% That should get you started. Go play!\n";
+  theValue += "% That should get you started. Go play!";
 
   // Lite: Customized
   // Refocus on the button after ABC added
@@ -21018,12 +20952,6 @@ function AppendSampleSong() {
 
   // Stuff in some default ABC with additional options explained
   var theValue = ""
-
-  var nTunes = CountTunes();
-
-  if (nTunes > 0) {
-    theValue += "\n";
-  }
 
   theValue += "% A simple, self-documenting song in ABC, by Linda Eskin\n";
   theValue += "%\n";
@@ -21143,7 +21071,7 @@ function AppendSampleSong() {
   theValue += "W: Here we have another verse, another verse, another verse.\n";
   theValue += "W: Now we have reached the end - this is the last verse of this song.\n";
   theValue += "%\n";
-  theValue += "% That should get you started. Go play!\n";
+  theValue += "% That should get you started. Go play!";
 
   // Lite: Customized
   // Refocus on the button after ABC added
@@ -21281,7 +21209,7 @@ function AppendJSBach(){
   theValue += 'A,2A,,2 z4 z EDC B,D^CE | D8- DA,B,C DB,CA, |\n';
   theValue += 'B,8- B,DCB, A,CB,D | C8- CG,A,_B, CA,B,G, |\n';
   theValue += 'A,2_B,2A,2G,2 F,2D2C2B,2 | A,2F2E2D2 ED,E,F, G,E,F,D, |\n';
-  theValue += '[][Q:1/4=56][M:2/4]E,2C,2D,2E,2|[Q:1/4=42]F,D,E,F, G,2G,,2 |[M:4/4][C,,C,]16 |]\n';
+  theValue += '[][Q:1/4=56][M:2/4]E,2C,2D,2E,2|[Q:1/4=42]F,D,E,F, G,2G,,2 |[M:4/4][C,,C,]16 |]';
 
   // Lite: Customized
   // Refocus on the button after ABC added
@@ -21392,7 +21320,7 @@ function AppendJSBach2(){
   theValue += 'F,4 ^F,4 G,2G,=F,E,2E,D, | C,2C,B,,A,,2A,,G,, F,,2A,,G,,F,,2F,,E,, | D,,2D,C,B,,2A,,G,, C,6 D,E, | A,,6 B,,C, F,,4 ^F,,2E,,F,, |\n';
   theValue += 'G,,4 z8 x4 | z16 | G,8G,8- | G,8G,8- |\n';
   theValue += 'G,8G,8- | G,2G,F,E,2D,C, B,,2A,,G,,F,,2E,,D,, | F,,4 F,4 G,8- | G,8G,8- |\n';
-  theValue += 'G,4 F,6 G,F,E,2D,C, | G,8G,8- | G,8G,8- | G,8 C,2C_B,A,2G,F, |\n';
+  theValue += 'G,4 F,6 G,F,E,2D,C, | G,8G,8- | G,8G,8- | G,8 C,2C_B,A,2G,F, |';
   theValue += 'E,4 F,4 C,8 | C,16 |]\n';
 
   // Lite: Customized
@@ -21569,7 +21497,7 @@ function AddRagtimeNightingale(){
   theValue += "x2 | x2 | x2 | x2 | %80\n";
   theValue += "x2 | x2 | x2 | x2 | %84\n";
   theValue += "x2 | x2 | x2 | x2 | %88\n";
-  theValue += "x2 | x2 | x2 |] %91\n";
+  theValue += "x2 | x2 | x2 |] %91";
 
   // Lite: Customized
   // Refocus on the button after ABC added
@@ -21587,10 +21515,46 @@ function AddRagtimeNightingale(){
 function ProcessAddTune(theValue, focusElem) {
 
   // Force scroll into view
-  var theOriginalLength = getABCEditorText().length;
+  // var theOriginalLength = getABCEditorText().length;
 
-  // Add the tune to the ABC
-  setABCEditorText(getABCEditorText() + theValue);
+  const abcArea =
+    gEnableSyntax? gTheCM : gTheABC;
+
+  const selectionStart =
+    abcArea.selectionStart;
+
+  const selectionEnd =
+    abcArea.selectionEnd;
+
+  if (selectionStart !== selectionEnd) {
+
+    if (gEnableSyntax) {
+
+      // Replace CodeMirror textarea selection with the tune
+      abcArea.replaceSelection(theValue, 'around');
+
+    } else {
+
+      // Replace ABC textarea selection with the tune
+      abcArea.setRangeText(theValue, selectionStart, selectionEnd, 'select');
+    }
+
+  } else {
+
+    var nTunes = CountTunes();
+
+    if (nTunes === 1) {
+
+      theValue = `\n\n${theValue}\n`;
+
+    } else if (nTunes > 0) {
+
+      theValue = `\n${theValue}\n`;
+    }
+
+    // Add the tune to the end of ABC textarea
+    setABCEditorText(getABCEditorText() + theValue);
+  }
 
   // Set dirty
   gIsDirty = true;
@@ -21636,10 +21600,10 @@ function ProcessAddTune(theValue, focusElem) {
         
         gTheCM.getInputField().blur();
 
-        if (isMobileBrowser()) {
+        // if (isMobileBrowser()) {
           // gTheCM.getInputField().blur();
-          return;
-        }
+          // return;
+        // }
 
         // gTheCM.getInputField().blur();
         // gTheCM.focus();
@@ -21650,10 +21614,10 @@ function ProcessAddTune(theValue, focusElem) {
 
         gTheABC.blur();
 
-        if (isMobileBrowser()) {
+        // if (isMobileBrowser()) {
           // gTheABC.blur();
-          return;
-        }
+          // return;
+        // }
 
         // gTheABC.blur();
         // gTheABC.focus();
@@ -21669,6 +21633,10 @@ function ProcessAddTune(theValue, focusElem) {
 
         doFocusAbc();
       }
+    }
+
+    if (selectionStart === selectionEnd) {
+      setAbcSelectionToEnd();
     }
 
     // Scroll the tune into view
@@ -53364,12 +53332,12 @@ function ConfigureToolSettings() {
   form.push({ html: '<div id="tab_update" class="adv-tab-panel">' });
   if (gUpdateAvailable){
     form.push({
-        html: '<p style="text-align:center;font-size:12pt;margin-top:120px;">Click the button below to force an update to the latest version of the tool:</p><p style="text-align:center;"><input id="abcplayer_updatebutton_d" class="abcplayer_updatebutton_d btn btn-configuresettingsfromhelp" onclick="UpdateToLatestVersion();" type="button" value="Update to the Latest Version" title="Forces an update of the tool to the latest available version."></p><p style="text-align:center;font-size:12pt;line-height:18pt;margin-top:24px;color:red;">Latest version: ' + gUpdateVersion + '<br/>Installed version: ' + gVersionNumber + '</p>'
+        html: '<p style="text-align:center;font-size:12pt;margin-top:120px;">Click the button below to force an update to the latest version of the tool:</p><p style="text-align:center;"><input id="abcplayer_updatebutton_d" class="abcplayer_updatebutton_d btn btn-configuresettingsfromhelp" onclick="UpdateToLatestVersion();" type="button" value="Update to the Latest Version" title="Forces an update of the tool to the latest available version."></p><p style="text-align:center;font-size:12pt;line-height:18pt;margin-top:24px;color:red;">Latest version: ' + gUpdateVersion + '<br/>Installed version: ' + gLiteVersionNumber + '</p>'
       });  
   }
   else{
     form.push({
-        html: '<p style="text-align:center;font-size:12pt;margin-top:120px;">Click the button below to force an update to the latest version of the tool:</p><p style="text-align:center;"><input id="abcplayer_updatebutton_d" class="abcplayer_updatebutton_d btn btn-configuresettingsfromhelp" onclick="UpdateToLatestVersion();" type="button" value="Update to the Latest Version" title="Forces an update of the tool to the latest available version."></p><p style="text-align:center;font-size:12pt;line-height:18pt;margin-top:24px;">You have the latest version:<br/>Version: ' + gVersionNumber + '</p>'
+        html: '<p style="text-align:center;font-size:12pt;margin-top:120px;">Click the button below to force an update to the latest version of the tool:</p><p style="text-align:center;"><input id="abcplayer_updatebutton_d" class="abcplayer_updatebutton_d btn btn-configuresettingsfromhelp" onclick="UpdateToLatestVersion();" type="button" value="Update to the Latest Version" title="Forces an update of the tool to the latest available version."></p><p style="text-align:center;font-size:12pt;line-height:18pt;margin-top:24px;">You have the latest version:<br/>' + gLiteVersionNumber + ' / ' + gVersionNumber + '</p>'
       });  
 
   }  
@@ -53409,7 +53377,7 @@ function ConfigureToolSettings() {
         '</p>' +
         '<p class="modal-text-updateinfo" title="Click to update to the latest version" onclick="UpdateToLatestVersion();">' +
           'You have the latest version<br/>' +
-          'Version: ' + gLiteVersionNumber + '<br>' +
+          'Installed version: ' + gLiteVersionNumber + '<br>' +
           'Click here to force an update' +
         '</p>'
     });
@@ -56806,7 +56774,7 @@ function showWelcomeScreen() {
   } else {
     
     modal_msg += 'This is an <strong>unofficial</strong>, <strong>experimental</strong> fork of ABC Transcription Tools with additional features ';
-    modal_msg += 'developed by <a href="https://github.com/anton-bregolas" target="_blank" title="Anton Zille on GitHub" aria-title="Anton Zille on GitHub"><strong>Anton Zille</strong></a>.';
+    modal_msg += 'developed by <a href="https://github.com/anton-bregolas" target="_blank" title="Anton Zille on GitHub" aria-label="Anton Zille on GitHub"><strong>Anton Zille</strong></a>.';
   }
   modal_msg += '</p>';
 
@@ -56829,8 +56797,8 @@ function showWelcomeScreen() {
   modal_msg += '</p>';
 
   modal_msg += '<p>';
-  modal_msg += 'Visit <a href="https://github.com/anton-bregolas/abctools-lite#abc-tools-lite" target="_blank" title="ABC Tools Lite README" aria-title="ABC Tools Lite README"><strong>ABC Tools Lite Readme</strong></a> page on GitHub for<span class="desktop-use-message"> the full list of keyboard shortcuts and</span> info about custom new features. ';
-  modal_msg += 'Visit Michael Eskin\'s original <a href="https://michaeleskin.com/abctools/userguide.html" target="_blank" title="ABC Transcription Tools User Guide" aria-title="ABC Transcription Tools User Guide"><strong><span class="desktop-use-message">ABC Tools </span>User Guide</strong></a> for detailed instructions and demo videos<span class="desktop-use-message"> on how to use the Tools</span>.';
+  modal_msg += 'Visit <a href="https://github.com/anton-bregolas/abctools-lite#abc-tools-lite" target="_blank" title="ABC Tools Lite README" aria-label="ABC Tools Lite README"><strong>ABC Tools Lite Readme</strong></a> page on GitHub for<span class="desktop-use-message"> the full list of keyboard shortcuts and</span> info about custom new features. ';
+  modal_msg += 'Visit Michael Eskin\'s original <a href="https://michaeleskin.com/abctools/userguide.html" target="_blank" title="ABC Transcription Tools User Guide" aria-label="ABC Transcription Tools User Guide"><strong><span class="desktop-use-message">ABC Tools </span>User Guide</strong></a> for detailed instructions and demo videos<span class="desktop-use-message"> on how to use the Tools</span>.';
   modal_msg += '</p>';
 
   DayPilot.Modal.alert(modal_msg, {
@@ -57042,8 +57010,8 @@ function ShowHelp() {
 
   modal_msg += '<p>';
   modal_msg += '<strong>HELP:</strong> ';
-  modal_msg += 'Open <a href="https://github.com/anton-bregolas/abctools-lite#abc-tools-lite" target="_blank" title="ABC Tools Lite README" aria-title="ABC Tools Lite README"><strong>ABC Tools Lite Readme</strong></a> page on GitHub for<span class="desktop-use-message"> the full list of keyboard shortcuts and</span> general info about custom new features. ';
-  modal_msg += 'Visit Michael Eskin\'s original <a href="https://michaeleskin.com/abctools/userguide.html" target="_blank" title="ABC Transcription Tools User Guide" aria-title="ABC Transcription Tools User Guide"><strong><span class="desktop-use-message">ABC Tools </span>User Guide</strong></a> for detailed instructions and demo videos<span class="desktop-use-message"> on how to use the Tools</span>.';
+  modal_msg += 'Open <a href="https://github.com/anton-bregolas/abctools-lite#abc-tools-lite" target="_blank" title="ABC Tools Lite README" aria-label="ABC Tools Lite README"><strong>ABC Tools Lite Readme</strong></a> page on GitHub for<span class="desktop-use-message"> the full list of keyboard shortcuts and</span> general info about custom new features. ';
+  modal_msg += 'Visit Michael Eskin\'s original <a href="https://michaeleskin.com/abctools/userguide.html" target="_blank" title="ABC Transcription Tools User Guide" aria-label="ABC Transcription Tools User Guide"><strong><span class="desktop-use-message">ABC Tools </span>User Guide</strong></a> for detailed instructions and demo videos<span class="desktop-use-message"> on how to use the Tools</span>.';
   modal_msg += '</p>';
 
   if (gIsMaximized && gDisableEditFromPlayLink) {
@@ -62218,12 +62186,13 @@ function DoStartup() {
         }
         else{
           elem = gTheABC;
+          elem.cols = 60;
 
-          if (gIsIPhone) {
-            elem.cols = 60;
-          } else {
-            elem.cols = 58;
-          }
+          // if (gIsIPhone) {
+          //   elem.cols = 60;
+          // } else {
+          //   elem.cols = 58;
+          // }
 
           elem.style.fontSize = "16pt";
           elem.style.lineHeight = "18pt";
@@ -62285,9 +62254,19 @@ function DoStartup() {
       elem = document.getElementById("rawmodebutton");
       elem.style.display = "none";
 
-      // Hide Export Website button
-      elem = document.getElementById("saveaswebsite");
-      elem.style.display = "none";
+      // // Hide Export Website button
+      // elem = document.getElementById("saveaswebsite");
+      // elem.style.display = "none";
+
+      // // Show the Copy button
+      // elem = document.getElementById("copybutton");
+      // elem.removeAttribute("aria-hidden");
+      // elem.removeAttribute("hidden");
+
+      // // Show the Paste button
+      // elem = document.getElementById("pastebutton");
+      // elem.removeAttribute("aria-hidden");
+      // elem.removeAttribute("hidden");
     }
   }
 
@@ -65160,7 +65139,7 @@ function openInExternalTool(theABC){
   modal_msg += '<img id="external_abcjs" src="img/abcjs_logo.png" title="Open the ABC in the abcjs quick editor" alt="abcjs quick editor"><br> <span style="font-size:1.2em;">abcjs quick editor</span>';
   modal_msg += '</button>';
   modal_msg += '<button class="btn-lite external-tool">';
-  modal_msg += '<img id="external_abcencoder" src="img/abc-encoder-logo.svg" title="Export the tunes to Anton Zille\'s ABC Encoder for auto-formatting headers and sorting sets of tunes or ABC collections" aria-title="Export the tunes to Anton Zille\'s ABC Encoder for auto-formatting headers and sorting sets of tunes or ABC collections"><br> <span style="font-size:1.2em;">N.S.S.S. ABC Encoder</span>';
+  modal_msg += '<img id="external_abcencoder" src="img/abc-encoder-logo.svg" title="Export the tunes to Anton Zille\'s ABC Encoder for auto-formatting headers and sorting sets of tunes or ABC collections" aria-label="Export the tunes to Anton Zille\'s ABC Encoder for auto-formatting headers and sorting sets of tunes or ABC collections"><br> <span style="font-size:1.2em;">N.S.S.S. ABC Encoder</span>';
   modal_msg += '</button>';
   modal_msg += '</p>';
 

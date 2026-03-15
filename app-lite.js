@@ -6,7 +6,7 @@
 ///////////////////////////////////////////////////////////////////////
 
 // Custom global variables / constants
-var gLiteVersionNumber = 'lite-3177-8';
+var gLiteVersionNumber = 'lite-3177-9';
 
 var ABC_TOOLS_BASE_URL =
   window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
@@ -343,6 +343,20 @@ function resetAbcScroll() {
   }
 }
 
+// Move cursor to the end of ABC text field
+
+function setAbcSelectionToEnd() {
+
+  if (gEnableSyntax) {
+
+    gTheCM.setCursor(gTheCM.lastLine(), Infinity);
+
+  } else {
+
+    gTheABC.setSelectionRange(gTheABC.value.length, gTheABC.value.length);
+  }
+}
+
 // Shift focus to player controls
 
 function doPlayerFocus() {
@@ -369,6 +383,63 @@ function doFocusElemDelayed(elemSelector, delayMs) {
 }
 
 ////////////////////////////////////////////
+// APP LITE: PASTE TEXT / REPLACE SELECTION
+///////////////////////////////////////////
+
+// Insert clipboard text to the ABC textarea
+// Replace selected ABC text if selection found
+
+function litePasteToABC() {
+
+  sendGoogleAnalytics("action", "litePasteToABC");
+
+  navigator.clipboard.readText()
+    .then(text => {
+
+      if (!text) return;
+
+      const abcArea =
+        gEnableSyntax? gTheCM : gTheABC;
+
+      abcArea.focus();
+
+      const selectionStart =
+        abcArea.selectionStart;
+
+      const selectionEnd =
+        abcArea.selectionEnd;
+
+      const nTunes = CountTunes();
+
+      if (selectionStart || selectionStart !== selectionEnd) {
+
+        if (nTunes && selectionStart && text.startsWith('X:')) text = `\n\n${text}\n`;
+
+        if (gEnableSyntax) {
+
+          abcArea.replaceSelection(text, 'around');
+
+        } else {
+
+          abcArea.setRangeText(text, selectionStart, selectionEnd, 'select');
+        }
+
+        RenderAsync(true, null);
+
+        return;
+      }
+
+      if (nTunes && text.startsWith('X:')) text = `\n\n${text}`;
+
+      ProcessAddTune(text);
+    })
+    .catch(error => {
+
+      console.warn("Error pasting text from clipboard:", error);
+    });
+}
+
+////////////////////////////////////////////
 // APP LITE: UI MENU (LEGACY) CUSTOM ITEMS
 ///////////////////////////////////////////
 
@@ -391,9 +462,9 @@ function liteOpenToolsLinks() {
   // Modal Tabs
   modalContent +=
     '<div class="adv-tab-bar">' +
-      '<button type="button" class="adv-tab-btn active" data-tab="tab_pages" aria-selected="true">Pages</button>' +
+      '<button type="button" class="adv-tab-btn active" data-tab="tab_tools" aria-selected="true">Tools</button>' +
       '<button type="button" class="adv-tab-btn" data-tab="tab_specs">Specs</button>' +
-      '<button type="button" class="adv-tab-btn" data-tab="tab_tools">Tools</button>' +
+      '<button type="button" class="adv-tab-btn" data-tab="tab_pages">Pages</button>' +
       '<button type="button" class="adv-tab-btn" data-tab="tab_eskin">Michael Eskin</button>' +
       '<button type="button" class="adv-tab-btn" data-tab="tab_zille">Anton Zille</button>' +
     '</div>';
@@ -401,35 +472,35 @@ function liteOpenToolsLinks() {
   // Modal Panels
   modalContent +=
     '<div class="adv-tab-panels">' +
-      '<div id="tab_pages" class="adv-tab-panel adv-tab-links-container active">' +
-        // Pages
-        '<a href="https://michaeleskin.com/abctools/userguide.html" target="_blank" class="btn btn-link btn-lite-lime" title="Open ABC Transcription Tools User Guide (External Link)" aria-title="Open ABC Transcription Tools User Guide (External Link)">ABC Tools User Guide</a>' +
-        '<a href="tunesources.html" target="_blank" class="btn btn-link btn-lite-lime" title="Open ABC Tools Lite Tune Sources Page" aria-title="Open ABC Tools Lite Tune Sources Page">ABC Tune Sources</a>' +
-        '<a href="credits.html" target="_blank" class="btn btn-link btn-lite-lime" title="Open ABC Tools Lite Credits Page" aria-title="Open ABC Tools Lite Credits Page">Credits & Thanks</a>' +
+      '<div id="tab_tools" class="adv-tab-panel adv-tab-links-container active">' +
+        // Tools
+        '<button class="saveaswebsite btn btn-top btn-lite-lime" id="saveaswebsite" onclick="generateWebsite();" title="Export Tunebook as Website or Gallery" aria-label="Export Tunebook as Website or Gallery">Export Website</button>' +
+        '<button class="saveaswebsite btn btn-top btn-lite-lime" id="opentuningtools" onclick="TuningTools();" title="Open Michael Eskin\'s Tuning Tools" aria-label="Open Michael Eskin\'s Tuning Tools">Tuning Tools</button>' +
+        '<button class="saveaswebsite btn btn-top btn-lite-lime" id="opentsoscraper" onclick="MustardScraper();" title="Open Michael Eskin\'s The Session Scraper" aria-label="Open Michael Eskin\'s The Session Scraper">Mustard Scraper</button>' +
       '</div>' +
       '<div id="tab_specs" class="adv-tab-panel adv-tab-links-container">' +
         // Specs
-        '<a href="https://abcnotation.com/wiki/abc:standard:v2.1" target="_blank" class="btn btn-link" title="Open ABC Notation Standard Wiki (External Link)" aria-title="Open ABC Notation Standard Wiki (External Link)">ABC Standard v2.1</a>' +
-        '<a href="https://michaeleskin.com/abctools/ABCquickRefv0_6.pdf" target="_blank" class="btn btn-link" title="Open ABC Notation Quick Reference (External Link)" aria-title="Open ABC Notation Quick Reference (External Link)">ABC Quick Reference</a>' +
-        '<a href="https://michaeleskin.com/abctools/general_midi_extended_v10.pdf" target="_blank" class="btn btn-link" title="Open MIDI Quick Reference (External Link)" aria-title="Open MIDI Quick Reference (External Link)">MIDI Quick Reference</a>' +
+        '<a href="https://abcnotation.com/wiki/abc:standard:v2.1" target="_blank" class="btn btn-link" title="Open ABC Notation Standard Wiki (External Link)" aria-label="Open ABC Notation Standard Wiki (External Link)">ABC Standard v2.1</a>' +
+        '<a href="https://michaeleskin.com/abctools/ABCquickRefv0_6.pdf" target="_blank" class="btn btn-link" title="Open ABC Notation Quick Reference (External Link)" aria-label="Open ABC Notation Quick Reference (External Link)">ABC Quick Reference</a>' +
+        '<a href="https://michaeleskin.com/abctools/general_midi_extended_v10.pdf" target="_blank" class="btn btn-link" title="Open MIDI Quick Reference (External Link)" aria-label="Open MIDI Quick Reference (External Link)">MIDI Quick Reference</a>' +
       '</div>' +
-      '<div id="tab_tools" class="adv-tab-panel adv-tab-links-container">' +
-        // Tools
-        '<button class="saveaswebsite btn btn-top btn-lite-lime" id="saveaswebsite" onclick="generateWebsite();" title="Export Tunebook as Website or Gallery" aria-title="Export Tunebook as Website or Gallery">Export Website</button>' +
-        '<button class="saveaswebsite btn btn-top btn-lite-lime" id="opentuningtools" onclick="TuningTools();" title="Open Michael Eskin\'s Tuning Tools" aria-title="Open Michael Eskin\'s Tuning Tools">Tuning Tools</button>' +
-        '<button class="saveaswebsite btn btn-top btn-lite-lime" id="opentsoscraper" onclick="MustardScraper();" title="Open Michael Eskin\'s The Session Scraper" aria-title="Open Michael Eskin\'s The Session Scraper">Mustard Scraper</button>' +
+      '<div id="tab_pages" class="adv-tab-panel adv-tab-links-container">' +
+        // Pages
+        '<a href="https://michaeleskin.com/abctools/userguide.html" target="_blank" class="btn btn-link btn-lite-lime" title="Open ABC Transcription Tools User Guide (External Link)" aria-label="Open ABC Transcription Tools User Guide (External Link)">ABC Tools User Guide</a>' +
+        '<a href="tunesources.html" target="_blank" class="btn btn-link btn-lite-lime" title="Open ABC Tools Lite Tune Sources Page" aria-label="Open ABC Tools Lite Tune Sources Page">ABC Tune Sources</a>' +
+        '<a href="credits.html" target="_blank" class="btn btn-link btn-lite-lime" title="Open ABC Tools Lite Credits Page" aria-label="Open ABC Tools Lite Credits Page">Credits & Thanks</a>' +
       '</div>' +
       '<div id="tab_eskin" class="adv-tab-panel adv-tab-links-container">' + 
         // Michael Eskin
-        '<a href="https://michaeleskin.com/" target="_blank" class="btn btn-link" title="Open Michael Eskin\'s Homepage (External Link)" aria-title="Open Michael Eskin\'s Homepage (External Link)">Homepage</a>' +
-        '<a href="https://michaeleskin.com/abctools/tipjars.html" target="_blank" class="btn btn-link" title="Open Michael Eskin\'s Tip Jars (External Link)" aria-title="Open Michael Eskin\'s Tip Jars (External Link)">Tip Jars</a>' +
-        '<a href="https://michaeleskin.com/tunebooks.html" target="_blank" class="btn btn-link" title="Open Michael Eskin\'s Tunebooks (External Link)" aria-title="Open Michael Eskin\'s Tunebooks (External Link)">Tunebooks</a>' +
+        '<a href="https://michaeleskin.com/" target="_blank" class="btn btn-link" title="Open Michael Eskin\'s Homepage (External Link)" aria-label="Open Michael Eskin\'s Homepage (External Link)">Homepage</a>' +
+        '<a href="https://michaeleskin.com/abctools/tipjars.html" target="_blank" class="btn btn-link" title="Open Michael Eskin\'s Tip Jars (External Link)" aria-label="Open Michael Eskin\'s Tip Jars (External Link)">Tip Jars</a>' +
+        '<a href="https://michaeleskin.com/tunebooks.html" target="_blank" class="btn btn-link" title="Open Michael Eskin\'s Tunebooks (External Link)" aria-label="Open Michael Eskin\'s Tunebooks (External Link)">Tunebooks</a>' +
       '</div>' +
       '<div id="tab_zille" class="adv-tab-panel adv-tab-links-container">' +
         // Anton Zille
-        '<a href="https://github.com/anton-bregolas/abctools-lite" target="_blank" class="btn btn-link btn-lite-lime" title="Open ABC Tools Lite GitHub Page (External Link)" aria-title="Open ABC Tools Lite GitHub Page (External Link)">ABC Tools Lite (GitHub)</a>' +
-        '<a href="https://ns.tunebook.app/" target="_blank" class="btn btn-link btn-lite-lime" title="Open Novi Sad Session Setlist App (External Link)" aria-title="Open Novi Sad Session Setlist App (External Link)">NS Session Setlist</a>' +
-        '<a href="https://denis.tunebook.app/" target="_blank" class="btn btn-link btn-lite-lime" title="Open Project Denis App (External Link)" aria-title="Open Project Denis App (External Link)">#ProjectDenis</a>' +
+        '<a href="https://github.com/anton-bregolas/abctools-lite" target="_blank" class="btn btn-link btn-lite-lime" title="Open ABC Tools Lite GitHub Page (External Link)" aria-label="Open ABC Tools Lite GitHub Page (External Link)">ABC Tools Lite (GitHub)</a>' +
+        '<a href="https://ns.tunebook.app/" target="_blank" class="btn btn-link btn-lite-lime" title="Open Novi Sad Session Setlist App (External Link)" aria-label="Open Novi Sad Session Setlist App (External Link)">NS Session Setlist</a>' +
+        '<a href="https://denis.tunebook.app/" target="_blank" class="btn btn-link btn-lite-lime" title="Open Project Denis App (External Link)" aria-label="Open Project Denis App (External Link)">#ProjectDenis</a>' +
       '</div>' +
     '</div>';
   
@@ -493,7 +564,7 @@ function liteOpenToolsLatestScreen() {
   let modal_msg = '';
 
   modal_msg += '<a href="https://github.com/anton-bregolas/abctools-lite#abc-tools-lite" target="_blank" ';
-	modal_msg += 'title="About ABC Tools Lite: Visit Readme Page on GitHub" aria-title="About ABC Tools Lite: Visit Readme Page on GitHub" class="modal-header-ui modal-link-help dialogcornerbutton">';
+	modal_msg += 'title="About ABC Tools Lite: Visit Readme Page on GitHub" aria-label="About ABC Tools Lite: Visit Readme Page on GitHub" class="modal-header-ui modal-link-help dialogcornerbutton">';
 	modal_msg += '<svg aria-hidden="true"><use href="#lite-icon-help"></use></svg>';
   modal_msg += '</a>';
   
