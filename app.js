@@ -31,7 +31,7 @@
  **/
 
 // Version number for the settings dialog
-var gVersionNumber = "3177_022126_1100";
+var gVersionNumber = "3206_031626_1030";
 
 var gMIDIInitStillWaiting = false;
 
@@ -539,6 +539,9 @@ var gEnableSyntaxMessageDelivered = false;
 
 // Always flatten playbackparts
 var gAlwaysFlattenParts = false;
+
+// Flat look UI?
+// var gUseFlatButtons = true;
 
 // Global reference to the ABC editor
 var gTheABC = document.getElementById("abc");
@@ -3455,58 +3458,34 @@ function DoSortTunesByMeter() {
     return;
   }
 
-  var elem = document.getElementById("sortbutton");
-  if (elem) {
-    // Give some feedback
-    elem.value = "Sorting...";
-  }
+  // Sort the tunes by name
+  SortTunes();
 
-  setTimeout(function() {
+  // Sort the tunes
+  SortTunesByTag("M", false);
 
-    // Sort the tunes by name
-    SortTunes();
+  const scrollY = window.scrollY || document.documentElement.scrollTop;
 
-    // Sort the tunes
-    SortTunesByTag("M", false);
+  var thePrompt = "Tunes sorted by Meter!";
 
-    const scrollY = window.scrollY || document.documentElement.scrollTop;
+  // Center the string in the prompt
+  thePrompt = makeCenteredPromptString(thePrompt);
 
-    var thePrompt = "Tunes sorted by Meter!";
+  DayPilot.Modal.alert(thePrompt, {
+    theme: "modal_flat",
+    top: 300,
+    scrollWithPage: (AllowDialogsToScroll())
+  }).then(function(){
 
-    // Center the string in the prompt
-    thePrompt = makeCenteredPromptString(thePrompt);
+    // Redraw
+    RenderAsync(true, null, function() {
 
-    DayPilot.Modal.alert(thePrompt, {
-      theme: "modal_flat",
-      top: 300,
-      scrollWithPage: (AllowDialogsToScroll())
-    }).then(function(){
+      if (AllowDialogsToScroll()) {
+        window.scrollTo(0, scrollY);
+      }
 
-      // Redraw
-      RenderAsync(true, null, function() {
-
-        if (AllowDialogsToScroll()) {
-          window.scrollTo(0, scrollY);
-        }
-
-        var elem = document.getElementById("sortbutton");
-        if (elem) {
-          elem.value = "   Sorted!   ";
-        }
-
-        setTimeout(function() {
-
-          var elem = document.getElementById("sortbutton");
-          if (elem) {
-            elem.value = "Sort by Tag";
-          }
-
-        }, 500);
-
-      });
     });
-
-  }, 250);
+  });
 
 }
 
@@ -3521,59 +3500,34 @@ function DoSortTunesByKey() {
     return;
   }
 
-  // Give some feedback
-  var elem = document.getElementById("sortbutton");
-  if (elem) {
-    // Give some feedback
-    elem.value = "Sorting...";
-  }
+  // Sort the tunes by name first
+  SortTunes();
 
-  setTimeout(function() {
+  // Sort the tunes by key
+  SortTunesByTag("K", false);
 
-    // Sort the tunes by name first
-    SortTunes();
+  const scrollY = window.scrollY || document.documentElement.scrollTop;
 
-    // Sort the tunes by key
-    SortTunesByTag("K", false);
+  var thePrompt = "Tunes sorted by Key!";
 
-    const scrollY = window.scrollY || document.documentElement.scrollTop;
+  // Center the string in the prompt
+  thePrompt = makeCenteredPromptString(thePrompt);
 
-    var thePrompt = "Tunes sorted by Key!";
+  DayPilot.Modal.alert(thePrompt, {
+    theme: "modal_flat",
+    top: 300,
+    scrollWithPage: (AllowDialogsToScroll())
+  }).then(function(){
 
-    // Center the string in the prompt
-    thePrompt = makeCenteredPromptString(thePrompt);
+    // Redraw
+    RenderAsync(true, null, function() {
 
-    DayPilot.Modal.alert(thePrompt, {
-      theme: "modal_flat",
-      top: 300,
-      scrollWithPage: (AllowDialogsToScroll())
-    }).then(function(){
+      if (AllowDialogsToScroll()) {
+        window.scrollTo(0, scrollY);
+      }
 
-      // Redraw
-      RenderAsync(true, null, function() {
-
-        if (AllowDialogsToScroll()) {
-          window.scrollTo(0, scrollY);
-        }
-
-        var elem = document.getElementById("sortbutton");
-        if (elem) {
-          elem.value = "   Sorted!   ";
-        }
-
-        setTimeout(function() {
-
-          var elem = document.getElementById("sortbutton");
-          if (elem) {
-            elem.value = "Sort by Tag";
-          }
-
-        }, 500);
-
-      });
     });
-
-  }, 250);
+  });
 
 }
 
@@ -3717,56 +3671,31 @@ function DoSortTunesByName() {
     return;
   }
 
-  // Give some feedback
-  var elem = document.getElementById("sortbutton");
+  // Sort the tunes
+  SortTunes();
 
-  if (elem) {
-    elem.value = "Sorting...";
-  }
+  const scrollY = window.scrollY || document.documentElement.scrollTop;
 
-  setTimeout(function() {
+  var thePrompt = "Tunes sorted by Title!";
 
-    // Sort the tunes
-    SortTunes();
+  // Center the string in the prompt
+  thePrompt = makeCenteredPromptString(thePrompt);
 
-    const scrollY = window.scrollY || document.documentElement.scrollTop;
+  DayPilot.Modal.alert(thePrompt, {
+    theme: "modal_flat",
+    top: 300,
+    scrollWithPage: (AllowDialogsToScroll())
+  }).then(function(){
 
-    var thePrompt = "Tunes sorted by Title!";
+    // Redraw
+    RenderAsync(true, null, function() {
 
-    // Center the string in the prompt
-    thePrompt = makeCenteredPromptString(thePrompt);
+      if (AllowDialogsToScroll()) {
+        window.scrollTo(0, scrollY);
+      }
 
-    DayPilot.Modal.alert(thePrompt, {
-      theme: "modal_flat",
-      top: 300,
-      scrollWithPage: (AllowDialogsToScroll())
-    }).then(function(){
-
-      // Redraw
-      RenderAsync(true, null, function() {
-
-        if (AllowDialogsToScroll()) {
-          window.scrollTo(0, scrollY);
-        }
-
-        var elem = document.getElementById("sortbutton");
-        if (elem) {
-          elem.value = "   Sorted!   ";
-        }
-
-        setTimeout(function() {
-
-          var elem = document.getElementById("sortbutton");
-          if (elem) {
-            elem.value = "Sort by Tag";
-          }
-
-        }, 500);
-
-      });
     });
-
-  }, 250);
+  });
 
 }
 
@@ -3780,59 +3709,34 @@ function DoSortTunesByRhythm() {
     return;
   }
 
-  // Give some feedback
-  var elem = document.getElementById("sortbutton");
-  if (elem) {
-    // Give some feedback
-    elem.value = "Sorting...";
-  }
+  // Sort the tunes by name first
+  SortTunes();
 
-  setTimeout(function() {
+  // Sort the tunes by rhythm
+  SortTunesByTag("R", true);
 
-    // Sort the tunes by name first
-    SortTunes();
+  const scrollY = window.scrollY || document.documentElement.scrollTop;
 
-    // Sort the tunes by rhythm
-    SortTunesByTag("R", true);
+  var thePrompt = "Tunes sorted by Rhythm!";
 
-    const scrollY = window.scrollY || document.documentElement.scrollTop;
+  // Center the string in the prompt
+  thePrompt = makeCenteredPromptString(thePrompt);
 
-    var thePrompt = "Tunes sorted by Rhythm!";
+  DayPilot.Modal.alert(thePrompt, {
+    theme: "modal_flat",
+    top: 300,
+    scrollWithPage: (AllowDialogsToScroll())
+  }).then(function(){
 
-    // Center the string in the prompt
-    thePrompt = makeCenteredPromptString(thePrompt);
+    // Redraw
+    RenderAsync(true, null, function() {
 
-    DayPilot.Modal.alert(thePrompt, {
-      theme: "modal_flat",
-      top: 300,
-      scrollWithPage: (AllowDialogsToScroll())
-    }).then(function(){
+      if (AllowDialogsToScroll()) {
+        window.scrollTo(0, scrollY);
+      }
 
-      // Redraw
-      RenderAsync(true, null, function() {
-
-        if (AllowDialogsToScroll()) {
-          window.scrollTo(0, scrollY);
-        }
-
-        var elem = document.getElementById("sortbutton");
-        if (elem) {
-          elem.value = "   Sorted!   ";
-        }
-
-        setTimeout(function() {
-
-          var elem = document.getElementById("sortbutton");
-          if (elem) {
-            elem.value = "Sort by Tag";
-          }
-
-        }, 500);
-
-      });
     });
-
-  }, 250);
+  });
 
 }
 
@@ -3846,59 +3750,34 @@ function DoSortTunesByCTag() {
     return;
   }
 
-  // Give some feedback
-  var elem = document.getElementById("sortbutton");
-  if (elem) {
-    // Give some feedback
-    elem.value = "Sorting...";
-  }
+  // Sort the tunes by name first
+  SortTunes();
 
-  setTimeout(function() {
+  // Sort the tunes by C tag
+  SortTunesByTag("C", true);
 
-    // Sort the tunes by name first
-    SortTunes();
+  const scrollY = window.scrollY || document.documentElement.scrollTop;
 
-    // Sort the tunes by C tag
-    SortTunesByTag("C", true);
+  var thePrompt = "Tunes sorted by Composer!";
 
-    const scrollY = window.scrollY || document.documentElement.scrollTop;
+  // Center the string in the prompt
+  thePrompt = makeCenteredPromptString(thePrompt);
 
-    var thePrompt = "Tunes sorted by Composer!";
+  DayPilot.Modal.alert(thePrompt, {
+    theme: "modal_flat",
+    top: 300,
+    scrollWithPage: (AllowDialogsToScroll())
+  }).then(function(){
 
-    // Center the string in the prompt
-    thePrompt = makeCenteredPromptString(thePrompt);
+    // Redraw
+    RenderAsync(true, null, function() {
 
-    DayPilot.Modal.alert(thePrompt, {
-      theme: "modal_flat",
-      top: 300,
-      scrollWithPage: (AllowDialogsToScroll())
-    }).then(function(){
+      if (AllowDialogsToScroll()) {
+        window.scrollTo(0, scrollY);
+      }
 
-      // Redraw
-      RenderAsync(true, null, function() {
-
-        if (AllowDialogsToScroll()) {
-          window.scrollTo(0, scrollY);
-        }
-
-        var elem = document.getElementById("sortbutton");
-        if (elem) {
-          elem.value = "   Sorted!   ";
-        }
-
-        setTimeout(function() {
-
-          var elem = document.getElementById("sortbutton");
-          if (elem) {
-            elem.value = "Sort by Tag";
-          }
-
-        }, 500);
-
-      });
     });
-
-  }, 250);
+  });
 
 }
 
@@ -3912,59 +3791,34 @@ function DoSortTunesByNTag() {
     return;
   }
 
-  // Give some feedback
-  var elem = document.getElementById("sortbutton");
-  if (elem) {
-    // Give some feedback
-    elem.value = "Sorting...";
-  }
+  // Sort the tunes by name first
+  SortTunes();
 
-  setTimeout(function() {
+  // Sort the tunes by N tag
+  SortTunesByTag("N", true);
 
-    // Sort the tunes by name first
-    SortTunes();
+  const scrollY = window.scrollY || document.documentElement.scrollTop;
 
-    // Sort the tunes by N tag
-    SortTunesByTag("N", true);
+  var thePrompt = "Tunes sorted by Notes!";
 
-    const scrollY = window.scrollY || document.documentElement.scrollTop;
+  // Center the string in the prompt
+  thePrompt = makeCenteredPromptString(thePrompt);
 
-    var thePrompt = "Tunes sorted by Notes!";
+  DayPilot.Modal.alert(thePrompt, {
+    theme: "modal_flat",
+    top: 300,
+    scrollWithPage: (AllowDialogsToScroll())
+  }).then(function(){
 
-    // Center the string in the prompt
-    thePrompt = makeCenteredPromptString(thePrompt);
+    // Redraw
+    RenderAsync(true, null, function() {
 
-    DayPilot.Modal.alert(thePrompt, {
-      theme: "modal_flat",
-      top: 300,
-      scrollWithPage: (AllowDialogsToScroll())
-    }).then(function(){
+      if (AllowDialogsToScroll()) {
+        window.scrollTo(0, scrollY);
+      }
 
-      // Redraw
-      RenderAsync(true, null, function() {
-
-        if (AllowDialogsToScroll()) {
-          window.scrollTo(0, scrollY);
-        }
-
-        var elem = document.getElementById("sortbutton");
-        if (elem) {
-          elem.value = "   Sorted!   ";
-        }
-
-        setTimeout(function() {
-
-          var elem = document.getElementById("sortbutton");
-          if (elem) {
-            elem.value = "Sort by Tag";
-          }
-
-        }, 500);
-
-      });
     });
-
-  }, 250);
+  });
 
 }
 
@@ -3978,60 +3832,35 @@ function DoSortTunesByOTag() {
     return;
   }
 
-  // Give some feedback
-  var elem = document.getElementById("sortbutton");
-  if (elem) {
-    // Give some feedback
-    elem.value = "Sorting...";
-  }
+  // Sort the tunes by name first
+  SortTunes();
 
-  setTimeout(function() {
+  // Sort the tunes by O tag
+  SortTunesByTag("O", true);
 
-    // Sort the tunes by name first
-    SortTunes();
+  const scrollY = window.scrollY || document.documentElement.scrollTop;
 
-    // Sort the tunes by O tag
-    SortTunesByTag("O", true);
+  var thePrompt = "Tunes sorted by Origin!";
 
-    const scrollY = window.scrollY || document.documentElement.scrollTop;
+  // Center the string in the prompt
+  thePrompt = makeCenteredPromptString(thePrompt);
 
-    var thePrompt = "Tunes sorted by Origin!";
+  DayPilot.Modal.alert(thePrompt, {
+    theme: "modal_flat",
+    top: 300,
+    scrollWithPage: (AllowDialogsToScroll())
+  }).then(function(){
 
-    // Center the string in the prompt
-    thePrompt = makeCenteredPromptString(thePrompt);
+    // Redraw
+    RenderAsync(true, null, function() {
 
-    DayPilot.Modal.alert(thePrompt, {
-      theme: "modal_flat",
-      top: 300,
-      scrollWithPage: (AllowDialogsToScroll())
-    }).then(function(){
-
-      // Redraw
-      RenderAsync(true, null, function() {
-
-        if (AllowDialogsToScroll()) {
-          window.scrollTo(0, scrollY);
-        }
-
-        var elem = document.getElementById("sortbutton");
-        if (elem) {
-          elem.value = "   Sorted!   ";
-        }
-
-        setTimeout(function() {
-
-          var elem = document.getElementById("sortbutton");
-          if (elem) {
-            elem.value = "Sort by Tag";
-          }
-
-        }, 500);
-
-      });
+      if (AllowDialogsToScroll()) {
+        window.scrollTo(0, scrollY);
+      }
 
     });
 
-  }, 250);
+  });
 
 }
 
@@ -4045,59 +3874,34 @@ function DoSortTunesByID() {
     return;
   }
 
-  // Give some feedback
-  var elem = document.getElementById("sortbutton");
-  if (elem) {
-    // Give some feedback
-    elem.value = "Sorting...";
-  }
+  // Sort the tunes by name first
+  SortTunes();
 
-  setTimeout(function() {
+  // Sort the tunes by key
+  SortTunesByTag("X", false);
 
-    // Sort the tunes by name first
-    SortTunes();
+  const scrollY = window.scrollY || document.documentElement.scrollTop;
 
-    // Sort the tunes by key
-    SortTunesByTag("X", false);
+  var thePrompt = "Tunes sorted by ID!";
 
-    const scrollY = window.scrollY || document.documentElement.scrollTop;
+  // Center the string in the prompt
+  thePrompt = makeCenteredPromptString(thePrompt);
 
-    var thePrompt = "Tunes sorted by ID!";
+  DayPilot.Modal.alert(thePrompt, {
+    theme: "modal_flat",
+    top: 300,
+    scrollWithPage: (AllowDialogsToScroll())
+  }).then(function(){
 
-    // Center the string in the prompt
-    thePrompt = makeCenteredPromptString(thePrompt);
+    // Redraw
+    RenderAsync(true, null, function() {
 
-    DayPilot.Modal.alert(thePrompt, {
-      theme: "modal_flat",
-      top: 300,
-      scrollWithPage: (AllowDialogsToScroll())
-    }).then(function(){
+      if (AllowDialogsToScroll()) {
+        window.scrollTo(0, scrollY);
+      }
 
-      // Redraw
-      RenderAsync(true, null, function() {
-
-        if (AllowDialogsToScroll()) {
-          window.scrollTo(0, scrollY);
-        }
-
-        var elem = document.getElementById("sortbutton");
-        if (elem) {
-          elem.value = "   Sorted!   ";
-        }
-
-        setTimeout(function() {
-
-          var elem = document.getElementById("sortbutton");
-          if (elem) {
-            elem.value = "Sort by Tag";
-          }
-
-        }, 500);
-
-      });
     });
-
-  }, 250);
+  });
 
 }
 
@@ -4168,9 +3972,128 @@ function RenumberXTags() {
 }
 
 //
-// Sort Dialog
+// DoShuffleTunes command
 //
-// Prompts for the sorting key
+function DoShuffleTunes() {
+
+  // If currently rendering PDF, exit immediately
+  if (gRenderingPDF) {
+    return;
+  }
+
+  //
+  // Shuffles the tunes in the ABC text area
+  //
+  function ShuffleTunes() {
+
+    // Get all the tunes
+    var theNotes = getABCEditorText();
+
+    var theTunes = theNotes.split(/(^X:.*$)/gm);
+
+    var nTunes = (theTunes.length - 1) / 2;
+
+    if (nTunes < 2) {
+      return;
+    }
+
+    var thePrefixABC = theTunes[0];
+
+    // Collect tunes
+    var tunesToProcess = [];
+    var nProcessed = 0;
+
+    for (var i = 0; i < nTunes; ++i) {
+
+      if (theTunes[(i * 2) + 1] != undefined) {
+
+        tunesToProcess.push({
+          idx: nProcessed, // optional (can help debugging)
+          tune: theTunes[(i * 2) + 1] + theTunes[(i * 2) + 2]
+        });
+
+        nProcessed++;
+      }
+    }
+
+    if (nProcessed < 2) {
+      return;
+    }
+
+    // Fisher–Yates shuffle
+    for (var j = nProcessed - 1; j > 0; --j) {
+      var k = Math.floor(Math.random() * (j + 1));
+      var tmp = tunesToProcess[j];
+      tunesToProcess[j] = tunesToProcess[k];
+      tunesToProcess[k] = tmp;
+    }
+
+    // Re-assemble
+    theNotes = "";
+    theNotes += thePrefixABC;
+
+    for (var t = 0; t < nProcessed; ++t) {
+
+      var thisTune = tunesToProcess[t].tune;
+
+      // Ensure there is a blank line between tunes
+      thisTune = thisTune.replace(/\n*$/, '') + '\n\n';
+
+      theNotes += thisTune;
+    }
+
+    theNotes = theNotes.replace(/\n*$/, '') + '\n';
+
+    // Put them back in the ABC area
+    setABCEditorText(theNotes);
+
+    // Set dirty
+    gIsDirty = true;
+
+    // Reset the selection
+    if (gEnableSyntax) {
+      gTheCM.selectionStart = 0;
+      gTheCM.selectionEnd = 0;
+    }
+    else {
+      gTheABC.selectionStart = 0;
+      gTheABC.selectionEnd = 0;
+    }
+
+    // Focus after operation
+    FocusAfterOperation();
+  }
+
+  // Shuffle the tunes
+  ShuffleTunes();
+
+  const scrollY = window.scrollY || document.documentElement.scrollTop;
+
+  var thePrompt = "All tunes shuffled!";
+
+  // Center the string in the prompt
+  thePrompt = makeCenteredPromptString(thePrompt);
+
+  DayPilot.Modal.alert(thePrompt, {
+    theme: "modal_flat",
+    top: 300,
+    scrollWithPage: (AllowDialogsToScroll())
+  }).then(function() {
+
+    // Redraw
+    RenderAsync(true, null, function() {
+
+      if (AllowDialogsToScroll()) {
+        window.scrollTo(0, scrollY);
+      }
+
+    });
+  });
+
+}
+
+//
+// Sort Dialog
 //
 var gLastSortOrder = "0";
 
@@ -4195,41 +4118,22 @@ function SortDialog() {
     });
 
     return;
-
   }
 
   // Keep track of dialogs
   sendGoogleAnalytics("dialog", "SortDialog");
 
-  const sorting_options = [{
-      name: "  Sort by Title (T:)",
-      id: "0"
-    }, {
-      name: "  Sort by Key (K:)",
-      id: "1"
-    }, {
-      name: "  Sort by Meter (M:)",
-      id: "2"
-    }, {
-      name: "  Sort by Rhythm (R:)",
-      id: "3"
-    }, {
-      name: "  Sort by Composer (C:)",
-      id: "4"
-    }, {
-      name: "  Sort by Notes (N:)",
-      id: "5"
-    }, {
-      name: "  Sort by Origin (O:)",
-      id: "6"
-    }, {
-      name: "  Sort by ID (X:)",
-      id: "7"
-    }, {
-      name: "  Renumber all X: Tags",
-      id: "8"
-    },
-
+  const sorting_options = [
+    { name: "  Sort by Title (T:)", id: "0" },
+    { name: "  Sort by Key (K:)", id: "1" },
+    { name: "  Sort by Meter (M:)", id: "2" },
+    { name: "  Sort by Rhythm (R:)", id: "3" },
+    { name: "  Sort by Composer (C:)", id: "4" },
+    { name: "  Sort by Notes (N:)", id: "5" },
+    { name: "  Sort by Origin (O:)", id: "6" },
+    { name: "  Sort by ID (X:)", id: "7" },
+    { name: "  Renumber all X: Tags", id: "8" },
+    { name: "  Shuffle All Tunes", id: "9" }
   ];
 
   // Setup initial values
@@ -4237,36 +4141,121 @@ function SortDialog() {
     configure_sort: gLastSortOrder,
   };
 
-  // Lite: Customized
-  // Replace inline styles with reusable classes
-  const form = [{
-    html:
-		'<a href="https://michaeleskin.com/abctools/userguide.html#sort_dialog" target="_blank" ' +
-		'title="View documentation in new tab" ' +
-		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
-		'<h2 class="modal-header">' +
-		'Sort by Specific Tag&nbsp;&nbsp;' +
-		'</h2>'
-  }, {
-    html: '<p style="margin-top:36px;margin-bottom:36px;font-size:12pt;line-height:18pt;">This will sort the tunes based on the ABC tag you select:</p>'
-  }, {
-    name: "Tag to sort by:",
-    id: "configure_sort",
-    type: "select",
-    options: sorting_options,
-    cssClass: "configure_sort_settings_select"
-  }, {
-    html: '<p style="font-size:12pt;">&nbsp;</p>'
-  }, ];
+  // Helpers to set the OK button label based on selection
+  function labelForOperation(opId) {
+    if (opId === "8") return "Renumber";
+    if (opId === "9") return "Shuffle";
+    return "Sort";
+  }
 
-  const modal = DayPilot.Modal.form(form, theData, {
+  var theOKButton = null;
+  var theCancelButton = null;
+
+  function setOkButtonText(opId) {
+
+    if (!theOKButton) return;
+
+    // Change the OK label
+    theOKButton.textContent = labelForOperation(opId);
+
+    // If we have Cancel, equalize widths
+    if (theCancelButton) {
+
+      // Let both buttons size naturally first
+      theOKButton.style.setProperty("width", "auto", "important");
+      theCancelButton.style.setProperty("width", "auto", "important");
+
+      // Clear any previous minWidth too
+      theOKButton.style.setProperty("min-width", "", "important");
+      theCancelButton.style.setProperty("min-width", "", "important");
+
+      // Wait a frame so the browser has applied the new text/layout
+      requestAnimationFrame(function () {
+
+        // Use scrollWidth (text-based) + a little padding fudge for safety
+        var okW = theOKButton.scrollWidth;
+        var cancelW = theCancelButton.scrollWidth;
+
+        // Add a small buffer so the text never feels cramped
+        var w = Math.max(okW, cancelW) + 20;
+
+        // Force both to the same explicit width
+        theOKButton.style.setProperty("width", w + "px", "important");
+        theCancelButton.style.setProperty("width", w + "px", "important");
+      });
+    }
+  }
+
+  const form = [
+    {
+      html:
+      '<a href="https://michaeleskin.com/abctools/userguide.html#sort_dialog" target="_blank" ' +
+      'title="View documentation in new tab" ' +
+      'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+      '<h2 class="modal-header">' +
+      'Sort by Specific Tag&nbsp;&nbsp;' +
+      '</h2>'
+    },
+    {
+      html: '<p style="margin-top:36px;margin-bottom:36px;font-size:12pt;line-height:18pt;font-family:var(--abctools-font-fallback-ui)">This will sort the tunes based on the ABC tag you select.<br/><br/>You may also renumber all the X: tags or shuffle all the tunes.</p>'
+    },
+    {
+      name: "Operation:",
+      id: "configure_sort",
+      type: "select",
+      options: sorting_options,
+      cssClass: "configure_sort_settings_select"
+    },
+    {
+      html: '<p style="font-size:12pt;">&nbsp;</p>'
+    },
+  ];
+
+  const modalPromise = DayPilot.Modal.form(form, theData, {
     theme: "modal_flat",
     top: 175,
     width: 500,
     scrollWithPage: (AllowDialogsToScroll()),
-    okText: "Sort",
     autoFocus: false
-  }).then(function(args) {
+  });
+
+  // After the modal is in the DOM, wire up the select -> OK text behavior
+  setTimeout(function () {
+
+    // --- your proven methodology: get the LAST OK and LAST Cancel buttons ---
+    var okButtons = document.getElementsByClassName("modal_flat_ok");
+    theOKButton = null;
+    for (var i = 0; i < okButtons.length; ++i) {
+      theOKButton = okButtons[i];
+    }
+
+    var cancelButtons = document.getElementsByClassName("modal_flat_cancel");
+    theCancelButton = null;
+    for (var j = 0; j < cancelButtons.length; ++j) {
+      theCancelButton = cancelButtons[j];
+    }
+
+    // Find the select (your approach is fine)
+    var selectEl =
+      document.querySelector("select.configure_sort_settings_select") ||
+      document.querySelector(".configure_sort_settings_select select") ||
+      document.querySelector("select[name='configure_sort']") ||
+      document.querySelector("select");
+
+    // Set initial button text/width
+    var initialVal = (selectEl && selectEl.value) ? selectEl.value : gLastSortOrder;
+    setOkButtonText(initialVal);
+
+    // Update on change
+    if (selectEl) {
+      selectEl.addEventListener("change", function () {
+        setOkButtonText(this.value);
+      });
+    }
+
+  }, 0);
+
+  modalPromise.then(function(args) {
 
     // Get the results and store them in the global configuration
     if (!args.canceled) {
@@ -4274,37 +4263,17 @@ function SortDialog() {
       gLastSortOrder = args.result.configure_sort;
 
       switch (args.result.configure_sort) {
-
-        case "0":
-          DoSortTunesByName();
-          break;
-        case "1":
-          DoSortTunesByKey();
-          break;
-        case "2":
-          DoSortTunesByMeter();
-          break;
-        case "3":
-          DoSortTunesByRhythm();
-          break;
-        case "4":
-          DoSortTunesByCTag();
-          break;
-        case "5":
-          DoSortTunesByNTag();
-          break;
-        case "6":
-          DoSortTunesByOTag();
-          break;
-        case "7":
-          DoSortTunesByID();
-          break;
-        case "8":
-          RenumberXTags();
-          break;
-        default:
-          DoSortTunesByName();
-          break;
+        case "0": DoSortTunesByName(); break;
+        case "1": DoSortTunesByKey(); break;
+        case "2": DoSortTunesByMeter(); break;
+        case "3": DoSortTunesByRhythm(); break;
+        case "4": DoSortTunesByCTag(); break;
+        case "5": DoSortTunesByNTag(); break;
+        case "6": DoSortTunesByOTag(); break;
+        case "7": DoSortTunesByID(); break;
+        case "8": RenumberXTags(); break;
+        case "9": DoShuffleTunes(); break;
+        default:  DoSortTunesByName(); break;
       }
     }
   });
@@ -11809,36 +11778,24 @@ function ExportTextIncipitsPDF(title, bDoFullTunes, bDoCCETransform, bDoQRCodes)
             document.getElementById("statuspdfname").innerHTML = "Saving <font color=\"blue\">" + title + "</font>";
 
             // Save the status up for a bit before saving
-            setTimeout(function() {
+            setTimeout(async function() {
 
               // Start the PDF save
-              // On mobile, have to use a different save strategy otherwise the PDF loads in the same tab
-              if (isMobileBrowser()) {
+              if (gIsIOS) {
 
                 var theBlob = pdf.output('blob', {
                   filename: (title)
                 });
 
-                var newBlob = new Blob([theBlob], {
-                  type: 'application/octet-stream'
+                await shareOrDownloadFile(theBlob, title, "application/pdf");
+
+              } else if (isMobileBrowser()) {
+
+                var theBlob = pdf.output('blob', {
+                  filename: (title)
                 });
 
-                var a = document.createElement("a");
-
-                document.body.appendChild(a);
-
-                a.style = "display: none";
-
-                var url = window.URL.createObjectURL(newBlob);
-                a.href = url;
-                a.download = (title);
-                a.click();
-
-                document.body.removeChild(a);
-
-                setTimeout(function() {
-                  window.URL.revokeObjectURL(url);
-                }, 1000);
+                await shareOrDownloadFile(theBlob, title, "application/pdf");
 
               } else {
 
@@ -12706,35 +12663,23 @@ function ExportNotationPDF(title) {
                 } else {
 
                   // Start the normal PDF save
-                  setTimeout(function() {
+                  setTimeout(async function() {
 
-                    // On mobile, have to use a different save strategy otherwise the PDF loads in the same tab
-                    if (isMobileBrowser()) {
+                    if (gIsIOS) {
 
                       var theBlob = pdf.output('blob', {
                         filename: (title)
                       });
 
-                      var newBlob = new Blob([theBlob], {
-                        type: 'application/octet-stream'
+                      await shareOrDownloadFile(theBlob, title, "application/pdf");
+
+                    } else if (isMobileBrowser()) {
+
+                      var theBlob = pdf.output('blob', {
+                        filename: (title)
                       });
 
-                      var a = document.createElement("a");
-
-                      document.body.appendChild(a);
-
-                      a.style = "display: none";
-
-                      var url = window.URL.createObjectURL(newBlob);
-                      a.href = url;
-                      a.download = (title);
-                      a.click();
-
-                      document.body.removeChild(a);
-
-                      setTimeout(function() {
-                        window.URL.revokeObjectURL(url);
-                      }, 1000);
+                      await shareOrDownloadFile(theBlob, title, "application/pdf");
 
                     } else {
 
@@ -13074,7 +13019,7 @@ async function createSplitPDFs(thePDF, pageMap, totalPages, TOCDelta, thePostSav
 
     gSplitPDFIndex = 0;
 
-    function saveSplitPDF(pdfBytes, fname, callback) {
+    async function saveSplitPDF(pdfBytes, fname, callback) {
 
       //debugger;
       document.getElementById("statustunecount").innerHTML = "Saving tune <font color=\"red\">" + (gSplitPDFIndex + 1) + "</font> of <font color=\"red\">" + gNSplitPDF + "</font>"
@@ -13084,23 +13029,7 @@ async function createSplitPDFs(thePDF, pageMap, totalPages, TOCDelta, thePostSav
         type: 'application/pdf'
       });
 
-      const link = document.createElement('a');
-
-      var href = URL.createObjectURL(blob);
-
-      link.href = href;
-
-      link.download = `${fname}.pdf`;
-
-      document.body.appendChild(link);
-
-      link.click();
-
-      document.body.removeChild(link);
-
-      setTimeout(function() {
-        window.URL.revokeObjectURL(href);
-      }, 1000);
+      await shareOrDownloadFile(blob, `${fname}.pdf`, "application/pdf");
 
       callback()
 
@@ -17364,7 +17293,7 @@ function searchForTunes() {
 
     if (!gTheFolkFriendDatabase) {
 
-      var prompt = makeCenteredPromptString("FolkFriend tune database still loading...")
+      var prompt = makeCenteredPromptString("thesession.org tune database still loading...")
 
       DayPilot.Modal.alert(prompt, {
         theme: "modal_flat",
@@ -18249,7 +18178,7 @@ function AddFromSearch(e, callback) {
 		'Tune Search Engine&nbsp;&nbsp;' +
 		'</h2>';
 
-  modal_msg += '<p style="font-size:12pt;line-height:24pt;margin-top:20px;margin-bottom:12px;" class="switchtunedatabase">Tune Collection to Search: <select id="databaseselect" onchange="SwitchTuneDatabase();" title="Select your tune search database"><option value="0">Gavin Heneghan\'s Collection (20,000+ Tune Settings)</option><option value="1">FolkFriend.app Collection (45,000+ Tune Settings)</option></select></p>';
+  modal_msg += '<p style="font-size:12pt;line-height:24pt;margin-top:20px;margin-bottom:12px;" class="switchtunedatabase">Tune Collection to Search: <select id="databaseselect" onchange="SwitchTuneDatabase();" title="Select your tune search database"><option value="0">Gavin Heneghan\'s Collection (20,000+ Tune Settings)</option><option value="1">thesession.org Collection (45,000+ Tune Settings)</option></select></p>';
 
   modal_msg += '<p style="font-size:12pt;line-height:24pt;margin-top:0px;margin-bottom:18px;">Search for text in the tune name:&nbsp;&nbsp;<input style="width:100%;font-size:12pt;line-height:18px;padding:6px;" id="tuneNameToSearch" type="text" title="Enter your search text here" autocomplete="off" autocorrect="off" placeholder="Enter your search text here"/> </p>';
 
@@ -18287,7 +18216,8 @@ function AddFromSearch(e, callback) {
     theme: "modal_flat",
     top: 25,
     width: theWidth,
-    scrollWithPage: (AllowDialogsToScroll())
+    scrollWithPage: (AllowDialogsToScroll()),
+    okText:"Exit"
   }).then(function() {
     if (callback) {
       callback();
@@ -18592,7 +18522,8 @@ function ChangeTuneOrderMobile() {
     top: 25,
     width: 650,
     scrollWithPage: false,
-    autoFocus: false
+    autoFocus: false,
+    okText:"Reorder"
   }).then(function(args) {
 
     if (!args.canceled) {
@@ -18765,7 +18696,8 @@ function ChangeTuneOrder() {
     top: 25,
     width: 650,
     scrollWithPage: false,
-    autoFocus: false
+    autoFocus: false,
+    okText:"Reorder"
   }).then(function(args) {
 
     if (!args.canceled) {
@@ -19886,42 +19818,57 @@ function BuildTuneSet() {
     top: 25,
     width: 700,
     scrollWithPage: (AllowDialogsToScroll()),
-    autoFocus: false
+    autoFocus: false,
+    okText:"Exit",
+    cancelText: null,
   }).then(function(args) {
 
-    if (!args.canceled) {
+    var bRepeat = args.result.repeat_enable;
+    BuildTuneSetRepeat = bRepeat;
 
-      var bRepeat = args.result.repeat_enable;
-      BuildTuneSetRepeat = bRepeat;
+    var bIsVerbose = args.result.is_verbose;
+    BuildTuneSetVerbose = bIsVerbose;
 
-      var bIsVerbose = args.result.is_verbose;
-      BuildTuneSetVerbose = bIsVerbose;
+    var nRepeat = args.result.repeat_count;
 
-      var nRepeat = args.result.repeat_count;
+    nRepeat = parseInt(nRepeat);
 
-      nRepeat = parseInt(nRepeat);
-
-      if (isNaN(nRepeat)) {
-        nRepeat = 1;
-      }
-
-      if (nRepeat < 1) {
-        nRepeat = 1;
-      }
-
-      BuildTuneSetRepeatCount = nRepeat;
-
-      //console.log("bRepeat "+bRepeat+" nRepeat "+nRepeat);
-
-      // Save the settings for next time
-      SaveConfigurationSettings();
-
-      return;
-
+    if (isNaN(nRepeat)) {
+      nRepeat = 1;
     }
 
+    if (nRepeat < 1) {
+      nRepeat = 1;
+    }
+
+    BuildTuneSetRepeatCount = nRepeat;
+
+    //console.log("bRepeat "+bRepeat+" nRepeat "+nRepeat);
+
+    // Save the settings for next time
+    SaveConfigurationSettings();
 
   });
+
+  // Find the button that says "Cancel" to use to close the dialog when changing UI settings
+  setTimeout(function(){
+
+    var theCancelButtons = document.getElementsByClassName("modal_flat_cancel");
+
+    for (var i = 0; i < theCancelButtons.length; ++i) {
+
+      theCancelButton = theCancelButtons[i];
+
+      if (theCancelButton.innerText == "Cancel") {
+
+        theCancelButton.style.display = "none";
+
+        break;
+
+      }
+    }
+
+  },10);
 }
 
 //
@@ -21788,7 +21735,7 @@ function RenderDivClickHandler(e) {
 
         gUIHiddenPlayerEnabled = true;
 
-        PlayABC();
+        PlayABC(null);
 
         setTimeout(function() {
 
@@ -22584,10 +22531,83 @@ function RoundTripMusicXML() {
   }
 }
 
+
+//
+// Save a file, using the iOS share sheet when available
+//
+async function shareOrDownloadFile(data, filename, mimeType) {
+
+  async function normalizeToBlob(data, mimeType) {
+
+    if (data instanceof Blob) {
+      return data;
+    }
+
+    if (data instanceof ArrayBuffer) {
+      return new Blob([data], {
+        type: mimeType || "application/octet-stream"
+      });
+    }
+
+    if (ArrayBuffer.isView(data)) {
+      return new Blob([data], {
+        type: mimeType || "application/octet-stream"
+      });
+    }
+
+    if ((typeof data === "string") && (data.indexOf("blob:") === 0 || data.indexOf("data:") === 0)) {
+      const response = await fetch(data);
+      return await response.blob();
+    }
+
+    return new Blob([data], {
+      type: mimeType || "text/plain"
+    });
+  }
+
+  const blob = await normalizeToBlob(data, mimeType);
+  const fileType = mimeType || blob.type || "application/octet-stream";
+
+  if (gIsIOS && navigator.share && navigator.canShare && (typeof File !== "undefined")) {
+    try {
+      const file = new File([blob], filename, {
+        type: fileType
+      });
+
+      if (navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file] });
+        return true;
+      }
+
+    } catch (err) {
+      //console.log("shareOrDownloadFile share cancelled or failed:", err);
+      return false;
+    }
+  }
+
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+
+  document.body.appendChild(a);
+
+  a.style = "display: none";
+  a.href = url;
+  a.download = filename;
+  a.click();
+
+  document.body.removeChild(a);
+
+  setTimeout(function() {
+    window.URL.revokeObjectURL(url);
+  }, 1000);
+
+  return false;
+}
+
 //
 // Save the ABC file converted to XML
 //
-function SaveABCAsMusicXML(theTune, fname) {
+async function SaveABCAsMusicXML(theTune, fname) {
 
   //debugger;
 
@@ -22608,79 +22628,54 @@ function SaveABCAsMusicXML(theTune, fname) {
     return;
   }
 
-  fetch(`https://seisiuneer.pythonanywhere.com/abc2xml`, {
+  try {
+
+    const response = await fetch(`https://seisiuneer.pythonanywhere.com/abc2xml`, {
       method: 'POST',
       body: theTune
-    })
-    .then(response => {
+    });
 
-      return response.text();
+    const data = await response.text();
 
-    })
-    .then(data => {
-      ;
+    await shareOrDownloadFile(data, fname, "application/xml");
 
-      var a = document.createElement("a");
+    // Update the displayed name
+    gDisplayedName = fname;
 
-      document.body.appendChild(a);
+    // Mark ABC as from a file
+    gABCFromFile = true;
 
-      a.style = "display: none";
+    // Update the displayed filename
+    var fileSelected = document.getElementById('abc-selected');
+    fileSelected.innerText = fname;
 
-      var blob = new Blob([data], {
-          type: "text/plain"
-        });
+    document.title = fname;
 
-      var url = window.URL.createObjectURL(blob);
-      a.href = url;
-      a.download = fname;
-      a.click();
+    // Clear the dirty count
+    gIsDirty = false;
 
-      document.body.removeChild(a);
+  } catch (error) {
 
-      setTimeout(function() {
-        window.URL.revokeObjectURL(url);
-      }, 1000);
+    var thePrompt = "There was an issue converting the ABC to MusicXML.";
 
-      // Update the displayed name
-      gDisplayedName = fname;
+    // Center the string in the prompt
+    thePrompt = makeCenteredPromptString(thePrompt);
 
-      // Mark ABC as from a file
-      gABCFromFile = true;
+    DayPilot.Modal.alert(thePrompt, {
+      theme: "modal_flat",
+      top: 200,
+      scrollWithPage: (AllowDialogsToScroll())
+    });
 
-      // Update the displayed filename
-      var fileSelected = document.getElementById('abc-selected');
-      fileSelected.innerText = fname;
+    return;
 
-      document.title = fname;
-
-      // Clear the dirty count
-      gIsDirty = false;
-
-    })
-    .catch(
-      error => {
-
-        var thePrompt = "There was an issue converting the ABC to MusicXML.";
-
-        // Center the string in the prompt
-        thePrompt = makeCenteredPromptString(thePrompt);
-
-        DayPilot.Modal.alert(thePrompt, {
-          theme: "modal_flat",
-          top: 200,
-          scrollWithPage: (AllowDialogsToScroll())
-        });
-
-        return;
-
-
-      });
+  }
 }
 
 //
 // Save the ABC file
 //
-function doSaveABCFile(fname, theData) {
+async function doSaveABCFile(fname, theData) {
 
   // Keep this around
   if ((fname.endsWith(".xml")) || (fname.endsWith(".XML"))) {
@@ -22700,7 +22695,7 @@ function doSaveABCFile(fname, theData) {
   sendGoogleAnalytics("export", "SaveABC");
 
   // Give it a good extension
-  if (isPureDesktopBrowser()) {
+  if (isPureDesktopBrowser() || gIsIOS) {
 
     if ((!fname.endsWith(".abc")) && (!fname.endsWith(".txt")) && (!fname.endsWith(".ABC")) && (!fname.endsWith(".TXT"))) {
 
@@ -22710,33 +22705,14 @@ function doSaveABCFile(fname, theData) {
 
     }
   } else {
-    // iOS and Android have odd rules about text file saving
+    // Android has odd rules about text file saving
     // Give it a good extension
     fname = fname.replace(/\..+$/, '');
     fname = fname + ".txt";
 
   }
 
-  var a = document.createElement("a");
-
-  document.body.appendChild(a);
-
-  a.style = "display: none";
-
-  var blob = new Blob([theData], {
-      type: "text/plain"
-    });
-
-  var url = window.URL.createObjectURL(blob);
-  a.href = url;
-  a.download = fname;
-  a.click();
-
-  document.body.removeChild(a);
-
-  setTimeout(function() {
-    window.URL.revokeObjectURL(url);
-  }, 1000);
+  await shareOrDownloadFile(theData, fname, "text/plain");
 
   // Update the displayed name
   gDisplayedName = fname;
@@ -22761,7 +22737,7 @@ function saveABCFile(thePrompt, thePlaceholder, theData) {
     top: 200,
     autoFocus: false,
     scrollWithPage: (AllowDialogsToScroll())
-  }).then(function(args) {
+  }).then(async function(args) {
 
     var fname = args.result;
 
@@ -22778,7 +22754,7 @@ function saveABCFile(thePrompt, thePlaceholder, theData) {
     }
 
     // Do the save
-    doSaveABCFile(fname, theData);
+    await doSaveABCFile(fname, theData);
 
   });
 }
@@ -22793,7 +22769,7 @@ function saveTextFile(thePrompt, thePlaceholder, theData) {
     top: 200,
     autoFocus: false,
     scrollWithPage: (AllowDialogsToScroll())
-  }).then(function(args) {
+  }).then(async function(args) {
 
     var fname = args.result;
 
@@ -22826,26 +22802,7 @@ function saveTextFile(thePrompt, thePlaceholder, theData) {
       fname = fname + ".txt";
     }
 
-    var a = document.createElement("a");
-
-    document.body.appendChild(a);
-
-    a.style = "display: none";
-
-    var blob = new Blob([theData], {
-        type: "text/plain"
-      });
-
-    var url = window.URL.createObjectURL(blob);
-    a.href = url;
-    a.download = fname;
-    a.click();
-
-    document.body.removeChild(a);
-
-    setTimeout(function() {
-      window.URL.revokeObjectURL(url);
-    }, 1000);
+    await shareOrDownloadFile(theData, fname, "text/plain");
 
   });
 
@@ -22861,7 +22818,7 @@ function saveTextFileDeveloper(thePrompt, thePlaceholder, theData) {
     top: 200,
     autoFocus: false,
     scrollWithPage: (AllowDialogsToScroll())
-  }).then(function(args) {
+  }).then(async function(args) {
 
     var fname = args.result;
 
@@ -22886,26 +22843,7 @@ function saveTextFileDeveloper(thePrompt, thePlaceholder, theData) {
       fname = fname + ".txt";
     }
 
-    var a = document.createElement("a");
-
-    document.body.appendChild(a);
-
-    a.style = "display: none";
-
-    var blob = new Blob([theData], {
-        type: "text/plain"
-      });
-
-    var url = window.URL.createObjectURL(blob);
-    a.href = url;
-    a.download = fname;
-    a.click();
-
-    document.body.removeChild(a);
-
-    setTimeout(function() {
-      window.URL.revokeObjectURL(url);
-    }, 1000);
+    await shareOrDownloadFile(theData, fname, "text/plain");
 
   });
 
@@ -22921,7 +22859,7 @@ function saveCSVFile(thePrompt, thePlaceholder, theData) {
     top: 200,
     autoFocus: false,
     scrollWithPage: (AllowDialogsToScroll())
-  }).then(function(args) {
+  }).then(async function(args) {
 
     var fname = args.result;
 
@@ -22941,26 +22879,7 @@ function saveCSVFile(thePrompt, thePlaceholder, theData) {
     fname = fname.replace(/\..+$/, '');
     fname = fname + ".csv";
 
-    var a = document.createElement("a");
-
-    document.body.appendChild(a);
-
-    a.style = "display: none";
-
-    var blob = new Blob([theData], {
-        type: "text/csv"
-      });
-
-    var url = window.URL.createObjectURL(blob);
-    a.href = url;
-    a.download = fname;
-    a.click();
-
-    document.body.removeChild(a);
-
-    setTimeout(function() {
-      window.URL.revokeObjectURL(url);
-    }, 1000);
+    await shareOrDownloadFile(theData, fname, "text/csv");
 
   });
 
@@ -28356,7 +28275,7 @@ function processShareLink() {
           // Keep track of share play presentation
           sendGoogleAnalytics("show_trainer", "from_share");
 
-          TuneTrainer(false);
+          TuneTrainer(false,false);
 
         }
       } else {
@@ -33648,7 +33567,7 @@ function dataURLtoBlob(dataurl) {
 //
 var gInDownloadSVG = false;
 
-function DownloadSVG(callback, val) {
+async function DownloadSVG(callback, val) {
 
   // Avoid re-entry
   if (gInDownloadSVG) {
@@ -33758,17 +33677,8 @@ function DownloadSVG(callback, val) {
   var svgBlob = new Blob([preface, svgData], {
     type: "image/svg+xml;charset=utf-8"
   });
-  var svgUrl = URL.createObjectURL(svgBlob);
 
-  var downloadLink = document.createElement("a");
-  downloadLink.href = svgUrl;
-  downloadLink.download = GetTuneAudioDownloadName(gPlayerABC, ".svg");
-  document.body.appendChild(downloadLink);
-  downloadLink.click();
-
-  window.URL.revokeObjectURL(svgUrl);
-
-  document.body.removeChild(downloadLink);
+  await shareOrDownloadFile(svgBlob, GetTuneAudioDownloadName(gPlayerABC, ".svg"), "image/svg+xml");
 
   PostProcessSVGImageAfterDownload();
 
@@ -33794,7 +33704,7 @@ function DownloadSVG(callback, val) {
 //
 var gInDownloadJPEG = false;
 
-function DownloadJPEG(callback, val) {
+async function DownloadJPEG(callback, val) {
 
   // Avoid re-entry
   if (gInDownloadJPEG) {
@@ -33921,49 +33831,13 @@ function DownloadJPEG(callback, val) {
 
   img.setAttribute("src", "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData))));
 
-  img.onload = function() {
+  img.onload = async function() {
 
     ctx.drawImage(img, 0, 0);
 
     var canvasdata = canvas.toDataURL("image/jpeg", 0.75);
 
-    if (isPureDesktopBrowser()) {
-
-      var downloadLink = document.createElement("a");
-
-      downloadLink.download = GetTuneAudioDownloadName(gPlayerABC, ".jpg");
-
-      downloadLink.href = canvasdata;
-
-      document.body.appendChild(downloadLink);
-
-      downloadLink.click();
-
-      window.URL.revokeObjectURL(canvasdata);
-
-      document.body.removeChild(downloadLink);
-
-    } else {
-
-      var imageBlob = dataURLtoBlob(canvasdata);
-
-      var imageUrl = URL.createObjectURL(imageBlob);
-
-      var downloadLink = document.createElement("a");
-
-      downloadLink.href = imageUrl;
-
-      downloadLink.download = GetTuneAudioDownloadName(gPlayerABC, ".jpg");
-
-      document.body.appendChild(downloadLink);
-
-      downloadLink.click();
-
-      window.URL.revokeObjectURL(imageUrl);
-
-      document.body.removeChild(downloadLink);
-
-    }
+    await shareOrDownloadFile(canvasdata, GetTuneAudioDownloadName(gPlayerABC, ".jpg"), "image/jpeg");
 
     PostProcessSVGImageAfterDownload();
 
@@ -33990,7 +33864,7 @@ function DownloadJPEG(callback, val) {
 //
 var gInDownloadPNG = false;
 
-function DownloadPNG(callback, val) {
+async function DownloadPNG(callback, val) {
 
   // Avoid re-entry
   if (gInDownloadPNG) {
@@ -34084,49 +33958,13 @@ function DownloadPNG(callback, val) {
 
   img.setAttribute("src", "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData))));
 
-  img.onload = function() {
+  img.onload = async function() {
 
     ctx.drawImage(img, 0, 0);
 
     var canvasdata = canvas.toDataURL("image/png", 1);
 
-    if (isPureDesktopBrowser()) {
-
-      var downloadLink = document.createElement("a");
-
-      downloadLink.download = GetTuneAudioDownloadName(gPlayerABC, ".png");
-
-      downloadLink.href = canvasdata;
-
-      document.body.appendChild(downloadLink);
-
-      downloadLink.click();
-
-      window.URL.revokeObjectURL(canvasdata);
-
-      document.body.removeChild(downloadLink);
-
-    } else {
-
-      var imageBlob = dataURLtoBlob(canvasdata);
-
-      var imageUrl = URL.createObjectURL(imageBlob);
-
-      var downloadLink = document.createElement("a");
-
-      downloadLink.href = imageUrl;
-
-      downloadLink.download = GetTuneAudioDownloadName(gPlayerABC, ".png");
-
-      document.body.appendChild(downloadLink);
-
-      downloadLink.click();
-
-      window.URL.revokeObjectURL(imageUrl);
-
-      document.body.removeChild(downloadLink);
-
-    }
+    await shareOrDownloadFile(canvasdata, GetTuneAudioDownloadName(gPlayerABC, ".png"), "image/png");
 
     PostProcessSVGImageAfterDownload();
 
@@ -35177,30 +35015,11 @@ function BatchABCExport() {
 // 
 // Convert and export one tune to ABC
 //
-function ExportOneABCTune(theABC, fname, callback, errorCallback) {
+async function ExportOneABCTune(theABC, fname, callback, errorCallback) {
 
   //console.log("ExportOneABCTune success!")
 
-  var a = document.createElement("a");
-
-  document.body.appendChild(a);
-
-  a.style = "display: none";
-
-  var blob = new Blob([theABC], {
-      type: "text/plain"
-    });
-
-  var url = window.URL.createObjectURL(blob);
-  a.href = url;
-  a.download = fname;
-  a.click();
-
-  document.body.removeChild(a);
-
-  setTimeout(function() {
-    window.URL.revokeObjectURL(url);
-  }, 1000);
+  await shareOrDownloadFile(theABC, fname, "text/plain");
 
   callback();
 
@@ -35346,57 +35165,34 @@ function BatchMusicXMLExport() {
 // 
 // Convert and export one tune to MusicXML
 //
-function ExportMusicXML(theABC, fname, callback, errorCallback) {
+async function ExportMusicXML(theABC, fname, callback, errorCallback) {
 
-  fetch(`https://seisiuneer.pythonanywhere.com/abc2xml`, {
+  try {
+
+    const response = await fetch(`https://seisiuneer.pythonanywhere.com/abc2xml`, {
       method: 'POST',
       body: theABC
-    })
-    .then(response => {
+    });
 
-      return response.text();
+    const data = await response.text();
 
-    })
-    .then(data => {
+    //console.log("ExportMusicXML success!")
 
-      //console.log("ExportMusicXML success!")
+    await shareOrDownloadFile(data, fname, "application/xml");
 
-      var a = document.createElement("a");
+    callback();
 
-      document.body.appendChild(a);
+  } catch (error) {
 
-      a.style = "display: none";
+    console.log("ExportMusicXML - MusicXML conversion failed on " + fname);
 
-      var blob = new Blob([data], {
-          type: "text/plain"
-        });
-
-      var url = window.URL.createObjectURL(blob);
-      a.href = url;
-      a.download = fname;
-      a.click();
-
-      document.body.removeChild(a);
-
-      setTimeout(function() {
-        window.URL.revokeObjectURL(url);
-      }, 1000);
-
+    if (errorCallback) {
+      errorCallback();
+    } else {
       callback();
+    }
 
-    })
-    .catch(
-      error => {
-
-        console.log("ExportMusicXML - MusicXML conversion failed on " + fname);
-
-        if (errorCallback) {
-          errorCallback();
-        } else {
-          callback();
-        }
-
-      });
+  }
 
 }
 
@@ -35700,9 +35496,10 @@ function isJigWithNoTiming(tuneABC, millisecondsPerMeasure) {
 //
 // Generate and download the .wav file for the current tune
 //
-function DownloadWave() {
+async function DownloadWave() {
 
   var originalMS;
+  var wavData = null;
 
   // Keep track of export
   sendGoogleAnalytics("export", "DownloadWave");
@@ -35722,29 +35519,15 @@ function DownloadWave() {
 
   gMIDIbuffer.fadeLength = theFade;
 
-  gMIDIbuffer.prime().then((function(t) {
+  try {
 
-    var wavData = gMIDIbuffer.download();
+    await gMIDIbuffer.prime();
 
-    gMIDIbuffer.millisecondsPerMeasure = originalMS;
+    wavData = gMIDIbuffer.download();
 
-    var link = document.createElement("a");
+    await shareOrDownloadFile(wavData, GetTuneAudioDownloadName(gPlayerABC, ".wav"), "audio/wav");
 
-    document.body.appendChild(link);
-
-    link.setAttribute("style", "display: none;");
-
-    link.href = wavData;
-
-    link.download = GetTuneAudioDownloadName(gPlayerABC, ".wav");
-
-    link.click();
-
-    window.URL.revokeObjectURL(wavData);
-
-    document.body.removeChild(link);
-
-  })).catch((function(e) {
+  } catch (e) {
 
     //console.warn("Problem exporting .wav:", e)
     // Nope, exit
@@ -35759,7 +35542,15 @@ function DownloadWave() {
       scrollWithPage: (AllowDialogsToScroll())
     });
 
-  }));
+  } finally {
+
+    gMIDIbuffer.millisecondsPerMeasure = originalMS;
+
+    if (wavData) {
+      window.URL.revokeObjectURL(wavData);
+    }
+
+  }
 
 }
 
@@ -36337,7 +36128,7 @@ function DoBatchMP3Export(repeatCount, doClickTrack, doInjectSilence, doIncludeR
 //
 var gInDownloadMP3 = false;
 
-function DownloadMP3(callback, val) {
+async function DownloadMP3(callback, val) {
 
   // Avoid re-entry
   if (gInDownloadMP3) {
@@ -36450,7 +36241,17 @@ function DownloadMP3(callback, val) {
 
   gMIDIbuffer.fadeLength = theFade;
 
-  gMIDIbuffer.prime().then(function(t) {
+  function delay(ms) {
+    return new Promise(function(resolve) {
+      setTimeout(resolve, ms);
+    });
+  }
+
+  var wavDataURL = null;
+
+  try {
+
+    await gMIDIbuffer.prime();
 
     if (!callback) {
 
@@ -36464,69 +36265,26 @@ function DownloadMP3(callback, val) {
     }
 
     // Give the UI a chance to update
-    setTimeout(async function() {
+    await delay(gSpinnerDelay);
 
-      var wavDataURL = gMIDIbuffer.download();
+    wavDataURL = gMIDIbuffer.download();
 
-      var wavData = await fetch(wavDataURL).then(r => r.blob());
+    var wavData = await fetch(wavDataURL).then(r => r.blob());
+    var buffer = await wavData.arrayBuffer();
 
-      // Restore the buffer timing
-      gMIDIbuffer.millisecondsPerMeasure = originalMS;
+    var mp3Data = convertToMp3(buffer);
 
-      var fileReader = new FileReader();
+    var blob = new Blob(mp3Data, {
+      type: 'audio/mpeg'
+    });
 
-      fileReader.onload = function(event) {
+    await shareOrDownloadFile(blob, GetTuneAudioDownloadName(gPlayerABC, ".mp3"), "audio/mpeg");
 
-        var buffer = event.target.result;
+    if (callback) {
+      callback(val);
+    }
 
-        var mp3Data = convertToMp3(buffer);
-
-        var blob = new Blob(mp3Data, {
-          type: 'audio/mp3'
-        });
-
-        var url = window.URL.createObjectURL(blob);
-
-        var link = document.createElement("a");
-
-        document.body.appendChild(link);
-
-        link.setAttribute("style", "display: none;");
-
-        link.href = url;
-
-        link.download = GetTuneAudioDownloadName(gPlayerABC, ".mp3");
-
-        link.click();
-
-        window.URL.revokeObjectURL(url);
-
-        document.body.removeChild(link);
-
-        if (!callback) {
-
-          var elem = document.getElementById("abcplayer_mp3button");
-
-          if (elem) {
-            elem.value = "Save as .MP3";
-          }
-
-          hideTheSpinner();
-
-        }
-
-        gInDownloadMP3 = false;
-
-        if (callback) {
-          callback(val);
-        }
-
-      };
-
-      fileReader.readAsArrayBuffer(wavData);
-
-    }, gSpinnerDelay);
-  }).catch((function(e) {
+  } catch (e) {
 
     var thePrompt = "A problem occured when exporting the .mp3 file.";
 
@@ -36538,6 +36296,14 @@ function DownloadMP3(callback, val) {
       top: 200,
       scrollWithPage: (AllowDialogsToScroll())
     });
+
+  } finally {
+
+    if (wavDataURL) {
+      window.URL.revokeObjectURL(wavDataURL);
+    }
+
+    gMIDIbuffer.millisecondsPerMeasure = originalMS;
 
     if (!callback) {
 
@@ -36551,18 +36317,16 @@ function DownloadMP3(callback, val) {
 
     }
 
-
     gInDownloadMP3 = false;
 
-
-  }));
+  }
 
 }
 
 //
 // Generate and download the MIDI file for the current tune
 //
-function DownloadMIDI(callback, val) {
+async function DownloadMIDI(callback, val) {
 
   // Keep track of export
   if (!callback) {
@@ -36578,26 +36342,47 @@ function DownloadMIDI(callback, val) {
   thisMIDI = thisMIDI.replace('<a download', '<a id="downloadmidilink" download');
 
   var link = document.createElement("div");
-
   link.innerHTML = thisMIDI;
-
-  link.setAttribute("style", "display: none;");
+  link.style.display = "none";
 
   document.body.appendChild(link);
 
-  var theMIDILink = document.getElementById("downloadmidilink");
+  try {
 
-  theMIDILink.click();
+    var theMIDILink = document.getElementById("downloadmidilink");
 
-  document.body.removeChild(link);
+    if (!theMIDILink || !theMIDILink.href) {
+      throw new Error("Unable to create MIDI download link.");
+    }
 
-  if (callback) {
-    callback(val);
+    await shareOrDownloadFile(
+      theMIDILink.href,
+      theMIDILink.download || GetTuneAudioDownloadName(gPlayerABC, ".mid"),
+      "audio/midi"
+    );
+
+    if (callback) {
+      callback(val);
+    }
+
+  } catch (e) {
+
+    var thePrompt = "A problem occured when exporting the .mid file.";
+
+    thePrompt = makeCenteredPromptString(thePrompt);
+
+    DayPilot.Modal.alert(thePrompt, {
+      theme: "modal_flat",
+      top: 200,
+      scrollWithPage: (AllowDialogsToScroll())
+    });
+
+  } finally {
+
+    document.body.removeChild(link);
+
   }
-
-
 }
-
 //
 // Export the tune in various audio or image formats
 //
@@ -45047,36 +44832,47 @@ function TuneTrainerLaunchFromPlayer() {
   setTimeout(function() {
 
     // Launch the trainer
-    TuneTrainer(true);
+    TuneTrainer(true,false);
 
   }, 250);
 }
 
-function TuneTrainerTopBar(){
+function TuneTrainerTopBar(e){
         
     // Get the current tune index and tune count
-    gPlayABCTuneIndex = findSelectedTuneIndex();
     gPlayABCTuneCount = CountTunes();
+
+    // Select random tune if user clicks Train with the alt key pressed
+    if (e && e.altKey) {
+
+      gPlayABCTuneIndex = Math.floor(Math.random() * gPlayABCTuneCount);
+
+      TuneTrainer(false,true);
+
+    }
+    else{
+
+      gPlayABCTuneIndex = findSelectedTuneIndex();
+
+      TuneTrainer(false,false);
+    }
 
     //console.log("gPlayABCTuneIndex: "+gPlayABCTuneIndex)
 
-    TuneTrainer(false);
 }
 
-function TuneTrainer(bIsFromPlayer) {
+function TuneTrainer(bIsFromPlayer,bUse_gPlayABCTuneIndex=false) {
 
   if (gAllowCopy) {
-
 
     if (!bIsFromPlayer) {
       // Deactivate Quick Player 
       deactivateQuickPlayer();
-
     }
 
     var theSelectedABC;
 
-    if (bIsFromPlayer) {
+    if (bIsFromPlayer || bUse_gPlayABCTuneIndex) {
       theSelectedABC = getTuneByIndex(gPlayABCTuneIndex);
     } else {
       // Try to find the current tune
@@ -46851,7 +46647,7 @@ function GetInitialConfigurationSettings() {
     resetAngloButtonNames();
   }
 
-  var theMusicXMLImportSettings = localStorage.musicXMLImportOptionsV6;
+  var theMusicXMLImportSettings = localStorage.musicXMLImportOptionsV7;
 
   if (theMusicXMLImportSettings) {
     gMusicXMLImportOptions = JSON.parse(theMusicXMLImportSettings);
@@ -47945,6 +47741,13 @@ function GetInitialConfigurationSettings() {
   // Apply custom theme
   ensureInitialAbcThemeApplied();
 
+  // Flat mode buttons?
+  // gUseFlatButtons = true;
+  // val = localStorage.UseFlatButtons
+  // if (val) {
+  //   gUseFlatButtons = (val == "true");
+  // }
+
   // Save the settings, in case they were initialized
   SaveConfigurationSettings();
 
@@ -48005,7 +47808,7 @@ function SaveConfigurationSettings() {
     localStorage.angloButtonNames2 = JSON.stringify(gAngloButtonNames);
 
     // MusicXML import options
-    localStorage.musicXMLImportOptionsV6 = JSON.stringify(gMusicXMLImportOptions);
+    localStorage.musicXMLImportOptionsV7 = JSON.stringify(gMusicXMLImportOptions);
 
     // Large player control player options
     localStorage.LargePlayerControls = gLargePlayerControls;
@@ -48261,6 +48064,9 @@ function SaveConfigurationSettings() {
     // Show external tools icon on Player
     localStorage.PlayerShowExternalToolsIcon = gPlayerShowExternalToolsIcon;
 
+    // Flat mode buttons
+    // localStorage.UseFlatButtons = gUseFlatButtons;
+
   }
 }
 
@@ -48292,7 +48098,8 @@ function resetMusicXMLImportOptions() {
     m: 1,
     addq: 1,
     q: 100,
-    addstavenum: 0
+    addstavenum: 0,
+    rehparts:0
   };
 }
 
@@ -48320,6 +48127,7 @@ function setMusicXMLOptions() {
   gMusicXMLImportOptions.mnum = parseInt($('#musicxml_mnum').val() || -1);
   gMusicXMLImportOptions.addq = $('#musicxml_addq').prop('checked') ? 1 : 0;
   gMusicXMLImportOptions.q = parseInt($('#musicxml_q').val() || 100);
+  gMusicXMLImportOptions.rehparts = $('#musicxml_rehparts').prop('checked') ? 1 : 0;
 
 }
 
@@ -48344,6 +48152,7 @@ function idleXMLImport() {
   $('#musicxml_addq').prop('checked', (gMusicXMLImportOptions.addq == 1));
   $('#musicxml_q').val(gMusicXMLImportOptions.q);
   $('#musicxml_addstavenum').prop('checked', (gMusicXMLImportOptions.addstavenum == 1));
+  $('#musicxml_rehparts').prop('checked', (gMusicXMLImportOptions.rehparts == 1));
 
 };
 
@@ -48393,26 +48202,26 @@ function ConfigureMusicXMLImport() {
 
   modal_msg += '<a href="https://michaeleskin.com/abctools/userguide.html#musicxml" target="_blank" title="View documentation in new tab" class="modal-header-ui modal-link-help dialogcornerbutton">?</a>';
   modal_msg += '<h2 class="modal-header">MusicXML/MIDI Import Settings&nbsp;&nbsp;</h2>';
-  modal_msg += '<div style="margin-bottom:12px;"><label style="font-size:12pt;">Bars-per-line:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" style="width:60px;" id="musicxml_bpl" type="text" pattern="\d+" title="Default: 3"/></div>\n';
-  modal_msg += '<div style="margin-bottom:12px;"><label style="font-size:12pt;">Characters-per-line:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" style="width:60px;" id="musicxml_cpl" type="text" pattern="\d+" title="Default: 0 - ignore"/></div>\n';
-  modal_msg += '<div style="margin-bottom:12px;"><label style="font-size:12pt;">Measure numbers:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" style="width:60px;" id="musicxml_mnum" type="text" pattern="\d+" title="-1: No measure numbers, 1..n: Number every n-th measure, 0: Number every system"/></div>\n';
-  modal_msg += '<div style="margin-bottom:12px;"><label style="font-size:12pt;">Include measure numbers at end of staves:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" id="musicxml_addstavenum" type="checkbox"/></div>\n';
-  modal_msg += '<div style="margin-bottom:12px;"><label style="font-size:12pt;">Unfold repeats:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" id="musicxml_unfld" type="checkbox"/></div>\n';
-  modal_msg += '<div style="margin-bottom:12px;"><label style="font-size:12pt;">Credit text filter (level 0-6):&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" style="width:60px;" id="musicxml_crf" type="text" pattern="[0123456]" title="0 (Default), 1, 2, 3, 4, 5, 6"/></div>\n';
-  modal_msg += '<div style="margin-bottom:12px;"><label style="font-size:12pt;">Denominator unit length for L: tags:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" style="width:60px;" id="musicxml_den" type="text" pattern="\d\d?" title="0 (Automatic), 1, 2, 4, 8, 16, or 32"/></div>\n';
-  modal_msg += '<div style="margin-bottom:12px;"><label style="font-size:12pt;">%%MIDI options:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" style="width:60px;" id="musicxml_midi" type="text" pattern="[012]" title="0: No MIDI, 1: Only program, 2: All MIDI"/></div>\n';
-  modal_msg += '<div style="margin-bottom:12px;"><label style="font-size:12pt;">No score line breaks:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" id="musicxml_nlb" type="checkbox"/></div>\n';
-  modal_msg += '<div style="margin-bottom:12px;"><label style="font-size:12pt;">No pedal directions:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" id="musicxml_noped" type="checkbox"/></div>\n';
-  modal_msg += '<div style="margin-bottom:12px;"><label style="font-size:12pt;">All directions to first voice:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" id="musicxml_v1" type="checkbox"/></div>\n';
-  modal_msg += '<div style="margin-bottom:12px;"><label style="font-size:12pt;">Translate stem directions:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" id="musicxml_stems" type="checkbox"/></div>\n';
-  modal_msg += '<div style="margin-bottom:12px;"><label style="font-size:12pt;">Inject Q: tag if not present:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" id="musicxml_addq" type="checkbox"/></div>\n';
-  modal_msg += '<div style="margin-bottom:12px;"><label style="font-size:12pt;">Q: tag value to inject:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" style="width:60px;" id="musicxml_q" type="text" pattern="\d+" title="Default: 100"/></div>\n';
+  modal_msg += '<div style="margin-bottom:10px;"><label style="font-size:12pt;">Bars-per-line:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" style="width:60px;" id="musicxml_bpl" type="text" pattern="\d+" title="Default: 3"/></div>\n';
+  modal_msg += '<div style="margin-bottom:10px;"><label style="font-size:12pt;">Characters-per-line:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" style="width:60px;" id="musicxml_cpl" type="text" pattern="\d+" title="Default: 0 - ignore"/></div>\n';
+  modal_msg += '<div style="margin-bottom:10px;"><label style="font-size:12pt;">Measure numbers:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" style="width:60px;" id="musicxml_mnum" type="text" pattern="\d+" title="-1: No measure numbers, 1..n: Number every n-th measure, 0: Number every system"/></div>\n';
+  modal_msg += '<div style="margin-bottom:10px;"><label style="font-size:12pt;">Include measure numbers at end of staves:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" id="musicxml_addstavenum" type="checkbox"/></div>\n';
+  modal_msg += '<div style="margin-bottom:10px;"><label style="font-size:12pt;">Unfold repeats:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" id="musicxml_unfld" type="checkbox"/></div>\n';
+  modal_msg += '<div style="margin-bottom:10px;"><label style="font-size:12pt;">Credit text filter (level 0-6):&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" style="width:60px;" id="musicxml_crf" type="text" pattern="[0123456]" title="0 (Default), 1, 2, 3, 4, 5, 6"/></div>\n';
+  modal_msg += '<div style="margin-bottom:10px;"><label style="font-size:12pt;">Denominator unit length for L: tags:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" style="width:60px;" id="musicxml_den" type="text" pattern="\d\d?" title="0 (Automatic), 1, 2, 4, 8, 16, or 32"/></div>\n';
+  modal_msg += '<div style="margin-bottom:10px;"><label style="font-size:12pt;">%%MIDI options:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" style="width:60px;" id="musicxml_midi" type="text" pattern="[012]" title="0: No MIDI, 1: Only program, 2: All MIDI"/></div>\n';
+  modal_msg += '<div style="margin-bottom:10px;"><label style="font-size:12pt;">No score line breaks:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" id="musicxml_nlb" type="checkbox"/></div>\n';
+  modal_msg += '<div style="margin-bottom:10px;"><label style="font-size:12pt;">No pedal directions:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" id="musicxml_noped" type="checkbox"/></div>\n';
+  modal_msg += '<div style="margin-bottom:10px;"><label style="font-size:12pt;">All directions to first voice:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" id="musicxml_v1" type="checkbox"/></div>\n';
+  modal_msg += '<div style="margin-bottom:10px;"><label style="font-size:12pt;">Translate stem directions:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" id="musicxml_stems" type="checkbox"/></div>\n';
+  modal_msg += '<div style="margin-bottom:10px;"><label style="font-size:12pt;">Inject Q: tag if not present:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" id="musicxml_addq" type="checkbox"/></div>\n';
+  modal_msg += '<div style="margin-bottom:10px;"><label style="font-size:12pt;">Q: tag value to inject:&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" style="width:60px;" id="musicxml_q" type="text" pattern="\d+" title="Default: 100"/></div>\n';
+  modal_msg += '<div style="margin-bottom:10px;"><label style="font-size:12pt;">Inject P: tags for rehearsal marks (default is text annotation):&nbsp;&nbsp;</label><input onchange="setMusicXMLOptions()" id="musicxml_rehparts" type="checkbox"/></div>\n';
   modal_msg += '<p style="text-align:center;margin-top:22px;"><input id="default_musicxml_settings" class="btn btn-clearbutton default_musicxml_settings" onclick="defaultMusicXMLSettings()" type="button" value="Reset to Default" title="Reset the MusicXML/MIDI import settings to their default values"></p>\n';
 
   const form = [{
     html: modal_msg
   }];
-
 
   setTimeout(function() {
 
@@ -48420,11 +48229,10 @@ function ConfigureMusicXMLImport() {
 
   }, 150);
 
-
   const modal = DayPilot.Modal.form(form, theData, {
     theme: "modal_flat",
-    top: 50,
-    width: 500,
+    top: 10,
+    width: 600,
     scrollWithPage: (AllowDialogsToScroll()),
     autoFocus: false
   }).then(function(args) {
@@ -48435,7 +48243,7 @@ function ConfigureMusicXMLImport() {
       // Save the MusicXML settings
       if (gLocalStorageAvailable) {
 
-        localStorage.musicXMLImportOptionsV6 = JSON.stringify(gMusicXMLImportOptions);
+        localStorage.musicXMLImportOptionsV7 = JSON.stringify(gMusicXMLImportOptions);
 
       }
     } else {
@@ -51182,7 +50990,6 @@ function launchCustomInstrumentBuilder(){
 
 }
 
-
 // ===== processCustomInstruments =====
 
 // Enable custom database use on all platforms
@@ -53042,6 +52849,7 @@ function ConfigureToolSettings() {
     configure_player_scaling: gPlayerScaling,
     configure_syntax_highlighting: gEnableSyntax,
     configure_syntax_highlighting_dark: gSyntaxDarkMode,
+    // configure_flat_buttons: gUseFlatButtons
   };
 
   var form = [];
@@ -53136,6 +52944,13 @@ function ConfigureToolSettings() {
       cssClass: "configure_settings_form_text_checkbox"
     });
   }
+
+  // form.push({
+  //   name: "          Use Flat Buttons? (Glossy if unchecked)",
+  //   id: "configure_flat_buttons",
+  //   type: "checkbox",
+  //   cssClass: "configure_settings_form_text_checkbox"
+  // });
 
   form.push({
     name: "          Use Dark Mode for the editor when syntax highlighting is enabled",
@@ -53397,6 +53212,10 @@ function ConfigureToolSettings() {
       // Syntax highlighting
       gEnableSyntax = args.result.configure_syntax_highlighting;
       gSyntaxDarkMode = args.result.configure_syntax_highlighting_dark;
+
+      // Flat buttons?
+      // gUseFlatButtons = args.result.configure_flat_buttons;
+      // setFlatButtons(gUseFlatButtons);
 
       var isEnableSyntaxChanged = (gEnableSyntax != oldEnableSyntax);
 
@@ -53865,7 +53684,6 @@ function MoveConfigureSettingsFieldsToTabs() {
     return false;
   }
 
-
   // ---- Editor tab ----
   if (!isPureDesktopBrowser()) moveByName("configure_always_two_columns", "tab_editor_fields");  // Lite: Customized (allow for all mobile browsers)
   moveByName("configure_editor_fontsize", "tab_editor_fields"); // Lite: Customized (allow for all browsers)
@@ -54328,7 +54146,8 @@ function importMusicXML(theXML, fileName) {
   //                 v1:0, noped:0,  // all directions to first voice of staff (1), no pedal directions (1)
   //                 stm:0,          // translate stem elements (stem direction)
   //                 p:'', s:0,   // page format: scale (1.0), width, left- and right margin in cm, shift note heads in tablature (1)
-  //                 addstavenum:1 };  // Add stave numbers at the end of the staves
+  //                 addstavenum:1,  // Add stave numbers at the end of the staves
+  //                 rehparts:0 };  // Convert rehearsal marks to P: tags
 
   // Suppress stave measure numbers if doing linebreaks
   var replacedStaveNum = false;
@@ -56706,28 +56525,34 @@ function showWhatsNewScreen() {
 
   // Header
   modal_msg += '<div style="text-align:center; padding:14px 10px; border-radius:12px;';
-  modal_msg += 'background: linear-gradient(135deg, #b00020 0%, #d62828 70%, #fcbf49 100%);';
+  modal_msg += 'background: linear-gradient(135deg, #0d47a1 0%, #1565c0 50%, #64b5f6 100%);';
   modal_msg += 'box-shadow: 0 6px 16px rgba(0,0,0,0.14); color:#fff;">';
   modal_msg += '<div style="font-size:20pt; line-height:24pt; font-weight:bold;">What&apos;s New</div>';
-  modal_msg += '<div style="font-size:11pt; opacity:0.92; margin-top:3px;">Version ' + gVersionNumber + ' released 21 February 2026</div>';
+  modal_msg += '<div style="font-size:11pt; opacity:0.92; margin-top:3px;">Version ' + gVersionNumber + ' released 16 March 2026</div>';
   modal_msg += '</div>';
 
   // Short intro
-  modal_msg += '<p style="margin:14px 4px 10px 4px; font-size:12pt;">';
+  modal_msg += '<p style="margin:24px 4px 10px 4px; font-size:12pt;">';
   modal_msg += 'Here’s what’s new in the ABC Transcription Tools:';
   modal_msg += '</p>';
 
   // Feature card
   modal_msg += '<div style="margin:10px 0 6px 0; padding:12px 12px; border-radius:12px;';
   modal_msg += 'background:#fff; border:1px solid #e7e7e7; box-shadow: 0 2px 10px rgba(0,0,0,0.06);">';
+  
+  modal_msg += '<p style="margin:6px 0; font-size:12pt;">Added <strong>thesession.org Power Tools</strong> to the <strong>Add ABC Tunes, Templates, and PDF Features</strong> dialog.</p>';
+  modal_msg += '<p style="margin:6px 0; font-size:12pt;">Given the link to a tune page on thesession.org, downloads all the ABC tune settings.</p>'; 
+  modal_msg += '<p style="margin:6px 0; font-size:12pt;">You can also get all of a member\'s tunebook tunes, tune sets, or all the tune settings they\'ve submitted or bookmarked.</p>'; 
+  modal_msg += '<p style="margin:6px 0; font-size:12pt;">Once the tune settings are downloaded, you can save them to a file, copy them to the clipboard, or if all the tunes will fit in a share link, open them directly in the ABC Transcription Tools.</p>';
 
-  modal_msg += '<p style="margin:6px 0; font-size:12pt;">Added <strong>thesession.org Tune Scraper</strong> to the <strong>☰</strong> dropdown menu.<br/><br/>Brings up the <strong>thesession.org Tune Settings Scraper</strong> utility in a new browser tab.</p>';
   modal_msg += '</div>';
 
+  // Feature card
   modal_msg += '<div style="margin:10px 0 6px 0; padding:12px 12px; border-radius:12px;';
   modal_msg += 'background:#fff; border:1px solid #e7e7e7; box-shadow: 0 2px 10px rgba(0,0,0,0.06);">';
   
-  modal_msg += '<p style="margin:6px 0; font-size:12pt;">Share links are now created using <b>Deflate</b> as the compression algorithm for the ABC instead of <b>LZW</b>.<br/><br/>Deflate creates share links that can be as much as 50% smaller than LZW.<br/><br/>This is particularly helpful for large tunes in PDF files intended to be opened by Adobe Acrobat which has a relatively small limit for hyperlink length.<br/><br/>The only exception is that LZW is still used for <b>Full Featured Websites</b> that include a dropdown tab/instrument selector since the LZW code is included in the source code for the sites to instrument and tablature change on-the-fly.</p>';
+  modal_msg += '<p style="margin:6px 0; font-size:12pt;"><strong>On iOS, when possible, all file saves and exports from the tool now use the native iOS file sharing dialog.</strong></p>';
+  modal_msg += '<p style="margin:6px 0; font-size:12pt;">This allows you to easily save exported files to the Files area on the device, share them with other iOS apps, or send them to another device via AirDrop.</p>';
 
   modal_msg += '</div>';
 
@@ -57304,7 +57129,11 @@ function CheckFacebook_iOS() {
           var modal_msg = '<p style="text-align:center;font-size:18pt;margin-top:60px;">Facebook iOS App Browser Issue</p>';
           modal_msg += '<p style="font-size:12pt;line-height:30pt;">The Facebook iOS app browser does not support running the ABC Tools.</p>';
 
-          modal_msg += '<p style="font-size:12pt;line-height:20pt;">Open the ABC Transcription Tools in Safari by clicking the button below:</p>';
+          modal_msg += '<p style="font-size:12pt;line-height:20pt;font-family:var(--abctools-font-fallback-ui)">Try opening the ABC Transcription Tools in Safari by clicking the button below.</p>';
+
+          modal_msg += '<p style="font-size:12pt;line-height:18pt;">If that doesn\'t work:</p>';
+          modal_msg += '<p style="font-size:12pt;line-height:20pt;">1) Click the&nbsp;&nbsp;<strong><span style="font-size:18pt">...</span></strong>&nbsp;&nbsp;at the top-right of the screen</p>';
+          modal_msg += '<p style="font-size:12pt;line-height:12pt;">2) Click <strong>Open in external browser</strong></p>';
 
           modal_msg += '<p style="text-align:center"><a style="display: inline-block; padding: 10px 20px; margin-top:40px; font-size: 18px; color: white; background-color: #007BFF; text-align: center; text-decoration: none; border-radius: 5px; transition: background-color 0.3s ease;" href=' + the_href + '>Click here to open in Safari</a></p>';
         }
@@ -59512,7 +59341,8 @@ function FindAndReplace() {
     theme: "modal_flat",
     top: 25,
     width: 700,
-    scrollWithPage: false
+    scrollWithPage: false,
+    okText:"Exit"
   }).then(function() {
   	if (!isPureDesktopBrowser()){
       doFocusAbc();
@@ -59526,69 +59356,73 @@ function FindAndReplace() {
 
   });
 
-  //
-  // Setup the file import control
-  //
-  document.getElementById("load_find_replace_fs").onchange = () => {
+  // Event handlers after dialog is shown
+  setTimeout(function () {
 
-    let fileElement = document.getElementById("load_find_replace_fs");
+    //
+    // Setup the file import control
+    //
+    document.getElementById("load_find_replace_fs").onchange = () => {
 
-    // check if user had selected a file
-    if (fileElement.files.length === 0) {
+      let fileElement = document.getElementById("load_find_replace_fs");
 
-      var thePrompt = "Please select a Find and Replace settings file";
+      // check if user had selected a file
+      if (fileElement.files.length === 0) {
 
-      // Center the string in the prompt
-      thePrompt = makeCenteredPromptString(thePrompt);
+        var thePrompt = "Please select a Find and Replace settings file";
 
-      DayPilot.Modal.alert(thePrompt, {
-        theme: "modal_flat",
-        top: 200,
-        scrollWithPage: false
-      });
+        // Center the string in the prompt
+        thePrompt = makeCenteredPromptString(thePrompt);
 
-      return;
+        DayPilot.Modal.alert(thePrompt, {
+          theme: "modal_flat",
+          top: 200,
+          scrollWithPage: false
+        });
+
+        return;
+
+      }
+
+      let file = fileElement.files[0];
+
+      // Read the file and stuff it into the Find and Replace fields
+      SR_LoadFindAndReplace(file);
+
+      // Reset file selectors
+      fileElement.value = "";
 
     }
 
-    let file = fileElement.files[0];
+    gSR_searchInput = document.getElementById("searchText");
 
-    // Read the file and stuff it into the Find and Replace fields
-    SR_LoadFindAndReplace(file);
+    gSR_replaceInput = document.getElementById("replacementText");
+    gSR_caseSensitive = document.getElementById("searchCaseSensitive");
+    gSR_regex = document.getElementById("searchRegex");
 
-    // Reset file selectors
-    fileElement.value = "";
+    gSR_searchInput.value = gSR_lastSearch;
+    gSR_replaceInput.value = gSR_lastReplace;
+    gSR_caseSensitive.checked = gSR_lastCaseSensitive;
+    gSR_regex.checked = gSR_lastRegex;
 
-  }
+    if (gSR_lastSearch != "") {
+      SR_findMatches();
+    }
 
-  gSR_searchInput = document.getElementById("searchText");
+    gSR_searchInput.addEventListener("input", function(event) {
+      gSR_lastSearch = gSR_searchInput.value;;
+      SR_findMatches();
+    });
 
-  gSR_searchInput.focus();
+    gSR_replaceInput.addEventListener("input", function(event) {
+      gSR_lastReplace = gSR_replaceInput.value;
+    });
 
-  gSR_replaceInput = document.getElementById("replacementText");
-  gSR_caseSensitive = document.getElementById("searchCaseSensitive");
-  gSR_regex = document.getElementById("searchRegex");
+    gSR_searchInput.focus();
 
-  gSR_searchInput.value = gSR_lastSearch;
-  gSR_replaceInput.value = gSR_lastReplace;
-  gSR_caseSensitive.checked = gSR_lastCaseSensitive;
-  gSR_regex.checked = gSR_lastRegex;
-
-  if (gSR_lastSearch != "") {
-    SR_findMatches();
-  }
-
-  gSR_searchInput.addEventListener("input", function(event) {
-    gSR_lastSearch = gSR_searchInput.value;;
-    SR_findMatches();
-  });
-
-  gSR_replaceInput.addEventListener("input", function(event) {
-    gSR_lastReplace = gSR_replaceInput.value;
-  });
+  },10);
 
 }
-
 
 //
 // Split long tags and/or text
@@ -60789,7 +60623,7 @@ function LaunchChromaticTuner(){
 
   sendGoogleAnalytics("action", "LaunchChromaticTuner");
 
-  var url = "https://abc.tunebook.app/tools/tuner.html";
+  var url = "./tools/tuner.html";
   window.open(url, '_blank');
 }
 
@@ -60798,7 +60632,7 @@ function LaunchRTTA(){
 
   sendGoogleAnalytics("action", "LaunchRTTA");
 
-  var url = "https://abc.tunebook.app/tools/rtta.html";
+  var url = "./tools/rtta.html";
   window.open(url, '_blank');
 }
 
@@ -60807,7 +60641,7 @@ function LaunchRTTVA(){
 
   sendGoogleAnalytics("action", "LaunchRTTVA");
 
-  var url = "https://abc.tunebook.app/tools/rttva.html";
+  var url = "./tools/rttva.html";
   window.open(url, '_blank');
 }
 
@@ -60816,7 +60650,7 @@ function LaunchToneGen(){
 
   sendGoogleAnalytics("action", "LaunchToneGen");
 
-  var url = "https://abc.tunebook.app/tools/tonegen.html";
+  var url = "./tools/tonegen.html";
   window.open(url, '_blank');
 }
 
@@ -60825,7 +60659,25 @@ function LaunchAudioTester(){
   
   sendGoogleAnalytics("action", "LaunchAudioTester");
 
-  var url = "https://abc.tunebook.app/tools/audiotest.html";
+  var url = "./tools/audiotest.html";
+  window.open(url, '_blank');
+}
+
+// Open thesession.org power tools
+function LaunchTheSessionPowerTools(){
+  
+  sendGoogleAnalytics("action", "LaunchTheSessionPowerTools");
+
+  var url = "./tools/thesession_power_tools.html";
+  window.open(url, '_blank');
+}
+
+// Open the chord chart generatior
+function LaunchChordChartGenerator(){
+  
+  sendGoogleAnalytics("action", "LaunchChordChartGenerator");
+
+  var url = "./tools/abc_to_chord_chart.html";
   window.open(url, '_blank');
 }
 
@@ -62620,7 +62472,7 @@ function DoStartup() {
     document.getElementById("playbuttonicon").onclick =
       function(e) {
         if (e.shiftKey){
-          TuneTrainer(false);
+          TuneTrainer(false,false);
         }
         else{
           PlayABC(null);
@@ -63545,17 +63397,20 @@ function DoStartup() {
     !gIsFirstRun
   ) {
 
-    var updatePresented = localStorage.sawUpdate022026;
+    var updatePresented = localStorage.sawUpdate032026;
 
     if (updatePresented != "true") {
 
       showWhatsNewScreen();
 
-      localStorage.sawUpdate022026 = true;
+      localStorage.sawUpdate032026 = true;
 
     }
 
   }
+
+  // Select the UI mode
+  // setFlatButtons(gUseFlatButtons);
 
 }
 
@@ -64745,7 +64600,8 @@ function PhraseBuilder(theTrainerTune,callback){
     top: 51,
     width: 600,
     scrollWithPage: (AllowDialogsToScroll()),
-    autoFocus: true
+    autoFocus: true,
+    okText:"Build"
   }).then(function(args) {
 
     // If canceled from the Tune Trainer, just return the original 
@@ -65117,6 +64973,67 @@ function OpenInABCJSQuickEditor(abcText){
     }
 }
 
+//
+// Open in the ABC Chord Chart Generator
+//
+function OpenInABCChordChartGenerator(abcText){
+
+    sendGoogleAnalytics("action", "OpenInABCChordChartGenerator");
+
+    var encoder = new TextEncoder();
+    var utf8Bytes = encoder.encode(abcText);
+    var deflated = pako.deflate(utf8Bytes, { level: 6 });
+    var theDef = def_bytesToBase64URL(deflated);
+
+    var theURL = "https://abc.tunebook.app/tools/abc_to_chord_chart.html?def="+theDef;
+
+    if (theURL.length < 8100)
+    {
+      var w = window.open(theURL);
+    }
+    else{
+
+      DayPilot.Modal.alert('<p style="text-align:center;">Share URL is too long to open in the ABC Chord Chart Generator.</p>', {
+        theme: "modal_flat",
+        top: 230,
+        scrollWithPage: (AllowDialogsToScroll())
+      });
+
+    }
+}
+
+//
+// Open in Anton Zille's N.S.S.S. ABC Encoder tool
+//
+function OpenInABCEncoder(abcText){
+
+    sendGoogleAnalytics("action", "OpenInABCEncoder");
+
+    // Remove everything before the first X: tag
+    //abcText = abcText.replace(/^[\s\S]*?(?=^X:)/m, "");
+
+    var encoder = new TextEncoder();
+    var utf8Bytes = encoder.encode(abcText);
+    var deflated = pako.deflate(utf8Bytes, { level: 6 });
+    var theDef = def_bytesToBase64URL(deflated);
+
+    var theURL = "https://ns.tunebook.app/abc-encoder.html?def="+theDef;
+
+    if (theURL.length < 8100)
+    {
+      var w = window.open(theURL);
+    }
+    else{
+
+      DayPilot.Modal.alert('<p style="text-align:center;">Share URL is too long to open in the ABC Encoder.</p>', {
+        theme: "modal_flat",
+        top: 230,
+        scrollWithPage: (AllowDialogsToScroll())
+      });
+
+    }
+}
+
 function openInExternalTool(theABC){
 
   // Lite: Customized
@@ -65139,13 +65056,16 @@ function openInExternalTool(theABC){
   modal_msg += '<img id="external_abcjs" src="img/abcjs_logo.png" title="Open the ABC in the abcjs quick editor" alt="abcjs quick editor"><br> <span style="font-size:1.2em;">abcjs quick editor</span>';
   modal_msg += '</button>';
   modal_msg += '<button class="btn-lite external-tool">';
-  modal_msg += '<img id="external_abcencoder" src="img/abc-encoder-logo.svg" title="Export the tunes to Anton Zille\'s ABC Encoder for auto-formatting headers and sorting sets of tunes or ABC collections" aria-label="Export the tunes to Anton Zille\'s ABC Encoder for auto-formatting headers and sorting sets of tunes or ABC collections"><br> <span style="font-size:1.2em;">N.S.S.S. ABC Encoder</span>';
+  modal_msg += '<img id="external_chord_chart" src="img/tool_chordchart_other_1.jpg" title="Open the ABC in the ABC Chord Chart Generator" alt="ABC Chord Chart Generator"><br> <span style="font-size:1.2em;">ABC Chord Chart Generator</span>';
+  modal_msg += '</button>';
+  modal_msg += '<button class="btn-lite external-tool">';
+  modal_msg += '<img id="external_abc_encoder" src="img/abc-encoder-logo.svg" title="Export the tunes to Anton Zille\'s ABC Encoder for auto-formatting headers and sorting sets of tunes or ABC collections" aria-label="Export the tunes to Anton Zille\'s ABC Encoder for auto-formatting headers and sorting sets of tunes or ABC collections"><br> <span style="font-size:1.2em;"><br>N.S.S.S. ABC Encoder</span>';
   modal_msg += '</button>';
   modal_msg += '</p>';
 
   DayPilot.Modal.alert(modal_msg, {
     theme: "modal_flat",
-    top: 150,
+    top: 75,
     width: 650,
     scrollWithPage: (AllowDialogsToScroll())
   });
@@ -65160,18 +65080,16 @@ function openInExternalTool(theABC){
     OpenInABCJSQuickEditor(theABC);
   };
 
-  elem = document.getElementById("external_abcencoder");
+  elem = document.getElementById("external_chord_chart");
   if (elem) elem.onclick = function(){
-    liteOpenInABCEncoder(theABC);
+    OpenInABCChordChartGenerator(theABC);
   };
-}
 
-// Open thesession.org Tune Scraper in a new browser tab
-function MustardScraper(){
-  sendGoogleAnalytics("action", "MustardScraper");
+  elem = document.getElementById("external_abc_encoder");
+  if (elem) elem.onclick = function(){
+    OpenInABCEncoder(theABC);
+  };
 
-  var url = "https://abc.tunebook.app/tools/mustard_scraper.html";
-  window.open(url, '_blank');
 }
 
 function TuningTools(){
@@ -65192,33 +65110,33 @@ function TuningTools(){
   
   + '    <div class="btn-container-center">'
 
-  + '      <button class="tuning-tool btn-lite" style="text-align:center; width:180px;">'
-  + '        <img id="tuning_tools_tuner" src="img/tool_tuner.webp" title="Simple chromatic instrument tuner. Needle and strobe views. Adjustable temperament (ET, Just Intonation, Pythagorean, Fiddle Sweetened), A4 reference, and input boost." alt="Chromatic Tuner"'
-  + '             style="width:150px;height:auto;cursor:pointer;">'
+  + '      <button id="tuning_tools_tuner" class="tuning-tool btn-lite" style="text-align:center; width:180px;">'
+  + '        <img src="img/tool_tuner.webp" title="Simple chromatic instrument tuner. Needle and strobe views. Adjustable temperament (ET, Just Intonation, Pythagorean, Fiddle Sweetened), A4 reference, and input boost." alt="Chromatic Tuner"'
+  + '             style="width:150px;height:auto;">'
   + '        <span style="font-size:1rem; margin-top:6px; height:3.2em; display:flex; align-items:center; justify-content:center; line-height:1.2em;">Chromatic Tuner</span>'
   + '      </button>'
 
-  + '      <button class="tuning-tool btn-lite" style="text-align:center; width:180px;">'
-  + '        <img id="tuning_tools_rtta" src="img/tool_rtta.webp" title="Real-time tuning analysis (box-plot style) from live mic input. Adjustable temperament (ET, Just Intonation, Pythagorean, Fiddle Sweetened), A4 reference, and input boost." alt="Real Time Tuning Analysis (RTTA)"'
-  + '             style="width:150px;height:auto;cursor:pointer;">'
+  + '      <button id="tuning_tools_rtta" class="tuning-tool btn-lite" style="text-align:center; width:180px;">'
+  + '        <img src="img/tool_rtta.webp" title="Real-time tuning analysis (box-plot style) from live mic input. Adjustable temperament (ET, Just Intonation, Pythagorean, Fiddle Sweetened), A4 reference, and input boost." alt="Real Time Tuning Analysis (RTTA)"'
+  + '             style="width:150px;height:auto;">'
   + '        <span style="font-size:1rem; margin-top:6px; height:3.2em; display:flex; align-items:center; justify-content:center; line-height:1.2em;">Real Time Tuning Analysis (RTTA)</span>'
   + '      </button>'
 
-  + '      <button class="tuning-tool btn-lite" style="text-align:center; width:180px;">'
-  + '        <img id="tuning_tools_rttva" src="img/tool_rttva.webp" title="Real-time tuning and volume analysis (box-plot style) from live mic input. Adjustable temperament (ET, Just Intonation, Pythagorean, Fiddle Sweetened), A4 reference, and input boost." alt="Real Time Tuning / Volume Analysis (RTTVA)"'
-  + '             style="width:150px;height:auto;cursor:pointer;">'
+  + '      <button id="tuning_tools_rttva" class="tuning-tool btn-lite" style="text-align:center; width:180px;">'
+  + '        <img src="img/tool_rttva.webp" title="Real-time tuning and volume analysis (box-plot style) from live mic input. Adjustable temperament (ET, Just Intonation, Pythagorean, Fiddle Sweetened), A4 reference, and input boost." alt="Real Time Tuning / Volume Analysis (RTTVA)"'
+  + '             style="width:150px;height:auto;">'
   + '        <span style="font-size:1rem; margin-top:6px; height:3.2em; display:flex; align-items:center; justify-content:center; line-height:1.2em;">Real Time Tuning / Volume Analysis (RTTVA)</span>'
   + '      </button>'
 
-  + '      <button class="tuning-tool btn-lite" style="text-align:center; width:180px;">'
-  + '        <img id="tuning_tools_tonegen" src="img/tool_tonegen.webp" title="Simple chromatic instrument tuner with tone generator. Needle and strobe views. Adjustable temperament (ET, Just Intonation, Pythagorean, Fiddle Sweetened), A4 reference, and input boost." alt="Chromatic Tuner / Tone Generator"'
-  + '             style="width:150px;height:auto;cursor:pointer;">'
+  + '      <button id="tuning_tools_tonegen" class="tuning-tool btn-lite" style="text-align:center; width:180px;">'
+  + '        <img src="img/tool_tonegen.webp" title="Simple chromatic instrument tuner with tone generator. Needle and strobe views. Adjustable temperament (ET, Just Intonation, Pythagorean, Fiddle Sweetened), A4 reference, and input boost." alt="Chromatic Tuner / Tone Generator"'
+  + '             style="width:150px;height:auto;">'
   + '        <span style="font-size:1rem; margin-top:6px; height:3.2em; display:flex; align-items:center; justify-content:center; line-height:1.2em;">Chromatic Tuner / Tone Generator</span>'
   + '      </button>'
 
-  + '      <button class="tuning-tool btn-lite" style="text-align:center; width:180px;">'
-  + '        <img id="tuning_tools_tester" src="img/tool_audiotester.webp" title="3-step audio input tester for the Chromatic Tuner and RTTA utilities: background noise, level range, and continuous tone test." alt="Audio Input Tester"'
-  + '             style="width:150px;height:auto;cursor:pointer;">'
+  + '      <button id="tuning_tools_tester" class="tuning-tool btn-lite" style="text-align:center; width:180px;">'
+  + '        <img src="img/tool_audiotester.webp" title="3-step audio input tester for the Chromatic Tuner and RTTA utilities: background noise, level range, and continuous tone test." alt="Audio Input Tester"'
+  + '             style="width:150px;height:auto;">'
   + '        <span style="font-size:1rem; margin-top:6px; height:3.2em; display:flex; align-items:center; justify-content:center; line-height:1.2em;">Audio Input Tester</span>'
   + '      </button>'
 
@@ -65226,7 +65144,7 @@ function TuningTools(){
 
   DayPilot.Modal.alert(modal_msg, {
     theme: "modal_flat",
-    top: 50,
+    top: 25,
     width: 700,
     scrollWithPage: (AllowDialogsToScroll())
   });
@@ -65245,8 +65163,73 @@ function TuningTools(){
 
   elem = document.getElementById("tuning_tools_tester");
   if (elem) elem.onclick = function(){ LaunchAudioTester(); };
+
 }
 
+function OtherABCTools(){
+
+  // Keep track of dialogs
+  sendGoogleAnalytics("dialog", "OtherABCTools");
+
+  var modal_msg =
+  	'<a id="otherabctoolsanchor" href="https://michaeleskin.com/abctools/userguide.html#hamburger_other_abc_tools" target="_blank" ' +
+		'title="View documentation in new tab" ' +
+		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
+		'<h2 class="modal-header">' +
+    'Other ABC Tools&nbsp;&nbsp;' +
+		'</h2>' +
+    '<h3 class="modal-subheader">' +
+    'Michael Eskin\'s various standalone web-based ABC tools.' +
+    '</h3>'
+  
+  + '    <div class="btn-container-center">'
+
+  + '      <button id="other_tools_tspt" class="tuning-tool btn-lite" style="text-align:center; width:200px;">'
+  + '        <img src="img/tool_scraper_2.jpg" title="thesession.org Power Tools" alt="thesession.org Power Tools"'
+  + '             style="width:170px;height:auto;">'
+  + '        <span style="font-size:1rem; margin-top:6px; height:3.2em; display:flex; align-items:center; justify-content:center; line-height:1.2em;">thesession.org<br/>Power Tools</span>'
+  + '      </button>'
+
+  + '      <button id="other_tools_chordchart" class="tuning-tool btn-lite" style="text-align:center; width:200px;">'
+  + '        <img src="img/tool_chordchart_2.jpg" title="ABC Chord Chart Generator" alt="ABC Chord Chart Generator"'
+  + '             style="width:170px;height:auto;">'
+  + '        <span style="font-size:1rem; margin-top:6px; height:3.2em; display:flex; align-items:center; justify-content:center; line-height:1.2em;">ABC Chord Chart Generator</span>'
+  + '      </button>'
+
+  + '      <button id="other_tools_abc2csv" class="tuning-tool btn-lite" style="text-align:center; width:200px;">'
+  + '        <img src="img/tool_abc2csv_2.jpg" title="ABC Tags to CSV Extractor Utilities" alt="ABC Tags to CSV Extractor Utilities"'
+  + '             style="width:170px;height:auto;">'
+  + '        <span style="font-size:1rem; margin-top:6px; height:3.2em; display:flex; align-items:center; justify-content:center; line-height:1.2em;">ABC Tags to CSV Extractor Utilities</span>'
+  + '      </button>'
+
+  + '      <button id="other_tools_custominstrument" class="tuning-tool btn-lite" style="text-align:center; width:200px;">'
+  + '        <img src="img/tool_custominstrument_2.jpg" title="Custom Instrument Builder" alt="Custom Instrument Builder"'
+  + '             style="width:170px;height:auto;">'
+  + '        <span style="font-size:1rem; margin-top:6px; height:3.2em; display:flex; align-items:center; justify-content:center; line-height:1.2em;">Custom Instrument Builder</span>'
+  + '      </button>'
+
+  + '    </div>'
+
+  DayPilot.Modal.alert(modal_msg, {
+    theme: "modal_flat",
+    top: 25,
+    width: 650,
+    scrollWithPage: (AllowDialogsToScroll())
+  });
+
+  elem = document.getElementById("other_tools_tspt");
+  if (elem) elem.onclick = function(){ LaunchTheSessionPowerTools(); };
+
+  elem = document.getElementById("other_tools_chordchart");
+  if (elem) elem.onclick = function(){ LaunchChordChartGenerator(); };
+
+  elem = document.getElementById("other_tools_abc2csv");
+  if (elem) elem.onclick = function(){ LaunchCSVTagExtractor(); };
+
+  elem = document.getElementById("other_tools_custominstrument");
+  if (elem) elem.onclick = function(){ launchCustomInstrumentBuilder(); };
+
+}
 
 // abcjs Custom CSS Generator
 // Returns %%begincss{...%%endcss} with ONLY non-black rules, defaults all black, reset to black.

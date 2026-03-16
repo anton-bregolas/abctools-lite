@@ -1,0 +1,4732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <link rel="profile" href="http://gmpg.org/xfn/11">
+  <title>thesession.org Power Tools</title>
+  <link rel='dns-prefetch' href='//fonts.googleapis.com' />
+  <link rel='dns-prefetch' href='//s.w.org' />
+  <link rel='preconnect' href='https://secureservercdn.net' crossorigin />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="thesession.org Power Tools" />
+  <meta property="og:description" content="thesession.org Power Tools" />
+  <meta property="og:url" content="https://abc.tunebook.app/tools/thesession_power_tools.html" />
+  <meta property="og:site_name" content="thesession.org Power Tools" />
+	<meta property="og:image" content="../img/abclite-icon-512x512.png" />
+	<meta name="theme-color" content="#181818">
+	<meta name="apple-mobile-web-app-title" content="Tools Lite">
+	<meta name="application-name" content="Tools Lite">
+	<link rel="icon" href="../favicon.ico" sizes="any">
+	<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+	<link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+	<link rel="manifest" href="../img/abc-manifest.json">
+
+  <style>
+    :root{
+      color-scheme: light;
+
+      --fs-base: clamp(15px, 1.05vw + 12px, 17px);
+      --fs-small: clamp(13px, 0.7vw + 11px, 14.5px);
+      --fs-h2: clamp(20px, 1.2vw + 16px, 24px);
+      --page-pad: 24px;
+      --page-pad-top: 18px;
+
+      --helpbar-pad-y: 12px;
+      --helpbar-est-height: 62px;
+    }
+
+    html, body{
+      height:100%;
+      margin:0;
+    }
+
+    *, *::before, *::after{ box-sizing:border-box; }
+
+    body{
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      padding:
+        calc(var(--page-pad-top) + env(safe-area-inset-top))
+        calc(var(--page-pad) + env(safe-area-inset-right))
+        calc(var(--page-pad) + env(safe-area-inset-bottom))
+        calc(var(--page-pad) + env(safe-area-inset-left));
+      box-sizing:border-box;
+      overflow:hidden;
+      font-size:var(--fs-base);
+      line-height:1.35;
+      -webkit-text-size-adjust:100%;
+    }
+
+    .app, .main, .left, .right, .card, .taWrap{ min-width:0; }
+
+    .app{
+      height: calc(100vh - (2 * var(--page-pad)));
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      overflow:hidden;
+      min-height:0;
+
+      padding-bottom: calc(var(--helpbar-est-height) + env(safe-area-inset-bottom));
+    }
+
+    @supports (height: 100dvh){
+      .app{
+        height: calc(
+          100dvh
+          - (2 * var(--page-pad))
+          - env(safe-area-inset-top)
+          - env(safe-area-inset-bottom)
+        );
+      }
+    }
+
+    h2{
+      margin:0 0 8px 0;
+      font-size:var(--fs-h2);
+    }
+
+    p{ margin:0; }
+
+    .row{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+      min-width:0;
+    }
+
+    input, textarea, button{
+      font:inherit;
+      color:inherit;
+      max-width:100%;
+    }
+
+    input[type="text"]{
+      -webkit-appearance:none;
+      appearance:none;
+      border:1px solid rgba(127,127,127,.35);
+      background: rgba(127,127,127,.06);
+      color:inherit;
+      border-radius:10px;
+      padding:10px 12px;
+      line-height:1.2;
+      flex: 3 1 360px;
+      min-width: 0;
+      width:auto;
+    }
+
+    button{
+      -webkit-appearance:none;
+      appearance:none;
+      border:1px solid rgba(127,127,127,.35);
+      background: rgba(127,127,127,.12);
+      color:inherit;
+      border-radius:12px;
+      padding:10px 14px;
+      line-height:1.15;
+      font-weight:600;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      user-select:none;
+      -webkit-tap-highlight-color:transparent;
+      max-width:100%;
+      min-width:0;
+    }
+
+    button:active{ transform: translateY(0.5px); }
+
+    button:disabled{
+      opacity:0.4;
+      cursor:default;
+      transform:none;
+    }
+
+    .row button{
+      white-space:normal;
+      text-align:center;
+      flex: 1 1 180px;
+    }
+
+    #btnFetch{
+      flex: 0 0 180px;
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    #btnOpenInTools{ flex-basis: 100%; }
+
+    .muted{
+      opacity:0.75;
+      line-height:2.0;
+    }
+
+    .small{ font-size:var(--fs-small); }
+
+    .card{
+      border:1px solid rgba(127,127,127,.35);
+      border-radius:12px;
+      padding:14px;
+      overflow:hidden;
+      min-width:0;
+      background: Canvas;
+    }
+
+    .status{
+      white-space:pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      overflow:auto;
+      max-height:300px;
+      font-size:0.95em;
+      line-height:1.45;
+      overflow-wrap:anywhere;
+      word-break:break-word;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .main{
+      flex:1;
+      display:flex;
+      gap:14px;
+      overflow-y:auto;
+      overflow-x:hidden;
+      min-height:0;
+      min-width:0;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .left{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      overflow:auto;
+      min-height:0;
+      min-width:0;
+      -webkit-overflow-scrolling: touch;
+
+      padding-bottom: calc(var(--helpbar-est-height) + 16px);
+    }
+
+    .right{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      overflow:visible;
+      min-height:0;
+      min-width:0;
+    }
+
+    .left > .card,
+    .right > .card,
+    #instructions_div{
+      flex: 0 0 auto;
+    }
+
+    .taWrap{
+      flex:1;
+      min-height:0;
+      border-radius:10px;
+      overflow:hidden;
+      border:1px solid rgba(127,127,127,.35);
+      background:Canvas;
+      min-width:0;
+      display:flex;
+      padding: 1px;
+    }
+
+    textarea{
+      flex: 1 1 auto;
+      min-height: 0;
+      width: auto;
+      height: auto;
+      padding:12px;
+      border:0;
+      border-radius:0;
+      background:transparent;
+      resize:none;
+      overflow:auto;
+      font-size:0.98em;
+      line-height:1.35;
+      overflow-wrap:anywhere;
+      -webkit-overflow-scrolling: touch;
+      box-sizing:border-box;
+      display:block;
+    }
+
+    .rightHeader{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-bottom:8px;
+      min-width:0;
+    }
+
+    code{
+      background: rgba(127,127,127,.15);
+      padding:2px 5px;
+      border-radius:4px;
+      font-size:0.95em;
+    }
+
+    .checkRow{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-top:10px;
+      flex-wrap:wrap;
+    }
+
+    .checkRow label{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      cursor:pointer;
+      user-select:none;
+    }
+
+    .checkRow input[type="checkbox"]{
+      width: 18px;
+      height: 18px;
+      accent-color: auto;
+    }
+
+    .checkRow.sortRow{
+      width:100%;
+    }
+
+    .checkRow.sortRow label{
+      width:100%;
+      display:grid;
+      grid-template-columns: minmax(220px, 1fr) minmax(240px, 1.2fr) auto;
+      gap:10px;
+      align-items:center;
+    }
+
+    .checkRow.sortRow label > span{
+      min-width:0;
+    }
+
+    .checkRow.sourceRow{
+      width:100%;
+    }
+
+    .checkRow.sourceRow label{
+      width:100%;
+      display:grid;
+      grid-template-columns: minmax(220px, 1fr) minmax(260px, 1.2fr);
+      gap:10px;
+      align-items:center;
+    }
+
+    .checkRow.sourceRow label > span{
+      min-width:0;
+    }
+
+    #memberSourceMode{
+      width:100%;
+      min-width:0;
+    }
+
+    @media (max-width: 1250px){
+      .checkRow.sourceRow label{
+        grid-template-columns: 1fr;
+        align-items:stretch;
+      }
+    }
+
+    #memberSort{
+      width:100%;
+      min-width:0;
+    }
+
+    #btnResort{
+      white-space:nowrap;
+      min-width: 96px;
+    }
+
+    @media (max-width: 1250px){
+      .checkRow.sortRow label{
+        grid-template-columns: 1fr;
+        align-items:stretch;
+      }
+      #btnResort{
+        width:100%;
+      }
+    }
+
+    .modal_flat_background{
+      background-color:#000;
+      opacity:0.4;
+    }
+
+    .modal_flat_main{
+      border:1px solid #333;
+      box-shadow:0 0 15px -2px rgba(0,0,0,0.75);
+      width:min(860px, calc(100vw - 80px)) !important;
+      max-width:min(860px, calc(100vw - 80px)) !important;
+      height:min(92dvh, 980px) !important;
+      max-height:min(92dvh, 980px) !important;
+      overflow:hidden !important;
+    }
+
+    .modal_flat_main,
+    .modal_flat_main input,
+    .modal_flat_main button{
+      font-size:16px;
+    }
+
+    .modal_flat_main input{
+      padding:6px;
+      box-sizing:border-box;
+    }
+
+    .modal_flat_inner{
+      padding:16px;
+      background:#fff;
+      color:#000;
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
+
+    .modal_flat_content{
+      font-family: Helvetica, Arial, sans-serif;
+      margin:14px 0 8px 0;
+      flex:1 1 auto;
+      min-height:0;
+      overflow:auto !important;
+      -webkit-overflow-scrolling:touch;
+    }
+
+    .modal_flat_input{
+      margin:20px 0;
+    }
+
+    .modal_flat_buttons{
+      text-align:center;
+      margin-top:14px;
+      padding:10px 0 12px 0;
+      flex:0 0 auto;
+    }
+
+    .modal_flat_main button{
+      background:#f0f3f8;
+      color:#000;
+      border:1px solid #d3dbe7;
+      padding:10px 20px;
+      cursor:pointer;
+      outline:none;
+      width:100px;
+      border-radius:10px;
+      font-weight:600;
+      transition:
+        filter 0.12s ease,
+        transform 0.08s ease,
+        box-shadow 0.12s ease;
+    }
+
+    .modal_flat_main button:hover{
+      filter: brightness(0.97);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.18);
+    }
+
+    .modal_flat_main button:active{
+      transform: translateY(1px);
+      box-shadow: 0 0 1px rgba(0,0,0,0.15);
+    }
+
+    .modal_flat_buttons .modal_flat_ok{
+      background:#e8f1ff !important;
+      border-color:#9dbaf2 !important;
+    }
+
+    .modal_flat_buttons .modal_flat_cancel{
+      background:#f3f3f3 !important;
+      border-color:#d4d4d4 !important;
+    }
+
+    .modal_flat_cancel{
+      margin-left:6px;
+    }
+
+    .modal_compact_background{
+      background-color:#000;
+      opacity:0.4;
+    }
+
+    .modal_compact_main{
+      border:1px solid #333;
+      box-shadow:0 0 15px -2px rgba(0,0,0,0.75);
+      width:min(520px, calc(100vw - 80px)) !important;
+      max-width:min(520px, calc(100vw - 80px)) !important;
+
+      height:auto !important;
+      max-height:260px !important;
+      overflow:hidden !important;
+    }
+
+    .modal_compact_inner{
+      padding:16px;
+      background:#fff;
+      color:#000;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .modal_compact_content{
+      margin:14px 0 8px 0;
+      overflow:auto !important;
+      -webkit-overflow-scrolling:touch;
+    }
+
+    .modal_compact_buttons{
+      text-align:center;
+      margin-top:14px;
+      padding:10px 0 12px 0;
+    }
+
+    .modal_compact_buttons button{
+      margin: 0 8px;
+    }
+
+    .modal_compact_main button{
+      background:#f0f3f8;
+      color:#000;
+      border:1px solid #d3dbe7;
+      padding:10px 20px;
+      cursor:pointer;
+      outline:none;
+      width:100px;
+      border-radius:10px;
+      font-weight:600;
+    }
+
+    .modal_compact_buttons .modal_compact_ok{
+      background:#e8f1ff !important;
+      border-color:#9dbaf2 !important;
+    }
+
+    .modal_compact_buttons .modal_compact_cancel{
+      background:#f3f3f3 !important;
+      border-color:#d4d4d4 !important;
+    }
+
+    .modal_tipjar_background{
+      background-color:#000;
+      opacity:0.4;
+    }
+
+    .modal_tipjar_main{
+      border:1px solid #333;
+      box-shadow:0 0 15px -2px rgba(0,0,0,0.75);
+      width:min(560px, calc(100vw - 80px)) !important;
+      max-width:min(560px, calc(100vw - 80px)) !important;
+
+      height:auto !important;
+      max-height:min(520px, 88dvh) !important;
+      overflow:hidden !important;
+    }
+
+    .modal_tipjar_inner{
+      padding:16px;
+      background:#fff;
+      color:#000;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .modal_tipjar_content{
+      margin:14px 0 8px 0;
+      overflow:auto !important;
+      -webkit-overflow-scrolling:touch;
+    }
+
+    .modal_tipjar_buttons{
+      text-align:center;
+      margin-top:14px;
+      padding:10px 0 12px 0;
+    }
+
+    .modal_tipjar_buttons button{
+      margin:0 8px;
+    }
+
+    .modal_tipjar_main button{
+      background:#e8f1ff;
+      color:#000;
+      border:1px solid #9dbaf2;
+      padding:10px 20px;
+      cursor:pointer;
+      outline:none;
+      width:100px;
+      border-radius:10px;
+      font-weight:600;
+    }
+
+    .exampleLink{
+      color: inherit;
+      text-decoration: underline;
+      cursor: pointer;
+      word-break: break-all;
+    }
+
+    .instructions{
+      font-size: clamp(14.5px, 0.9vw + 13px, 16.5px);
+      line-height: 2.0;
+    }
+
+    .instructions a.exampleLink{
+      font-weight: 500;
+    }
+
+    #instructions_div{
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1000;
+      margin: 0;
+
+      border-radius: 0;
+      border-left: none;
+      border-right: none;
+      border-bottom: none;
+
+      background: Canvas;
+
+      padding:
+        var(--helpbar-pad-y)
+        calc(var(--page-pad) + env(safe-area-inset-right))
+        calc(var(--helpbar-pad-y) + env(safe-area-inset-bottom))
+        calc(var(--page-pad) + env(safe-area-inset-left));
+    }
+
+    #btnHelp{
+      width: 100%;
+    }
+
+    select{
+      -webkit-appearance:none;
+      appearance:none;
+      font:inherit;
+      color:#000;
+      background:#fff;
+      border:1px solid rgba(127,127,127,.35);
+      border-radius:10px;
+      padding:10px 52px 10px 12px;
+      line-height:1.2;
+      cursor:pointer;
+      background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%3E%3Cpolygon%20points%3D%276%2C9%2018%2C9%2012%2C17%27%20fill%3D%27%23000%27%2F%3E%3C%2Fsvg%3E");
+      background-repeat:no-repeat;
+      background-position:right 16px center;
+      background-size:22px 22px;
+    }
+
+    select:disabled{
+      cursor:not-allowed;
+      opacity:0.45;
+    }
+
+    @media (max-width: 980px){
+      body{
+        overflow:auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: calc(var(--page-pad) + env(safe-area-inset-bottom) + 12px);
+      }
+
+      .app{
+        height:auto;
+        overflow:visible;
+        min-height:0;
+        padding-bottom: calc(var(--helpbar-est-height) + env(safe-area-inset-bottom));
+      }
+
+      .main{
+        flex-direction:column;
+        overflow:visible;
+        min-height:auto;
+      }
+
+      .left, .right{
+        overflow:visible;
+        min-height:auto;
+        padding-bottom:0;
+      }
+
+      .taWrap{
+        height: 55vh;
+        min-height: 320px;
+      }
+
+      #btnFetch{
+        flex: 1 0 100% !important;
+        width: 100% !important;
+      }
+
+      .right{
+        padding-bottom: 12px;
+      }
+    }
+
+    @media (max-width: 720px){
+      .row{ gap:10px; }
+      .row button{ flex-basis:100%; }
+      input[type="text"]{ flex-basis:100%; }
+      .taWrap{ height: 60vh; min-height: 300px; }
+
+      #btnFetch{
+        flex: 1 0 100% !important;
+        width: 100% !important;
+      }
+
+      .instructions a.exampleLink{
+        font-size: 0.92em;
+      }
+
+      .modal_flat_main{
+        width: calc(100vw - 24px) !important;
+        max-width: calc(100vw - 24px) !important;
+        max-height: 82dvh !important;
+        height: auto !important;
+        overflow: hidden !important;
+
+        display: flex !important;
+        flex-direction: column !important;
+      }
+
+      .modal_flat_inner{
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow: auto !important;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 8px;
+      }
+
+      .modal_flat_buttons{
+        flex: 0 0 auto;
+        margin-top: 8px;
+        padding: 10px 0 10px 0;
+      }
+
+      .modal_flat_main button{
+        width: 100px;
+      }
+
+      .sessionSearchWrap{
+        display:flex;
+        flex-direction:column;
+        height:100%;
+        min-height:0;
+      }
+
+      .sessionSearchTop{
+        grid-template-columns:1fr;
+      }
+
+      .sessionSearchTop button{
+        width:100% !important;
+      }
+
+      .sessionSearchResults{
+        flex:1 1 auto;
+        min-height:320px;
+        max-height:none !important;
+        overflow:auto;
+        -webkit-overflow-scrolling:touch;
+      }
+
+      .sessionSearchFilters{
+        grid-template-columns: 1fr;
+      }
+
+      .sessionSearchFilters label{
+        text-align:left;
+      }
+
+      .findRow{
+        grid-template-columns: 1fr;
+      }
+
+      .right{
+        padding-bottom: 12px;
+      }
+
+    }
+
+    /* Navigation / open pages */
+    .btn-import {
+      background:#eef7f1;
+      border:1px solid #c9ded1;
+    }
+
+    .btn-thesession {
+      background:#f6e3ac;
+      border:1px solid #e0c980;
+    }
+
+    /* PRIMARY ACTION */
+    .btn-fetch {
+      background:#e8f1ff;
+      border:1px solid #9dbaf2;
+      font-weight:600;
+    }
+
+    /* Editing / results operations */
+    .btn-edit {
+      background:#f0f3f8;
+      border:1px solid #d3dbe7;
+    }
+
+    /* Restore */
+    .btn-restore {
+      background:#f3eef8;
+      border:1px solid #d7cdea;
+    }
+
+    /* Neutral buttons */
+    .btn-neutral {
+      background:#f3f3f3;
+      border:1px solid #d4d4d4;
+    }
+
+    /* Re-sort / processing */
+    .btn-resort {
+      background:#fff4e6;
+      border:1px solid #e6c89c;
+    }
+
+    button {
+      transition:
+        filter 0.12s ease,
+        transform 0.08s ease,
+        box-shadow 0.12s ease;
+    }
+
+    button:hover {
+      filter: brightness(0.97);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.18);
+    }
+
+    button:active {
+      transform: translateY(1px);
+      box-shadow: 0 0px 1px rgba(0,0,0,0.15);
+    }
+
+    .selectorRow{
+      display:grid;
+      grid-template-columns: 220px minmax(0, 1fr) auto;
+      gap:12px;
+      align-items:center;
+      width:100%;
+    }
+
+    .selectorRow.selectorRowNoButton{
+      grid-template-columns: 220px minmax(0, 1fr);
+    }
+
+    .selectorLabel{
+      font-weight:600;
+      min-width:0;
+    }
+
+    .selectorRow select{
+      width:100%;
+      min-width:0;
+    }
+
+    @media (max-width: 900px){
+      .selectorRow,
+      .selectorRow.selectorRowNoButton{
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .sessionSearchWrap{
+      width:100%;
+      min-width:0;
+      height:100%;
+      min-height:0;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .sessionSearchTop{
+      display:grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap:12px;
+      align-items:center;
+    }
+
+    .sessionSearchTop input[type="text"]{
+      width:100%;
+      min-width:0;
+      max-width:100%;
+
+      border:1px solid rgba(127,127,127,.35);
+      border-radius:7px;
+      padding:10px 12px 10px 16px;
+
+      background:#fff;
+      color:#000;
+
+      -webkit-appearance:none;
+      appearance:none;
+      box-sizing:border-box;
+      background-clip:padding-box;
+    }
+
+    .sessionSearchTop button{
+      width:auto !important;
+      min-width:170px;
+      padding:10px 18px;
+      white-space:nowrap;
+      justify-self:start;
+      flex:none;
+    }
+
+    .sessionSearchTop input[type="text"]::-moz-focus-inner{
+      border:0;
+      padding:0;
+    }
+
+    .sessionSearchTop input[type="text"]:-moz-focusring{
+      outline:none;
+    }
+
+    .sessionSearchTop input[type="text"]:focus{
+      outline:none;
+    }
+
+    .sessionSearchHint{
+      font-size:0.95em;
+      opacity:0.8;
+      margin:8px 0 6px 4px;
+      line-height:1.45;
+    }
+
+    .sessionSearchResults{
+      border:1px solid rgba(127,127,127,.35);
+      border-radius:4px;
+      background:#fff;
+      min-height:320px;
+      flex:1 1 auto;
+      overflow:auto;
+      -webkit-overflow-scrolling:touch;
+    }
+
+    .sessionSearchEmpty{
+      padding:14px;
+      color:#666;
+      line-height:1.5;
+    }
+
+    .sessionSearchItem{
+      width:100% !important;
+      border:0 !important;
+      border-bottom:1px solid rgba(127,127,127,.18) !important;
+      border-radius:0 !important;
+      background:#fff !important;
+      color:#000 !important;
+      padding:12px 14px !important;
+      text-align:left !important;
+      display:block !important;
+      cursor:pointer;
+      box-shadow:none !important;
+    }
+
+    .sessionSearchItem:last-child{
+      border-bottom:0 !important;
+    }
+
+    .sessionSearchItem:hover{
+      background:#f7f9fc !important;
+      filter:none !important;
+      box-shadow:none !important;
+    }
+
+    .sessionSearchItem.selected{
+      background:#e8f1ff !important;
+      outline:2px solid #9dbaf2;
+      outline-offset:-2px;
+    }
+
+    .sessionSearchPrimary{
+      font-weight:700;
+      line-height:1.35;
+      margin-bottom:4px;
+    }
+
+    .sessionSearchSecondary{
+      font-size:0.94em;
+      opacity:0.82;
+      line-height:1.35;
+    }
+
+    .sessionSearchLoading{
+      padding:14px;
+      color:#444;
+      line-height:1.5;
+    }
+
+    .sessionSearchFilters{
+      display:grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      gap:10px;
+      align-items:center;
+      margin-bottom:10px;
+    }
+
+    .sessionSearchFilters label{
+      font-weight:600;
+      white-space:nowrap;
+    }
+
+    .sessionSearchFilters select{
+      width:100%;
+      min-width:0;
+      color:#000;
+      background:#fff;
+    }
+
+    .findRow{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap:12px;
+      align-items:center;
+      margin-top:0px;
+      margin-bottom:14px;
+    }
+
+    .findRow button{
+      width:100%;
+      min-width:0;
+      flex:none;
+      white-space:nowrap;
+    }
+
+    .heroCard{
+      position: relative;
+      border: 1px solid rgba(127,127,127,.22);
+      border-radius: 18px;
+      padding: 18px 20px 16px 20px;
+      background:
+        linear-gradient(180deg, rgba(244,248,255,0.95) 0%, rgba(252,252,252,0.98) 100%);
+      overflow: hidden;
+    }
+
+    .heroTop{
+      margin-bottom: 14px;
+    }
+
+    .heroTitle{
+      margin: 0;
+      font-size: clamp(24px, 1.4vw + 18px, 32px);
+      line-height: 1.12;
+      letter-spacing: -0.01em;
+    }
+
+    .heroText{
+      margin: 10px 0 0 0;
+      max-width: 112ch;
+      color: rgba(0,0,0,0.74);
+      line-height: 1.55;
+      font-size: clamp(14.5px, 0.5vw + 13px, 16.5px);
+    }
+
+    .heroExamples{
+      display:grid;
+      grid-template-columns: repeat(2, fit-content(100%));
+      gap:16px 20px;
+      margin-top: 2px;
+      align-items:start;
+      justify-content:start;
+    }
+
+    .heroExampleItem{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-width: min(320px, 100%);
+    }
+
+    .heroExampleLabel{
+      font-size:0.95em;
+      font-weight:700;
+      color: rgba(0,0,0,0.66);
+    }
+
+    .exampleChip{
+      display:inline-flex;
+      align-items:center;
+      max-width:100%;
+      padding:8px 12px;
+      border-radius:12px;
+      text-decoration:none;
+      color:#1f3557;
+      background:#ffffff;
+      border:1px solid rgba(157,186,242,.7);
+      font-weight:500;
+      font-size:14px;
+      transition:all .12s ease;
+      overflow-wrap:anywhere;
+      word-break:break-word;
+      cursor:pointer;
+    }
+
+    .exampleChip:hover{
+      background:#f7fbff;
+      box-shadow:0 2px 5px rgba(0,0,0,.08);
+      transform:translateY(-1px);
+    }
+
+    .exampleChip:active{
+      transform: translateY(0);
+    }
+
+    @media (max-width: 900px){
+      .heroExamples{
+        grid-template-columns: 1fr;
+        gap:12px;
+      }
+
+      .heroExampleItem{
+        width:100%;
+      }
+
+      .exampleChip{
+        width:100%;
+      }
+    }
+
+    @media (max-width: 720px){
+      .heroCard{
+        padding: 16px 14px 14px 14px;
+        border-radius: 16px;
+      }
+
+      .heroTitle{
+        font-size: clamp(22px, 5vw, 28px);
+      }
+
+      .heroText{
+        max-width: none;
+      }
+
+      .exampleChip{
+        width:100%;
+      }
+    }
+
+    .modal_filename_background{
+      background-color:#000;
+      opacity:0.4;
+    }
+
+    .modal_filename_main{
+      border:1px solid #333;
+      box-shadow:0 0 15px -2px rgba(0,0,0,0.75);
+      width:min(620px, calc(100vw - 48px)) !important;
+      max-width:min(620px, calc(100vw - 48px)) !important;
+      height:auto !important;
+      max-height:260px !important;
+      overflow:hidden !important;
+    }
+
+    .modal_filename_inner{
+      padding:20px 22px 18px 22px;
+      background:#fff;
+      color:#000;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .modal_filename_content{
+      margin:8px 0 10px 0;
+      overflow:auto !important;
+      -webkit-overflow-scrolling:touch;
+    }
+
+    .modal_filename_main,
+    .modal_filename_main input,
+    .modal_filename_main button{
+      font-size:16px;
+    }
+
+    .modal_filename_main label{
+      display:block;
+      margin-bottom:8px;
+      font-size:18px;
+      font-weight:600;
+      line-height:1.3;
+    }
+
+    .modal_filename_main input{
+      width:100%;
+      box-sizing:border-box;
+      padding:10px 12px;
+      border:1px solid rgba(127,127,127,.35);
+      border-radius:10px;
+      background:#fff;
+      color:#000;
+    }
+
+    .modal_filename_buttons{
+      text-align:center;
+      margin-top:14px;
+      padding:10px 0 12px 0;
+    }
+
+    .modal_filename_buttons button{
+      margin:0 3px;
+    }
+
+    .modal_filename_main button{
+      background:#f0f3f8;
+      color:#000;
+      border:1px solid #d3dbe7;
+      padding:10px 20px;
+      cursor:pointer;
+      outline:none;
+      width:100px;
+      border-radius:10px;
+      font-weight:600;
+      transition:
+        filter 0.12s ease,
+        transform 0.08s ease,
+        box-shadow 0.12s ease;
+    }
+
+    .modal_filename_main button:hover{
+      filter: brightness(0.97);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.18);
+    }
+
+    .modal_filename_main button:active{
+      transform: translateY(1px);
+      box-shadow: 0 0 1px rgba(0,0,0,0.15);
+    }
+
+    .modal_filename_buttons .modal_filename_ok{
+      background:#e8f1ff !important;
+      border-color:#9dbaf2 !important;
+    }
+
+    .modal_filename_buttons .modal_filename_cancel{
+      background:#f3f3f3 !important;
+      border-color:#d4d4d4 !important;
+    }
+  </style>
+
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-VM0N9HL3MK"></script>
+  <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-VM0N9HL3MK');
+  </script> -->
+
+</head>
+
+<body>
+  <div class="app">
+
+    <div class="heroCard">
+      <div class="heroTop">
+        <h2 class="heroTitle">thesession.org Power Tools</h2>
+        <p class="heroText">
+          Download ABC tune settings from thesession.org and combine them into a single ABC file for copying, saving, or opening in the ABC Transcription Tools.
+        </p>
+      </div>
+
+      <div class="heroExamples">
+        <div class="heroExampleItem">
+          <div class="heroExampleLabel">Try a tune URL</div>
+          <a
+            href="https://thesession.org/tunes/1"
+            class="exampleChip"
+            data-fill-url="https://thesession.org/tunes/1"
+            title="Click to load the example tune URL into thesession.org URL field">
+            https://thesession.org/tunes/1
+          </a>
+        </div>
+
+        <div class="heroExampleItem">
+          <div class="heroExampleLabel">Try a member URL</div>
+          <a
+            href="https://thesession.org/members/12799"
+            class="exampleChip"
+            data-fill-url="https://thesession.org/members/12799"
+            title="Click to load the example member URL into thesession.org URL field">
+            https://thesession.org/members/12799
+          </a>
+        </div>
+      </div>
+            
+    </div>
+
+    <div class="main">
+      <div class="left">
+
+        <div class="card">
+
+          <div class="row findRow">
+            <button class="btn-neutral" title="Search for a tune on thesession.org and populate the URL field" id="btnFindTune">Find Tune…</button>
+            <button class="btn-neutral" title="Search for a member on thesession.org and populate the URL field" id="btnFindMember">Find Member…</button>
+          </div>
+
+          <div class="row">
+            <label for="tuneUrl"><strong>thesession.org URL:</strong></label>
+            <input title="Enter a thesession.org tune or member page URL" id="tuneUrl" type="text" value="https://thesession.org/tunes/1" />
+            <button class="btn-fetch" title="Fetches either all the specified tune settings or the member results selected below for member URLs" id="btnFetch">Fetch</button>
+          </div>
+          
+          <div class="checkRow">
+            <label for="onlyChords">
+              <input title="When checked, only include tune settings with chords (not applied to Tune Sets)" id="onlyChords" type="checkbox" />
+              <span title="When checked, only include tune settings with chords (not applied to Tune Sets)">Only include settings with chords (except Tune Sets)</span>
+            </label>
+          </div>
+
+          <div class="checkRow selectorRow selectorRowNoButton">
+            <span class="selectorLabel">For member URLs, fetch:</span>
+
+            <select id="memberSourceMode"
+                    title="Choose whether member URLs fetch tunebook first settings only, tunebook all settings, submitted tune settings, bookmarked tune settings, or tune sets">
+              <option value="tunebook_first">Tunebook (First Setting Only)</option>
+              <option value="tunebook_all">Tunebook (All Settings)</option>
+              <option value="submitted" selected>Submitted Tune Settings</option>
+              <option value="bookmarked">Bookmarked Tune Settings</option>
+              <option value="sets">Tune Sets</option>
+            </select>
+          </div>
+
+          <div class="checkRow selectorRow">
+            <span class="selectorLabel">Sort member results:</span>
+
+            <select id="memberSort" title="Sorting applies only to member results">
+              <option value="orig" selected>Original order</option>
+              <option value="title">Sorted by title (T:)</option>
+              <option value="key">Sorted by key (K:)</option>
+              <option value="rhythm">Sorted by rhythm (R:)</option>
+            </select>
+
+            <button id="btnResort"
+                    class="btn-resort"
+                    title="Re-sort the existing results using the current sort option"
+                    disabled>
+              Re-sort
+            </button>
+          </div>
+
+          <div class="row" style="margin-top:10px">
+            <button class="btn-edit" title="Copies the ABC tune settings to the clipboard" id="btnCopy" disabled>Copy ABC</button>
+            <button class="btn-edit" title="Saves the ABC tune settings to a file" id="btnDownload" disabled>Download .abc File</button>
+            <button class="btn-edit" title="Opens the ABC tune settings in the ABC Transcription Tools" id="btnOpenInTools" disabled>Open Results in the ABC Transcription Tools</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="row">
+            <button class="btn-thesession" title="Opens the thesession.org tune search page in a new browser tab" id="btnTune">Open Tunes Search Page</button>
+            <button class="btn-thesession" title="Opens the thesession.org members search page in a new browser tab" id="btnMembers">Open Members Search Page</button>
+            <button class="btn-import" title="Launches the ABC Transcription Tools in a new browser tab" id="btnABCTools">ABC Transcription Tools</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <strong>Status</strong>
+          <div id="status" class="status muted" style="margin-top:8px">Ready.</div>
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="card" style="flex:1; display:flex; flex-direction:column; min-height:0;">
+          <div class="rightHeader">
+            <strong>ABC Tune Settings</strong>
+          </div>
+          <div class="taWrap">
+            <textarea id="out" spellcheck="false"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="instructions_div" class="card">
+      <button class="btn-neutral" title="Click to show the instructions" id="btnHelp">Instructions</button>
+    </div>
+
+  </div>
+
+<script>
+
+/* ============================================================
+   Runtime environment checks
+   ============================================================ */
+
+function isIOS() {
+  if (/iPad|iPhone|iPod/.test(navigator.platform)) {
+    return true;
+  } else {
+    return navigator.maxTouchPoints &&
+      navigator.maxTouchPoints > 2 &&
+      /MacIntel/.test(navigator.platform);
+  }
+}
+
+const gIsIOS = isIOS();
+
+//
+// Are we on Android?
+//
+function isAndroid() {
+  if (/Android/i.test(navigator.userAgent)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+const gIsAndroid = isAndroid();
+
+async function shareOrDownloadFile(data, filename, mimeType) {
+
+  async function normalizeToBlob(data, mimeType) {
+
+    if (data instanceof Blob) {
+      return data;
+    }
+
+    if (data instanceof ArrayBuffer) {
+      return new Blob([data], {
+        type: mimeType || "application/octet-stream"
+      });
+    }
+
+    if (ArrayBuffer.isView(data)) {
+      return new Blob([data], {
+        type: mimeType || "application/octet-stream"
+      });
+    }
+
+    if ((typeof data === "string") && (data.indexOf("blob:") === 0 || data.indexOf("data:") === 0)) {
+      const response = await fetch(data);
+      return await response.blob();
+    }
+
+    return new Blob([data], {
+      type: mimeType || "text/plain"
+    });
+  }
+
+  const blob = await normalizeToBlob(data, mimeType);
+  const fileType = mimeType || blob.type || "application/octet-stream";
+
+  if (gIsIOS && navigator.share && navigator.canShare && (typeof File !== "undefined")) {
+    try {
+      const file = new File([blob], filename, {
+        type: fileType
+      });
+
+      if (navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file] });
+        return true;
+      }
+    } catch (err) {
+      console.log("shareOrDownloadFile share cancelled or failed:", err);
+      return false;
+    }
+  }
+
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+
+  document.body.appendChild(a);
+
+  a.style = "display: none";
+  a.href = url;
+  a.download = filename;
+  a.click();
+
+  document.body.removeChild(a);
+
+  setTimeout(function() {
+    window.URL.revokeObjectURL(url);
+  }, 1000);
+
+  return false;
+}
+
+let gLocalStorageAvailable = false;
+try {
+  if (window.localStorage) {
+    gLocalStorageAvailable = true;
+  }
+} catch (e) {
+  gLocalStorageAvailable = false;
+}
+
+function sanitizeForDownloadName(s) {
+  return String(s || "")
+    .replace(/[\u0000-\u001F\u007F]/g, "")
+    .replace(/[\\\/:*?"<>|]/g, "_")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function validateFileName(name) {
+  const s = sanitizeForDownloadName(name);
+  if (!s) return { ok: false, msg: "Please enter a file name." };
+  if (s === "." || s === "..") return { ok: false, msg: "Please enter a valid file name." };
+  if (s.length > 160) return { ok: false, msg: "File name is too long. Please use 160 characters or fewer." };
+  return { ok: true, value: s };
+}
+
+function ensureFileExt(name, ext) {
+
+  let s = String(name || "").trim();
+  if (!s) return s;
+
+  const lower = s.toLowerCase();
+
+  // Mobile: force .txt always
+  if (gIsIOS || gIsAndroid) {
+    s = s.replace(/\.[a-z0-9]{1,8}$/i, "");
+    return s + ".txt";
+  }
+
+  // Desktop: allow .abc or .txt
+  if (lower.endsWith(".abc") || lower.endsWith(".txt")) {
+    return s;
+  }
+
+  // Otherwise replace any extension with .txt
+  s = s.replace(/\.[a-z0-9]{1,8}$/i, "");
+  return s + ".txt";
+}
+
+async function promptForDownloadFileName(defaultName) {
+  if (!window.DayPilot || !DayPilot.Modal) {
+    const v = window.prompt("Save ABC file as:", defaultName || "");
+    return (v === null) ? null : String(v);
+  }
+
+  if (typeof DayPilot.Modal.prompt === "function") {
+    const res = await DayPilot.Modal.prompt("Save ABC file as:", defaultName || "", {
+      theme: "modal_filename",
+      top: 80,
+      scrollWithPage: false
+    });
+
+    if (!res || res.canceled) return null;
+    return String(res.result || "");
+  }
+
+  const form = [
+    { name: "File name", id: "name", type: "text", value: defaultName || "" }
+  ];
+
+  const res2 = await DayPilot.Modal.form(form, { name: defaultName || "" }, {
+    theme: "modal_flat",
+    top: 80,
+    scrollWithPage: false
+  });
+
+  if (!res2 || res2.canceled) return null;
+  return String(res2.result && res2.result.name ? res2.result.name : "");
+}
+
+/* ============================================================
+   Status accumulation helpers
+   ============================================================ */
+
+const $ = (id) => document.getElementById(id);
+const statusEl = $("status");
+const outEl = $("out");
+const tuneUrlInput = $("tuneUrl");
+const onlyChordsEl = $("onlyChords");
+const memberSourceModeEl = $("memberSourceMode");
+
+/* ============================================================
+   Sorting helpers
+   ============================================================ */
+
+function normKeyForSort(kLine) {
+  return String(kLine || "").trim().toUpperCase().replace(/\s+/g, "");
+}
+
+function canonicalRhythmForSort(r) {
+  return String(r || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .replace(/\u2011|\u2012|\u2013|\u2014/g, "-");
+}
+
+const RHYTHM_SORT_ORDER = [
+  "reel",
+  "hornpipe",
+  "barndance",
+  "barn dance",
+  "strathspey",
+  "march",
+  "jig",
+  "slip jig",
+  "slipjig",
+  "hop jig",
+  "hopjig",
+  "slide",
+  "polka",
+  "waltz",
+  "mazurka",
+  "three-two",
+  "three two",
+  "3-2",
+  "3/2"
+];
+
+const RHYTHM_SORT_RANK = (() => {
+  const m = new Map();
+  for (let i = 0; i < RHYTHM_SORT_ORDER.length; i++) {
+    m.set(canonicalRhythmForSort(RHYTHM_SORT_ORDER[i]), i);
+  }
+  return m;
+})();
+
+function rhythmRank(rLine) {
+  const rr = canonicalRhythmForSort(rLine);
+  return RHYTHM_SORT_RANK.has(rr) ? RHYTHM_SORT_RANK.get(rr) : 9999;
+}
+
+function stableSort(arr, compareFn) {
+  return arr
+    .map((v, i) => ({ v, i }))
+    .sort((a, b) => {
+      const c = compareFn(a.v, b.v);
+      return c !== 0 ? c : (a.i - b.i);
+    })
+    .map(o => o.v);
+}
+
+/* ============================================================
+   Click-to-fill example links
+   ============================================================ */
+
+document.addEventListener("click", (e) => {
+  const a = e.target.closest("a.exampleLink, a.exampleChip");
+  if (!a) return;
+
+  e.preventDefault();
+
+  const urlToFill = a.getAttribute("data-fill-url") || a.getAttribute("href") || "";
+  if (!urlToFill) return;
+
+  tuneUrlInput.value = urlToFill;
+  tuneUrlInput.focus();
+  tuneUrlInput.select();
+});
+
+function clearStatus(msg) {
+  statusEl.textContent = (msg == null ? "" : String(msg));
+  statusEl.scrollTop = statusEl.scrollHeight;
+}
+
+function appendStatus(msg) {
+  const s = String(msg == null ? "" : msg);
+  if (!s) return;
+
+  if (statusEl.textContent && !statusEl.textContent.endsWith("\n")) {
+    statusEl.textContent += "\n";
+  }
+  statusEl.textContent += s + "\n";
+  statusEl.scrollTop = statusEl.scrollHeight;
+}
+
+async function fetchMemberNameById(memberId) {
+  const id = String(memberId || "").trim();
+  if (!id) return "";
+
+  const url = `https://thesession.org/members/${encodeURIComponent(id)}?format=json`;
+
+  try {
+    const res = await fetch(url, { method: "GET", mode: "cors", cache: "no-store" });
+    if (!res.ok) return "";
+
+    const data = await res.json();
+    const name = (data && typeof data.name === "string") ? data.name.trim() : "";
+    return name;
+  } catch {
+    return "";
+  }
+}
+
+function updateResortEnabled() {
+  const btnResort = $("btnResort");
+  if (!btnResort) return;
+
+  const url = ($("tuneUrl") && $("tuneUrl").value) ? $("tuneUrl").value.trim() : "";
+  const isTune = isSessionTuneUrl(url);
+
+  const can =
+    !fetchInProgress &&
+    !!lastResult &&
+    !isTune &&
+    Array.isArray(lastResult.includedUnsorted) &&
+    lastResult.includedUnsorted.length > 0;
+
+  btnResort.disabled = !can;
+}
+
+async function confirmTunebookAllDownload() {
+  const msg =
+    `<div style="text-align:center;font-family:helvetica,arial,sans-serif;font-size:14pt;line-height:1.5;">` +
+    `Fetching <b>all settings</b> for a member's tunebook may<br/>result in a very large amount of data being downloaded.` +
+    `<br/><br/>Do you want to continue?</div>`;
+
+  const result = await DayPilot.Modal.confirm(msg, {
+    theme: "modal_compact",
+    top: 120,
+    scrollWithPage: false
+  });
+
+  return !!(result && result.result);
+}
+
+/* ============================================================
+   Tune/member search dialog helpers
+   ============================================================ */
+
+function escapeHtml(s) {
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function normalizeSearchTermForDisplay(term) {
+  return String(term || "").trim().replace(/\s+/g, " ");
+}
+
+function makeSessionSearchUrl(kind, searchTerm, pageNum, tuneType, tuneMode) {
+  const term = normalizeSearchTermForDisplay(searchTerm);
+
+  let url;
+  if (kind === "tune") {
+    url = new URL("https://thesession.org/tunes/search");
+    url.searchParams.set("type", String(tuneType || ""));
+    url.searchParams.set("mode", String(tuneMode || ""));
+    url.searchParams.set("q", term);
+    url.searchParams.set("format", "json");
+    url.searchParams.set("perpage", "50");
+    url.searchParams.set("page", String(pageNum || 1));
+    return url.toString();
+  }
+
+  url = new URL("https://thesession.org/members/search");
+  url.searchParams.set("q", term);
+  url.searchParams.set("format", "json");
+  url.searchParams.set("page", String(pageNum || 1));
+  return url.toString();
+}
+
+async function fetchAllSessionSearchResults(kind, searchTerm, tuneType, tuneMode) {
+  const term = normalizeSearchTermForDisplay(searchTerm);
+
+  if (kind !== "tune" && !term) {
+    return {
+      total: 0,
+      items: [],
+      hitMaxPages: false,
+      maxPages: 0,
+      fetchedPages: 0,
+      availablePages: 0
+    };
+  }
+
+  const items = [];
+  let totalPages = 1;
+
+  // Limit tune fetch to 1000 items
+  let MAX_PAGES = 20;
+  
+  // Looks like paging on members is limited to 10 per call
+  // Limit member fetch to 100 items
+  if (kind === "member"){
+    MAX_PAGES = 10;
+  }
+  
+  let fetchedPages = 0;
+  let hitMaxPages = false;
+
+  for (let page = 1; page <= totalPages && page <= MAX_PAGES; page++) {
+    const url = makeSessionSearchUrl(kind, term, page, tuneType, tuneMode);
+
+    const res = await fetch(url, { method: "GET", mode: "cors", cache: "no-store" });
+
+    if (!res.ok) {
+      throw new Error(`Search failed: HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    fetchedPages = page;
+
+    if (data && typeof data.pages === "number" && isFinite(data.pages) && data.pages > 0) {
+      totalPages = data.pages;
+    }
+
+    const pageItems =
+      kind === "tune"
+        ? ((data && Array.isArray(data.tunes)) ? data.tunes : [])
+        : ((data && Array.isArray(data.members)) ? data.members : []);
+
+    for (const item of pageItems) {
+      items.push(item);
+    }
+  }
+
+  if (totalPages > MAX_PAGES && fetchedPages >= MAX_PAGES) {
+    hitMaxPages = true;
+    appendStatus(
+      `Reached maximum ${kind === "tune" ? "tune" : "member"} search limit. Additional results may exist.`
+    );
+  }
+
+  return {
+    total: items.length,
+    items,
+    hitMaxPages,
+    maxPages: MAX_PAGES,
+    fetchedPages,
+    availablePages: totalPages
+  };
+}
+
+function sessionSearchSortResults(kind, items, term) {
+  const needle = normalizeSearchTermForDisplay(term).toLowerCase();
+
+  function rankTune(it) {
+    const name = String((it && it.name) || "").toLowerCase();
+    const alias = String((it && it.alias) || "").toLowerCase();
+
+    if (name === needle) return 0;
+    if (alias === needle) return 1;
+    if (name.startsWith(needle)) return 2;
+    if (alias.startsWith(needle)) return 3;
+    if (name.includes(needle)) return 4;
+    if (alias.includes(needle)) return 5;
+    return 6;
+  }
+
+  function rankMember(it) {
+    const name = String((it && it.name) || "").toLowerCase();
+
+    if (name === needle) return 0;
+    if (name.startsWith(needle)) return 1;
+    if (name.includes(needle)) return 2;
+    return 3;
+  }
+
+  return stableSort(items.slice(), (a, b) => {
+    const ra = kind === "tune" ? rankTune(a) : rankMember(a);
+    const rb = kind === "tune" ? rankTune(b) : rankMember(b);
+    if (ra !== rb) return ra - rb;
+
+    const an = String((a && a.name) || "");
+    const bn = String((b && b.name) || "");
+    const c = an.localeCompare(bn, undefined, { sensitivity: "base" });
+    if (c !== 0) return c;
+
+    const ai = Number((a && a.id) || 0);
+    const bi = Number((b && b.id) || 0);
+    return ai - bi;
+  });
+}
+
+function titleCaseWords(str) {
+  if (!str) return str;
+  return str
+    .toLowerCase()
+    .replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function buildTuneSearchRowHtml(item) {
+  const name = escapeHtml(item && item.name ? item.name : "(untitled)");
+  const alias = escapeHtml(item && item.alias ? item.alias : "");
+  const rawType = item && item.type ? item.type : "unknown type";
+  const type = escapeHtml(titleCaseWords(rawType));
+  const id = escapeHtml(item && item.id != null ? item.id : "");
+  const url = escapeHtml(item && item.url ? item.url : "");
+
+  let secondary = `${type} — Tune #${id}`;
+  if (alias) {
+    secondary += ` — alias: ${alias}`;
+  }
+
+  return (
+    `<div class="sessionSearchPrimary">${name}</div>` +
+    `<div class="sessionSearchSecondary">${secondary}</div>` +
+    `<div class="sessionSearchSecondary" style="margin-top:4px; opacity:0.7;">${url}</div>`
+  );
+}
+
+function buildMemberSearchRowHtml(item) {
+  const name = escapeHtml(item && item.name ? item.name : "(unnamed member)");
+  const id = escapeHtml(item && item.id != null ? item.id : "");
+  const url = escapeHtml(item && item.url ? item.url : "");
+  const bio = String((item && item.bio) || "").replace(/\s+/g, " ").trim();
+  const bioShort = bio ? escapeHtml(bio.slice(0, 140) + (bio.length > 140 ? "…" : "")) : "";
+
+  let secondary = `Member #${id}`;
+  if (bioShort) {
+    secondary += ` — ${bioShort}`;
+  }
+
+  return (
+    `<div class="sessionSearchPrimary">${name}</div>` +
+    `<div class="sessionSearchSecondary">${secondary}</div>` +
+    `<div class="sessionSearchSecondary" style="margin-top:4px; opacity:0.7;">${url}</div>`
+  );
+}
+
+function renderSessionSearchResults(container, kind, items, selectedId) {
+  if (!container) return;
+
+  if (!items || !items.length) {
+    container.innerHTML = `<div class="sessionSearchEmpty">No results found.</div>`;
+    return;
+  }
+
+  container.innerHTML = items.map((item, index) => {
+    const id = String((item && item.id != null) ? item.id : index);
+    const inner = kind === "tune"
+      ? buildTuneSearchRowHtml(item)
+      : buildMemberSearchRowHtml(item);
+
+    const selectedClass = String(selectedId) === id ? " selected" : "";
+
+    return (
+      `<button type="button" class="sessionSearchItem${selectedClass}" data-result-id="${escapeHtml(id)}">` +
+      inner +
+      `</button>`
+    );
+  }).join("");
+}
+
+function getLastModalRoot() {
+  const modals = document.querySelectorAll(".modal_flat_main");
+  return modals.length ? modals[modals.length - 1] : null;
+}
+
+function setDialogOkEnabled(modalRoot, enabled) {
+  if (!modalRoot) return;
+  const buttons = modalRoot.querySelectorAll(".modal_flat_buttons button");
+  if (!buttons || !buttons.length) return;
+  buttons[0].disabled = !enabled;
+}
+
+async function openSessionSearchDialog(kind) {
+  const isTune = kind === "tune";
+  const title = isTune ? "Find Tune" : "Find Member";
+  const inputPlaceholder = isTune ? "Enter tune name" : "Enter member name";
+  const searchButtonLabel = isTune ? "Search Tunes" : "Search Members";
+  const hintText = isTune
+    ? "Enter a tune name, optionally choose a tune style and key/mode, click Search Tunes, then select one result and click OK to populate the URL field."
+    : "Enter a member name, click Search Members, then select one result and click OK to populate the URL field.";
+
+  const uid = "sessionSearch_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
+
+  const tuneFiltersHtml = isTune
+    ? (
+        `<div class="sessionSearchFilters">` +
+          `<select id="${uid}_type" name="type" title="Filter tune search by tune style">` +
+            `<option value="">All Tunes</option>` +
+            `<option value="jig">Jigs</option>` +
+            `<option value="reel">Reels</option>` +
+            `<option value="slip jig">Slip Jigs</option>` +
+            `<option value="hornpipe">Hornpipes</option>` +
+            `<option value="polka">Polkas</option>` +
+            `<option value="slide">Slides</option>` +
+            `<option value="waltz">Waltzes</option>` +
+            `<option value="barndance">Barndances</option>` +
+            `<option value="strathspey">Strathspeys</option>` +
+            `<option value="three-two">Three-Twos</option>` +
+            `<option value="mazurka">Mazurkas</option>` +
+            `<option value="march">Marches</option>` +
+          `</select>` +
+          `<label for="${uid}_mode">in</label>` +
+          `<select id="${uid}_mode" name="mode" title="Filter tune search by key/mode">` +
+            `<option value="">All Keys/Modes</option>` +
+            `<option value="Amajor">A Major</option>` +
+            `<option value="Amixolydian">A Mixolydian</option>` +
+            `<option value="Adorian">A Dorian</option>` +
+            `<option value="Aminor">A Minor</option>` +
+            `<option value="Bmixolydian">B Mixolydian</option>` +
+            `<option value="Bdorian">B Dorian</option>` +
+            `<option value="Bminor">B Minor</option>` +
+            `<option value="Cmajor">C Major</option>` +
+            `<option value="Cdorian">C Dorian</option>` +
+            `<option value="Dmajor">D Major</option>` +
+            `<option value="Dmixolydian">D Mixolydian</option>` +
+            `<option value="Ddorian">D Dorian</option>` +
+            `<option value="Dminor">D Minor</option>` +
+            `<option value="Emajor">E Major</option>` +
+            `<option value="Emixolydian">E Mixolydian</option>` +
+            `<option value="Edorian">E Dorian</option>` +
+            `<option value="Eminor">E Minor</option>` +
+            `<option value="Fmajor">F Major</option>` +
+            `<option value="Fdorian">F Dorian</option>` +
+            `<option value="Gmajor">G Major</option>` +
+            `<option value="Gmixolydian">G Mixolydian</option>` +
+            `<option value="Gdorian">G Dorian</option>` +
+            `<option value="Gminor">G Minor</option>` +
+          `</select>` +
+        `</div>`
+      )
+    : "";
+
+  const html =
+    `<div class="sessionSearchWrap" style="font-family:Helvetica, Arial, sans-serif; display:flex; flex-direction:column; height:100%; min-height:0;">` +
+      `<div style="text-align:center; font-size:16pt; font-weight:700; margin-bottom:12px;">${escapeHtml(title)}</div>` +
+      `<div class="sessionSearchHint">${escapeHtml(hintText)}</div>` +
+      tuneFiltersHtml +
+      `<div class="sessionSearchTop">` +
+        `<input id="${uid}_input" type="text" value="" placeholder="${escapeHtml(inputPlaceholder)}" />` +
+        `<button id="${uid}_searchBtn" type="button">${escapeHtml(searchButtonLabel)}</button>` +
+      `</div>` +
+      `<div id="${uid}_summary" class="sessionSearchHint"></div>` +
+      `<div id="${uid}_results" class="sessionSearchResults">` +
+        `<div class="sessionSearchEmpty">Enter a search term and click ${escapeHtml(searchButtonLabel)}.</div>` +
+      `</div>` +
+    `</div>`;
+
+  const promise = DayPilot.Modal.confirm(html, {
+    theme: "modal_flat",
+    top: 50,
+    scrollWithPage: false
+  });
+
+  await new Promise(resolve => setTimeout(resolve, 0));
+
+  const modalRoot = getLastModalRoot();
+  const inputEl = document.getElementById(uid + "_input");
+  const searchBtnEl = document.getElementById(uid + "_searchBtn");
+  const summaryEl = document.getElementById(uid + "_summary");
+  const resultsEl = document.getElementById(uid + "_results");
+  const tuneTypeEl = document.getElementById(uid + "_type");
+  const tuneModeEl = document.getElementById(uid + "_mode");
+
+  let dialogClosed = false;
+  let currentItems = [];
+  let selectedItem = null;
+  let searchBusy = false;
+
+  setDialogOkEnabled(modalRoot, false);
+
+  function setBusy(busy) {
+    searchBusy = !!busy;
+    if (inputEl) inputEl.disabled = searchBusy;
+    if (searchBtnEl) searchBtnEl.disabled = searchBusy;
+    if (tuneTypeEl) tuneTypeEl.disabled = searchBusy;
+    if (tuneModeEl) tuneModeEl.disabled = searchBusy;
+    if (resultsEl && searchBusy) {
+      resultsEl.innerHTML = `<div class="sessionSearchLoading">Searching…</div>`;
+    }
+  }
+
+  function selectItemById(id) {
+    const wanted = String(id);
+    selectedItem = currentItems.find(it => String((it && it.id != null) ? it.id : "") === wanted) || null;
+    renderSessionSearchResults(resultsEl, kind, currentItems, selectedItem ? selectedItem.id : "");
+    setDialogOkEnabled(modalRoot, !!selectedItem);
+
+    const rowButtons = resultsEl.querySelectorAll(".sessionSearchItem");
+    rowButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        selectItemById(btn.getAttribute("data-result-id"));
+      });
+
+      btn.addEventListener("dblclick", () => {
+        selectItemById(btn.getAttribute("data-result-id"));
+        if (modalRoot) {
+          const buttons = modalRoot.querySelectorAll(".modal_flat_buttons button");
+          if (buttons && buttons.length && !buttons[0].disabled) {
+            buttons[0].click();
+          }
+        }
+      });
+    });
+  }
+
+  async function doSearch() {
+    if (searchBusy || dialogClosed) return;
+
+    const term = inputEl ? inputEl.value.trim() : "";
+    const tuneType = tuneTypeEl ? tuneTypeEl.value : "";
+    const tuneMode = tuneModeEl ? tuneModeEl.value : "";
+
+    selectedItem = null;
+    setDialogOkEnabled(modalRoot, false);
+
+    if (!term && kind !== "tune") {
+      if (summaryEl) summaryEl.textContent = "Please enter a search term.";
+      if (resultsEl) {
+        resultsEl.innerHTML = `<div class="sessionSearchEmpty">Please enter a search term.</div>`;
+      }
+      return;
+    }
+
+    try {
+      setBusy(true);
+      if (summaryEl) summaryEl.textContent = "";
+
+      let statusMsg;
+
+      if (kind === "tune") {
+        const typeText =
+          (tuneTypeEl && tuneTypeEl.value)
+            ? tuneTypeEl.options[tuneTypeEl.selectedIndex].text
+            : "";
+
+        const modeText =
+          (tuneModeEl && tuneModeEl.value)
+            ? tuneModeEl.options[tuneModeEl.selectedIndex].text
+            : "";
+
+        statusMsg = term ? `Searching tunes for "${term}"` : `Searching tunes`;
+
+        if (typeText) {
+          statusMsg += `, ${typeText}`;
+        }
+
+        if (modeText) {
+          statusMsg += ` in ${modeText}`;
+        }
+      } else {
+        statusMsg = `Searching members for "${term}"`;
+      }
+
+      clearStatus(statusMsg);
+
+      const result = await fetchAllSessionSearchResults(kind, term, tuneType, tuneMode);
+      currentItems = sessionSearchSortResults(kind, result.items, term);
+
+      if (summaryEl) {
+        let summary = `${currentItems.length} result${currentItems.length === 1 ? "" : "s"} found.`;
+
+        if (result.hitMaxPages) {
+          summary += ` (search limit reached; more results may exist)`;
+        }
+
+        if (kind === "tune") {
+          const filters = [];
+
+          if (tuneTypeEl && tuneTypeEl.value) {
+            const typeText = tuneTypeEl.options[tuneTypeEl.selectedIndex].text;
+            filters.push(typeText);
+          }
+
+          if (tuneModeEl && tuneModeEl.value) {
+            const modeText = tuneModeEl.options[tuneModeEl.selectedIndex].text;
+            filters.push(`in ${modeText}`);
+          }
+
+          if (filters.length) {
+            summary += `  Filtered by ${filters.join(" ")}.`;
+          }
+        }
+
+        summaryEl.textContent = summary;
+      }
+
+      renderSessionSearchResults(resultsEl, kind, currentItems, "");
+
+      if (currentItems.length === 1) {
+        selectItemById(currentItems[0].id);
+      } else {
+        const rowButtons = resultsEl.querySelectorAll(".sessionSearchItem");
+        rowButtons.forEach(btn => {
+          btn.addEventListener("click", () => {
+            selectItemById(btn.getAttribute("data-result-id"));
+          });
+
+          btn.addEventListener("dblclick", () => {
+            selectItemById(btn.getAttribute("data-result-id"));
+            if (modalRoot) {
+              const buttons = modalRoot.querySelectorAll(".modal_flat_buttons button");
+              if (buttons && buttons.length && !buttons[0].disabled) {
+                buttons[0].click();
+              }
+            }
+          });
+        });
+      }
+    } catch (e) {
+      currentItems = [];
+      selectedItem = null;
+      setDialogOkEnabled(modalRoot, false);
+
+      if (summaryEl) summaryEl.textContent = "Search failed.";
+      if (resultsEl) {
+        resultsEl.innerHTML =
+          `<div class="sessionSearchEmpty">` +
+          `${escapeHtml(e && e.message ? e.message : String(e))}` +
+          `</div>`;
+      }
+    } finally {
+      setBusy(false);
+      if (inputEl) inputEl.focus();
+    }
+  }
+
+  if (searchBtnEl) {
+    searchBtnEl.addEventListener("click", doSearch);
+  }
+
+  if (inputEl) {
+    inputEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        doSearch();
+      }
+    });
+
+    inputEl.focus();
+    inputEl.select();
+  }
+
+  const result = await promise;
+  dialogClosed = true;
+
+  if (result && result.result && selectedItem && selectedItem.url) {
+    tuneUrlInput.value = selectedItem.url;
+    tuneUrlInput.focus();
+    tuneUrlInput.select();
+
+    const selectedName =
+      (selectedItem && typeof selectedItem.name === "string")
+        ? selectedItem.name.trim()
+        : "";
+
+    if (kind === "tune") {
+      if (selectedName) {
+        appendStatus(`Selected tune: ${selectedName}`);
+      }
+      appendStatus(`Selected tune URL: ${selectedItem.url}`);
+    } else {
+      if (selectedName) {
+        appendStatus(`Selected member: ${selectedName}`);
+      }
+      appendStatus(`Selected member URL: ${selectedItem.url}`);
+    }
+  }
+}
+
+/* ============================================================
+   Title/key/rhythm sorting
+   ============================================================ */
+
+function sortIncludedForMember(includedUnsorted, sortMode) {
+  const included = (includedUnsorted || []).slice();
+  const mode = String(sortMode || "orig");
+
+  const titleKey = (it) => processTitleForSorting(it.tuneTitle || "");
+
+  const getSettingNumberForSortFromSUrl = (sUrl) => {
+    const m = String(sUrl || "").match(/#setting-?(\d+)\b/i);
+    return m ? parseInt(m[1], 10) : 0;
+  };
+
+  const settingNum = (it) => getSettingNumberForSortFromSUrl(it.sourceSettingUrl);
+
+  const cmpTitleThenSetting = (a, b) => {
+    const t = titleKey(a).localeCompare(titleKey(b), undefined, { sensitivity: "base" });
+    if (t !== 0) return t;
+
+    const sa = settingNum(a);
+    const sb = settingNum(b);
+    if (sa !== sb) return sa - sb;
+
+    return 0;
+  };
+
+  if (mode === "title") {
+    return stableSort(included, cmpTitleThenSetting);
+  }
+
+  if (mode === "key") {
+    return stableSort(included, (a, b) => {
+      const ka = normKeyForSort(normalizeKValue((a.setting && a.setting.key) ? a.setting.key : ""));
+      const kb = normKeyForSort(normalizeKValue((b.setting && b.setting.key) ? b.setting.key : ""));
+      const k = ka.localeCompare(kb, undefined, { sensitivity: "base" });
+      if (k !== 0) return k;
+      return cmpTitleThenSetting(a, b);
+    });
+  }
+
+  if (mode === "rhythm") {
+    return stableSort(included, (a, b) => {
+      const ra = rhythmRank(a.tuneType || "");
+      const rb = rhythmRank(b.tuneType || "");
+      if (ra !== rb) return ra - rb;
+      return cmpTitleThenSetting(a, b);
+    });
+  }
+
+  return included;
+}
+
+function sortIncludedForMemberSets(includedUnsorted, sortMode) {
+  const included = (includedUnsorted || []).slice();
+  const mode = String(sortMode || "orig");
+
+  const titleKey = (it) => processTitleForSorting(it.setTitle || "");
+  const firstKey = (it) => normKeyForSort(normalizeKValue(it.firstTuneKey || ""));
+  const firstRhythm = (it) => rhythmRank(it.firstTuneType || "");
+
+  const cmpTitle = (a, b) => {
+    const t = titleKey(a).localeCompare(titleKey(b), undefined, { sensitivity: "base" });
+    if (t !== 0) return t;
+
+    const ia = Number(a.setId || 0);
+    const ib = Number(b.setId || 0);
+    if (ia !== ib) return ia - ib;
+
+    return 0;
+  };
+
+  if (mode === "title") {
+    return stableSort(included, cmpTitle);
+  }
+
+  if (mode === "key") {
+    return stableSort(included, (a, b) => {
+      const k = firstKey(a).localeCompare(firstKey(b), undefined, { sensitivity: "base" });
+      if (k !== 0) return k;
+      return cmpTitle(a, b);
+    });
+  }
+
+  if (mode === "rhythm") {
+    return stableSort(included, (a, b) => {
+      const r = firstRhythm(a) - firstRhythm(b);
+      if (r !== 0) return r;
+      return cmpTitle(a, b);
+    });
+  }
+
+  return included;
+}
+
+/* ============================================================
+   ABC rebuilding helpers
+   ============================================================ */
+
+function buildMemberABCFromIncluded(included, sourceLabel) {
+  const built = [];
+
+  for (let j = 0; j < included.length; j++) {
+    const it = included[j];
+    built.push(buildSingleSettingABCFromIncludedItem(it, j + 1));
+  }
+
+  return {
+    combined: built.join("\n"),
+    settingsCount: included.length,
+    memberSourceLabel: sourceLabel
+  };
+}
+
+function buildSingleSettingABCFromIncludedItem(it, xNum) {
+  const rLine = it.tuneType || "reel";
+  const mLine = defaultMForRhythm(rLine) || "4/4";
+  const lLine = "1/8";
+  const qVal  = defaultQForRhythm(rLine);
+  const tLine = it.tuneTitle;
+  const kRaw = (typeof it.setting.key === "string") ? it.setting.key : "";
+  const kLine = normalizeKValue(kRaw) || "Dmaj";
+
+  const settingMemberName =
+    (it.setting && it.setting.member && typeof it.setting.member.name === "string")
+      ? it.setting.member.name.trim()
+      : "";
+
+  const header =
+    `X:${xNum}\n` +
+    `T:${tLine}\n` +
+    `R:${rLine}\n` +
+    `M:${mLine}\n` +
+    `L:${lLine}\n` +
+    `Q:${qVal}\n` +
+    `K:${kLine}\n` +
+    `S:${it.sourceSettingUrl}\n` +
+    (settingMemberName ? `Z:${settingMemberName}\n` : "");
+
+  return header + it.bodyNormalized + "\n";
+}
+
+function renumberLeadingXTag(abc, xNum) {
+  const s = String(abc || "");
+  if (/^X:\s*.*\r?\n/i.test(s)) {
+    return s.replace(/^X:\s*.*$/im, `X:${xNum}`);
+  }
+  return `X:${xNum}\n` + s;
+}
+
+function buildSingleSetCombinedABC(setTitle, setEntries) {
+
+  // Convert "Tune A, Tune B, Tune C" → "Tune A / Tune B / Tune C"
+  const normalizedSetTitle = String(setTitle || "")
+    .split(",")
+    .map(s => s.trim())
+    .filter(Boolean)
+    .join(" / ");
+
+  const chunks = [];
+  const hasMultipleTunes = setEntries.length > 1;
+
+  for (let i = 0; i < setEntries.length; i++) {
+
+    let chunk = buildSingleSettingABCFromIncludedItem(setEntries[i], i + 1).trim();
+
+    // Remove all Z: tags everywhere
+    chunk = chunk.replace(/^Z:\s*.*\r?\n/gim, "");
+
+    if (i === 0) {
+
+      if (hasMultipleTunes) {
+        // Add normalized set title before the first tune title
+        chunk = chunk.replace(
+          /^T:\s*(.*)$/m,
+          `T:${normalizedSetTitle}\nT:$1`
+        );
+      }
+
+      // Insert hide labels after first K:
+      chunk = chunk.replace(
+        /^(K:\s*.*)$/m,
+        `$1\n%hide_information_labels\n%%keywarn 0\n%%titlefont Palatino 16\n%%subtitlefont Palatino 16`
+      );
+
+      chunks.push(chunk);
+
+    } else {
+
+      // Remove headers from subsequent tunes
+      chunk = chunk
+        .replace(/^X:\s*.*\r?\n/i, "")
+        .replace(/^R:\s*.*\r?\n/gim, "");
+
+      const midiChordDirective = abcBodyHasChords(setEntries[i].bodyNormalized)
+        ? "%%MIDI gchordon"
+        : "%%MIDI gchordoff";
+
+      // Insert %%text and MIDI chord state before the tune title
+      chunk = chunk.replace(
+        /^T:\s*/m,
+        `%%text\n${midiChordDirective}\nT:`
+      );
+
+      chunks.push(chunk.trim());
+    }
+  }
+
+  return chunks.join("\n");
+}
+
+function buildMemberSetsABCFromIncluded(included, sourceLabel) {
+  const built = [];
+
+  for (let j = 0; j < included.length; j++) {
+    const setItem = included[j];
+    built.push(renumberLeadingXTag(setItem.combinedSetABC, j + 1));
+  }
+
+  return {
+    combined: built.join("\n\n"),
+    settingsCount: included.length,
+    memberSourceLabel: sourceLabel
+  };
+}
+
+/* ============================================================
+   Member mode helpers
+   ============================================================ */
+
+function normalizeMemberSourceMode(mode) {
+  const m = String(mode || "").trim().toLowerCase();
+
+  if (m === "tunebook_first") return "tunebook_first";
+  if (m === "tunebook_all") return "tunebook_all";
+  if (m === "bookmarked") return "bookmarked";
+  if (m === "sets") return "sets";
+
+  return "submitted";
+}
+
+function getMemberSourceTailFromMode(mode) {
+  const m = normalizeMemberSourceMode(mode);
+
+  if (m === "tunebook_first" || m === "tunebook_all") return "tunebook";
+  if (m === "bookmarked") return "bookmarks";
+  if (m === "sets") return "sets";
+
+  return "tunes";
+}
+
+function getMemberSourceLabelFromMode(mode) {
+  const m = normalizeMemberSourceMode(mode);
+
+  if (m === "tunebook_first") return "Tunebook (First Setting Only)";
+  if (m === "tunebook_all") return "Tunebook (All Settings)";
+  if (m === "bookmarked") return "Bookmarked Tune Settings";
+  if (m === "sets") return "Tune Sets";
+
+  return "Submitted Tune Settings";
+}
+
+function getMemberSourceAnalyticsToken(mode) {
+  const m = normalizeMemberSourceMode(mode);
+
+  if (m === "tunebook_first") return "tunebook_first_setting_only";
+  if (m === "tunebook_all") return "tunebook_all_settings";
+  if (m === "bookmarked") return "bookmarked_tune_settings";
+  if (m === "sets") return "tune_sets";
+
+  return "submitted_tune_settings";
+}
+
+function isSessionMemberTunebookUrl(s) {
+  try {
+    const u = new URL(String(s));
+    return /^\/members\/\d+\/tunebook\/?$/.test(u.pathname);
+  } catch {
+    return /\/members\/\d+\/tunebook\/?$/.test(String(s));
+  }
+}
+
+function isSessionMemberSetsUrl(s) {
+  try {
+    const u = new URL(String(s));
+    return /^\/members\/\d+\/sets\/?$/.test(u.pathname);
+  } catch {
+    return /\/members\/\d+\/sets\/?$/.test(String(s));
+  }
+}
+
+function getMemberSourceModeFromUrl(url, selectedMode) {
+  if (isSessionMemberTunebookUrl(url)) {
+    const chosen = normalizeMemberSourceMode(selectedMode);
+    if (chosen === "tunebook_first" || chosen === "tunebook_all") {
+      return chosen;
+    }
+    return "tunebook_all";
+  }
+
+  if (isSessionBookmarksUrl(url)) return "bookmarked";
+  if (isSessionMemberTunesUrl(url)) return "submitted";
+  if (isSessionMemberSetsUrl(url)) return "sets";
+
+  return normalizeMemberSourceMode(selectedMode || "submitted");
+}
+
+/* ============================================================
+   Member tunebook fetching
+   ============================================================ */
+
+async function fetchMemberTunebookAsABC(items, memberName, onlyChords, memberSortMode, tunebookMode) {
+  const tuneItems = [];
+
+  for (const t of items) {
+    const tuneUrl = (t && typeof t.url === "string") ? t.url.trim() : "";
+    if (!tuneUrl) continue;
+
+    const displayName =
+      (t && typeof t.name === "string") ? t.name.trim() : "";
+
+    tuneItems.push({
+      url: tuneUrl,
+      displayName
+    });
+  }
+
+  if (!tuneItems.length) {
+    throw new Error(`Member: ${memberName} - No tunebook tunes found.`);
+  }
+
+  const seen = new Set();
+  const uniqTuneItems = [];
+  for (const ti of tuneItems) {
+    const tuneId = extractTuneIdFromSessionUrl(ti.url);
+    const key = tuneId || ti.url;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    uniqTuneItems.push(ti);
+  }
+
+  const firstOnly = normalizeMemberSourceMode(tunebookMode) === "tunebook_first";
+  const sourceLabel = firstOnly ? "Tunebook (First Setting Only)" : "Tunebook (All Settings)";
+
+  appendStatus(`Found ${uniqTuneItems.length} tunebook tune(s).`);
+
+  const tuneCache = new Map();
+  const tuneInFlight = new Map();
+
+  let skippedNoChords = 0;
+  let skippedNotFound = 0;
+  let totalTunebookSettingsFound = 0;
+
+  const resultsByIndex = new Array(uniqTuneItems.length);
+  const logsByIndex = new Array(uniqTuneItems.length);
+
+  async function getTuneCached(tuneId, statusTuneNameForFallback) {
+    const cached = tuneCache.get(tuneId);
+    if (cached) return cached;
+
+    const inflight = tuneInFlight.get(tuneId);
+    if (inflight) return await inflight;
+
+    const tuneUrlNoHash = `https://thesession.org/tunes/${encodeURIComponent(tuneId)}`;
+    const tuneJsonUrl = normalizeToJsonUrl(tuneUrlNoHash);
+
+    const p = (async () => {
+      try {
+        const tr = await fetch(tuneJsonUrl, { method: "GET", mode: "cors", cache: "no-store" });
+
+        if (!tr.ok) {
+          const failObj = { failed: true };
+          tuneCache.set(tuneId, failObj);
+          return failObj;
+        }
+
+        const tuneData = await tr.json();
+
+        const tuneTitle =
+          (tuneData && tuneData.name) ? String(tuneData.name) :
+          (statusTuneNameForFallback || `Tune ${tuneId}`);
+
+        const tuneType =
+          (tuneData && tuneData.type) ? normalizeTuneType(String(tuneData.type)) : "";
+
+        const okObj = { tuneData, tuneUrlNoHash, tuneTitle, tuneType, failed: false };
+        tuneCache.set(tuneId, okObj);
+        return okObj;
+
+      } catch (e) {
+        const failObj = { failed: true, error: e };
+        tuneCache.set(tuneId, failObj);
+        return failObj;
+      } finally {
+        tuneInFlight.delete(tuneId);
+      }
+    })();
+
+    tuneInFlight.set(tuneId, p);
+    return await p;
+  }
+
+  async function processOne(index) {
+    const logs = [];
+    const log = (m) => logs.push(String(m));
+
+    const tuneItem = uniqTuneItems[index];
+    const tuneUrl = tuneItem.url;
+    const statusTuneName = tuneItem.displayName || "";
+
+    const tuneId = extractTuneIdFromSessionUrl(tuneUrl);
+
+    if (!tuneId) {
+      skippedNotFound++;
+      log(`Skip: could not parse tune from ${tuneUrl}`);
+      logsByIndex[index] = logs;
+      return;
+    }
+
+    const cached = await getTuneCached(tuneId, statusTuneName);
+
+    if (!cached || cached.failed) {
+      skippedNotFound++;
+      const msg =
+        (cached && cached.error && cached.error.message)
+          ? cached.error.message
+          : "network/HTTP error";
+      log(`Skip: tune ${tuneId} failed to load (${msg}).`);
+      logsByIndex[index] = logs;
+      return;
+    }
+
+    const settings = (cached.tuneData && Array.isArray(cached.tuneData.settings)) ? cached.tuneData.settings : [];
+    if (!settings.length) {
+      log(`Skip: no settings found for ${cached.tuneTitle}`);
+      logsByIndex[index] = logs;
+      return;
+    }
+
+    const settingsToUse = firstOnly ? [settings[0]] : settings;
+    totalTunebookSettingsFound += settingsToUse.length;
+
+    const collected = [];
+
+    for (const setting of settingsToUse) {
+      if (!setting) continue;
+
+      const rawAbc = (typeof setting.abc === "string") ? setting.abc : "";
+      if (!rawAbc.trim()) continue;
+
+      const bodyNormalized = extractBody(rawAbc)
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .join("\n")
+        .trimEnd();
+
+      if (onlyChords && !abcBodyHasChords(bodyNormalized)) {
+        skippedNoChords++;
+        continue;
+      }
+
+      let sourceSettingUrl = "";
+      if (typeof setting.url === "string" && setting.url.trim()) {
+        sourceSettingUrl = setting.url.trim();
+      } else if (setting.id != null) {
+        sourceSettingUrl = `${cached.tuneUrlNoHash}#setting${setting.id}`;
+      } else {
+        sourceSettingUrl = cached.tuneUrlNoHash;
+      }
+
+      collected.push({
+        setting,
+        bodyNormalized,
+        tuneTitle: cached.tuneTitle,
+        tuneType: cached.tuneType,
+        sourceSettingUrl
+      });
+    }
+
+    resultsByIndex[index] = collected;
+    logsByIndex[index] = logs;
+  }
+
+  const CONCURRENCY = 2;
+  const running = new Set();
+
+  async function runLimited(i) {
+    while (running.size >= CONCURRENCY) {
+      await Promise.race(running);
+    }
+    const p = processOne(i).finally(() => running.delete(p));
+    running.add(p);
+  }
+
+  for (let i = 0; i < uniqTuneItems.length; i++) {
+    const statusTuneName = uniqTuneItems[i].displayName || "";
+    appendStatus(`Loading tunebook tune ${i + 1} of ${uniqTuneItems.length}: ${statusTuneName}`);
+    await runLimited(i);
+  }
+
+  await Promise.all(Array.from(running));
+
+  for (let i = 0; i < logsByIndex.length; i++) {
+    const logs = logsByIndex[i];
+    if (logs && logs.length) {
+      for (const line of logs) appendStatus(line);
+    }
+  }
+
+  let included = [];
+  for (let i = 0; i < resultsByIndex.length; i++) {
+    if (Array.isArray(resultsByIndex[i]) && resultsByIndex[i].length) {
+      included = included.concat(resultsByIndex[i]);
+    }
+  }
+
+  if (!included.length) {
+    if (onlyChords) {
+      throw new Error(`Member: ${memberName} - No ${sourceLabel.toLowerCase()} contained chords.`);
+    }
+    throw new Error(`Member: ${memberName} - No ${sourceLabel.toLowerCase()} could be loaded.`);
+  }
+
+  const includedUnsorted = included.slice();
+  included = sortIncludedForMember(includedUnsorted, memberSortMode);
+
+  appendStatus(`Building ABC for ${included.length} ${sourceLabel.toLowerCase()}`);
+
+  const rebuilt = buildMemberABCFromIncluded(included, sourceLabel);
+
+  return {
+    combined: rebuilt.combined,
+    tuneTitle: sourceLabel,
+    tuneType: "",
+    tuneId: "",
+    settingsCount: rebuilt.settingsCount,
+    skippedNoChords,
+    skippedNotFound,
+    memberSourceLabel: sourceLabel,
+    memberSourceMode: normalizeMemberSourceMode(tunebookMode),
+    memberItemsCount: uniqTuneItems.length,
+    memberSettingsCount: included.length,
+    memberSettingsFoundBeforeFilter: totalTunebookSettingsFound,
+    memberName: memberName || "",
+    memberSortMode,
+    includedUnsorted
+  };
+}
+
+/* ============================================================
+   Member sets fetching
+   ============================================================ */
+
+async function fetchMemberSetsAsABC(items, memberName, onlyChords, memberSortMode) {
+  const sets = [];
+
+  for (const s of items) {
+    if (!s || !Array.isArray(s.settings) || !s.settings.length) continue;
+
+    sets.push({
+      id: s.id,
+      name: (typeof s.name === "string") ? s.name.trim() : `Set ${s.id || ""}`.trim(),
+      url: (typeof s.url === "string") ? s.url.trim() : "",
+      settings: s.settings
+    });
+  }
+
+  if (!sets.length) {
+    throw new Error(`Member: ${memberName} - No tune sets found.`);
+  }
+
+  appendStatus(`Found ${sets.length} tune set(s).`);
+
+  const tuneCache = new Map();
+  const tuneInFlight = new Map();
+
+  let skippedNoChords = 0;
+  let skippedNotFound = 0;
+  let totalSetTuneSettingsFound = 0;
+
+  const resultsByIndex = new Array(sets.length);
+  const logsByIndex = new Array(sets.length);
+
+  async function getTuneCached(tuneId, statusTuneNameForFallback) {
+    const cached = tuneCache.get(tuneId);
+    if (cached) return cached;
+
+    const inflight = tuneInFlight.get(tuneId);
+    if (inflight) return await inflight;
+
+    const tuneUrlNoHash = `https://thesession.org/tunes/${encodeURIComponent(tuneId)}`;
+    const tuneJsonUrl = normalizeToJsonUrl(tuneUrlNoHash);
+
+    const p = (async () => {
+      try {
+        const tr = await fetch(tuneJsonUrl, { method: "GET", mode: "cors", cache: "no-store" });
+
+        if (!tr.ok) {
+          const failObj = { failed: true };
+          tuneCache.set(tuneId, failObj);
+          return failObj;
+        }
+
+        const tuneData = await tr.json();
+
+        const tuneTitle =
+          (tuneData && tuneData.name) ? String(tuneData.name) :
+          (statusTuneNameForFallback || `Tune ${tuneId}`);
+
+        const tuneType =
+          (tuneData && tuneData.type) ? normalizeTuneType(String(tuneData.type)) : "";
+
+        const okObj = { tuneData, tuneUrlNoHash, tuneTitle, tuneType, failed: false };
+        tuneCache.set(tuneId, okObj);
+        return okObj;
+
+      } catch (e) {
+        const failObj = { failed: true, error: e };
+        tuneCache.set(tuneId, failObj);
+        return failObj;
+      } finally {
+        tuneInFlight.delete(tuneId);
+      }
+    })();
+
+    tuneInFlight.set(tuneId, p);
+    return await p;
+  }
+
+  async function processOne(index) {
+    const logs = [];
+    const log = (m) => logs.push(String(m));
+
+    const setItem = sets[index];
+    const collected = [];
+
+    log(`Set: ${setItem.name}`);
+
+    for (let i = 0; i < setItem.settings.length; i++) {
+      const settingRef = setItem.settings[i];
+      if (!settingRef || typeof settingRef.url !== "string") {
+        skippedNotFound++;
+        log(`Skip: missing setting URL in set ${setItem.name}`);
+        continue;
+      }
+
+      totalSetTuneSettingsFound++;
+
+      const settingUrl = settingRef.url.trim();
+      const tuneId = extractTuneIdFromSettingUrl(settingUrl);
+      const settingId = extractSettingIdFromSettingUrl(settingUrl);
+      const statusTuneName = (typeof settingRef.name === "string") ? settingRef.name.trim() : "";
+
+      if (!tuneId || !settingId) {
+        skippedNotFound++;
+        log(`Skip: could not parse tune/setting from ${settingUrl}`);
+        continue;
+      }
+
+      const cached = await getTuneCached(tuneId, statusTuneName);
+
+      if (!cached || cached.failed) {
+        skippedNotFound++;
+        const msg =
+          (cached && cached.error && cached.error.message)
+            ? cached.error.message
+            : "network/HTTP error";
+        log(`Skip: tune ${tuneId} failed to load (${msg}).`);
+        continue;
+      }
+
+      const picked = findSettingById(cached.tuneData, cached.tuneUrlNoHash, settingId);
+      if (!picked || typeof picked.abc !== "string" || !picked.abc.trim()) {
+        skippedNotFound++;
+        log(`Skip: setting ${settingId} not found in tune ${statusTuneName}`);
+        continue;
+      }
+
+      const rawAbc = picked.abc;
+      const bodyNormalized = extractBody(rawAbc)
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .join("\n")
+        .trimEnd();
+
+      if (onlyChords && !abcBodyHasChords(bodyNormalized)) {
+        skippedNoChords++;
+        continue;
+      }
+
+      collected.push({
+        setting: picked,
+        bodyNormalized,
+        tuneTitle: cached.tuneTitle,
+        tuneType: cached.tuneType || normalizeTuneType(settingRef.type || ""),
+        sourceSettingUrl: settingUrl
+      });
+    }
+
+    if (!collected.length) {
+      resultsByIndex[index] = null;
+      logsByIndex[index] = logs;
+      return;
+    }
+
+    const firstIncluded = collected[0];
+
+    resultsByIndex[index] = {
+      setId: setItem.id,
+      setTitle: setItem.name || `Set ${setItem.id || ""}`.trim(),
+      setUrl: setItem.url || "",
+      firstTuneKey:
+        (firstIncluded && firstIncluded.setting && typeof firstIncluded.setting.key === "string")
+          ? firstIncluded.setting.key
+          : "",
+      firstTuneType: firstIncluded ? firstIncluded.tuneType : "",
+      combinedSetABC: buildSingleSetCombinedABC(setItem.name || `Set ${setItem.id || ""}`.trim(), collected),
+      includedTunesCount: collected.length
+    };
+
+    logsByIndex[index] = logs;
+  }
+
+  const CONCURRENCY = 2;
+  const running = new Set();
+
+  async function runLimited(i) {
+    while (running.size >= CONCURRENCY) {
+      await Promise.race(running);
+    }
+    const p = processOne(i).finally(() => running.delete(p));
+    running.add(p);
+  }
+
+  for (let i = 0; i < sets.length; i++) {
+    appendStatus(`Loading set ${i + 1} of ${sets.length}: ${sets[i].name || ""}`);
+    await runLimited(i);
+  }
+
+  await Promise.all(Array.from(running));
+
+  for (let i = 0; i < logsByIndex.length; i++) {
+    const logs = logsByIndex[i];
+    if (logs && logs.length) {
+      for (const line of logs) appendStatus(line);
+    }
+  }
+
+  let included = [];
+  for (let i = 0; i < resultsByIndex.length; i++) {
+    if (resultsByIndex[i]) included.push(resultsByIndex[i]);
+  }
+
+  if (!included.length) {
+    if (onlyChords) {
+      throw new Error(`Member: ${memberName} - No tune sets contained settings with chords.`);
+    }
+    throw new Error(`Member: ${memberName} - No tune sets could be loaded.`);
+  }
+
+  const includedUnsorted = included.slice();
+  included = sortIncludedForMemberSets(includedUnsorted, memberSortMode);
+
+  appendStatus(`Building ABC for ${included.length} tune set(s)`);
+
+  const rebuilt = buildMemberSetsABCFromIncluded(included, "Tune Sets");
+
+  return {
+    combined: rebuilt.combined,
+    tuneTitle: "Tune Sets",
+    tuneType: "",
+    tuneId: "",
+    settingsCount: rebuilt.settingsCount,
+    skippedNoChords,
+    skippedNotFound,
+    memberSourceLabel: "Tune Sets",
+    memberSourceMode: "sets",
+    memberItemsCount: sets.length,
+    memberSettingsCount: included.length,
+    memberSettingsFoundBeforeFilter: totalSetTuneSettingsFound,
+    memberName: memberName || "",
+    memberSortMode,
+    includedUnsorted
+  };
+}
+
+/* ============================================================
+   Main entry
+   ============================================================ */
+
+async function fetchTuneOrBookmarksAsABC(inputUrl, opts) {
+  opts = opts || {};
+  let onlyChords = !!opts.onlyChords;
+  const memberSourceMode = normalizeMemberSourceMode(opts.memberSourceMode || "submitted");
+  const memberSortMode = String(opts.memberSortMode || "orig");
+
+  let url = String(inputUrl || "").trim();
+  if (!url) throw new Error("Error: Please enter a URL.");
+
+  url = normalizeMembersUrl(url, memberSourceMode);
+
+  if (isSessionTuneUrl(url)) {
+    clearStatus("Fetching all tune settings");
+    return await fetchAllTuneVersionsAsABC(url, opts);
+  }
+
+  if (!isSessionBookmarksUrl(url) &&
+      !isSessionMemberTunesUrl(url) &&
+      !isSessionMemberTunebookUrl(url) &&
+      !isSessionMemberSetsUrl(url)) {
+    throw new Error("Error: URL must be a thesession.org tune URL (/tunes/####) or a member URL (/members/####).");
+  }
+
+  const sourceModeFromUrl = getMemberSourceModeFromUrl(url, memberSourceMode);
+  const sourceLabel = getMemberSourceLabelFromMode(sourceModeFromUrl);
+
+  // Do not apply chord filtering when building sets
+  if (sourceModeFromUrl === "sets") {
+    onlyChords = false;
+  }
+
+  if (sourceModeFromUrl === "tunebook_all") {
+    const ok = await confirmTunebookAllDownload();
+
+    if (!ok) {
+      clearStatus("Tunebook (All Settings) download cancelled.");
+      return null;
+    }
+  }
+
+  const memberId = extractMemberIdFromSessionUrl(url);
+  const memberName = memberId ? await fetchMemberNameById(memberId) : "";
+  const who = memberName ? `${memberName}'s` : "member's";
+
+  clearStatus(`Fetching ${who} ${sourceLabel.toLowerCase()}`);
+
+  const items = await fetchAllMemberItemsPaged(url, sourceLabel);
+  if (!items.length) {
+    throw new Error(`Member: ${memberName} - No ${sourceLabel.toLowerCase()} found.`);
+  }
+
+  if (sourceModeFromUrl === "tunebook_first" || sourceModeFromUrl === "tunebook_all") {
+    return await fetchMemberTunebookAsABC(items, memberName, onlyChords, memberSortMode, sourceModeFromUrl);
+  }
+
+  if (sourceModeFromUrl === "sets") {
+    return await fetchMemberSetsAsABC(items, memberName, onlyChords, memberSortMode);
+  }
+
+  const settingItems = [];
+
+  if (sourceModeFromUrl === "submitted") {
+    for (const s of items) {
+      const settingUrl = (s && typeof s.url === "string") ? s.url.trim() : "";
+      if (!settingUrl) continue;
+
+      const tuneName =
+        (s && s.tune && typeof s.tune.name === "string") ? s.tune.name.trim() : "";
+
+      settingItems.push({
+        url: settingUrl,
+        displayName: tuneName
+      });
+    }
+  } else {
+    for (const it of items) {
+      const obj = (it && it.object) ? it.object : null;
+      const objType = (obj && typeof obj.objectType === "string") ? obj.objectType : "";
+      if (objType !== "setting") continue;
+
+      const objUrl = (obj && typeof obj.url === "string") ? obj.url.trim() : "";
+      if (!objUrl) continue;
+
+      const displayName =
+        (obj && typeof obj.displayName === "string") ? obj.displayName.trim() : "";
+
+      settingItems.push({
+        url: objUrl,
+        displayName
+      });
+    }
+  }
+
+  if (!settingItems.length) {
+    throw new Error(`Member: ${memberName} - No ${sourceLabel.toLowerCase()} found.`);
+  }
+
+  const seen = new Set();
+  const uniqSettingItems = [];
+  for (const si of settingItems) {
+    if (seen.has(si.url)) continue;
+    seen.add(si.url);
+    uniqSettingItems.push(si);
+  }
+
+  appendStatus(`Found ${uniqSettingItems.length} tune setting(s).`);
+
+  const tuneCache = new Map();
+  const tuneInFlight = new Map();
+
+  let included = [];
+  let skippedNoChords = 0;
+  let skippedNotFound = 0;
+
+  const resultsByIndex = new Array(uniqSettingItems.length);
+  const logsByIndex = new Array(uniqSettingItems.length);
+
+  async function getTuneCached(tuneId, statusTuneNameForFallback, log) {
+    const cached = tuneCache.get(tuneId);
+    if (cached) return cached;
+
+    const inflight = tuneInFlight.get(tuneId);
+    if (inflight) return await inflight;
+
+    const tuneUrlNoHash = `https://thesession.org/tunes/${encodeURIComponent(tuneId)}`;
+    const tuneJsonUrl = normalizeToJsonUrl(tuneUrlNoHash);
+
+    const p = (async () => {
+      try {
+        const tr = await fetch(tuneJsonUrl, { method: "GET", mode: "cors", cache: "no-store" });
+
+        if (!tr.ok) {
+          const failObj = { failed: true };
+          tuneCache.set(tuneId, failObj);
+          return failObj;
+        }
+
+        const tuneData = await tr.json();
+
+        const tuneTitle =
+          (tuneData && tuneData.name) ? String(tuneData.name) :
+          (statusTuneNameForFallback || `Tune ${tuneId}`);
+
+        const tuneType =
+          (tuneData && tuneData.type) ? normalizeTuneType(String(tuneData.type)) : "";
+
+        const okObj = { tuneData, tuneUrlNoHash, tuneTitle, tuneType, failed: false };
+        tuneCache.set(tuneId, okObj);
+        return okObj;
+
+      } catch (e) {
+        const failObj = { failed: true, error: e };
+        tuneCache.set(tuneId, failObj);
+        return failObj;
+      } finally {
+        tuneInFlight.delete(tuneId);
+      }
+    })();
+
+    tuneInFlight.set(tuneId, p);
+    return await p;
+  }
+
+  async function processOne(index) {
+    const logs = [];
+    const log = (m) => logs.push(String(m));
+
+    const settingItem = uniqSettingItems[index];
+    const settingUrl = settingItem.url;
+    const statusTuneName = settingItem.displayName || "";
+
+    const tuneId = extractTuneIdFromSettingUrl(settingUrl);
+    const settingId = extractSettingIdFromSettingUrl(settingUrl);
+
+    if (!tuneId || !settingId) {
+      skippedNotFound++;
+      log(`Skip: could not parse tune/setting from ${settingUrl}`);
+      logsByIndex[index] = logs;
+      return;
+    }
+
+    const cached = await getTuneCached(tuneId, statusTuneName, log);
+
+    if (!cached || cached.failed) {
+      skippedNotFound++;
+      const msg =
+        (cached && cached.error && cached.error.message)
+          ? cached.error.message
+          : "network/HTTP error";
+      log(`Skip: tune ${tuneId} failed to load (${msg}).`);
+      logsByIndex[index] = logs;
+      return;
+    }
+
+    const picked = findSettingById(cached.tuneData, cached.tuneUrlNoHash, settingId);
+    if (!picked || typeof picked.abc !== "string" || !picked.abc.trim()) {
+      skippedNotFound++;
+      log(`Skip: setting ${settingId} not found in tune ${statusTuneName}`);
+      logsByIndex[index] = logs;
+      return;
+    }
+
+    const rawAbc = picked.abc;
+    const bodyNormalized = extractBody(rawAbc)
+      .split(/\r?\n/)
+      .map(line => line.trim())
+      .join("\n")
+      .trimEnd();
+
+    if (onlyChords && !abcBodyHasChords(bodyNormalized)) {
+      skippedNoChords++;
+      logsByIndex[index] = logs;
+      return;
+    }
+
+    resultsByIndex[index] = {
+      setting: picked,
+      bodyNormalized,
+      tuneTitle: cached.tuneTitle,
+      tuneType: cached.tuneType,
+      sourceSettingUrl: settingUrl
+    };
+
+    logsByIndex[index] = logs;
+  }
+
+  const CONCURRENCY = 2;
+  const running = new Set();
+
+  async function runLimited(i) {
+    while (running.size >= CONCURRENCY) {
+      await Promise.race(running);
+    }
+    const p = processOne(i).finally(() => running.delete(p));
+    running.add(p);
+  }
+
+  for (let i = 0; i < uniqSettingItems.length; i++) {
+    const statusTuneName = uniqSettingItems[i].displayName || "";
+    appendStatus(`Loading setting ${i + 1} of ${uniqSettingItems.length}: ${statusTuneName}`);
+    await runLimited(i);
+  }
+
+  await Promise.all(Array.from(running));
+
+  for (let i = 0; i < logsByIndex.length; i++) {
+    const logs = logsByIndex[i];
+    if (logs && logs.length) {
+      for (const line of logs) appendStatus(line);
+    }
+  }
+
+  for (let i = 0; i < resultsByIndex.length; i++) {
+    if (resultsByIndex[i]) included.push(resultsByIndex[i]);
+  }
+
+  if (!included.length) {
+    if (onlyChords) {
+      throw new Error(`Member: ${memberName} - No ${sourceLabel.toLowerCase()} contained chords.`);
+    }
+    throw new Error(`Member: ${memberName} - No ${sourceLabel.toLowerCase()} could be loaded.`);
+  }
+
+  const includedUnsorted = included.slice();
+  included = sortIncludedForMember(includedUnsorted, memberSortMode);
+
+  appendStatus(`Building ABC for ${included.length} ${sourceLabel.toLowerCase()}`);
+
+  const rebuilt = buildMemberABCFromIncluded(included, sourceLabel);
+
+  return {
+    combined: rebuilt.combined,
+    tuneTitle: sourceLabel,
+    tuneType: "",
+    tuneId: "",
+    settingsCount: rebuilt.settingsCount,
+    skippedNoChords,
+    skippedNotFound,
+    memberSourceLabel: sourceLabel,
+    memberSourceMode: sourceModeFromUrl,
+    memberItemsCount: items.length,
+    memberSettingsCount: included.length,
+    memberName: memberName || "",
+    memberSortMode,
+    includedUnsorted
+  };
+}
+
+/* ============================================================
+   Member list paging
+   ============================================================ */
+
+async function fetchAllMemberItemsPaged(listUrl, sourceLabel) {
+  const all = [];
+  const base = new URL(String(listUrl));
+  base.hash = "";
+
+  const MAX_PAGES = 250;
+  let knownTotalPages = null;
+
+  for (let page = 1; page <= MAX_PAGES; page++) {
+    if (knownTotalPages != null && page > knownTotalPages) break;
+
+    const pageUrl = new URL(base.toString());
+    pageUrl.searchParams.set("format", "json");
+    pageUrl.searchParams.set("page", String(page));
+    pageUrl.searchParams.set("perpage", "50");
+
+    appendStatus(`- Fetching ${sourceLabel.toLowerCase()} page ${page}`);
+
+    let res;
+    try {
+      res = await fetch(pageUrl.toString(), { method: "GET", mode: "cors", cache: "no-store" });
+    } catch (e) {
+      appendStatus(`  Stop: fetch error on page ${page}.`);
+      break;
+    }
+
+    if (!res.ok) {
+      appendStatus(`  Stop: HTTP ${res.status} on page ${page}.`);
+      break;
+    }
+
+    const data = await res.json();
+
+    const items = (data && Array.isArray(data.items)) ? data.items : null;
+    const settings = (data && Array.isArray(data.settings)) ? data.settings : null;
+    const tunes = (data && Array.isArray(data.tunes)) ? data.tunes : null;
+    const sets = (data && Array.isArray(data.sets)) ? data.sets : null;
+
+    if (knownTotalPages == null && data && typeof data.pages === "number" && isFinite(data.pages)) {
+      knownTotalPages = data.pages;
+    }
+
+    if (items) {
+      if (!items.length) {
+        appendStatus(`  All ${sourceLabel.toLowerCase()} pages fetched!`);
+        break;
+      }
+      all.push.apply(all, items);
+      continue;
+    }
+
+    if (settings) {
+      if (!settings.length) {
+        appendStatus(`  All ${sourceLabel.toLowerCase()} pages fetched!`);
+        break;
+      }
+      all.push.apply(all, settings);
+      continue;
+    }
+
+    if (tunes) {
+      if (!tunes.length) {
+        appendStatus(`  All ${sourceLabel.toLowerCase()} pages fetched!`);
+        break;
+      }
+      all.push.apply(all, tunes);
+      continue;
+    }
+
+    if (sets) {
+      if (!sets.length) {
+        appendStatus(`  All ${sourceLabel.toLowerCase()} pages fetched!`);
+        break;
+      }
+      all.push.apply(all, sets);
+      continue;
+    }
+
+    appendStatus(`  Stop: Unexpected JSON format on page ${page}.`);
+    break;
+  }
+
+  return all;
+}
+
+/* ============================================================
+   Single tune fetching
+   ============================================================ */
+
+async function fetchAllTuneVersionsAsABC(tuneUrl, opts) {
+  opts = opts || {};
+  const onlyChords = !!opts.onlyChords;
+
+  const tuneId = extractTuneIdFromSessionUrl(tuneUrl);
+  if (!tuneId) throw new Error("Error: Could not extract tunes from: " + tuneUrl);
+
+  const apiUrl = `https://thesession.org/tunes/${encodeURIComponent(tuneId)}?format=json`;
+  const res = await fetch(apiUrl, { method: "GET", mode: "cors", cache: "no-store" });
+  if (!res.ok) throw new Error(`Error: The Session fetch failed: ${res.status} ${apiUrl}`);
+
+  const data = await res.json();
+
+  const tuneTitle = (data && data.name) ? String(data.name) : `Tune ${tuneId}`;
+  const tuneType  = (data && data.type) ? normalizeTuneType(String(data.type)) : "";
+
+  const settings = (data && Array.isArray(data.settings)) ? data.settings : [];
+  if (!settings.length) throw new Error("Error: No settings found for tune: " + tuneUrl);
+
+  const included = [];
+  let skippedNoChords = 0;
+
+  for (let i = 0; i < settings.length; i++) {
+    const setting = settings[i] || {};
+    const rawAbc = typeof setting.abc === "string" ? setting.abc : "";
+    if (!rawAbc.trim()) continue;
+
+    const bodyNormalized = extractBody(rawAbc)
+      .split(/\r?\n/)
+      .map(line => line.trim())
+      .join("\n")
+      .trimEnd();
+
+    if (onlyChords && !abcBodyHasChords(bodyNormalized)) {
+      skippedNoChords++;
+      continue;
+    }
+
+    included.push({ setting, bodyNormalized });
+  }
+
+  if (!included.length) {
+    if (onlyChords) {
+      if (settings.length > 1) throw new Error(settings.length + " tune settings available but no settings contained chords.");
+      throw new Error(settings.length + " tune setting available but it did not contain chords.");
+    }
+    throw new Error("Error: Settings had no ABC text.");
+  }
+
+  const totalIncluded = included.length;
+  const built = [];
+
+  const rLine = tuneType || "reel";
+  const mLine = defaultMForRhythm(rLine) || "4/4";
+  const lLine = "1/8";
+  const qVal  = defaultQForRhythm(rLine);
+
+  for (let j = 0; j < included.length; j++) {
+    const { setting, bodyNormalized } = included[j];
+
+    const xNum = j + 1;
+    const tLine = tuneTitle + (totalIncluded > 1 ? ` (${xNum} of ${totalIncluded})` : "");
+
+    const kRaw = (typeof setting.key === "string") ? setting.key : "";
+    const kLine = normalizeKValue(kRaw) || "Dmaj";
+
+    const memberName =
+      (setting && setting.member && typeof setting.member.name === "string")
+        ? setting.member.name.trim()
+        : "";
+    const zLine = memberName;
+
+    let sUrl = "";
+    if (setting && typeof setting.url === "string" && setting.url.trim()) {
+      sUrl = setting.url.trim();
+    } else {
+      sUrl = tuneUrl;
+    }
+
+    const header =
+      `X:${xNum}\n` +
+      `T:${tLine}\n` +
+      `R:${rLine}\n` +
+      `M:${mLine}\n` +
+      `L:${lLine}\n` +
+      `Q:${qVal}\n` +
+      `K:${kLine}\n` +
+      `S:${sUrl}\n` +
+      (zLine ? `Z:${zLine}\n` : "");
+
+    built.push(header + bodyNormalized + "\n");
+  }
+
+  return {
+    combined: built.join("\n"),
+    tuneTitle,
+    tuneType,
+    tuneId,
+    settingsCount: totalIncluded,
+    skippedNoChords
+  };
+}
+
+/* ============================================================
+   URL detection + JSON URL
+   ============================================================ */
+
+function isSessionTuneUrl(s) {
+  try {
+    const u = new URL(String(s));
+    return /^\/tunes\/\d+\b/.test(u.pathname);
+  } catch {
+    return /\/tunes\/\d+\b/.test(String(s));
+  }
+}
+
+function isSessionBookmarksUrl(s) {
+  try {
+    const u = new URL(String(s));
+    return /^\/members\/\d+\/bookmarks\/?$/.test(u.pathname);
+  } catch {
+    return /\/members\/\d+\/bookmarks\/?$/.test(String(s));
+  }
+}
+
+function isSessionMemberTunesUrl(s) {
+  try {
+    const u = new URL(String(s));
+    return /^\/members\/\d+\/tunes\/?$/.test(u.pathname);
+  } catch {
+    return /\/members\/\d+\/tunes\/?$/.test(String(s));
+  }
+}
+
+function extractMemberIdFromSessionUrl(s) {
+  try {
+    const u = new URL(String(s));
+    const m = u.pathname.match(/^\/members\/(\d+)\b/i);
+    return m ? m[1] : null;
+  } catch {
+    const m = String(s).match(/\/members\/(\d+)\b/i);
+    return m ? m[1] : null;
+  }
+}
+
+function normalizeToJsonUrl(url) {
+  const u = new URL(String(url));
+  u.searchParams.set("format", "json");
+  return u.toString();
+}
+
+function extractTuneIdFromSettingUrl(s) {
+  try {
+    const u = new URL(String(s));
+    const m = u.pathname.match(/^\/tunes\/(\d+)\b/);
+    return m ? m[1] : null;
+  } catch {
+    const m = String(s).match(/\/tunes\/(\d+)\b/);
+    return m ? m[1] : null;
+  }
+}
+
+function extractSettingIdFromSettingUrl(s) {
+  const m = String(s).match(/#setting-?(\d+)\b/i);
+  return m ? m[1] : null;
+}
+
+function findSettingById(tuneData, tuneUrlNoHash, settingIdStr) {
+  const settings = (tuneData && Array.isArray(tuneData.settings)) ? tuneData.settings : [];
+  const targetId = String(settingIdStr || "");
+  if (!targetId) return null;
+
+  for (const s of settings) {
+    if (s && (String(s.id) === targetId)) return s;
+  }
+
+  const targetUrl = `${String(tuneUrlNoHash).replace(/\?.*$/, "")}#setting${targetId}`;
+  for (const s of settings) {
+    if (!s) continue;
+    const sid = (s.id != null) ? String(s.id) : "";
+    if (sid && (`${String(tuneUrlNoHash).replace(/\?.*$/, "")}#setting${sid}` === targetUrl)) return s;
+  }
+
+  return null;
+}
+
+/* ============================================================
+   Chord detection
+   ============================================================ */
+
+function abcBodyHasChords(bodyText) {
+  const s = String(bodyText || "");
+  if (s.indexOf('"') === -1) return false;
+
+  const chordRe = /"[^"\r\n]{1,20}"/g;
+  const matches = s.match(chordRe);
+  if (!matches) return false;
+
+  for (const token of matches) {
+    const inner = token.slice(1, -1).trim();
+    if (!inner) continue;
+
+    if (/^(N\.?C\.?|NC)$/i.test(inner)) return true;
+
+    if (/^[A-Ga-g](?:#|b)?(?:m|min|maj|dim|aug|sus|add)?\d{0,2}(?:\([^)]*\))?(?:[\/][A-Ga-g](?:#|b)?)?$/.test(inner)) {
+      return true;
+    }
+
+    if (/^[A-Ga-g](?:#|b)?/.test(inner)) return true;
+  }
+  return false;
+}
+
+/* ============================================================
+   ABC helpers
+   ============================================================ */
+
+function extractTuneIdFromSessionUrl(s) {
+  try {
+    const u = new URL(String(s));
+    const m = u.pathname.match(/^\/tunes\/(\d+)\b/);
+    return m ? m[1] : null;
+  } catch {
+    const m = String(s).match(/\/tunes\/(\d+)\b/);
+    return m ? m[1] : null;
+  }
+}
+
+function normalizeTuneType(type) {
+  return String(type || "").trim().toLowerCase();
+}
+
+function canonicalRhythm(r) {
+  return String(r || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .replace(/\u2011|\u2012|\u2013|\u2014/g, "-");
+}
+
+function defaultMForRhythm(r) {
+  const rr = canonicalRhythm(r);
+
+  if (rr === "reel" || rr === "hornpipe" || rr === "barndance" || rr === "barn dance" ||
+      rr === "strathspey" || rr === "march") return "4/4";
+  if (rr === "jig") return "6/8";
+  if (rr === "slip jig" || rr === "slipjig") return "9/8";
+  if (rr === "hop jig" || rr === "hopjig") return "9/8";
+  if (rr === "slide") return "12/8";
+  if (rr === "waltz" || rr === "mazurka") return "3/4";
+  if (rr === "polka") return "2/4";
+  if (rr === "three-two" || rr === "three two" || rr === "3-2" || rr === "3/2") return "3/2";
+  return "";
+}
+
+function defaultQForRhythm(r) {
+  const rr = canonicalRhythm(r);
+
+  if (rr === "jig" || rr === "slip jig" || rr === "slipjig" || rr === "slide" || rr === "hop jig" || rr === "hopjig")
+    return "3/8=120";
+  if (rr === "reel") return "1/2=90";
+  if (rr === "hornpipe" || rr === "march"  || rr === "barndance" || rr === "barn dance") return "1/2=80";
+  if (rr === "strathspey") return "1/2=70";
+  if (rr === "polka") return "1/4=120";
+  if (rr === "waltz" || rr === "mazurka") return "1/4=120";
+  if (rr === "three-two" || rr === "three two" || rr === "3-2" || rr === "3/2") return "1/2=80";
+  return "1/2=90";
+}
+
+function replaceBangSpaceWithNewlinePreservingDecorations(s) {
+  s = String(s || "");
+
+  let out = "";
+  let inDecoration = false;
+
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+
+    if (ch !== "!") {
+      out += ch;
+      continue;
+    }
+
+    const next = (i + 1 < s.length) ? s[i + 1] : "";
+
+    if (next && /\s/.test(next)) {
+      if (inDecoration) {
+        out += "!";
+        inDecoration = false;
+      } else {
+        out += "\n";
+        i++;
+      }
+      continue;
+    }
+
+    out += "!";
+    inDecoration = !inDecoration;
+  }
+
+  return out;
+}
+
+function processTitleForSorting(thisTitle) {
+  thisTitle = String(thisTitle || "").trim();
+
+  const prefixMap = {
+    "The ": ", The",
+    "Da ": ", Da",
+    "An ": ", An",
+    "A ": ", A",
+    "Le ": ", Le",
+    "La ": ", La",
+    "Ye ": ", Ye",
+    "Les ": ", Les",
+    "an ": ", an",
+    "Der ": ", Der",
+    "Die ": ", Die",
+    "Das ": ", Das",
+    "Ein ": ", Ein",
+    "Eine ": ", Eine"
+  };
+
+  for (const [prefix, suffix] of Object.entries(prefixMap)) {
+    if (thisTitle.startsWith(prefix)) {
+      return thisTitle.slice(prefix.length) + suffix;
+    }
+  }
+
+  return thisTitle;
+}
+
+function extractBody(abcText) {
+  const body = replaceBangSpaceWithNewlinePreservingDecorations(
+      String(abcText || "").replace(/^\uFEFF/, "")
+    )
+    .split(/\r?\n/)
+    .map(l => l.trim())
+    .join("\n")
+    .trim();
+
+  return body ? (body + "\n") : "\n";
+}
+
+/* ============================================================
+   K: tag normalization
+   ============================================================ */
+
+function normalizeKValue(k) {
+  k = String(k || "").trim();
+  if (!k) return "";
+
+  const tonicMatch = k.match(/^([A-Ga-g])\s*([#b]?)(.*)$/);
+  if (!tonicMatch) return k;
+
+  const tonic = tonicMatch[1].toUpperCase() + (tonicMatch[2] || "");
+  let rest = (tonicMatch[3] || "").trim().toLowerCase();
+
+  if (!rest) return tonic + "maj";
+  rest = rest.replace(/^[:\s]+/, "");
+
+  const shortToken = rest.match(/^(maj|min|dor|mix|phr|lyd|loc)\b/);
+  if (shortToken) return tonic + shortToken[1];
+
+  const mode = normalizeMode(rest);
+  return tonic + (mode || "maj");
+}
+
+function normalizeMode(mode) {
+  mode = String(mode || "").trim().toLowerCase();
+  if (!mode) return "";
+
+  if (mode === "major" || mode === "maj" || mode === "ionian") return "maj";
+  if (mode === "minor" || mode === "min" || mode === "aeolian") return "min";
+  if (mode === "dorian" || mode === "dor") return "dor";
+  if (mode === "mixolydian" || mode === "mix") return "mix";
+  if (mode === "phrygian" || mode === "phr") return "phr";
+  if (mode === "lydian" || mode === "lyd") return "lyd";
+  if (mode === "locrian" || mode === "loc") return "loc";
+
+  if (/^(maj|min|dor|mix|phr|lyd|loc)$/.test(mode)) return mode;
+
+  if (mode.includes("minor")) return "min";
+  if (mode.includes("major")) return "maj";
+  if (mode.includes("dorian")) return "dor";
+  if (mode.includes("mixolyd")) return "mix";
+  if (mode.includes("phryg")) return "phr";
+  if (mode.includes("lyd")) return "lyd";
+  if (mode.includes("locr")) return "loc";
+
+  return "";
+}
+
+function normalizeMembersUrl(inputUrl, memberSourceMode) {
+  const s = String(inputUrl || "").trim();
+  if (!s) return s;
+
+  const targetTail = getMemberSourceTailFromMode(memberSourceMode);
+
+  try {
+    const u = new URL(s);
+
+    if (!/thesession\.org$/i.test(u.hostname)) return s;
+
+    const path = u.pathname || "";
+    const m = path.match(/^\/members\/(\d+)(?:\/([^?#]*))?\/?$/i);
+    if (!m) return s;
+
+    const memberId = m[1];
+    u.pathname = `/members/${memberId}/${targetTail}`;
+    u.search = "";
+    u.hash = "";
+    return u.toString();
+  } catch {
+    const m = s.match(/^(https?:\/\/thesession\.org)?(\/members\/(\d+))(\/[^?#]*)?/i);
+    if (!m) return s;
+
+    const prefix = m[1] || "https://thesession.org";
+    const memberId = m[3];
+    return `${prefix}/members/${memberId}/${targetTail}`;
+  }
+}
+
+/* ============================================================
+   UI wiring
+   ============================================================ */
+
+let lastResult = null;
+let fetchInProgress = false;
+
+/* Allow pressing Enter in the URL field to trigger Fetch */
+if (tuneUrlInput) {
+  tuneUrlInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const btnFetch = $("btnFetch");
+      if (btnFetch) {
+        btnFetch.click();
+      }
+    }
+  });
+}
+
+function setFetchBusy(busy) {
+  fetchInProgress = !!busy;
+
+  $("btnFetch").disabled = fetchInProgress;
+  $("btnFindTune").disabled = fetchInProgress;
+  $("btnFindMember").disabled = fetchInProgress;
+  $("tuneUrl").disabled = fetchInProgress;
+  $("onlyChords").disabled = fetchInProgress;
+  $("memberSourceMode").disabled = fetchInProgress;
+  $("btnFetch").textContent = fetchInProgress ? "Fetching" : "Fetch";
+  $("memberSort").disabled = fetchInProgress;
+
+  updateResortEnabled();
+}
+
+function safeFilename(s) {
+  return String(s || "tune")
+    .replace(/[^\w\-]+/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 80) || "tune";
+}
+
+function enableActions(on) {
+  $("btnCopy").disabled = !on;
+  $("btnDownload").disabled = !on;
+  $("btnOpenInTools").disabled = !on;
+}
+
+function capitalizeFirst(str) {
+  if (!str) return str;
+  const [first, ...rest] = str;
+  return first.toUpperCase() + rest.join("");
+}
+
+function buildOperationDescription(result, originalUrl, onlyChordsEnabled) {
+
+  const isTune = isSessionTuneUrl(originalUrl);
+  const memberName = (result && result.memberName) ? result.memberName : "member";
+  const tuneTitle = (result && result.tuneTitle) ? result.tuneTitle : "tune";
+
+  const memberId = extractMemberIdFromSessionUrl(originalUrl);
+  const memberUrl = memberId ? `https://thesession.org/members/${memberId}` : "";
+
+  const tuneId = extractTuneIdFromSessionUrl(originalUrl);
+  const tuneUrl = tuneId ? `https://thesession.org/tunes/${tuneId}` : "";
+
+  const chordSuffix = onlyChordsEnabled ? " (only settings with chords)" : "";
+
+  // const accum = "%\n% Created by Michael Eskin's thesession.org Power Tools\n%\n% https://michaeleskin.com/tools/thesession_power_tools.html\n%\n\n%\n";
+  const accum = '';
+  // const postfix = "\n%\n\n%\n% Make S: tag hyperlinks in the rendered ABC notation clickable\n%\n%enable_hyperlinks\n%\n";
+  const postfix = "\n%enable_hyperlinks";
+
+  if (isTune) {
+    const tuneLine = tuneUrl ? `\n% ${tuneUrl}` : "";
+    return accum + `% All tune settings for "${tuneTitle}"${chordSuffix}` + tuneLine + postfix;
+  }
+
+  const memberLine = memberUrl ? `\n% ${memberUrl}` : "";
+
+  const sourceMode = result && result.memberSourceMode ? result.memberSourceMode : "submitted";
+
+  if (sourceMode === "tunebook_first") {
+    return accum + `% First tune settings only for tunebook tunes by ${memberName}${chordSuffix}` + memberLine + postfix;
+  }
+
+  if (sourceMode === "tunebook_all") {
+    return accum + `% All tune settings for tunebook tunes by ${memberName}${chordSuffix}` + memberLine + postfix;
+  }
+
+  if (sourceMode === "bookmarked") {
+    return accum + `% All bookmarked tune settings by ${memberName}${chordSuffix}` + memberLine + postfix;
+  }
+
+  if (sourceMode === "sets") {
+    return accum + `% All tune sets by ${memberName}${chordSuffix}` + memberLine + postfix;
+  }
+
+  return accum + `% All submitted tune settings by ${memberName}${chordSuffix}` + memberLine + postfix;
+}
+
+function getMemberDownloadTypeLabel(sourceMode) {
+  const mode = String(sourceMode || "submitted");
+
+  if (mode === "tunebook_first") return "Tunebook (First Setting Only)";
+  if (mode === "tunebook_all") return "Tunebook (All Settings)";
+  if (mode === "bookmarked") return "Bookmarked Tune Settings";
+  if (mode === "sets") return "Tune Sets";
+
+  return "Submitted Tune Settings";
+}
+
+function getShareUrlContext(result, originalUrl) {
+  const isTune = isSessionTuneUrl(originalUrl);
+  const chordsOnly =
+    !!$("onlyChords") &&
+    $("onlyChords").checked &&
+    (!result || result.memberSourceMode !== "sets");
+
+  if (isTune) {
+    return {
+      memberName: "",
+      downloadType: "",
+      chordsOnly
+    };
+  }
+
+  return {
+    memberName: (result && result.memberName) ? result.memberName : "",
+    downloadType: getMemberDownloadTypeLabel(result && result.memberSourceMode),
+    chordsOnly
+  };
+}
+
+$("btnTune").addEventListener("click", async () => {
+  sendGoogleAnalytics("action", "open_tunes");
+  window.open("https://thesession.org/tunes", "_blank","noopener,noreferrer");
+});
+
+$("btnMembers").addEventListener("click", async () => {
+  sendGoogleAnalytics("action", "open_members");
+  window.open("https://thesession.org/members", "_blank","noopener,noreferrer");
+});
+
+$("btnABCTools").addEventListener("click", async () => {
+  sendGoogleAnalytics("action", "open_abctools");
+  window.open("https://abc.tunebook.app/abctools.html", "_blank","noopener,noreferrer");
+});
+
+$("btnFetch").addEventListener("click", async () => {
+  if (fetchInProgress) {
+    appendStatus("Fetch already in progress");
+    return;
+  }
+
+  setFetchBusy(true);
+
+  const url = $("tuneUrl").value.trim();
+  const onlyChords = !!onlyChordsEl.checked;
+  const memberSourceMode = memberSourceModeEl ? String(memberSourceModeEl.value || "submitted") : "submitted";
+  const memberSortModeEl = $("memberSort");
+  const memberSortMode = memberSortModeEl ? String(memberSortModeEl.value || "orig") : "orig";
+
+  enableActions(false);
+  outEl.value = "";
+  lastResult = null;
+
+  try {
+    const result = await fetchTuneOrBookmarksAsABC(url, { onlyChords, memberSourceMode, memberSortMode });
+
+    if (!result) {
+      return;
+    }
+
+    lastResult = result;
+
+    const effectiveOnlyChords = onlyChords && result.memberSourceMode !== "sets";
+
+    const operationDescription = buildOperationDescription(result, url, effectiveOnlyChords);
+    
+    outEl.value =
+      operationDescription + "\n" +
+      result.combined;
+
+    clearStatus("Success!");
+
+    if (!isSessionTuneUrl(url)) {
+      const memberLine = (result && result.memberName) ? result.memberName : "";
+      appendStatus(`Member: ${memberLine}`);
+    }
+
+    if (isSessionTuneUrl(url)) {
+      sendGoogleAnalytics("action", "tune_settings");
+
+      appendStatus(`- Title: ${result.tuneTitle}`);
+      appendStatus(`- Type: ${capitalizeFirst((result.tuneType || "(varies / not provided)"))}`);
+    } else {
+      const sourceMode = result && result.memberSourceMode ? result.memberSourceMode : "submitted";
+      const analyticsToken = getMemberSourceAnalyticsToken(sourceMode);
+
+      const itemsCount = result.memberItemsCount;
+      const settingsCount = result.memberSettingsCount;
+      const settingsFoundBeforeFilter =
+        (result.memberSettingsFoundBeforeFilter != null)
+          ? result.memberSettingsFoundBeforeFilter
+          : settingsCount;
+
+      if ((settingsCount > 0) && (settingsCount <= 50)) {
+        sendGoogleAnalytics("action", "user_s_" + analyticsToken);
+      } else if (settingsCount <= 100) {
+        sendGoogleAnalytics("action", "user_m_" + analyticsToken);
+      } else if (settingsCount <= 200) {
+        sendGoogleAnalytics("action", "user_l_" + analyticsToken);
+      } else if (settingsCount <= 500) {
+        sendGoogleAnalytics("action", "user_xl_" + analyticsToken);
+      } else if (settingsCount <= 1000) {
+        sendGoogleAnalytics("action", "user_xxl_" + analyticsToken);
+      } else {
+        sendGoogleAnalytics("action", "user_xxxl_" + analyticsToken);
+      }
+
+      if (result && result.memberSortMode) {
+        const sortLabel =
+          result.memberSortMode === "orig" ? "Original order" :
+          result.memberSortMode === "title" ? "Sorted by title (T:)" :
+          result.memberSortMode === "key" ? "Sorted by key (K:)" :
+          result.memberSortMode === "rhythm" ? "Sorted by rhythm (R:)" :
+          "Original order";
+        appendStatus(`- Member results sort: ${sortLabel}`);
+      }
+
+      if (sourceMode === "tunebook_first") {
+        if (itemsCount != null) appendStatus(`- Tunebook tunes fetched: ${itemsCount}`);
+        if (settingsCount != null) appendStatus(`- First tunebook settings found: ${settingsCount}`);
+      } else if (sourceMode === "tunebook_all") {
+        if (itemsCount != null) appendStatus(`- Tunebook tunes fetched: ${itemsCount}`);
+        if (settingsFoundBeforeFilter != null) appendStatus(`- Tunebook tune settings found: ${settingsFoundBeforeFilter}`);
+      } else if (sourceMode === "submitted") {
+        if (itemsCount != null) appendStatus(`- Submitted settings fetched: ${itemsCount}`);
+        if (settingsCount != null) appendStatus(`- Submitted tune settings found: ${settingsCount}`);
+      } else if (sourceMode === "bookmarked") {
+        if (itemsCount != null) appendStatus(`- Bookmark items fetched: ${itemsCount}`);
+        if (settingsCount != null) appendStatus(`- Bookmarked tune settings found: ${settingsCount}`);
+      } else if (sourceMode === "sets") {
+        if (itemsCount != null) appendStatus(`- Tune sets fetched: ${itemsCount}`);
+        if (settingsFoundBeforeFilter != null) appendStatus(`- Tune settings found in sets: ${settingsFoundBeforeFilter}`);
+        if (settingsCount != null) appendStatus(`- Tune sets added to results: ${settingsCount}`);
+      }
+    }
+
+    if (onlyChords && result.memberSourceMode !== "sets") {
+      appendStatus(`- Skipped (no chords): ${result.skippedNoChords || 0}`);
+    }
+
+    if (result.skippedNotFound != null && result.skippedNotFound > 0) {
+      appendStatus(`- Skipped (missing tune/setting): ${result.skippedNotFound}`);
+    }
+
+    appendStatus(`- Final # of settings added to results: ${result.settingsCount}`);
+    appendStatus("");
+
+    const shareCtx = getShareUrlContext(result, url);
+
+    if (testOpenInAbcTools(outEl.value, shareCtx.memberName, shareCtx.downloadType, shareCtx.chordsOnly)) {
+      enableActions(true);
+      appendStatus("You can now copy or download the ABC tune settings or open them in the ABC Transcription Tools.");
+    } else {
+      enableActions(true);
+      $("btnOpenInTools").disabled = true;
+      appendStatus("You can now copy or download the ABC tune settings.");
+    }
+
+  } catch (e) {
+    console.error(e);
+    clearStatus(e && e.message ? e.message : String(e));
+  } finally {
+    setFetchBusy(false);
+  }
+});
+
+$("btnResort").addEventListener("click", () => {
+  if (!lastResult || !Array.isArray(lastResult.includedUnsorted) || !lastResult.includedUnsorted.length) {
+    return;
+  }
+
+  const mode = String(($("memberSort") && $("memberSort").value) || "orig");
+  sendGoogleAnalytics("action", "resort_" + mode);
+
+  const sourceLabel = lastResult.memberSourceLabel || "Bookmarks";
+
+  let rebuilt;
+  if (lastResult.memberSourceMode === "sets") {
+    const sorted = sortIncludedForMemberSets(lastResult.includedUnsorted, mode);
+    rebuilt = buildMemberSetsABCFromIncluded(sorted, sourceLabel);
+  } else {
+    const sorted = sortIncludedForMember(lastResult.includedUnsorted, mode);
+    rebuilt = buildMemberABCFromIncluded(sorted, sourceLabel);
+  }
+
+  lastResult = {
+    ...lastResult,
+    combined: rebuilt.combined,
+    settingsCount: rebuilt.settingsCount,
+    memberSortMode: mode
+  };
+
+  const effectiveOnlyChords =
+    $("onlyChords").checked && lastResult.memberSourceMode !== "sets";
+
+  const operationDescription = buildOperationDescription(
+    lastResult,
+    $("tuneUrl").value.trim(),
+    effectiveOnlyChords
+  );
+
+  outEl.value =
+    operationDescription + "\n" +
+    lastResult.combined;
+
+  clearStatus("Re-sorted!\n");
+
+  if (lastResult.memberName) appendStatus(`Member: ${lastResult.memberName}`);
+
+  const sortLabel =
+    mode === "orig" ? "Original order" :
+    mode === "title" ? "Sorted by title (T:)" :
+    mode === "key" ? "Sorted by key (K:)" :
+    mode === "rhythm" ? "Sorted by rhythm (R:)" :
+    "Original order";
+
+  appendStatus(`- Member results sort: ${sortLabel}`);
+  appendStatus(`- Final # of settings added to results: ${lastResult.settingsCount}`);
+  appendStatus("");
+
+  const shareCtx = getShareUrlContext(lastResult, $("tuneUrl").value.trim());
+
+  if (testOpenInAbcTools(outEl.value, shareCtx.memberName, shareCtx.downloadType, shareCtx.chordsOnly)) {
+    enableActions(true);
+  } else {
+    enableActions(true);
+    $("btnOpenInTools").disabled = true;
+  }
+
+  appendStatus("Done.");
+  updateResortEnabled();
+});
+
+$("btnCopy").addEventListener("click", async () => {
+  sendGoogleAnalytics("action", "copy");
+
+  try {
+    await navigator.clipboard.writeText(outEl.value);
+    appendStatus("ABC tune settings copied to the clipboard.");
+  } catch (e) {
+    appendStatus("ABC tune settings copy failed (browser permission). You can still select-all and copy manually.");
+  }
+});
+
+$("btnDownload").addEventListener("click", async () => {
+  sendGoogleAnalytics("action", "download");
+  if (!lastResult) return;
+
+  const originalUrl = $("tuneUrl").value.trim();
+  const memberId = extractMemberIdFromSessionUrl(originalUrl);
+
+  let baseName;
+
+  if (isSessionTuneUrl(originalUrl)) {
+    baseName = lastResult.tuneTitle ? lastResult.tuneTitle : "tune";
+  } else if (memberId) {
+    const sourceMode = lastResult.memberSourceMode || "submitted";
+    const label =
+      sourceMode === "tunebook_first" ? "tunebook_first_setting_only" :
+      sourceMode === "tunebook_all" ? "tunebook_all_settings" :
+      sourceMode === "bookmarked" ? "bookmarked_tune_settings" :
+      sourceMode === "sets" ? "tune_sets" :
+      "submitted_tune_settings";
+
+    baseName = `${label}_member_${memberId}`;
+  } else {
+    baseName = "thesession";
+  }
+
+  const postfix = (gIsIOS || gIsAndroid) ? ".txt" : ".abc";
+
+  let suggestedName =
+    `${safeFilename(baseName)}` +
+    (lastResult.tuneId ? `_${lastResult.tuneId}` : "") +
+    postfix;
+
+  try {
+    let fname = await promptForDownloadFileName(suggestedName);
+    if (fname === null) return;
+
+    fname = sanitizeForDownloadName(fname);
+    fname = ensureFileExt(fname, postfix);
+
+    const v = validateFileName(fname);
+    if (!v.ok) {
+      if (!window.DayPilot || !DayPilot.Modal || typeof DayPilot.Modal.alert !== "function") {
+        alert(v.msg);
+      } else {
+        DayPilot.Modal.alert(v.msg, {
+          theme: "modal_compact",
+          top: 120,
+          scrollWithPage: false
+        });
+      }
+      return;
+    }
+
+    const finalName = v.value;
+
+    await shareOrDownloadFile(outEl.value, finalName, "text/plain;charset=utf-8");
+    appendStatus("ABC tune settings saved to " + finalName);
+  } catch (e) {
+    appendStatus("ABC tune settings save failed.");
+  }
+});
+
+$("btnOpenInTools").addEventListener("click", () => {
+  sendGoogleAnalytics("action", "abctools_shareurl");
+
+  try {
+    if (!lastResult) return;
+
+    const shareCtx = getShareUrlContext(lastResult, $("tuneUrl").value.trim());
+
+    openInAbcTools(outEl.value, shareCtx.memberName, shareCtx.downloadType, shareCtx.chordsOnly);
+    appendStatus("ABC tune settings opened in the ABC Transcription Tools.");
+  } catch (e) {
+    console.error(e);
+    appendStatus("Open tune settings in ABC Transcription Tools failed: " + (e && e.message ? e.message : String(e)));
+  }
+});
+
+$("btnFindTune").addEventListener("click", async () => {
+  sendGoogleAnalytics("action", "find_tune_open");
+  await openSessionSearchDialog("tune");
+});
+
+$("btnFindMember").addEventListener("click", async () => {
+  sendGoogleAnalytics("action", "find_member_open");
+  await openSessionSearchDialog("member");
+});
+
+/* ============================================================
+   Base64 helpers
+   ============================================================ */
+
+function def_bytesToBase64(bytes) {
+  let binary = "";
+  let len = bytes.length;
+  for (let i = 0; i < len; i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary);
+}
+
+function def_bytesToBase64URL(bytes) {
+  return def_bytesToBase64(bytes)
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+}
+
+/* ============================================================
+   Open in ABC Transcription Tools
+   ============================================================ */
+
+function buildShareName(theABC, memberName, downloadType, chordsOnly) {
+
+  // Member downloads
+  if (memberName) {
+    let name = memberName;
+
+    if (downloadType) {
+      name += "'s " + downloadType;
+    }
+
+    if (chordsOnly) {
+      name += " (Chords only)";
+    }
+
+    name = name
+      .replace(/\s+/g, " ")
+      .trim()
+      .replace(/\s+/g, "_");
+
+    return encodeURIComponent(name);
+  }
+
+  // Tune downloads
+  let m = String(theABC).match(/^\s*T\s*:\s*(.+)\s*$/m);
+  let tuneTitle = (m && m[1]) ? m[1].trim() : "tune";
+
+  // Detect "(1 of N)" pattern and convert to "All tune settings"
+  let multiMatch = tuneTitle.match(/^(.*)\(\s*1\s+of\s+\d+\s*\)$/i);
+
+  if (multiMatch) {
+    tuneTitle = multiMatch[1].trim() + " (All tune settings)";
+  }
+
+  if (chordsOnly) {
+    if (/\(All tune settings\)$/i.test(tuneTitle)) {
+      tuneTitle = tuneTitle.replace(/\(All tune settings\)$/i, "(All tune settings, Chords only)");
+    } else {
+      tuneTitle += " (Chords only)";
+    }
+  }
+
+  return encodeURIComponent(tuneTitle.replace(/\s+/g, "_"));
+}
+
+function testOpenInAbcTools(theABC, memberName, downloadType, chordsOnly) {
+
+  let shareName = buildShareName(theABC, memberName, downloadType, chordsOnly);
+
+  let encoder = new TextEncoder();
+  let utf8Bytes = encoder.encode(theABC);
+  let deflated = pako.deflate(utf8Bytes, { level: 6 });
+  let abc_compressed = def_bytesToBase64URL(deflated);
+
+  let url =
+    "https://abc.tunebook.app/abctools.html?def=" + abc_compressed +
+    "&format=noten&ssp=0" +
+    "&name=" + shareName +
+    "&editor=1";
+
+  return url.length < 8100;
+}
+
+function openInAbcTools(theABC, memberName, downloadType, chordsOnly) {
+
+  let shareName = buildShareName(theABC, memberName, downloadType, chordsOnly);
+
+  let encoder = new TextEncoder();
+  let utf8Bytes = encoder.encode(theABC);
+  let deflated = pako.deflate(utf8Bytes, { level: 6 });
+  let abc_compressed = def_bytesToBase64URL(deflated);
+
+  let url =
+    "https://abc.tunebook.app/abctools.html?def=" + abc_compressed +
+    "&format=noten&ssp=0" +
+    "&name=" + shareName +
+    "&editor=1";
+
+  if (url.length < 8100) {
+    window.open(url, "_blank", "noopener,noreferrer");
+  } else {
+    DayPilot.Modal.alert(
+      '<p style="text-align:center;font-family:helvetica;font-size:12pt;">The Share URL is too long to open in ABC Transcription Tools.<br/><br/>Instead, copy and paste the ABC or save it to an ABC file and load it from the tools.</p>',
+      { theme: "modal_compact", top: 120, scrollWithPage: false }
+    );
+  }
+}
+
+/* ============================================================
+   Tip jar visit reminder
+   ============================================================ */
+
+function incrementPageVisitCount() {
+
+  if (!gLocalStorageAvailable) {
+    return;
+  }
+
+  let count = 0;
+
+  try {
+    count = parseInt(localStorage.getItem("tspt_visit_count") || "0", 10);
+  } catch {
+    count = 0;
+  }
+
+  count++;
+
+  localStorage.setItem("tspt_visit_count", count);
+
+  checkTipReminder(count);
+}
+
+function checkTipReminder(count) {
+
+  let show = false;
+
+  if (count === 10) show = true;
+  else if (count === 50) show = true;
+  else if (count === 100) show = true;
+  else if (count > 100 && count % 100 === 0) show = true;
+
+  if (!show) return;
+
+  const html =
+    `<div style="text-align:center;font-family:helvetica,arial,sans-serif;font-size:14pt;line-height:1.5;margin-top:10px">` +
+
+    `<b>Enjoying the thesession.org Power Tools?</b><br/><br/>` +
+    `If this utility has been helpful, please consider` +
+    `<br/>buying the developer a beer by tossing a few` +
+    `<br/>bucks into one of the tip jars.<br/>` +
+
+    `<div style="margin-top:10px;">` +
+    `<b>PayPal</b><br/>` +
+    `<a href="https://paypal.me/MichaelEskin" target="_blank" rel="noopener noreferrer" style="color:#1a73e8; text-decoration:underline;">https://paypal.me/MichaelEskin</a>` + 
+    `</div>` +
+
+    `<div style="margin-top:10px;">` +
+    `<b>Venmo</b><br/>` +
+    `@MichaelEskin` +
+    `</div>` +
+
+    `<div style="margin-top:14px;font-size:0.9em;opacity:0.8;">` +
+    `Thank you for supporting development!` +
+    `</div>` +
+
+    `</div>`;
+
+  DayPilot.Modal.alert(html, {
+    theme: "modal_tipjar",
+    top: 125,
+    scrollWithPage: false
+  });
+}
+
+/* ============================================================
+   Instructions modal
+   ============================================================ */
+
+$("btnHelp").addEventListener("click", () => {
+  sendGoogleAnalytics("action", "instructions");
+
+const content =
+  '  <div style="margin-bottom:16px;">' +
+  '    This tool fetches ABC tune settings from <b>thesession.org</b> using either a <b>tune URL</b> or a <b>member URL</b>, then combines the results into a single ABC output that you can copy, save, or open in the ABC Transcription Tools.' +
+  '  </div>' +
+
+  '  <hr style="border:0; border-top:1px solid #ccc; margin:18px 0;">' +
+
+  '  <p style="text-align:center;margin-bottom:16px;"><a href="https://youtu.be/zIE86i-Caws" target="_blank">Complete Walkthrough Video on YouTube</a></p>' +
+
+  '  <hr style="border:0; border-top:1px solid #ccc; margin:18px 0;">' +
+
+  '  <div style="margin-bottom:16px;">' +
+  '    <div style="font-weight:700; margin-bottom:6px;">Find Tune / Find Member</div>' +
+  '    <div>' +
+  '      You can search The Session directly from within the tool by clicking <b>Find Tune…</b> or <b>Find Member…</b>' +
+  '    </div>' +
+  '    <div style="opacity:0.8; margin-top:6px;">' +
+  '      Enter a search term, then click <b>Search Tunes</b> or <b>Search Members</b>.<br/>For tune searches, you can also optionally filter by <b>tune style</b> and <b>key/mode</b>.<br/>Select one of the matching results and click <b>OK</b> to populate the <b>thesession.org URL</b> field automatically.' +
+  '    </div>' +
+  '    <div style="opacity:0.8; margin-top:6px;">' +
+  '      <b>Note:</b> Tune search results are limited to 1000 items and member search results to 100 items.<br/>The search methods use the same API as the native search on thesession.org and should produce results identical to those you would get searching on the site itself.<br/>If you believe you are seeing incorrect results, please try the same search on thesession.org before reporting an issue.' +
+  '    </div>' +
+  '  </div>' +
+
+  '  <hr style="border:0; border-top:1px solid #ccc; margin:18px 0;">' +
+
+  '  <div style="margin-bottom:16px;">' +
+  '    <div style="font-weight:700; margin-bottom:6px;">Enter or populate a thesession.org URL</div>' +
+  '    <div>' +
+  '      You can either use <b>Find Tune…</b> / <b>Find Member…</b> to populate the <b>thesession.org URL</b> field automatically, or manually paste a thesession.org <b>tune URL</b> or <b>member URL</b> into the field and click <b>Fetch</b>.' +
+  '    </div>' +
+  '  </div>' +
+
+  '  <div style="margin-bottom:16px;">' +
+  '    <div style="font-weight:700; margin-bottom:6px;">Examples (click to fill the thesession.org URL field)</div>' +
+  '    <div style="margin-bottom:6px;">' +
+  '      <a href="https://thesession.org/tunes/1" class="exampleLink" data-fill-url="https://thesession.org/tunes/1">https://thesession.org/tunes/1</a>' +
+  '    </div>' +
+  '    <div style="margin-bottom:6px;">' +
+  '      <a href="https://thesession.org/members/12799" class="exampleLink" data-fill-url="https://thesession.org/members/12799">https://thesession.org/members/12799</a>' +
+  '    </div>' +
+  '  </div>' +
+
+  '  <hr style="border:0; border-top:1px solid #ccc; margin:18px 0;">' +
+  
+  '  <div style="margin-bottom:16px;">' +
+  '    <div style="font-weight:700; margin-bottom:6px;">For member URLs, choose what to fetch</div>' +
+  '    <div>' +
+  '      Use the <b>For member URLs, fetch</b> selector to choose whether to fetch the member\'s <b>Tunebook (First Setting Only)</b>, <b>Tunebook (All Settings)</b>, <b>Submitted Tune Settings</b>, <b>Bookmarked Tune Settings</b>, or <b>Tune Sets</b>.' +
+  '    </div>' +
+  '    <div style="margin-top:10px;">' +
+  '      <ul style="margin:10px 0 0 10px;">' +
+  '        <li><b>Tunebook (First Setting Only)</b>: all tunes in the member\'s tunebook, including only the first available setting for each tune</li>' +
+  '        <li><b>Tunebook (All Settings)</b>: all tunes in the member\'s tunebook along with all available settings for those tunes</li>' +
+  '        <li><b>Submitted Tune Settings</b>: all the tune settings the member has submitted (default)</li>' +
+  '        <li><b>Bookmarked Tune Settings</b>: all tune settings the user has bookmarked</li>' +
+  '        <li><b>Tune Sets</b>: all tune sets for the member; each set is built by fetching the settings used in the set and combining them into a single ABC result</li>' +
+  '      </ul>' +
+  '    </div>' +
+  '    <div style="opacity:0.8; margin-top:6px;">' +
+  '      <b>Note:</b> Some members\' tunebooks contain many tunes, each with multiple settings.<br/>' +
+  '      When using <b>Tunebook (All Settings)</b>, the tool will display a confirmation dialog before downloading what may be a large amount of data.' +
+  '    </div>' +
+  '  </div>' +
+
+  '  <hr style="border:0; border-top:1px solid #ccc; margin:18px 0;">' +
+
+  '  <div style="margin-bottom:16px;">' +
+  '    <div style="font-weight:700; margin-bottom:6px;">Optional guitar chords filter</div>' +
+  '    <div>' +
+  '      If <b>“Only include settings with chords (except Tune Sets)”</b> is checked, the tool will include only settings that contain guitar-style chord annotations in the ABC (for example, <code>"Em"</code>, <code>"D"</code>, <code>"G/B"</code>, etc.).' +
+  '    </div>' +
+  '    <div style="opacity:0.8; margin-top:6px;">' +
+  '      This is useful for quickly collecting settings with chords while skipping melody-only versions.<br/>' +
+  '      Tune Sets always include all settings and are not filtered for chords.' +
+  '    </div>' +
+  '  </div>' +
+
+  '  <hr style="border:0; border-top:1px solid #ccc; margin:18px 0;">' +
+
+  '  <div style="margin-bottom:16px;">' +
+  '    <div style="font-weight:700; margin-bottom:6px;">Sorting member results</div>' +
+  '    <div>' +
+  '      For <b>member URLs</b>, choose how the fetched results should be sorted using the <b>Sort member results</b> options.' +
+  '    </div>' +
+  '    <div style="margin-top:10px;">' +
+  '      <ul style="margin:10px 0 0 10px;">' +
+  '        <li><b>Original order</b>: Preserve the original order returned by thesession.org for the selected member source</li>' +
+  '        <li><b>Sorted by title (T:)</b>: Sorted alphabetically by tune title, or by set title for <b>Tune Sets</b></li>' +
+  '        <li><b>Sorted by key (K:)</b>: Grouped by key in alphabetical key order, or by the first tune key for <b>Tune Sets</b></li>' +
+  '        <li><b>Sorted by rhythm (R:)</b>: Grouped by rhythm (reel, jig, etc.), or by the first tune rhythm for <b>Tune Sets</b></li>' +
+  '      </ul>' +
+  '    </div>' +
+  '    <div style="margin-top:10px;">' +
+  '      After results have been fetched, you can change the sort option and click the <b>Re-sort</b> button to re-order the existing results instantly without re-fetching the data again from thesession.org.' +
+  '    </div>' +
+  '  </div>' +
+
+  '  <hr style="border:0; border-top:1px solid #ccc; margin:18px 0;">' +
+
+  '  <div style="margin-bottom:16px;">' +
+  '    <div style="font-weight:700; margin-bottom:6px;">After clicking Fetch</div>' +
+  '    <div>' +
+  '      You can copy the fetched ABC tune settings to the clipboard, save them to a .abc file (opens the sharing dialog on iOS), or, if the generated ShareURL is under 8100 characters, open the tune settings directly in <a href="https://abc.tunebook.app/" target="_blank" rel="noopener noreferrer">ABC Tools Lite</a>.' +
+  '    </div>' +
+  '  </div>' +
+
+  '  <hr style="border:0; border-top:1px solid #ccc; margin:18px 0;">' +
+
+  '  <div style="margin-bottom:16px;">' +
+  '    <div style="font-weight:700; margin-bottom:6px;">Title sorting rules</div>' +
+  '    <div>' +
+  '      When sorting by title (and when sub-sorting titles within a key or rhythm), common leading articles are ignored by moving them to the end. For example:' +
+  '      <ul style="margin:10px 0 0 10px;">' +
+  '        <li><b>The</b> Silver Spear → Silver Spear, The</li>' +
+  '        <li><b>An</b> Bhean Udaí Thall → Bhean Udaí Thall, An</li>' +
+  '        <li><b>A</b> Fig for a Kiss → Fig for a Kiss, A</li>' +
+  '      </ul>' +
+  '      The tune title shown in the ABC (<code>T:</code>) is <b>not changed</b>; this only affects sorting.' +
+  '    </div>' +
+  '  </div>' +
+
+  '  <hr style="border:0; border-top:1px solid #ccc; margin:18px 0;">' +
+
+  '  <div style="margin-bottom:16px;">' +
+  '    <div style="font-weight:700; margin-bottom:6px;">Rhythm sort order</div>' +
+  '    <div>' +
+  '      When sorting by rhythm, rhythms are ordered using a standard session-friendly list. Items with unknown or uncommon rhythms are placed after the known types.' +
+  '    </div>' +
+  '    <div style="margin-top:10px;">' +
+  '      <div style="opacity:0.95;">Rhythm sorting order:</div>' +
+  '      <div style="margin-top:6px; padding-left:10px; line-height:1.8;">' +
+  '        Reel, Hornpipe, Barndance, Strathspey, March, Jig, Slip Jig, Hop Jig, Slide, Polka, Waltz, Mazurka, Three-Two' +
+  '      </div>' +
+  '    </div>' +
+  '  </div>' +
+
+  '  <hr style="border:0; border-top:1px solid #ccc; margin:18px 0;">' +
+  
+  '  <div style="margin-bottom:16px;">' +
+  '    <div style="font-weight:700; margin-bottom:6px;">Open related sites in a new tab</div>' +
+  '    <div>' +
+  '      You can open the thesession.org Tunes or Members search pages in a new browser tab by clicking the <b>Open Tunes Search Page</b> or <b>Open Members Search Page</b> buttons.' +
+  '    </div>' +
+  '    <div style="margin-top:6px;">' +
+  '      Click the <b>ABC Transcription Tools</b> button to launch the tools in a new browser tab.' +
+  '    </div>' +
+  '  </div>' +
+
+  '  <hr style="border:0; border-top:1px solid #ccc; margin:18px 0;">' +
+
+  '  <div style="text-align:center; font-size:15pt; font-weight:700; margin-bottom:10px;">Tip Jars</div>' +
+  '  <div style="text-align:center; margin-bottom:12px;">' +
+  '    If you find this tool useful, please consider buying me a beer<br/>' +
+  '    by tossing a few bucks into one of my virtual tip jars:' +
+  '  </div>' +
+  '  <div style="text-align:center; margin-bottom:10px;">' +
+  '    <div style="font-weight:700;">PayPal</div>' +
+  '    <div><a href="https://paypal.me/MichaelEskin" target="_blank" rel="noopener noreferrer" style="color:#1a73e8; text-decoration:underline;">https://paypal.me/MichaelEskin</a></div>' + 
+  '  </div>' +
+  '  <div style="text-align:center; margin-bottom:16px;">' +
+  '    <div style="font-weight:700;">Venmo</div>' +
+  '    <div>@MichaelEskin</div>' +
+  '  </div>' +
+
+  '  <hr style="border:0; border-top:1px solid #ccc; margin:18px 0;">' +
+
+  '  <div style="margin-bottom:6px; text-align:center;"><b>The source code for this tool is available on GitHub:</b></div>' +
+  '  <div style="margin-bottom:6px; text-align:center;">' +
+  '    <a href="https://github.com/seisiuneer/abctools/blob/main/tools/thesession_power_tools.html" target="_blank" rel="noopener noreferrer">' +
+  '      thesession_power_tools.html' +
+  '    </a>' +
+  '  </div>';
+
+  const html =
+    '<div style="font-family:Helvetica, Arial, sans-serif; font-size:12.5pt; line-height:1.6;">' +
+    '  <div style="text-align:center; font-size:16pt; font-weight:700; margin-bottom:14px;">Instructions</div>' +
+    '  <div style="' +
+      'width:100%;' +
+      'padding:0 12px 2px 12px;' +
+      'padding-left:30px;' +
+      'box-sizing:border-box;' +
+    '">' +
+    content +
+    '  </div>' +
+    '</div>';
+
+  DayPilot.Modal.alert(html, {
+    theme: "modal_flat",
+    top: 25,
+    scrollWithPage: false
+  });
+});
+
+/* ============================================================
+   Reset/defaults
+   ============================================================ */
+
+function resetUIToDefaults() {
+  lastResult = null;
+  fetchInProgress = false;
+
+  $("tuneUrl").value = "https://thesession.org/tunes/1";
+  $("onlyChords").checked = false;
+  $("memberSourceMode").value = "submitted";
+  $("memberSort").value = "orig";
+
+  outEl.value = "";
+  clearStatus("Ready.");
+
+  enableActions(false);
+  $("btnOpenInTools").disabled = true;
+
+  $("btnFetch").textContent = "Fetch";
+  $("btnFetch").disabled = false;
+  $("tuneUrl").disabled = false;
+  $("onlyChords").disabled = false;
+  $("memberSourceMode").disabled = false;
+  $("memberSort").disabled = false;
+
+  if ($("btnResort")) $("btnResort").disabled = true;
+
+  $("btnFindTune").disabled = false;
+  $("btnFindMember").disabled = false;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  resetUIToDefaults();
+  setTimeout(() => {
+    incrementPageVisitCount();
+  }, 1200);
+});
+
+window.addEventListener("pageshow", (e) => {
+  if (e.persisted) {
+    resetUIToDefaults();
+  }
+});
+
+/* ============================================================
+   Analytics
+   ============================================================ */
+//
+// Lite: Customized
+// Use GoatCounter, a simple privacy-oriented click counter
+//
+function sendGoogleAnalytics(theCategory, theAction, theLabel) {
+  if (!navigator.onLine) {
+    return;
+  }
+
+  if (gIsIOS) {
+    return;
+  }
+
+  if (!gLocalStorageAvailable) {
+    return;
+  }
+
+  // Handle counting events with GoatCounter (largely for catching potential issues)
+  if (window.goatcounter && navigator.onLine) {
+
+    window.goatcounter.count({
+        path: `abcToolsLite__${theAction}`,
+        title: `#${theCategory}`,
+        event: true,
+    });
+  }
+}
+</script>
+
+<script type="text/javascript" src="pako.min.js?v=11"></script>
+<script type="text/javascript" src="daypilot-modal.min-3.10.1.js?v=11"></script>
+
+</body>
+</html>

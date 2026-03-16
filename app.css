@@ -677,35 +677,13 @@ margin-top:10px;
 	}
 }
 
-#abcplayer_settingsbutton_d{
-margin-top:10px;
-}
-
-@media (hover: hover) {
-	.abcplayer_settingsbutton_d:hover{
-	background: palegreen;
-	}
-}
-
 #abcplayer_updatebutton_d{
 margin-top:10px;
 }
 
 @media (hover: hover) {
 	.abcplayer_updatebutton_d:hover{
-	background: palegreen;
-	}
-}
-
-#abcplayer_updatebutton_d{
-height:42px;
-padding:12px;
-margin-top:10px;
-}
-
-@media (hover: hover) {
-	.abcplayer_updatebutton_d:hover{
-	background: palegreen;
+	background: var(--abctools-ui-btn-hovercolor);
 	}
 }
 

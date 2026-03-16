@@ -6,7 +6,7 @@
 ///////////////////////////////////////////////////////////////////////
 
 // Custom global variables / constants
-var gLiteVersionNumber = 'lite-3177-9';
+var gLiteVersionNumber = 'lite-3206-1';
 
 var ABC_TOOLS_BASE_URL =
   window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
@@ -476,7 +476,7 @@ function liteOpenToolsLinks() {
         // Tools
         '<button class="saveaswebsite btn btn-top btn-lite-lime" id="saveaswebsite" onclick="generateWebsite();" title="Export Tunebook as Website or Gallery" aria-label="Export Tunebook as Website or Gallery">Export Website</button>' +
         '<button class="saveaswebsite btn btn-top btn-lite-lime" id="opentuningtools" onclick="TuningTools();" title="Open Michael Eskin\'s Tuning Tools" aria-label="Open Michael Eskin\'s Tuning Tools">Tuning Tools</button>' +
-        '<button class="saveaswebsite btn btn-top btn-lite-lime" id="opentsoscraper" onclick="MustardScraper();" title="Open Michael Eskin\'s The Session Scraper" aria-label="Open Michael Eskin\'s The Session Scraper">Mustard Scraper</button>' +
+        '<button class="saveaswebsite btn btn-top btn-lite-lime" id="openothertools" onclick="OtherABCTools();" title="Open Michael Eskin\'s Other ABC Tools" aria-label="Open Michael Eskin\'s Other ABC Tools">Other ABC Tools</button>' +
       '</div>' +
       '<div id="tab_specs" class="adv-tab-panel adv-tab-links-container">' +
         // Specs
@@ -574,7 +574,7 @@ function liteOpenToolsLatestScreen() {
   // Modal Dialog Updates Header
   modal_msg += '<header class="modal-header-updates-container">';
   modal_msg += '<h2 class="modal-header-updates">ABC Tools Lite: Latest</h2>';
-  modal_msg += '<h3 class="modal-subheader modal-subheader-updates">Version ' + gLiteVersionNumber + ' (February 2026)</h3>';
+  modal_msg += '<h3 class="modal-subheader modal-subheader-updates">Version ' + gLiteVersionNumber + ' (March 2026)</h3>';
   modal_msg += '</header>';
 
   // Modal Dialog Updates Intro
@@ -586,6 +586,7 @@ function liteOpenToolsLatestScreen() {
   modal_msg += '<section class="modal-section-updates modal-section-summary">';
   modal_msg += '<h4>Update Summary</h4>';
   modal_msg += '<ul>';
+  modal_msg += '<li><strong>ABC Tools Lite</strong>: N.S.S.S. ABC Encoder export option added to Share dialogs.</li>';
   modal_msg += '<li><strong>ABC Tools Lite</strong>: Full keyboard navigation support for editor and notation view.</li>';
   modal_msg += '<li><strong>ABC Tools Lite</strong>: New <a href="https://github.com/anton-bregolas/abctools-lite#tools-lite-new-keyboard-shortcuts" target="_blank" title="View Full List of Keyboard Shortcuts on ABC Tools Lite GitHub">keyboard shortcuts</a> and <a href="https://github.com/anton-bregolas/abctools-lite#tools-lite-new-customization-options" target="_blank" title="View Full List of New Customization Options on ABC Tools Lite GitHub">customization options</a> added.</li>';
   modal_msg += '<li><strong>ABC Tools Lite</strong>: Custom new <a href="https://github.com/anton-bregolas/abctools-lite#ui-fixes--features-roadmap" target="_blank" title="View Full List of Custom UI Features on ABC Tools Lite GitHub">fonts, icons and styles</a> added to UI components.</li>';
@@ -597,6 +598,8 @@ function liteOpenToolsLatestScreen() {
   modal_msg += '<section class="modal-section-updates">';
   modal_msg += '<h4>Selected Updates</h4>';
   modal_msg += '<ul>';
+  modal_msg += '<li><b>Copy</b> & <b>Paste</b> buttons with smart insert / replace logic added to the top bar.</li>';
+  modal_msg += '<li>You can now send your tunes to <a href="https://ns.tunebook.app/abc-encoder.html" title="Open Anton Zille\'s ABC Encoder Tool, a Swiss army knife of ABC collection editing" target="_blank"><b>ABC Encoder</b></a> for advanced sorting, formatting or encoding via the <b>Sharing</b> dialog. Sorted ABC can then be reopened in ABC Tools.</li>';
   modal_msg += '<li>Keyboard users can now <b>Tab</b> through editor and notation buttons and open menus with <b>Enter</b> / <b>Space</b>. All dialogs now support pressing <b>Escape</b> to exit.</li>';
   modal_msg += '<li>New <b>X</b> button ensures app menus are easy to <b>quit</b> for desktop & mobile users.</li>';
   modal_msg += '<li>Try custom <a href="https://github.com/anton-bregolas/abctools-lite#tools-lite-new-keyboard-shortcuts" target="_blank" title="View Full List of Keyboard Shortcuts on ABC Tools Lite GitHub"><b>keyboard shortcuts</b></a> to speed up tasks and get to editing ABC quicker.</li>';

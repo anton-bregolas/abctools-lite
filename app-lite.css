@@ -298,10 +298,11 @@ div.modal_flat_form_item_label {
 }
 
 .modal-header-updates-container {
-  /* color: #ffd324; */
-  /* background: linear-gradient(90deg, #003300 25%, #663399 100%); */
-  color: var(--abctools-textcolor-contrast);
-  background-color: var(--abctools-bgcolor-contrast);
+  /* color: var(--abctools-textcolor-contrast); */
+  /* background-color: var(--abctools-bgcolor-contrast); */
+  color: black;
+  background: linear-gradient(90deg, #00a500 7%, #d6ff08 55%);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.14);
   border-radius: 0.75rem;
   text-align: center;
   padding: 1em;
@@ -710,6 +711,10 @@ a:focus-visible,
 .external_tools_share svg {
   width: 75%;
   height: 75%;
+}
+
+.external-tool img {
+  max-height: 8.25rem;
 }
 
 /* UI: Notation Placeholder */

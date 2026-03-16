@@ -146,13 +146,13 @@
 						<button class="copybutton btn btn-top" id="copybutton" onclick="CopyABC();" title="Copy all ABC text" aria-label="Copy all ABC text">
 							Copy
 						</button>
-						<button class="pastebutton btn btn-top" id="pastebutton" onclick="litePasteToABC();" title="Paste text from clipboard" aria-label="Paste text from clipboard">
+						<button class="pastebutton btn btn-top" id="pastebutton" onclick="litePasteToABC();" title="Paste text from clipboard. Select text before pasting to Replace" aria-label="Paste text from clipboard. Select text before pasting to Replace">
 							Paste
 						</button>
 						<button disabled class="playbuttondisabled btn btn-play btn-padded" id="playbutton" onclick="PlayABC(event);" title="Open ABC Player with selected tune.&nbsp;&nbsp;Press F4 to play / pause. Press F3 to rewind.&nbsp;&nbsp;Alt-click to play a random tune from Tunebook" aria-label="Open ABC Player with selected tune.&nbsp;&nbsp;Press F4 to play / pause. Press F3 to rewind.&nbsp;&nbsp;Alt-click to play a random tune from Tunebook">
 							Play
 						</button>
-						<button disabled class="playbuttondisabled btn btn-train btn-padded" id="tunetrainerbutton" onclick="TuneTrainerTopBar();" title="Open Tune Trainer with currently selected tune" aria-label="Open Tune Trainer with currently selected tune">
+						<button disabled class="playbuttondisabled btn btn-train btn-padded" id="tunetrainerbutton" onclick="TuneTrainerTopBar(event);" title="Open Tune Trainer with currently selected tune" aria-label="Open Tune Trainer with currently selected tune">
 							Train
 						</button>
 						<button disabled class="rawmodebuttondisabled btn btn-rawmode-off" id="rawmodebutton" onclick="ToggleRawMode()" title="Toggle Highlighting mode. When ON, select ABC text to highlight notation or click on notation to highlight ABC text">
