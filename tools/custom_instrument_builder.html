@@ -1,4 +1,35 @@
-<!DOCTYPE html>
+<!-- 
+ * 
+ * custom_instrument_builder.html - All code for the ABC Transcription Tools - Custom Instrument Builder
+ *
+ * Project repo at: https://github.com/seisiuneer/abctools/tree/main/tools/custom_instrument_builder.html
+ * 
+ *
+ * MIT License
+ * 
+ * Copyright (c) 2026 Michael Eskin
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ * 
+ -->
+ <!DOCTYPE html>
 <html lang="en">
 
   <head>
@@ -7,7 +38,7 @@
   <title>ABC Transcription Tools - Custom Instrument Builder</title>
   <meta property="og:type" content="website" />
   <meta property="og:title" content="ABC Transcription Tools - Custom Instrument Builder" />
-  <meta property="og:description" content="Utility for creating custom instruments for the ABC Transcription Tools." />
+  <meta property="og:description" content="Utility for creating custom instruments for the ABC Transcription Tools and Celtic Sounds." />
   <meta property="og:url" content="https://abc.tunebook.app/tools/custom_instrument_builder.html" />
   <meta property="og:site_name" content="ABC Transcription Tools - Custom Instrument Builder" />
   <meta property="og:image" content="../img/abclite-icon-512x512.png" />
@@ -21,53 +52,91 @@
   <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
   <link rel="manifest" href="../img/abc-manifest.json">
 
-  <script type="text/javascript" src="jszip-min.js?v=21"></script>
-  <script type="text/javascript" src="filesaver-min.js?v=21"></script>
-  <script type="text/javascript" src="daypilot-modal.min-3.10.1.js?v=21"></script>
+  <script type="text/javascript" src="jszip-min.js?v=22"></script>
+  <script type="text/javascript" src="filesaver-min.js?v=22"></script>
+  <script type="text/javascript" src="daypilot-modal.min-3.10.1.js?v=22"></script>
+
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-VM0N9HL3MK"></script>
+  <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-VM0N9HL3MK');
+  </script> -->
   
   <style>
+    :root {
+      --cib-bg: #0f172a;
+      --cib-bg-top: #020617;
+      --cib-panel: rgba(17, 24, 39, 0.94);
+      --cib-panel-2: #1f2937;
+      --cib-panel-3: #111827;
+      --cib-text: #e5e7eb;
+      --cib-muted: #94a3b8;
+      --cib-border: #334155;
+      --cib-border-strong: #475569;
+      --cib-accent: #60a5fa;
+      --cib-accent-2: #22c55e;
+      --cib-accent-3: #8b5cf6;
+      --cib-danger: #ef4444;
+      --cib-warning-bg: #3a2a0f;
+      --cib-warning-border: #8a6a1f;
+      --cib-warning-text: #fcd34d;
+    }
+
+    html,
     body {
-      background: #fafafa;
-      color: #222;
+      min-height: 100%;
+      background: linear-gradient(180deg, var(--cib-bg-top), var(--cib-bg));
+    }
+
+    body {
+      color: var(--cib-text);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       max-width: 800px;
-      margin: 12.5px auto;               
-      padding: 0 19px;                   
+      margin: 12.5px auto;
+      padding: 0 19px;
       line-height: 1.47;
-      padding-bottom: 60px;                 
+      padding-bottom: 60px;
+      min-height: 100vh;
     }
 
     h1 {
-      margin-top: 14.5px;                
-      font-size: 1.73em;                 
-      margin-bottom: .47em;              
-      color: #000;
+      margin-top: 14.5px;
+      font-size: 1.73em;
+      margin-bottom: .47em;
       text-align: center;
+      color: #d4ffe8;
+      text-shadow:
+        0 0 6px rgba(34, 197, 94, 0.7),
+        0 0 16px rgba(34, 197, 94, 0.45),
+        0 0 32px rgba(34, 197, 94, 0.25);
     }
 
     h2 {
       font-size: 1.5em;
       margin-top: .3em;
       margin-bottom: .47em;
-      color: #000;
+      color: var(--cib-text);
       text-align: center;
     }
 
     h4 {
-      font-size: 1.15em;                 
+      font-size: 1.15em;
       margin-top: .75em;
       margin-bottom: .47em;
-      color: #000;
+      color: var(--cib-text);
       text-align: center;
     }
 
-    p { font-size: 1.0em; }              
+    p { font-size: 1.0em; color: var(--cib-text); }
 
     label {
-      font-size: 1.0em;                  
+      font-size: 1.0em;
       display: block;
-      margin-top: .6em;                
+      margin-top: .6em;
       font-weight: 600;
+      color: var(--cib-text);
     }
 
     input[type="file"], input[type="number"] {
@@ -78,6 +147,19 @@
       box-sizing: border-box;
     }
 
+    input[type="number"] {
+      background-color: var(--cib-panel-2);
+      color: var(--cib-text);
+      border: 1px solid var(--cib-border);
+      border-radius: 12px;
+    }
+
+    input[type="number"]:focus {
+      border-color: var(--cib-accent);
+      box-shadow: 0 0 0 2px rgba(96,165,250,0.28);
+      outline: none;
+    }
+
     input[type="file"] {
       font-size: 1em;
       padding: 0.3em 0;
@@ -85,6 +167,8 @@
       line-height: 1.2;
       border-radius: 4px;
       box-sizing: border-box;
+      color: var(--cib-text);
+      background: transparent;
     }
 
     input[type="file"]::file-selector-button {
@@ -92,9 +176,9 @@
       appearance: none;
       margin-right: 0.5em;
       padding: 0.3em 0.8em;
-      border-radius: 5px;
-      border: 1px solid #005aad;
-      background: #005aad;
+      border-radius: 10px;
+      border: 1px solid #38bdf8;
+      background: linear-gradient(135deg, #0c4a6e 0%, #0284c7 100%);
       color: #fff;
       font-weight: 600;
       font-size: 0.95em;
@@ -102,27 +186,50 @@
       line-height: 1.2;
     }
 
-    input[type="file"]::file-selector-button:hover { background: #0a6bd1; border-color: #0a6bd1; }
-    input[type="file"]::file-selector-button:active { background: #0a5db6; border-color: #0a5db6; }
+    input[type="file"]::file-selector-button:hover {
+      background: linear-gradient(135deg, #0369a1 0%, #0ea5e9 100%);
+      border-color: #7dd3fc;
+    }
+
+    input[type="file"]::file-selector-button:active {
+      background: linear-gradient(135deg, #075985 0%, #0284c7 100%);
+      border-color: #38bdf8;
+    }
+
     input[type="file"]::file-selector-button:focus,
-    input[type="file"]:focus-visible::file-selector-button { outline: none; box-shadow: 0 0 0 2px rgba(0,90,173,0.25); }
+    input[type="file"]:focus-visible::file-selector-button {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(96,165,250,0.25);
+    }
 
     input[type="file"]::-webkit-file-upload-button {
       -webkit-appearance: none;
       margin-right: 0.5em;
       padding: 0.3em 0.8em;
-      border-radius: 5px;
-      border: 1px solid #005aad;
-      background: #005aad;
+      border-radius: 10px;
+      border: 1px solid #38bdf8;
+      background: linear-gradient(135deg, #0c4a6e 0%, #0284c7 100%);
       color: #fff;
       font-weight: 600;
       font-size: 0.95em;
       cursor: pointer;
       line-height: 1.2;
     }
-    input[type="file"]::-webkit-file-upload-button:hover { background: #0a6bd1; border-color: #0a6bd1; }
-    input[type="file"]::-webkit-file-upload-button:active { background: #0a5db6; border-color: #0a5db6; }
-    input[type="file"]:focus-visible::-webkit-file-upload-button { outline: none; box-shadow: 0 0 0 2px rgba(0,90,173,0.25); }
+
+    input[type="file"]::-webkit-file-upload-button:hover {
+      background: linear-gradient(135deg, #0369a1 0%, #0ea5e9 100%);
+      border-color: #7dd3fc;
+    }
+
+    input[type="file"]::-webkit-file-upload-button:active {
+      background: linear-gradient(135deg, #075985 0%, #0284c7 100%);
+      border-color: #38bdf8;
+    }
+
+    input[type="file"]:focus-visible::-webkit-file-upload-button {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(96,165,250,0.25);
+    }
 
     select {
       -webkit-appearance: none;
@@ -134,49 +241,61 @@
       box-sizing: border-box;
       padding-block: 0.4em;
       padding-inline: 0.52em;
-      color: #222;
-      background-color: #fff;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      color: var(--cib-text);
+      background-color: var(--cib-panel-2);
+      border: 1px solid var(--cib-border);
+      border-radius: 12px;
     }
 
     select:focus {
-      border-color: #005aad;
-      box-shadow: 0 0 0 2px rgba(0,90,173,0.25);
+      border-color: var(--cib-accent);
+      box-shadow: 0 0 0 2px rgba(96,165,250,0.28);
       outline: none;
     }
 
     #fileList {
       margin-top: .47em;
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 4px;
+      background: var(--cib-panel);
+      border: 1px solid var(--cib-border);
+      border-radius: 14px;
       padding: 0.84em;
       max-height: 32vh;
       overflow-y: auto;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
     }
 
     .file-item {
       padding: 0.1em 0.9em;
       margin-bottom: 0.3em;
-      background: #f5f5f5;
-      border: 1px solid #e1e1e1;
-      border-radius: 3px;
+      background: var(--cib-panel-2);
+      border: 1px solid var(--cib-border);
+      border-radius: 10px;
       display: flex;
       align-items: center;
       gap: 7px;
       font-size: 0.97em;
+      color: var(--cib-text);
     }
 
     .file-item.real { cursor: grab; }
-    .file-item.drag-over { background: #e6f7ff; border-color: #91d5ff; }
+
+    .file-item.drag-over {
+      background: rgba(37, 99, 235, 0.22);
+      border-color: #60a5fa;
+    }
 
     .file-item > span { align-self: center; line-height: 1.24; }
     .file-item > span:first-child { flex: 1 1 auto; }
 
     .file-item:not(.real) { min-height: 1.6em; padding: 0.1em 0.9em; }
 
-    .proposed { color: #555; font-style: italic; margin-left: auto; flex-shrink: 0; align-self: center; }
+    .proposed {
+      color: #cbd5e1;
+      font-style: italic;
+      margin-left: auto;
+      flex-shrink: 0;
+      align-self: center;
+    }
 
     .controls { display: flex; align-items: center; justify-content: flex-end; margin-left: 8.5px; }
 
@@ -190,17 +309,22 @@
       gap: 6.3px;
       line-height: 1.05;
       padding: .37em .74em;
-      border-radius: 6px;
-      border: 1px solid #0d6efd;
-      background: #0d6efd;
+      border-radius: 10px;
+      border: 1px solid #38bdf8;
+      background: linear-gradient(135deg, #0c4a6e 0%, #0284c7 100%);
       color: #fff;
       cursor: pointer;
       font-weight: 700;
       user-select: none;
       transform: translateY(-11.5px);
     }
-    .preview-btn:active { background: #d32f2f; border-color: #b71c1c; }
-    .placeholder-label { color: #888; font-style: italic; }
+
+    .preview-btn:active {
+      background: linear-gradient(135deg, #991b1b 0%, #dc2626 100%);
+      border-color: #ef4444;
+    }
+
+    .placeholder-label { color: var(--cib-muted); font-style: italic; }
 
     .gap-controls { margin-top: 14px; }
 
@@ -210,22 +334,31 @@
       margin-top: 1.68em;
       padding: 0.63em 1.05em;
       font-size: 1.0em;
-      background: #005aad;
+      background: linear-gradient(135deg, #0c4a6e 0%, #0284c7 100%);
       color: #fff;
-      border: none;
-      border-radius: 4px;
+      border: 1px solid #38bdf8;
+      border-radius: 10px;
       cursor: pointer;
       font-weight: 600;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.28);
     }
-    button:hover { background: green; }
+
+    button:hover {
+      background: linear-gradient(135deg, #0369a1 0%, #0ea5e9 100%);
+      border-color: #7dd3fc;
+    }
 
     .preview-btn.is-playing {
-      background: #d32f2f !important;
-      border-color: #b71c1c !important;
+      background: linear-gradient(135deg, #991b1b 0%, #dc2626 100%) !important;
+      border-color: #ef4444 !important;
       color: #fff;
       box-shadow: 0 0 0 2px rgba(211,47,47,.15) inset;
     }
-    .preview-btn:hover:not(.is-playing) { background: #81c784; border-color: #388e3c; }
+
+    .preview-btn:hover:not(.is-playing) {
+      background: linear-gradient(135deg, #15803d 0%, #22c55e 100%);
+      border-color: #4ade80;
+    }
 
     #fileList.drag-disabled { user-select: none; }
     #fileList.drag-disabled .file-item.real { cursor: default; opacity: 0.9; }
@@ -233,31 +366,53 @@
     .accordion {
       font-size: 12.1pt !important;
       font-family: "Helvetica" !important;
-      background-color: #eee;
-      color: #000 !important;
+      background-color: var(--cib-panel) !important;
+      color: var(--cib-text) !important;
       cursor: pointer !important;
-      padding: 7.3px 8.4px !important;
+      padding: 10px 8.4px !important;
       width: 100% !important;
       text-align: center !important;
-      border: .53px solid #000 !important;
+      border: 1px solid var(--cib-border) !important;
+      border-radius: 12px !important;
       outline: none !important;
       margin-bottom: 7.3px;
       margin-top: 0px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
     }
-    .accordion:hover { background: #88FF88; }
+
+    .accordion:hover {
+      background: #1e293b !important;
+      color: #ffffff !important;
+      border-color: var(--cib-accent) !important;
+    }
 
     .form-row { display: flex; gap: 10.5px; align-items: flex-end; flex-wrap: wrap; }
     .form-row > label { flex: 1 1 230px; margin-top: .7em; }
     .form-row > label > select, .form-row > label > input[type="number"] { width: 100%; }
 
-    .active { background-color: #eee; }
+    .active { background-color: #1e293b; }
 
-    .apply-status { margin-left: 8px; font-size: 1em; color: #2e7d32; opacity: 0; transform: translateY(2px); transition: opacity 220ms ease, transform 220ms ease; }
+    .apply-status {
+      margin-left: 8px;
+      font-size: 1em;
+      color: #4ade80;
+      opacity: 0;
+      transform: translateY(2px);
+      transition: opacity 220ms ease, transform 220ms ease;
+    }
+
     .apply-status.show { opacity: 1; transform: translateY(2px); }
 
     .expandall {
-      font-size: 11.55pt !important; font-family:"Helvetica" !important; width:126px !important; height:42px !important;
-      padding:7.3px !important; border-radius:4.2px !important; border:.53px solid #000 !important; color:black !important; background-color: #eee;
+      font-size: 11.55pt !important;
+      font-family: "Helvetica" !important;
+      width:126px !important;
+      height:42px !important;
+      padding:7.3px !important;
+      border-radius:10px !important;
+      border:1px solid var(--cib-border) !important;
+      color: var(--cib-text) !important;
+      background-color: var(--cib-panel) !important;
     }
 
     .modal_flat_background { background-color: #000; opacity: 0.4; }
@@ -268,22 +423,63 @@
     .modal_flat_content { font-family: "Helvetica"; margin: 21px 0px; }
     .modal_flat_input { margin: 21px 0px; }
     .modal_flat_buttons { text-align: center; margin-top: 20px; margin-bottom: 20px; }
-    .modal_flat_main button { background-color: #ccc; color: #000; padding: 10.5px 21px; border: 0px; cursor: pointer; outline: none; width: 105px; }
+    .modal_flat_main button {
+      background-color: #ccc !important;
+      background-image: none !important;
+      color: #000 !important;
+      padding: 10.5px 21px;
+      border: 0 !important;
+      cursor: pointer;
+      outline: none;
+      width: 105px;
+      box-shadow: none !important;
+    }
+
+    .modal_flat_main button:hover {
+      background-color: #bfbfbf !important;
+      background-image: none !important;
+      color: #000 !important;
+      border: 0 !important;
+      box-shadow: none !important;
+    }
 
     .modal_flat_cancel { margin-left: 5.25px; }
 
-    .instr-modal { text-align: left; background-color: #f5ffff; max-height: 70vh; overflow: auto; padding: 12px; border: 1px solid #e1e1e1; border-radius: 4px; }
+    /* Leave instructions / guided-tour look unchanged */
+    .instr-modal {
+      text-align: left;
+      background-color: #f5ffff !important;
+      max-height: 70vh;
+      overflow: auto;
+      padding: 12px;
+      border: 1px solid #e1e1e1 !important;
+      border-radius: 4px;
+    }
+
+    .instr-modal,
+    .instr-modal p,
+    .instr-modal label,
+    .instr-modal strong,
+    .instr-modal span,
+    .instr-modal small,
+    .instr-modal h2,
+    .instr-modal h4 {
+      color: #000 !important;
+    }
+
     .instr-modal p { margin: 0 0 12px 0; }
 
     .range-controls {
       display: none;
       margin-top: 7.3px;
       padding: 8px;
-      padding-top:0px;
-      background: #f8f8ff;
-      border: 1px solid #e1e1f0;
-      border-radius: 4px;
+      padding-top: 0px;
+      background: var(--cib-panel);
+      border: 1px solid var(--cib-border);
+      border-radius: 14px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
     }
+
     .range-controls .row {
       display: flex;
       gap: 10px;
@@ -291,45 +487,65 @@
       flex-wrap: wrap;
       margin-top: 6px;
     }
+
     .range-controls label { margin-top: 0.2em; }
 
     .action-row { display: flex; justify-content: center; gap: 10px; }
 
-    #exportZip { margin-left:9px; margin-top:12px; }
-    #importZipBtn { background-color: #471268; border-color: #471268; margin-right:9px; margin-top:12px; }
-    #importZipBtn:hover { background-color: green; border-color: green; }
-
-    .touch-reorder{
-      display:flex;
-      gap:8px;
-      justify-content:center;
-      margin-top:6px;
+    #exportZip {
+      margin-left: 9px;
+      margin-top: 12px;
+      background: linear-gradient(135deg, #0c4a6e 0%, #0284c7 100%) !important;
+      border-color: #38bdf8 !important;
     }
 
-    .file-item.selected{ outline:2px solid #91d5ff; background:#e6f7ff; }
+    #importZipBtn {
+      background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%) !important;
+      border-color: #8b5cf6 !important;
+      margin-right: 9px;
+      margin-top: 12px;
+    }
+
+    #importZipBtn:hover {
+      background: linear-gradient(135deg, #5b21b6 0%, #8b5cf6 100%) !important;
+      border-color: #a78bfa !important;
+    }
+
+    .touch-reorder {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 6px;
+    }
+
+    .file-item.selected {
+      outline: 2px solid rgba(96, 165, 250, 0.75);
+      background: rgba(30, 64, 175, 0.28);
+    }
+
     .file-item.temp-suppressed {
-      background: #fff7e6;
-      border-color: #ffd591;
+      background: #2b2112;
+      border-color: #8b6b1f;
     }
+
     .file-item .temp-badge {
       margin-left: 6px;
       padding: 1px 6px;
       border-radius: 10px;
       font-size: 0.8em;
-      background: #faad14;
-      color: #000;
+      background: #f59e0b;
+      color: #111827;
       font-weight: 700;
     }
 
-    /* Add just below your existing .temp-badge / .temp-suppressed styles */
     .temp-meta {
       margin-left: 6px;
       padding: 1px 6px;
       border-radius: 10px;
       font-size: 0.83em;
-      background: #fff1b8;              /* soft amber */
-      color: #5b4a00;                   /* readable on amber */
-      border: 1px solid #ffe58f;
+      background: var(--cib-warning-bg);
+      color: var(--cib-warning-text);
+      border: 1px solid var(--cib-warning-border);
       font-weight: 600;
       white-space: nowrap;
       max-width: 360px;
@@ -337,19 +553,18 @@
       text-overflow: ellipsis;
     }
 
-    /* Updated to include new Delete button */
     #moveUpBtn, #moveDownBtn, #insertAfterBtn, #deleteBtn {
-      background-color: #008a53;  
-      border-color: #008a53;
+      background: linear-gradient(135deg, #166534 0%, #16a34a 100%) !important;
+      border-color: #22c55e !important;
     }
 
-    #moveUpBtn:hover, #moveDownBtn:hover, #insertAfterBtn:hover, #deleteBtn:hover{
-      background-color: #008a53 !important;
-      border-color: #008a53 !important;
+    #moveUpBtn:hover, #moveDownBtn:hover, #insertAfterBtn:hover, #deleteBtn:hover {
+      background: linear-gradient(135deg, #15803d 0%, #22c55e 100%) !important;
+      border-color: #4ade80 !important;
     }
 
-    #moveUpBtn, #moveDownBtn, #insertAfterBtn{
-      margin-right:8px;
+    #moveUpBtn, #moveDownBtn, #insertAfterBtn {
+      margin-right: 8px;
     }
 
     #touchReorderControls button:disabled {
@@ -357,16 +572,236 @@
       cursor: default;
     }
 
-  </style>
-    
-  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-VM0N9HL3MK"></script>
+    #remoteFetchStatus {
+      margin-top: 8px;
+      min-height: 1.2em;
+      font-size: 0.95em;
+      color: var(--cib-text);
+    }
 
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-VM0N9HL3MK');
-  </script> -->
+    .remote-fetch-disclosure {
+      margin-top: 12px;
+    }
+
+    .secondary-toggle-btn {
+      margin-top: 0;
+      width: 100%;
+      background: var(--cib-panel);
+      color: var(--cib-text);
+      border: 1px solid var(--cib-border);
+      border-radius: 12px;
+      font-weight: 600;
+      text-align: center;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+    }
+
+    .secondary-toggle-btn:hover {
+      background: #1e293b;
+      color: #fff;
+      border-color: var(--cib-accent);
+    }
+
+    .secondary-toggle-btn::before {
+      content: "▸ ";
+      font-weight: 700;
+    }
+
+    .secondary-toggle-btn[aria-expanded="true"]::before {
+      content: "▾ ";
+    }
+
+    .remote-fetch-panel {
+      margin-top: 10px;
+      padding: 12px;
+      background: var(--cib-panel);
+      border: 1px solid var(--cib-border);
+      border-radius: 14px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+    }
+
+    .remote-fetch-panel p {
+      margin: 0 0 8px 0;
+      color: var(--cib-text);
+    }
+
+    .fetch-btn {
+      margin-top: 1.1em;
+      background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%);
+      border-color: #8b5cf6;
+    }
+
+    .fetch-btn:hover {
+      background: linear-gradient(135deg, #5b21b6 0%, #8b5cf6 100%);
+      border-color: #a78bfa;
+    }
+
+    select {
+      background-image: url("data:image/svg+xml;utf8,\
+  <svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'>\
+  <path d='M1 1l4 4 4-4' stroke='%23cbd5e1' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/>\
+  </svg>");
+      background-repeat: no-repeat;
+      background-position: right 0.6em center;
+      background-size: 10px 6px;
+      padding-right: 2em;
+    }
+
+    /* Leave walkthrough / first-run styling unchanged */
+    .walkthrough-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.18);
+      z-index: 2500;
+      pointer-events: auto;
+    }
+
+    .walkthrough-card {
+      position: fixed;
+      z-index: 2504;
+      width: min(440px, calc(100vw - 24px));
+      max-width: calc(100vw - 24px);
+      background: #f5ffff;
+      border: 1px solid #bfcfcf;
+      border-radius: 10px;
+      box-shadow: 0 10px 26px rgba(0,0,0,.25);
+      padding: 16px;
+      box-sizing: border-box;
+    }
+
+    .walkthrough-card h2 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 1.45em;
+      text-align: left;
+      color: #000 !important;
+    }
+
+    .walkthrough-card p {
+      margin: 0 0 10px 0;
+      color: #000 !important;
+    }
+
+    .walkthrough-card-footer {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid #d8e3e3;
+    }
+
+    .walkthrough-card .walkthrough-step-count {
+      text-align: center;
+      font-size: 0.95em;
+      color: #333;
+      margin-bottom: 12px;
+    }
+
+    .walkthrough-card .walkthrough-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .walkthrough-card .walkthrough-buttons button {
+      margin-top: 0 !important;
+      min-width: 96px;
+    }
+
+    .walkthrough-arrow-layer {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 2503;
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    .walkthrough-arrow-path {
+      stroke: #d32f2f;
+      stroke-width: 3;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,.2));
+    }
+
+    .walkthrough-target-highlight {
+      position: relative;
+      z-index: 2502 !important;
+      box-shadow: 0 0 0 4px rgba(0, 90, 173, 0.30), 0 0 0 9999px rgba(255,255,255,0.06);
+      border-radius: 8px;
+      transition: box-shadow 160ms ease;
+    }
+
+    .walkthrough-choice-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin: 14px 0 18px 0;
+    }
+
+    .walkthrough-choice-row .walkthrough-choice-btn,
+    .modal_flat_main .walkthrough-choice-row .walkthrough-choice-btn,
+    .custom-html-modal .walkthrough-choice-row .walkthrough-choice-btn {
+      display: inline-flex !important;
+      align-items: center;
+      justify-content: center;
+      flex: 0 1 auto;
+      width: auto !important;
+      min-width: 180px !important;
+      max-width: 260px !important;
+      min-height: 58px !important;
+      margin-top: 0 !important;
+      padding: 12px 18px !important;
+      line-height: 1.2 !important;
+      text-align: center !important;
+      white-space: normal !important;
+      word-break: keep-all !important;
+      overflow-wrap: normal !important;
+      hyphens: none !important;
+      background: #d9d9d9 !important;
+      color: #000 !important;
+      border: 1px solid #bdbdbd !important;
+      border-radius: 10px !important;
+      font-weight: 700 !important;
+      font-size: 1.0em !important;
+      box-sizing: border-box !important;
+      cursor: pointer;
+      box-shadow: none !important;
+    }
+
+    .walkthrough-choice-row .walkthrough-choice-btn:hover,
+    .modal_flat_main .walkthrough-choice-row .walkthrough-choice-btn:hover,
+    .custom-html-modal .walkthrough-choice-row .walkthrough-choice-btn:hover {
+      background: #cfcfcf !important;
+      color: #000 !important;
+      border-color: #bdbdbd !important;
+    }
+
+    .custom-html-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.30);
+      z-index: 2600;
+    }
+
+    .custom-html-modal {
+      position: fixed;
+      z-index: 2601;
+      left: 50%;
+      top: 4vh;
+      transform: translateX(-50%);
+      width: min(var(--dialog-width, 860px), calc(100vw - 32px));
+      max-height: calc(100vh - 48px);
+      overflow: auto;
+      background: #fff;
+      border: 1px solid #333;
+      box-shadow: 0px 0px 15.5px -2px rgba(0, 0, 0, 0.75);
+      padding: 20px;
+      box-sizing: border-box;
+    }
+  </style>
 
   </head>
 
@@ -376,13 +811,55 @@
 
     <button id="instructionsBtn" class="accordion" title="Show Instructions">Show Instructions</button>
 
-    <label>Import audio sample files in .wav or .mp3 format:
-      <input type="file" id="fileInput" accept=".wav,.mp3" multiple>
-      <label for="disableMidiDetect" style="display:flex; align-items:center; gap:6px; margin:0; white-space:nowrap;margin-top:10px !important;">
-        <input type="checkbox" id="disableMidiDetect">
-        Disable .sf2-style MIDI-number pitch name detection
-      </label>
+    <label for="fileInput">Import audio sample files in .wav or .mp3 format:</label>
+
+    <input type="file" id="fileInput" accept=".wav,.mp3" multiple>
+
+    <label for="disableMidiDetect"
+           style="display:flex; align-items:center; gap:6px; margin-top:10px;">
+      <input type="checkbox" id="disableMidiDetect">
+      Disable .sf2-style MIDI-number pitch name detection
     </label>
+
+    <div class="remote-fetch-disclosure">
+      <button
+        id="toggleRemoteFetchBtn"
+        type="button"
+        class="secondary-toggle-btn"
+        aria-expanded="false"
+        aria-controls="remoteFetchPanel"
+        title="Show or hide the soundfont import tools">
+        Import Instrument from ABC Transcription Tools Soundfont
+      </button>
+
+      <div id="remoteFetchPanel" class="remote-fetch-panel" hidden>
+
+        <p><strong>Import note samples from one of the built-in ABC Transcription Tools MIDI soundfonts:</strong></p>
+
+        <div class="form-row">
+          <label>Soundfont:
+            <select id="remoteSoundfont"></select>
+          </label>
+          <label>Instrument:
+            <select id="remoteInstrument"></select>
+          </label>
+          <label>Imported note range:
+            <select id="remoteRange">
+              <option value="compact">Compact (C4–C6)</option>
+              <option value="standard" selected>Standard (C3–C7)</option>
+              <option value="extended">Extended (C2–C7)</option>
+              <option value="full">Full (C0–C7)</option>
+            </select>
+          </label>
+        </div>
+
+        <button id="fetchRemoteBtn" class="fetch-btn" type="button" title="Imports notes in the selected range from the selected remote soundfont and instrument">
+          Import Soundfont Instrument Notes
+        </button>
+
+        <div id="remoteFetchStatus" role="status" aria-live="polite"></div>
+      </div>
+    </div>
 
     <div class="form-row">
       <label>Default instrument volume scale:
@@ -518,7 +995,7 @@
           </select>
         </label>
       </div>
-      <p style="margin:8px 2px 0;color:#444;font-size:0.95em;">
+      <p style="margin:8px 2px 0;color:#94a3b8;font-size:0.95em;">
         Files are transposed by <strong>Starting scale note/octave</strong> above before expansion. Output is clamped to this range.
       </p>
     </div>
@@ -545,7 +1022,7 @@
       <button id="restoreSampleBtn" type="button" aria-label="Restore original sample">Restore Original Sample</button>
     </div>
 
-    <div id="exportStatus" role="status" aria-live="polite" style="margin-top:6px; min-height:1.2em; text-align:center; font-size:0.95em; color:#333;"></div>
+    <div id="exportStatus" role="status" aria-live="polite" style="margin-top:6px; min-height:1.2em; text-align:center; font-size:0.95em; color:#cbd5e1;"></div>
 
     <div class="action-row">
       <button id="importZipBtn" title="Load and edit an ABC Transcription Tools custom instrument (.zip)">Import Custom Instrument (.zip)</button>
@@ -556,14 +1033,179 @@
     <input type="file" id="importZipInput" accept=".zip" style="display:none;">
 
     <script>
+
+      var instrumentIndexToName = ["acoustic_grand_piano-mp3", "bright_acoustic_piano-mp3", "electric_grand_piano-mp3", "honkytonk_piano-mp3", "electric_piano_1-mp3", "electric_piano_2-mp3", "harpsichord-mp3", "clavinet-mp3", "celesta-mp3", "glockenspiel-mp3", "music_box-mp3", "vibraphone-mp3", "marimba-mp3", "xylophone-mp3", "tubular_bells-mp3", "dulcimer-mp3", "drawbar_organ-mp3", "percussive_organ-mp3", "rock_organ-mp3", "church_organ-mp3", "reed_organ-mp3", "accordion-mp3", "harmonica-mp3", "tango_accordion-mp3", "acoustic_guitar_nylon-mp3", "acoustic_guitar_steel-mp3", "electric_guitar_jazz-mp3", "electric_guitar_clean-mp3", "electric_guitar_muted-mp3", "overdriven_guitar-mp3", "distortion_guitar-mp3", "guitar_harmonics-mp3", "acoustic_bass-mp3", "electric_bass_finger-mp3", "electric_bass_pick-mp3", "fretless_bass-mp3", "slap_bass_1-mp3", "slap_bass_2-mp3", "synth_bass_1-mp3", "synth_bass_2-mp3", "violin-mp3", "viola-mp3", "cello-mp3", "contrabass-mp3", "tremolo_strings-mp3", "pizzicato_strings-mp3", "orchestral_harp-mp3", "timpani-mp3", "string_ensemble_1-mp3", "string_ensemble_2-mp3", "synth_strings_1-mp3", "synth_strings_2-mp3", "choir_aahs-mp3", "voice_oohs-mp3", "synth_choir-mp3", "orchestra_hit-mp3", "trumpet-mp3", "trombone-mp3", "tuba-mp3", "muted_trumpet-mp3", "french_horn-mp3", "brass_section-mp3", "synth_brass_1-mp3", "synth_brass_2-mp3", "soprano_sax-mp3", "alto_sax-mp3", "tenor_sax-mp3", "baritone_sax-mp3", "oboe-mp3", "english_horn-mp3", "bassoon-mp3", "clarinet-mp3", "piccolo-mp3", "flute-mp3", "recorder-mp3", "pan_flute-mp3", "blown_bottle-mp3", "shakuhachi-mp3", "whistle-mp3", "ocarina-mp3", "lead_1_square-mp3", "lead_2_sawtooth-mp3", "lead_3_calliope-mp3", "lead_4_chiff-mp3", "lead_5_charang-mp3", "lead_6_voice-mp3", "lead_7_fifths-mp3", "lead_8_bass_lead-mp3", "pad_1_new_age-mp3", "pad_2_warm-mp3", "pad_3_polysynth-mp3", "pad_4_choir-mp3", "pad_5_bowed-mp3", "pad_6_metallic-mp3", "pad_7_halo-mp3", "pad_8_sweep-mp3", "fx_1_rain-mp3", "fx_2_soundtrack-mp3", "fx_3_crystal-mp3", "fx_4_atmosphere-mp3", "fx_5_brightness-mp3", "fx_6_goblins-mp3", "fx_7_echoes-mp3", "fx_8_scifi-mp3", "sitar-mp3", "banjo-mp3", "shamisen-mp3", "koto-mp3", "kalimba-mp3", "bagpipe-mp3", "fiddle-mp3", "shanai-mp3", "tinkle_bell-mp3", "agogo-mp3", "steel_drums-mp3", "woodblock-mp3", "taiko_drum-mp3", "melodic_tom-mp3", "synth_drum-mp3", "reverse_cymbal-mp3", "guitar_fret_noise-mp3", "breath_noise-mp3", "seashore-mp3", "bird_tweet-mp3", "telephone_ring-mp3", "helicopter-mp3", "applause-mp3", "gunshot-mp3"];
+
+      const generalMIDISoundNames = [
+        "Acoustic Grand Piano",
+        "Bright Acoustic Piano",
+        "Electric Grand Piano",
+        "Honky-tonk Piano",
+        "Electric Piano 1",
+        "Electric Piano 2",
+        "Harpsichord",
+        "Clavi",
+        "Celesta",
+        "Glockenspiel",
+        "Music Box",
+        "Vibraphone",
+        "Marimba",
+        "Xylophone",
+        "Tubular Bells",
+        "Dulcimer",
+        "Drawbar Organ",
+        "Percussive Organ",
+        "Rock Organ",
+        "Church Organ",
+        "Reed Organ",
+        "Accordion",
+        "Harmonica",
+        "Tango Accordion",
+        "Acoustic Guitar (nylon)",
+        "Acoustic Guitar (steel)",
+        "Electric Guitar (jazz)",
+        "Electric Guitar (clean)",
+        "Electric Guitar (muted)",
+        "Overdriven Guitar",
+        "Distortion Guitar",
+        "Guitar Harmonics",
+        "Acoustic Bass",
+        "Electric Bass (finger)",
+        "Electric Bass (pick)",
+        "Fretless Bass",
+        "Slap Bass 1",
+        "Slap Bass 2",
+        "Synth Bass 1",
+        "Synth Bass 2",
+        "Violin",
+        "Viola",
+        "Cello",
+        "Contrabass",
+        "Tremolo Strings",
+        "Pizzicato Strings",
+        "Orchestral Harp",
+        "Timpani",
+        "String Ensemble 1",
+        "String Ensemble 2",
+        "SynthStrings 1",
+        "SynthStrings 2",
+        "Choir Aahs",
+        "Voice Oohs",
+        "Synth Voice",
+        "Orchestra Hit",
+        "Trumpet",
+        "Trombone",
+        "Tuba",
+        "Muted Trumpet",
+        "French Horn",
+        "Brass Section",
+        "SynthBrass 1",
+        "SynthBrass 2",
+        "Soprano Sax",
+        "Alto Sax",
+        "Tenor Sax",
+        "Baritone Sax",
+        "Oboe",
+        "English Horn",
+        "Bassoon",
+        "Clarinet",
+        "Piccolo",
+        "Flute",
+        "Recorder",
+        "Pan Flute",
+        "Blown Bottle",
+        "Shakuhachi",
+        "Tin Whistle",
+        "Ocarina",
+        "Lead 1 (square)",
+        "Lead 2 (sawtooth)",
+        "Lead 3 (calliope)",
+        "Lead 4 (chiff)",
+        "Lead 5 (charang)",
+        "Lead 6 (voice)",
+        "Lead 7 (fifths)",
+        "Lead 8 (bass + lead)",
+        "Pad 1 (new age)",
+        "Pad 2 (warm)",
+        "Pad 3 (polysynth)",
+        "Pad 4 (choir)",
+        "Pad 5 (bowed)",
+        "Pad 6 (metallic)",
+        "Pad 7 (halo)",
+        "Pad 8 (sweep)",
+        "FX 1 (rain)",
+        "FX 2 (soundtrack)",
+        "FX 3 (crystal)",
+        "FX 4 (atmosphere)",
+        "FX 5 (brightness)",
+        "FX 6 (goblins)",
+        "FX 7 (echoes)",
+        "FX 8 (sci-fi)",
+        "Sitar",
+        "Banjo",
+        "Shamisen",
+        "Koto",
+        "Kalimba",
+        "Bagpipe",
+        "Fiddle",
+        "Shanai",
+        "Tinkle Bell",
+        "Agogo",
+        "Steel Drums",
+        "Woodblock",
+        "Taiko Drum",
+        "Bodhran",
+        "Synth Drum",
+        "Reverse Cymbal",
+        "Guitar Fret Noise",
+        "Breath Noise",
+        "Seashore",
+        "Bird Tweet",
+        "Telephone Ring",
+        "Helicopter",
+        "Applause",
+        "Gunshot"
+      ];
+
+      const soundfontNames = [
+        "FatBoy",
+        "https://michaeleskin.com/abctools/soundfonts/fatboy_4/",
+        "Canvas",
+        "https://michaeleskin.com/abctools/soundfonts/canvas/",
+        "MScore",
+        "https://michaeleskin.com/abctools/soundfonts/mscore_2/",
+        "Arachno",
+        "https://michaeleskin.com/abctools/soundfonts/arachno_3/",
+        "FluidHQ",
+        "https://michaeleskin.com/abctools/soundfonts/fluidhq_1/"
+      ];
+
+      const soundfontScaling = [
+        "FatBoy",
+        "3.25",
+        "Canvas",
+        "2.0",
+        "MScore",
+        "2.5",
+        "Arachno",
+        "2.0",
+        "FluidHQ",
+        "2.0"
+      ];    
+
       function DoStartup() {
 
-        // For mobile adaptation testing, set true to force mobile test
-        const gForceMobile = false;
+        // For mobile adaptation testing, set true to force mobile test,
+        // or add &ui=1 to the URL to force the mobile UI.
+        const gForceMobile = new URLSearchParams(window.location.search).get('ui') === '1';
 
         const notes = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
         let files = [];
         let originalFiles = [];
+
+        let gImportedInstrumentMetaExtras = null;
+
+        let gKeepRemoteFetchPanelOpen = false;
 
         const fileInput = document.getElementById('fileInput');
         const startNumber = document.getElementById('startNumber');
@@ -591,6 +1233,14 @@
 
         const disableMidiDetectCheckbox = document.getElementById('disableMidiDetect');
 
+        const remoteSoundfontSelect = document.getElementById('remoteSoundfont');
+        const remoteInstrumentSelect = document.getElementById('remoteInstrument');
+        const remoteRangeSelect = document.getElementById('remoteRange');
+        const fetchRemoteBtn = document.getElementById('fetchRemoteBtn');
+        const remoteFetchStatus = document.getElementById('remoteFetchStatus');
+        const toggleRemoteFetchBtn = document.getElementById('toggleRemoteFetchBtn');
+        const remoteFetchPanel = document.getElementById('remoteFetchPanel');
+
         // Range Expander UI
         const rangeExpanderRow = document.getElementById('rangeExpanderRow');
         const rangeExpanderCheckbox = document.getElementById('rangeExpander');
@@ -603,6 +1253,670 @@
         const exportStatusEl = document.getElementById('exportStatus');
         function setExportStatus(msg){ if (exportStatusEl) exportStatusEl.textContent = msg; }
         function clearExportStatus(){ if (exportStatusEl) exportStatusEl.textContent = ''; }
+        function setRemoteFetchStatus(msg){ if (remoteFetchStatus) remoteFetchStatus.textContent = msg || ''; }
+
+        const WALKTHROUGH_SEEN_KEY = 'customInstrumentBuilderWalkthroughSeen_v1';
+
+        let gWalkthroughOverlay = null;
+        let gWalkthroughCard = null;
+        let gWalkthroughArrowLayer = null;
+        let gWalkthroughHighlightedEl = null;
+        let gCustomHtmlModalOverlay = null;
+        let gCustomHtmlModal = null;
+        let gCustomHtmlModalResolve = null;
+
+        function clearCustomHtmlModal() {
+          if (gCustomHtmlModal) {
+            gCustomHtmlModal.remove();
+            gCustomHtmlModal = null;
+          }
+          if (gCustomHtmlModalOverlay) {
+            gCustomHtmlModalOverlay.remove();
+            gCustomHtmlModalOverlay = null;
+          }
+          gCustomHtmlModalResolve = null;
+        }
+
+        window.closeModalWithAction = function(action, value = '') {
+          window.__cibModalAction = action;
+          window.__cibModalValue = value;
+          if (gCustomHtmlModalResolve) {
+            const resolve = gCustomHtmlModalResolve;
+            clearCustomHtmlModal();
+            resolve(action || 'close');
+            return;
+          }
+          DayPilot.Modal.close();
+        };
+
+        function showCustomHtmlModal(html, options = {}) {
+          return new Promise((resolve) => {
+            clearCustomHtmlModal();
+            window.__cibModalAction = '';
+            window.__cibModalValue = '';
+
+            const overlay = document.createElement('div');
+            overlay.className = 'custom-html-modal-overlay';
+
+            const modal = document.createElement('div');
+            modal.className = 'custom-html-modal';
+            modal.style.setProperty('--dialog-width', `${options.width || 860}px`);
+            modal.innerHTML = html;
+
+            overlay.addEventListener('click', () => {
+              clearCustomHtmlModal();
+              resolve('close');
+            }, { once: true });
+            modal.addEventListener('click', (e) => e.stopPropagation());
+
+            document.body.appendChild(overlay);
+            document.body.appendChild(modal);
+            gCustomHtmlModalOverlay = overlay;
+            gCustomHtmlModal = modal;
+            gCustomHtmlModalResolve = resolve;
+          });
+        }
+
+        function clearWalkthroughUI() {
+          if (gWalkthroughHighlightedEl) {
+            gWalkthroughHighlightedEl.classList.remove('walkthrough-target-highlight');
+            gWalkthroughHighlightedEl = null;
+          }
+          if (gWalkthroughArrowLayer) {
+            gWalkthroughArrowLayer.remove();
+            gWalkthroughArrowLayer = null;
+          }
+          if (gWalkthroughCard) {
+            gWalkthroughCard.remove();
+            gWalkthroughCard = null;
+          }
+          if (gWalkthroughOverlay) {
+            gWalkthroughOverlay.remove();
+            gWalkthroughOverlay = null;
+          }
+        }
+
+        function waitMs(ms) {
+          return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function scrollWalkthroughTarget(selector) {
+          if (!selector) return null;
+          const el = document.querySelector(selector);
+          if (!el) return null;
+          try {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+            await waitMs(240);
+          } catch (err) {
+            el.scrollIntoView();
+          }
+          return el;
+        }
+
+        function setRemoteFetchPanelExpanded(expanded, options = {}) {
+          if (!toggleRemoteFetchBtn || !remoteFetchPanel) return;
+
+          const force = options.force === true;
+          let isExpanded = expanded === true;
+
+          // Only enforce open while walkthrough is active
+          if (gKeepRemoteFetchPanelOpen && !force) {
+            isExpanded = true;
+          }
+
+          toggleRemoteFetchBtn.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+          remoteFetchPanel.hidden = !isExpanded;
+        }
+
+        function getWalkthroughSteps(mode) {
+          if (mode === 'remote') {
+            return [
+              {
+                title: 'Guided Tour: Import MIDI Soundfont Instrument',
+                body: `<p>This guided tour shows how to create a custom instrument by importing notes from one of the ABC Transcription Tools MIDI soundfont instruments.</p>
+                       <p>You can relaunch this tour at any time from <strong>Show Instructions</strong>.</p>`
+              },
+              {
+                title: 'Step 1: Show the Remote Soundfont Import Controls',
+                selector: '#toggleRemoteFetchBtn',
+                body: `<p>This button shows or hides the remote soundfont import controls.</p>`
+              },
+              {
+                title: 'Step 2: Choose a Soundfont',
+                selector: '#remoteSoundfont',
+                body: `<p>In the remote import section, choose the <strong>Soundfont</strong> you want to import from.</p>
+                       <p>This selects the source collection of instrument samples.</p>`
+              },
+              {
+                title: 'Step 3: Choose an Instrument',
+                selector: '#remoteInstrument',
+                body: `<p>Choose the <strong>Instrument</strong> you want to import.</p>
+                       <p>This selects which MIDI instrument will be used within the chosen soundfont.</p>`
+              },
+              {
+                title: 'Step 4: Choose the Imported Note Range',
+                selector: '#remoteRange',
+                body: `<p>Choose the <strong>Imported note range</strong>.</p>
+                       <p><strong>Standard (C3–C7)</strong> is the default and is a good starting point for most instruments.</p>`
+              },
+              {
+                title: 'Step 5: Import the Notes',
+                selector: '#fetchRemoteBtn',
+                body: `<p>Click or tap <strong>Import Soundfont Instrument Notes</strong>.</p>
+                       <p>The tool clears any currently loaded samples, imports the notes it finds in the selected range, and applies the recommended default volume scale for that soundfont.</p>`
+              },
+              {
+                title: 'Step 6: Review and Adjust',
+                selector: '#fileList',
+                body: `<p>Review the imported note list, then adjust settings like volume scale, release fade time, sorting, range expansion, gap handling, silence trimming, or mono export as needed.</p>`
+              },
+              {
+                title: 'Step 7: Export the Instrument',
+                selector: '#exportZip',
+                body: `<p>When you are happy with the result, click or tap <strong>Export Custom Instrument</strong>.</p>
+                       <p>This saves the final custom instrument as a .zip file for use in the ABC Transcription Tools or Celtic Sounds.</p>`
+              }
+            ];
+          }
+
+          return [
+            {
+              title: 'Guided Tour: Importing Local Audio Samples',
+              body: `<p>This guided tour shows how to create a custom instrument from your own local audio sample files.</p>
+                     <p>You can relaunch this tour at any time from <strong>Show Instructions</strong>.</p>`
+            },
+            {
+              title: 'Step 1: Import Your Audio Samples',
+              selector: '#fileInput',
+              body: `<p>Click or tap <strong>Choose Files</strong> and select your .wav or .mp3 sample files.</p>
+                     <p>The tool will try to determine the note name and octave for each sample automatically.</p>`
+            },
+            {
+              title: 'Step 2: Set Instrument Defaults',
+              selector: '#volumeScale',
+              body: `<p>Set the <strong>Default instrument volume scale</strong> and <strong>Default instrument release fade time</strong>.</p>
+                     <p>These become the starting playback settings for the exported instrument.</p>`
+            },
+            {
+              title: 'Step 3: Set Note Mapping Options',
+              selector: '#startNote',
+              body: `<p>Choose the <strong>Starting scale note</strong> and <strong>Starting octave number</strong>.</p>
+                     <p>You can also use auto sort, range expansion, and missing note handling to shape the final exported note layout.</p>`
+            },
+            {
+              title: 'Step 4: Review the Note List',
+              selector: '#fileList',
+              body: `<p>Review the loaded note list, then adjust settings like volume scale, release fade time, sorting, range expansion, gap handling, silence trimming, or mono export as needed.</p>`
+            },
+            {
+              title: 'Step 5: Export the Instrument',
+              selector: '#exportZip',
+              body: `<p>When everything looks right, click or tap <strong>Export Custom Instrument</strong>.</p>
+                     <p>This saves the final custom instrument as a .zip file.</p>`
+            }
+          ];
+        }
+
+        function chooseWalkthroughCardPlacement(targetEl) {
+          const gap = 18;
+          const vw = window.innerWidth;
+          const vh = window.innerHeight;
+          const cardWidth = Math.min(440, vw - 24);
+          const cardHeightEstimate = 250;
+          if (!targetEl) {
+            return {
+              left: Math.max(12, Math.min(vw - cardWidth - 12, vw * .5 - cardWidth / 2)),
+              top: 25,
+              side: 'none',
+              width: cardWidth
+            };
+          }
+          const rect = targetEl.getBoundingClientRect();
+          const leftSpace = rect.left;
+          const rightSpace = vw - rect.right;
+          const topSpace = rect.top;
+          const bottomSpace = vh - rect.bottom;
+
+          let left = Math.max(12, vw - cardWidth - 18);
+          let top = 18;
+          let side = 'right';
+
+          if (rightSpace >= cardWidth + gap) {
+            left = Math.min(vw - cardWidth - 12, rect.right + gap);
+            top = Math.min(Math.max(12, rect.top), vh - cardHeightEstimate - 12);
+            side = 'right';
+          } else if (leftSpace >= cardWidth + gap) {
+            left = Math.max(12, rect.left - cardWidth - gap);
+            top = Math.min(Math.max(12, rect.top), vh - cardHeightEstimate - 12);
+            side = 'left';
+          } else if (bottomSpace >= cardHeightEstimate + gap) {
+            left = Math.min(Math.max(12, rect.left), vw - cardWidth - 12);
+            top = Math.min(vh - cardHeightEstimate - 12, rect.bottom + gap);
+            side = 'bottom';
+          } else {
+            left = Math.min(Math.max(12, rect.left), vw - cardWidth - 12);
+            top = Math.max(12, rect.top - cardHeightEstimate - gap);
+            side = 'top';
+          }
+
+          const bottomSafeZone = 60;
+          top = Math.min(top, vh - cardHeightEstimate - bottomSafeZone);
+
+          return { left, top, side, width: cardWidth };
+        }
+
+        function drawWalkthroughArrow(cardEl, targetEl) {
+          if (!cardEl || !targetEl) return;
+          const cardRect = cardEl.getBoundingClientRect();
+          const targetRect = targetEl.getBoundingClientRect();
+          const startX = cardRect.left + cardRect.width / 2;
+          const startY = cardRect.top + cardRect.height / 2;
+          const endX = targetRect.left + targetRect.width / 2;
+          const endY = targetRect.top + targetRect.height / 2;
+          const midX = (startX + endX) / 2;
+          const path = `M ${startX} ${startY} Q ${midX} ${startY}, ${endX} ${endY}`;
+
+          const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          svg.setAttribute('class', 'walkthrough-arrow-layer');
+          svg.setAttribute('viewBox', `0 0 ${window.innerWidth} ${window.innerHeight}`);
+          svg.setAttribute('preserveAspectRatio', 'none');
+
+          const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+          const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+          marker.setAttribute('id', 'walkthroughArrowHead');
+          marker.setAttribute('markerWidth', '10');
+          marker.setAttribute('markerHeight', '10');
+          marker.setAttribute('refX', '8');
+          marker.setAttribute('refY', '3');
+          marker.setAttribute('orient', 'auto');
+          const arrowHead = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          arrowHead.setAttribute('d', 'M0,0 L0,6 L9,3 z');
+          arrowHead.setAttribute('fill', '#d32f2f');
+          marker.appendChild(arrowHead);
+          defs.appendChild(marker);
+          svg.appendChild(defs);
+
+          const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          arrow.setAttribute('class', 'walkthrough-arrow-path');
+          arrow.setAttribute('d', path);
+          arrow.setAttribute('marker-end', 'url(#walkthroughArrowHead)');
+          svg.appendChild(arrow);
+
+          document.body.appendChild(svg);
+          gWalkthroughArrowLayer = svg;
+        }
+
+        function showWalkthroughStepCard(step, index, total) {
+          return new Promise(async (resolve) => {
+            clearWalkthroughUI();
+            const targetEl = await scrollWalkthroughTarget(step.selector);
+            if (targetEl) {
+              targetEl.classList.add('walkthrough-target-highlight');
+              gWalkthroughHighlightedEl = targetEl;
+            }
+
+            const overlay = document.createElement('div');
+            overlay.className = 'walkthrough-overlay';
+            document.body.appendChild(overlay);
+            gWalkthroughOverlay = overlay;
+
+            const card = document.createElement('div');
+            card.className = 'walkthrough-card';
+            const isFirst = index === 0;
+            const isLast = index === total - 1;
+            card.innerHTML = `
+              <h2>${step.title}</h2>
+              ${step.body}
+              <div class="walkthrough-card-footer">
+                <div class="walkthrough-step-count">Step ${index + 1} of ${total}</div>
+                <div class="walkthrough-buttons">
+                  ${isFirst ? '' : '<button type="button" data-action="back">Back</button>'}
+                  <button type="button" data-action="exit">Close</button>
+                  <button type="button" data-action="${isLast ? 'done' : 'next'}">${isLast ? 'Done' : 'Next'}</button>
+                </div>
+              </div>
+            `;
+            document.body.appendChild(card);
+            gWalkthroughCard = card;
+
+            const placement = chooseWalkthroughCardPlacement(targetEl);
+            card.style.left = `${placement.left}px`;
+            card.style.top = `${placement.top}px`;
+            card.style.width = `${placement.width}px`;
+
+            drawWalkthroughArrow(card, targetEl);
+
+            card.querySelectorAll('button[data-action]').forEach(btn => {
+              btn.addEventListener('click', () => {
+                const action = btn.getAttribute('data-action') || 'exit';
+                clearWalkthroughUI();
+                resolve(action);
+              });
+            });
+
+            overlay.addEventListener('click', () => {
+              clearWalkthroughUI();
+              resolve('exit');
+            }, { once: true });
+          });
+        }
+
+        async function runGuidedWalkthrough(mode) {
+
+          const isRemoteTour = (mode === 'remote');
+
+          // Only lock/open the remote fetch panel during the remote walkthrough
+          gKeepRemoteFetchPanelOpen = isRemoteTour;
+          if (isRemoteTour) {
+            setRemoteFetchPanelExpanded(true);
+          }
+
+          const steps = getWalkthroughSteps(mode);
+          let index = 0;
+
+          while (index >= 0 && index < steps.length) {
+            const action = await showWalkthroughStepCard(steps[index], index, steps.length);
+
+            if (action === 'back') {
+              index--;
+            }
+            else if (action === 'next') {
+              index++;
+            }
+            else {
+              break;
+            }
+          }
+
+          clearWalkthroughUI();
+
+          // Always unlock after walkthrough completes
+          gKeepRemoteFetchPanelOpen = false;
+        }
+
+        async function showWalkthroughChooser() {
+          const html = `
+            <div class="instr-modal">
+              <h2>Getting Started</h2>
+              <p>This tool allows you to create a custom instrument from your own local audio sample files.</p>
+              <p>You can also import remote note samples from an ABC Transcription Tools MIDI soundfont.</p>
+              <p style="text-align:center;margin-bottom:24px;"><strong>How would you like to begin?</strong></p>
+              <div class="walkthrough-choice-row">
+                <button type="button" class="walkthrough-choice-btn" onclick="closeModalWithAction('local')">Guided Tour: Importing Local Audio Samples</button>
+                <button type="button" class="walkthrough-choice-btn" onclick="closeModalWithAction('remote')">Guided Tour: Import MIDI Soundfont Instrument</button>
+                <button type="button" class="walkthrough-choice-btn" style="margin-top:12px !important;" onclick="closeModalWithAction('skip')">Skip Guided Tours</button>
+              </div>
+            </div>
+          `;
+
+          const action = await showCustomHtmlModal(html, { width: 650 });
+
+          try {
+            localStorage.setItem(WALKTHROUGH_SEEN_KEY, '1');
+          } catch (err) {}
+
+          if (action === 'local' || action === 'remote') {
+            await runGuidedWalkthrough(action);
+          }
+        }
+
+        function scheduleFirstUseWalkthrough() {
+
+          let seen = false;
+          try {
+            seen = localStorage.getItem(WALKTHROUGH_SEEN_KEY) === '1';
+          } catch (err) {}
+
+          if (!seen) {
+            setTimeout(() => {
+              showWalkthroughChooser();
+            }, 350);
+          }
+        }
+
+
+        function buildSoundfontPairs() {
+          const pairs = [];
+          if (!Array.isArray(soundfontNames)) return pairs;
+          for (let i = 0; i < soundfontNames.length - 1; i += 2) {
+            pairs.push({ name: soundfontNames[i], url: soundfontNames[i + 1] });
+          }
+          return pairs;
+        }
+
+        function normalizeBaseUrl(url) {
+          return String(url || '').replace(/\/+$/, '') + '/';
+        }
+
+        function joinUrl(base, part) {
+          return normalizeBaseUrl(base) + String(part || '').replace(/^\/+/, '') + '/';
+        }
+
+        function populateRemoteSelectors() {
+          const soundfonts = buildSoundfontPairs();
+
+          remoteSoundfontSelect.innerHTML = '';
+          soundfonts.forEach((sf, index) => {
+            const opt = document.createElement('option');
+            opt.value = String(index);
+            opt.textContent = sf.name;
+            opt.dataset.url = sf.url;
+            remoteSoundfontSelect.appendChild(opt);
+          });
+
+          remoteInstrumentSelect.innerHTML = '';
+          if (Array.isArray(generalMIDISoundNames)) {
+            generalMIDISoundNames.forEach((name, index) => {
+              const opt = document.createElement('option');
+              opt.value = String(index);
+              opt.textContent = name;
+              remoteInstrumentSelect.appendChild(opt);
+            });
+          }
+        }
+
+        function buildSoundfontScalingMap() {
+          const map = new Map();
+          if (!Array.isArray(soundfontScaling)) return map;
+          for (let i = 0; i < soundfontScaling.length - 1; i += 2) {
+            map.set(String(soundfontScaling[i]), String(soundfontScaling[i + 1]));
+          }
+          return map;
+        }
+
+        const soundfontScalingMap = buildSoundfontScalingMap();
+
+        function applySelectedSoundfontDefaultScale() {
+          const info = getSelectedRemoteInstrumentInfo();
+          if (!info) return;
+          const scale = soundfontScalingMap.get(info.soundfontName);
+          if (scale != null) {
+            volumeScaleInput.value = String(scale);
+          }
+        }
+
+        function clearCurrentlyLoadedSamples() {
+          stopPreviewIfPlaying();
+          files = [];
+          originalFiles = [];
+          gImportedInstrumentMetaExtras = null;
+          gapMode.value = 'synth';
+          if (typeof gHasHashedNames !== 'undefined') {
+            gHasHashedNames = false;
+          }
+          if (typeof gTempSuppressed !== 'undefined') {
+            gTempSuppressed = new WeakSet();
+          }
+          if (fileInput) fileInput.value = '';
+          clearExportStatus();
+          safeRenderList();
+          updateDragInteractivity();
+          clearSelection();
+        }
+
+        function getSelectedRemoteInstrumentInfo() {
+          const soundfonts = buildSoundfontPairs();
+          const sfIndex = Math.max(0, parseInt(remoteSoundfontSelect.value, 10) || 0);
+          const instrIndex = Math.max(0, parseInt(remoteInstrumentSelect.value, 10) || 0);
+
+          const soundfont = soundfonts[sfIndex] || soundfonts[0] || null;
+          const instrumentLabel = (Array.isArray(generalMIDISoundNames) && generalMIDISoundNames[instrIndex]) ? generalMIDISoundNames[instrIndex] : '';
+          const instrumentDir = (Array.isArray(instrumentIndexToName) && instrumentIndexToName[instrIndex]) ? instrumentIndexToName[instrIndex] : '';
+
+          if (!soundfont || !instrumentDir) return null;
+
+          return {
+            soundfontName: soundfont.name,
+            soundfontUrl: soundfont.url,
+            instrumentIndex: instrIndex,
+            instrumentLabel,
+            instrumentDir,
+            baseUrl: joinUrl(soundfont.url, instrumentDir)
+          };
+        }
+
+        async function processLoadedFiles(newFiles, options = {}) {
+          gImportedInstrumentMetaExtras = null;
+          gapMode.value = 'synth';
+
+          originalFiles = Array.isArray(newFiles) ? [...newFiles] : [];
+          files = [...originalFiles];
+
+          if (options.zipName) {
+            gFileSaveName = options.zipName;
+          }
+
+          gHasHashedNames = hasHashedFilenames(files);
+          if (gHasHashedNames){
+            applyHashedModeUIState();
+            DayPilot.Modal.alert('<p style="text-align:center;font-size:1.1em;"><strong>Hash-based Filenames Detected</strong><br/><br/>Auto-sort and note range detect initially disabled.</p>', { theme:"modal_flat", top:200 });
+          } else {
+            clearHashedModeUIState();
+          }
+
+          sortFilesIfNeeded();
+
+          if ((autoSortCheckbox.checked || rangeExpanderCheckbox.checked) && !gHasHashedNames) {
+            detectAndApplyLowestPitch();
+          }
+
+          if (autoSortCheckbox.checked) {
+            const built = buildContinuousRange();
+            if (built && isFinite(built.effMin) && isFinite(built.effMax)) {
+              const loOct = Math.floor(built.effMin/12), loNote = built.effMin%12;
+              const hiOct = Math.floor(built.effMax/12), hiNote = built.effMax%12;
+              lowOct.value = String(loOct); lowNote.value = String(loNote);
+              highOct.value = String(hiOct); highNote.value = String(hiNote);
+            }
+          }
+
+          safeRenderList();
+          updateDragInteractivity();
+          clearSelection();
+        }
+        
+        async function fetchRemoteInstrumentSamples() {
+          const info = getSelectedRemoteInstrumentInfo();
+          if (!info) {
+            DayPilot.Modal.alert('<p style="text-align:center">Unable to determine the selected soundfont or instrument.</p>', { theme:"modal_flat", top:200 });
+            return;
+          }
+          
+          setRemoteFetchPanelExpanded(true);
+
+          applySelectedSoundfontDefaultScale();
+
+          let octaveMin = 3;
+          let octaveMax = 7;
+
+          switch (remoteRangeSelect.value) {
+            case "compact":
+              octaveMin = 4;
+              octaveMax = 6;
+              break;
+            case "standard":
+              octaveMin = 3;
+              octaveMax = 7;
+              break;
+            case "extended":
+              octaveMin = 2;
+              octaveMax = 7;
+              break;
+            case "full":
+              octaveMin = 0;
+              octaveMax = 7;
+              break;
+          }
+
+          const noteNames = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+          const fetchedFiles = [];
+          let attempts = 0;
+          let found = 0;
+          const totalAttempts = (octaveMax - octaveMin + 1) * noteNames.length;
+
+          fetchRemoteBtn.disabled = true;
+          clearCurrentlyLoadedSamples();
+          setRemoteFetchStatus(`Fetching ${info.instrumentLabel} from ${info.soundfontName} (C${octaveMin}–B${octaveMax})...`);
+
+          try {
+            for (let octave = octaveMin; octave <= octaveMax; octave++) {
+              for (const noteName of noteNames) {
+                attempts++;
+                const fileName = `${noteName}${octave}.mp3`;
+                const url = info.baseUrl + fileName;
+
+                setRemoteFetchStatus(`Fetching ${fileName} (${attempts}/${totalAttempts})...`);
+
+                try {
+                  const response = await fetch(url, { cache: 'no-store' });
+                  if (!response.ok) {
+                    continue;
+                  }
+
+                  const blob = await response.blob();
+                  if (!blob || !blob.size) {
+                    continue;
+                  }
+
+                  const fetchedFile = new File([blob], fileName, {
+                    type: blob.type || 'audio/mpeg',
+                    lastModified: Date.now()
+                  });
+
+                  fetchedFiles.push(fetchedFile);
+                  found++;
+                } catch (err) {
+                  console.warn('Fetch failed for', url, err);
+                }
+              }
+            }
+
+            if (!found) {
+              DayPilot.Modal.alert(
+                `<p style="text-align:center">No notes were found for <strong>${info.instrumentLabel}</strong> in <strong>${info.soundfontName}</strong>.</p>`,
+                { theme:"modal_flat", top:200 }
+              );
+              setRemoteFetchStatus('No notes found.');
+              return;
+            }
+
+            const zipNameBase = `${info.soundfontName}_${info.instrumentLabel}`
+              .replace(/[^a-z0-9]+/gi, '_')
+              .replace(/^_+|_+$/g, '');
+
+            await processLoadedFiles(fetchedFiles, {
+              zipName: `${zipNameBase || 'custom_instrument'}.zip`
+            });
+
+            setRemoteFetchStatus(`Fetched ${found} note${found === 1 ? '' : 's'} from ${info.soundfontName} / ${info.instrumentLabel} (C${octaveMin}–B${octaveMax}).`);
+          } catch (err) {
+            console.error('Remote soundfont fetch failed:', err);
+            DayPilot.Modal.alert('<p style="text-align:center">Failed to fetch remote soundfont notes.</p>', { theme:"modal_flat", top:200 });
+            setRemoteFetchStatus('Fetch failed.');
+          } finally {
+            fetchRemoteBtn.disabled = false;
+          }
+        }
 
         const tick = () => new Promise(r => setTimeout(r, 0));
 
@@ -653,7 +1967,7 @@
         let selectedRef = null; // { kind: 'real'|'placeholder', fileRef: File|null, renderIdx: number }
 
         // Track samples temporarily suppressed (treated as placeholders)
-        const gTempSuppressed = new WeakSet();
+        let gTempSuppressed = new WeakSet();
 
         // Convert an absolute pitch index to a "NoteOctave" label, e.g., "Db4"
         function piToNoteOctave(absPI) {
@@ -2227,6 +3541,21 @@
                 highNote: parseInt(highNote.value,10)
               } : null
             };
+
+            if (gImportedInstrumentMetaExtras && gImportedInstrumentMetaExtras.hasDrone === true) {
+              meta.hasDrone = true;
+
+              if (Array.isArray(gImportedInstrumentMetaExtras.droneNotes)) {
+                meta.droneNotes = gImportedInstrumentMetaExtras.droneNotes.slice();
+              }
+
+              if (typeof gImportedInstrumentMetaExtras.droneVolumeScale === "number" &&
+                  isFinite(gImportedInstrumentMetaExtras.droneVolumeScale) &&
+                  gImportedInstrumentMetaExtras.droneVolumeScale >= 0) {
+                meta.droneVolumeScale = gImportedInstrumentMetaExtras.droneVolumeScale;
+              }
+            }
+
             zip.file("abctools.json", JSON.stringify(meta,null,2));
 
             let processedCount = 0;
@@ -2289,7 +3618,6 @@
                   await tick();
                 }
               } else {
-                // ---- Modified synthesis prep: ONLY real, unsuppressed samples are sources ----
                 const haveAtIndex = new Map();
                 full.forEach((slot, i) => {
                   if (slot.file && !(gTempSuppressed && gTempSuppressed.has(slot.file))) {
@@ -2322,7 +3650,6 @@
                   const slot = full[i];
 
                   if (slot.file && !(gTempSuppressed && gTempSuppressed.has(slot.file))) {
-                    // real, unsuppressed file → write it (with any processing)
                     const ext      = slot.ext;
                     const proposed = getProposedNameForIndex(i, ext);
                     const outBlob  = await fileToProcessedBlob(slot.file);
@@ -2331,7 +3658,6 @@
                     await tick();
 
                   } else if (slot.file && gTempSuppressed && gTempSuppressed.has(slot.file)) {
-                    // this slot is temporarily a placeholder
                     const proposed = getProposedNameForIndex(i, "wav");
                     if (gapMode.value === 'silent'){
                       zip.file(proposed, generateSilentWav(1));
@@ -2358,7 +3684,6 @@
                     }
 
                   } else {
-                    // slot has no file (true gap/placeholder from auto-range)
                     const proposed = getProposedNameForIndex(i, "wav");
                     if (gapMode.value === 'silent'){
                       zip.file(proposed, generateSilentWav(1));
@@ -2445,7 +3770,6 @@
           .finally(()=>{ exportZipBtn.disabled = false; });
         });
 
-
         // ===================== Import Existing Instrument (.zip) =====================
         importZipBtn.addEventListener('click', () => {
           importZipInput.value = "";
@@ -2477,13 +3801,34 @@
 
             let importedVolumeScale = null;
             let importedFadeTimeMs = null;
+            let importedMetaExtras = null;
+
             const metaEntry = Object.keys(zip.files).find(n => n.toLowerCase() === "abctools.json");
             if (metaEntry) {
               try {
                 const metaText = await zip.file(metaEntry).async("string");
                 const meta = JSON.parse(metaText);
-                if (meta && typeof meta.volumeScale === "number" && meta.volumeScale >= 0) importedVolumeScale = meta.volumeScale;
-                if (meta && typeof meta.fadeTimeMs === "number" && meta.fadeTimeMs >= 0) importedFadeTimeMs = meta.fadeTimeMs;
+
+                if (meta && typeof meta.volumeScale === "number" && meta.volumeScale >= 0) {
+                  importedVolumeScale = meta.volumeScale;
+                }
+                if (meta && typeof meta.fadeTimeMs === "number" && meta.fadeTimeMs >= 0) {
+                  importedFadeTimeMs = meta.fadeTimeMs;
+                }
+
+                if (meta && meta.hasDrone === true) {
+                  importedMetaExtras = {
+                    hasDrone: true
+                  };
+
+                  if (Array.isArray(meta.droneNotes)) {
+                    importedMetaExtras.droneNotes = meta.droneNotes.slice();
+                  }
+
+                  if (typeof meta.droneVolumeScale === "number" && isFinite(meta.droneVolumeScale) && meta.droneVolumeScale >= 0) {
+                    importedMetaExtras.droneVolumeScale = meta.droneVolumeScale;
+                  }
+                }
               } catch {}
             }
 
@@ -2519,6 +3864,12 @@
             thresholdControls.style.display = 'none';
             forceMonoWavCheckbox.checked = false;
             rangeExpanderCheckbox.checked = false;
+
+            gImportedInstrumentMetaExtras = importedMetaExtras;
+
+            if (gImportedInstrumentMetaExtras && gImportedInstrumentMetaExtras.hasDrone === true) {
+              gapMode.value = 'silent';
+            }
 
             if (importedVolumeScale !== null) {
               volumeScaleInput.value = String(importedVolumeScale);
@@ -2565,38 +3916,17 @@
           }
         });
 
-
         // ===== UI wiring =====
 
+        populateRemoteSelectors();
+        
         fileInput.addEventListener('change',(e)=>{
-          originalFiles=Array.from(e.target.files);
-          files=[...originalFiles];
+          processLoadedFiles(Array.from(e.target.files));
+        });
 
-          gHasHashedNames=hasHashedFilenames(files);
-          if (gHasHashedNames){
-            applyHashedModeUIState();
-            DayPilot.Modal.alert('<p style="text-align:center;font-size:1.1em;"><strong>Hash-based Filenames Detected</strong><br/><br/>Auto-sort and note range detect initially disabled.</p>', { theme:"modal_flat", top:200 });
-          } else { clearHashedModeUIState(); }
-
-          sortFilesIfNeeded();
-
-          if ((autoSortCheckbox.checked || rangeExpanderCheckbox.checked) && !gHasHashedNames) {
-            detectAndApplyLowestPitch();
-          }
-
-          if (autoSortCheckbox.checked) {
-            const built = buildContinuousRange();
-            if (built && isFinite(built.effMin) && isFinite(built.effMax)) {
-              const loOct = Math.floor(built.effMin/12), loNote = built.effMin%12;
-              const hiOct = Math.floor(built.effMax/12), hiNote = built.effMax%12;
-              lowOct.value = String(loOct); lowNote.value = String(loNote);
-              highOct.value = String(hiOct); highNote.value = String(hiNote);
-            }
-          }
-
-          safeRenderList();
-          updateDragInteractivity();
-          clearSelection();
+        fetchRemoteBtn.addEventListener('click', async ()=>{
+          if (gPrevSource) stopCurrentPreview();
+          await fetchRemoteInstrumentSamples();
         });
 
         function handleStartingControlsChange() {
@@ -2817,17 +4147,35 @@
           });
         }
 
+        setRemoteFetchPanelExpanded(false);
+
+        if (toggleRemoteFetchBtn) {
+          toggleRemoteFetchBtn.addEventListener('click', () => {
+            if (gKeepRemoteFetchPanelOpen) {
+              setRemoteFetchPanelExpanded(true);
+              return;
+            }
+
+            const expanded = toggleRemoteFetchBtn.getAttribute('aria-expanded') === 'true';
+            setRemoteFetchPanelExpanded(!expanded);
+          });
+        }
+
         // Instructions modal
         instructionsBtn.addEventListener('click', async () => {
 
           var html;
-
           if (isMobile){
             html = `
             <div class="instr-modal">
              <h2>Instructions</h2>
-              <p>This tool is used to create an ABC Transcription Tools custom instrument from a directory of per-note instrument audio sample files.</p>
-              <p>The files should be in .wav or .mp3 format. The samples must all be in the same directory.</p>
+              <div class="walkthrough-choice-row">
+                <button type="button" class="walkthrough-choice-btn" onclick="closeModalWithAction('walkthroughLocal')">Guided Tour: Importing Local Audio Samples</button>
+                <button type="button" class="walkthrough-choice-btn" onclick="closeModalWithAction('walkthroughRemote')">Guided Tour: Import MIDI Soundfont Instrument</button>
+              </div>
+              <p>This tool is used to create an <strong>ABC Transcription Tools</strong> or <strong>Celtic Sounds</strong> custom instrument from a directory of per-note instrument audio sample files.</p>
+              <p>It can also optionally import samples from a remote ABC Transcription Tools soundfont instrument.</p>
+              <p>The files should be in <strong>.wav</strong> or <strong>.mp3</strong> format. The samples must all be in the same directory.</p>
               <p><strong>1)</strong> Tap <strong>Choose Files</strong> (<strong>Browse...</strong> on Firefox) to import your audio sample files.</p>
               <p>The tool will attempt to determine the note name and octave of each of the files.</p>
               <p>Both note name (e.g., C4.wav) or patchname-(MIDI note number) filenames (e.g., Piano-60.wav), which are common in .sf2-extracted .wav files, are supported.</p>
@@ -2836,9 +4184,12 @@
               <p>If you want to specifically disable the .sf2 MIDI-number pitch name detection, check <strong>Disable .sf2-style MIDI-number pitch name detection</strong>.</p>
               <p>You can also import an existing custom instrument by tapping <strong>Import Custom Instrument (.zip)</strong>.</p>
               <p>If you re-import a previously exported custom instrument .zip, your saved volume scale and fade settings will also be restored automatically.</p>
+              <p>If the imported custom instrument .zip was created by the <strong>Bagpipes Custom Instrument Factory</strong>, the tool will automatically switch <strong>Missing note handling</strong> to <strong>Fill gaps with silent WAVs</strong>.</p>
+              <p>When you export that instrument again, the <strong>droneNotes</strong>, <strong>droneVolumeScale</strong>, and <strong>hasDrone</strong> fields from the imported <strong>abctools.json</strong> will be passed through into the exported custom instrument .zip.</p>
               <p>The custom instrument note output filename for each audio sample is displayed to the right of each note.</p>
               <p><strong>2)</strong> Select the default volume scale and fade time for the instrument.</p>
-              <p>These values will be applied to the instrument when used in the <strong>ABC Transcription Tools</strong>.</p>
+              <p>When you import a remote soundfont, the tool automatically applies its recommended default volume scale. You can still adjust it manually.</p>
+              <p>These values will be applied to the instrument when used in the <strong>ABC Transcription Tools</strong> or <strong>Celtic Sounds</strong>.</p>
               <p><strong>3)</strong> Choose the starting scale note for the instrument notes.</p>
               <p><strong>4)</strong> Choose the starting octave number for the instrument notes.</p>
               <p>For reference, in ABC notation, middle C on the piano (written as C) corresponds to C4, while the lowest string on a violin (written as G,) corresponds to G3.</p>
@@ -2872,11 +4223,82 @@
               <p><strong>13)</strong> Tap <strong>Export Custom Instrument</strong> to export the final custom instrument.</p>
               <p>The .zip file is saved to your browser’s default <strong>Downloads</strong> folder.</p>
               <hr>
+              <h4>Ideal Note Sample File Naming</h4>
+              <p>
+              For best automatic note detection results, name your sample files using either
+              flat-based pitch names or MIDI note numbers.
+              </p>
+              <p>
+              <strong>Recommended flat-based note naming:</strong><br>
+              Use note names with octave numbers appended to the filename:
+              </p>
+              <p style="margin-left:18px;">
+              Db3.wav<br>
+              Ab3.mp3<br>
+              C4.wav<br>
+              Eb5.mp3
+              </p>
+              <p>
+              The tool uses a flat-based note naming system:
+              </p>
+              <p style="margin-left:18px;">
+              C, Db, D, Eb, E, F, Gb, G, Ab, A, Bb, B
+              </p>
+              <p>
+              Sharp-based filenames such as C#4.wav may also work in many cases, but
+              flat-based naming is preferred and recommended for best compatibility with
+              ABC Transcription Tools and Celtic Sounds custom instruments.
+              </p>
+              <p>
+              <strong>MIDI note number naming is also supported:</strong><br>
+              The tool can detect .sf2-style MIDI note numbers embedded in filenames.
+              Examples:
+              </p>
+              <p style="margin-left:18px;">
+              Piano_060.wav<br>
+              Flute-072.mp3<br>
+              Violin_048.wav
+              </p>
+              <p>
+              In MIDI note numbering, middle C (C4) is note number 60.
+              </p>
+              <p>
+              If MIDI note number detection causes incorrect note assignments for your files,
+              enable:
+              </p>
+              <p>
+              <strong>Disable .sf2-style MIDI-number pitch name detection</strong>
+              </p>
+              <p>
+              The cleaner and more consistently your files are named, the more accurate the
+              automatic note ordering and range expansion features will be.
+              </p>
+              <hr>
+              <p><strong>Optional: Import instrument from an ABC Transcription Tools Soundfont</strong></p>
+              <p>If you don’t have your own samples, you can import remote instrument note samples from one of the ABC Transcription Tools MIDI soundfonts.</p>
+              <p>Tap <strong>Import Instrument from ABC Transcription Tools Soundfont</strong> to reveal the import controls.</p>
+              <p>Select a soundfont, MIDI instrument, and note range, then tap <strong>Import Soundfont Instrument Notes</strong>.</p>
+              <p>The available imported soundfont note ranges are:</p>
+              <p style="margin-left:18px;">
+                <strong>Compact (C4–C6)</strong><br>
+                <strong>Standard (C3–C7)</strong> &ndash; recommended default<br>
+                <strong>Extended (C2–C7)</strong><br>
+                <strong>Full (C0–C7)</strong>
+              </p>
+              <p>When you import remote soundfont samples, the tool clears any currently loaded samples, then attempts to load every note in the selected range using the standard soundfont note filenames and replaces the sample list with any notes it finds.</p>
+              <hr>
               <h4>Additional Resources</h4>
               <p style="text-align:center;margin-top:12px;">User Guide Information on Custom Instrument Creation</p>
               <p style="text-align:center;margin-top:12px;"><a href="https://michaeleskin.com/abctools/userguide.html#creating_custom_midi_instruments" target="_blank">ABC Transcription Tools User Guide: Custom Instruments</a></p>
               <p style="text-align:center;margin-top:12px;">UltraBox Utility for Extracting Samples from .sf2 Soundfonts</p>
               <p style="text-align:center;margin-top:12px;"><a href="https://abc.tunebook.app/tools/UltraBox/UltraBox_Sample_Extractor.html" target="_blank">UltraBox Sample Extractor</a></p>
+              <hr>
+              <h4>Demo Videos</h4>
+              <div style="text-align:center; margin-top:6px; margin-bottom:6px;">
+                <p style="margin-top:24px;margin-bottom:24px;text-align:center"><iframe width="620" height="338" loading="lazy" src="https://www.youtube.com/embed/VU2LHaTQN_c" title="Building WARBL Custom Instruments for Celtic Sounds from ABC Transcription Tools Soundfont Instruments" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture;" allowfullscreen></iframe></p>
+                <p style="margin-top:24px;margin-bottom:24px;text-align:center"><iframe width="620" height="338" loading="lazy" src="https://www.youtube.com/embed/UurVJwyRv_A" title="UltraBox Sample Extractor demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture;" allowfullscreen></iframe></p>
+                <p style="margin-top:24px;margin-bottom:24px;text-align:center"><iframe width="620" height="338" loading="lazy" src="https://www.youtube.com/embed/t8YXGyJ9ZIc" title="UltraBox Sample Extractor demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture;" allowfullscreen></iframe></p>
+              </div>
               <hr>
               <h4>Credits</h4>
               <p style="text-align:center;">This tool uses several open-source Javascript libraries, credits can be found here:</p>
@@ -2893,8 +4315,13 @@
             html = `
             <div class="instr-modal">
              <h2>Instructions</h2>
-              <p>This tool is used to create an ABC Transcription Tools custom instrument from a directory of per-note instrument audio sample files.</p>
-              <p>The files should be in .wav or .mp3 format. The samples must all be in the same directory.</p>
+              <div class="walkthrough-choice-row">
+                <button type="button" class="walkthrough-choice-btn" onclick="closeModalWithAction('walkthroughLocal')">Guided Tour: Importing Local Audio Samples</button>
+                <button type="button" class="walkthrough-choice-btn" onclick="closeModalWithAction('walkthroughRemote')">Guided Tour: Import MIDI Soundfont Instrument</button>
+              </div>
+              <p>This tool is used to create an <strong>ABC Transcription Tools</strong> or <strong>Celtic Sounds</strong> custom instrument from a directory of per-note instrument audio sample files.</p>
+              <p>It can also optionally import samples from a remote ABC Transcription Tools soundfont instrument.</p>
+              <p>The files should be in <strong>.wav</strong> or <strong>.mp3</strong> format. The samples must all be in the same directory.</p>
               <p><strong>1)</strong> Click <strong>Choose Files</strong> (<strong>Browse...</strong> on Firefox) to import your audio sample files.</p>
               <p>The tool will attempt to determine the note name and octave of each of the files.</p>
               <p>Both note name (e.g., C4.wav) or patchname-(MIDI note number) filenames (e.g., Piano-60.wav), which are common in .sf2-extracted .wav files, are supported.</p>
@@ -2903,9 +4330,12 @@
               <p>If you want to specifically disable the .sf2 MIDI-number pitch name detection, check <strong>Disable .sf2-style MIDI-number pitch name detection</strong>.</p>
               <p>You can also import an existing custom instrument by clicking <strong>Import Custom Instrument (.zip)</strong>.</p>
               <p>If you re-import a previously exported custom instrument .zip, your saved volume scale and fade settings will also be restored automatically.</p>
+              <p>If the imported custom instrument .zip was created by the <strong>Bagpipes Custom Instrument Factory</strong>, the tool will automatically switch <strong>Missing note handling</strong> to <strong>Fill gaps with silent WAVs</strong>.</p>
+              <p>When you export that instrument again, the <strong>droneNotes</strong>, <strong>droneVolumeScale</strong>, and <strong>hasDrone</strong> fields from the imported <strong>abctools.json</strong> will be passed through into the exported custom instrument .zip.</p>
               <p>The custom instrument note output filename for each audio sample is displayed to the right of each note.</p>
               <p><strong>2)</strong> Select the default volume scale and fade time for the instrument.</p>
-              <p>These values will be applied to the instrument when used in the <strong>ABC Transcription Tools</strong>.</p>
+              <p>When you import a remote soundfont, the tool automatically applies its recommended default volume scale. You can still adjust it manually.</p>
+              <p>These values will be applied to the instrument when used in the <strong>ABC Transcription Tools</strong> or <strong>Celtic Sounds</strong>.</p>
               <p><strong>3)</strong> Choose the starting scale note for the instrument notes.</p>
               <p><strong>4)</strong> Choose the starting octave number for the instrument notes.</p>
               <p>For reference, in ABC notation, middle C on the piano (written as C) corresponds to C4, while the lowest string on a violin (written as G,) corresponds to G3.</p>
@@ -2939,11 +4369,86 @@
               <p><strong>13)</strong> Click <strong>Export Custom Instrument</strong> to export the final custom instrument.</p>
               <p>The .zip file is saved to your browser’s default <strong>Downloads</strong> folder.</p>
               <hr>
+              <h4>Ideal Note Sample File Naming</h4>
+              <p>
+              For best automatic note detection results, name your sample files using either
+              flat-based pitch names or MIDI note numbers.
+              </p>
+              <p>
+              <strong>Recommended flat-based note naming:</strong><br>
+              Use note names with octave numbers appended to the filename:
+              </p>
+              <p style="margin-left:18px;">
+              Db3.wav<br>
+              Ab3.mp3<br>
+              C4.wav<br>
+              Eb5.mp3
+              </p>
+              <p>
+              The tool uses a flat-based note naming system:
+              </p>
+              <p style="margin-left:18px;">
+              C, Db, D, Eb, E, F, Gb, G, Ab, A, Bb, B
+              </p>
+              <p>
+              Sharp-based filenames such as C#4.wav may also work in many cases, but
+              flat-based naming is preferred and recommended for best compatibility with
+              ABC Transcription Tools and Celtic Sounds custom instruments.
+              </p>
+              <p>
+              <strong>MIDI note number naming is also supported:</strong><br>
+              The tool can detect .sf2-style MIDI note numbers embedded in filenames.
+              Examples:
+              </p>
+              <p style="margin-left:18px;">
+              Piano_060.wav<br>
+              Flute-072.mp3<br>
+              Violin_048.wav
+              </p>
+              <p>
+              In MIDI note numbering, middle C (C4) is note number 60.
+              </p>
+              <p>
+              If MIDI note number detection causes incorrect note assignments for your files,
+              enable:
+              </p>
+              <p>
+              <strong>Disable .sf2-style MIDI-number pitch name detection</strong>
+              </p>
+              <p>
+              The cleaner and more consistently your files are named, the more accurate the
+              automatic note ordering and range expansion features will be.
+              </p>
+              <hr>
+              <p><strong>Optional: Import instrument from an ABC Transcription Tools Soundfont</strong></p>
+              <p>If you don’t have your own samples, you can import remote instrument note samples from one of the ABC Transcription Tools MIDI soundfonts.</p>
+              <p>Click <strong>Import Instrument from ABC Transcription Tools Soundfont</strong> to reveal the import controls.</p>
+              <p>Select a soundfont, MIDI instrument, and note range, then click <strong>Import Soundfont Instrument Notes</strong>.</p>
+              <p>The available imported soundfont note ranges are:</p>
+              <p style="margin-left:18px;">
+                <strong>Compact (C4–C6)</strong><br>
+                <strong>Standard (C3–C7)</strong> &ndash; recommended default<br>
+                <strong>Extended (C2–C7)</strong><br>
+                <strong>Full (C0–C7)</strong>
+              </p>
+              <p>When you import remote soundfont samples, the tool clears any currently loaded samples, then attempts to load every note in the selected range using the standard soundfont note filenames and replaces the sample list with any notes it finds.</p>
+              <hr>
               <h4>Additional Resources</h4>
               <p style="text-align:center;margin-top:12px;">User Guide Information on Custom Instrument Creation</p>
               <p style="text-align:center;margin-top:12px;"><a href="https://michaeleskin.com/abctools/userguide.html#creating_custom_midi_instruments" target="_blank">ABC Transcription Tools User Guide: Custom Instruments</a></p>
               <p style="text-align:center;margin-top:12px;">UltraBox Utility for Extracting Samples from .sf2 Soundfonts</p>
               <p style="text-align:center;margin-top:12px;"><a href="https://abc.tunebook.app/tools/UltraBox/UltraBox_Sample_Extractor.html" target="_blank">UltraBox Sample Extractor</a></p>
+              <hr>
+              <h4>Forcing the Mobile UI</h4>
+              <p>To force the mobile UI, append <b>?ui=1</b> to the URL.</p>
+              <p>The mobile UI uses buttons for moving the samples instead of drag-and-drop.</p>
+              <hr>
+              <h4>Demo Videos</h4>
+              <div style="text-align:center; margin-top:6px; margin-bottom:6px;">
+                <p style="margin-top:24px;margin-bottom:24px;text-align:center"><iframe width="620" height="338" loading="lazy" src="https://www.youtube.com/embed/VU2LHaTQN_c" title="Building WARBL Custom Instruments for Celtic Sounds from ABC Transcription Tools Soundfont Instruments" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture;" allowfullscreen></iframe></p>
+                <p style="margin-top:24px;margin-bottom:24px;text-align:center"><iframe width="620" height="338" loading="lazy" src="https://www.youtube.com/embed/UurVJwyRv_A" title="UltraBox Sample Extractor demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture;" allowfullscreen></iframe></p>
+                <p style="margin-top:24px;margin-bottom:24px;text-align:center"><iframe width="620" height="338" loading="lazy" src="https://www.youtube.com/embed/t8YXGyJ9ZIc" title="UltraBox Sample Extractor demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture;" allowfullscreen></iframe></p>
+              </div>
               <hr>
               <h4>Credits</h4>
               <p style="text-align:center;">This tool uses several open-source Javascript libraries, credits can be found here:</p>
@@ -2954,8 +4459,21 @@
               <p style="text-align:center;">If you find it useful, please consider making a contribution via his online tip jars:</p>
               <p style="text-align:center;margin-top:12px;"><a href="https://abc.tunebook.app/tipjars.html" target="_blank">Tip Jars</a></p>
             </div>
-          `;          }
+          `; 
+          }
+
+          window.__cibModalAction = '';
           await DayPilot.Modal.alert(html, { theme: "modal_flat", top: 25, width: 780 });
+
+          if (window.__cibModalAction === 'walkthroughChooser') {
+            await showWalkthroughChooser();
+          }
+          else if (window.__cibModalAction === 'walkthroughLocal') {
+            await runGuidedWalkthrough('local');
+          }
+          else if (window.__cibModalAction === 'walkthroughRemote') {
+            await runGuidedWalkthrough('remote');
+          }
         });
 
         // Range defaults
@@ -2963,6 +4481,7 @@
         highOct.value = "6"; highNote.value = "0";   // C6
 
         updateDragInteractivity();
+        scheduleFirstUseWalkthrough();
       }
 
       function guessMimeByExt(name){

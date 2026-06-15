@@ -1,0 +1,2302 @@
+<!-- 
+ * 
+ * flip-viewer.html - All code for the Side-by-Side Stereo Flip Viewer
+ *
+ * Project repo at: https://github.com/seisiuneer/abctools/tree/main/tools/apple-spatial-photo-to-sbs
+ * 
+ *
+ * MIT License
+ * 
+ * Copyright (c) 2026 Michael Eskin
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ * 
+ -->
+ <!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Side-by-Side JPEG/TIFF Stereo Flip Viewer</title>
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Side-by-Side JPEG/TIFF Stereo Flip Viewer" />
+<meta property="og:description" content="Flip viewer for side-by-side JPEG/TIFF stereo images." />
+<meta property="og:url" content="https://michaeleskin.com/tools/flip-viewer.html" />
+<meta property="og:site_name" content="Side-by-Side JPEG/TIFF Stereo Flip Viewer" />
+<meta property="og:image" content="https://michaeleskin.com/tools/img/flip_viewer_og_3.jpg"/>
+<link rel="icon" type="image/png" sizes="32x32" href="https://michaeleskin.com/tools/img/spatial_to_sbs_favicon.png">
+
+<style>
+  :root {
+    color-scheme: dark;
+    --panel: #161d27;
+    --panel2: #202a36;
+    --text: #f2f6fb;
+    --muted: #aab7c6;
+    --accent: #73d0ff;
+    --accent2: #9ce6b2;
+    --border: rgba(255,255,255,.14);
+    --shadow: 0 18px 45px rgba(0,0,0,.35);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #000;
+    color: var(--text);
+    min-height: 100vh;
+    position: relative;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+
+    background-color: #000;
+    background-image: url("https://michaeleskin.com/tools/img/spatial_to_sbs_background.jpg");
+    background-repeat: repeat;
+    background-position: top left;
+    background-size: 320px 320px;
+
+    opacity: 0.15;
+  }
+
+  .wrap {
+    width: min(960px, calc(100vw - 28px));
+    margin: 0 auto;
+    padding: 18px 0 40px;
+  }
+
+  header,
+  .card {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015)),
+      var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    padding: 18px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    margin-bottom: 14px;
+  }
+
+  header {
+    text-align: center;
+    position: relative;
+  }
+
+  button.fullscreenButton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 42px;
+    height: 42px;
+    min-width: 0;
+    padding: 8px;
+    border-radius: 10px;
+    line-height: 1;
+    white-space: nowrap;
+    z-index: 5;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(32, 42, 54, 0.82);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.16s ease-in-out;
+  }
+
+  .viewerBox:hover button.fullscreenButton,
+  .viewerBox:focus-within button.fullscreenButton,
+  .viewerBox.fullscreenButtonAlwaysVisible button.fullscreenButton {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .viewerBox:fullscreen button.fullscreenButton,
+  .viewerBox:-webkit-full-screen button.fullscreenButton {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  button.fullscreenButton svg {
+    width: 22px;
+    height: 22px;
+    display: block;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.25;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    pointer-events: none;
+  }
+
+  .viewerBox:fullscreen {
+    width: 100vw;
+    height: 100vh;
+    max-width: none;
+    max-height: none;
+    aspect-ratio: auto;
+    border: 0;
+    border-radius: 0;
+    margin: 0;
+    background: #000;
+  }
+
+  .viewerBox:-webkit-full-screen {
+    width: 100vw;
+    height: 100vh;
+    max-width: none;
+    max-height: none;
+    aspect-ratio: auto;
+    border: 0;
+    border-radius: 0;
+    margin: 0;
+    background: #000;
+  }
+
+  h1 {
+    margin: 0 0 8px;
+    font-size: clamp(1.45rem, 3vw, 2rem);
+    letter-spacing: .01em;
+    text-shadow: 0 0 18px rgba(115,208,255,.35);
+  }
+
+  .subhead {
+    margin: 0 auto;
+    max-width: 760px;
+    color: var(--muted);
+    line-height: 1.45;
+  }
+
+  label {
+    display: block;
+    font-weight: 650;
+    margin-bottom: 8px;
+  }
+
+  input[type="file"],
+  button {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 11px 12px;
+    background: var(--panel2);
+    color: var(--text);
+    font: inherit;
+  }
+
+  input[type="file"]::file-selector-button {
+    appearance: none;
+    -webkit-appearance: none;
+    margin-right: 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 12px;
+    background: linear-gradient(180deg, rgba(115,208,255,.22), rgba(115,208,255,.10)), var(--panel2);
+    color: var(--text);
+    font: inherit;
+    font-weight: 650;
+  }
+
+  input[type="file"]::-webkit-file-upload-button {
+    -webkit-appearance: none;
+    margin-right: 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 12px;
+    background: linear-gradient(180deg, rgba(115,208,255,.22), rgba(115,208,255,.10)), var(--panel2);
+    color: var(--text);
+    font: inherit;
+    font-weight: 650;
+  }
+
+  button {
+    cursor: pointer;
+    font-weight: 750;
+    background: linear-gradient(180deg, rgba(115,208,255,.26), rgba(115,208,255,.12)), var(--panel2);
+  }
+
+  .row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: nowrap;
+    margin-top: 12px;
+  }
+
+  input[type="range"] {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .rangeValue {
+    min-width: 5.5rem;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: rgba(255,255,255,.08);
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hint {
+    color: var(--muted);
+    font-size: .93rem;
+    line-height: 1.4;
+    margin-top: 8px;
+  }
+
+  .viewerBox {
+    --viewer-aspect: 1.333333;
+    --viewer-max-height: min(720px, calc(100dvh - 360px));
+
+    background: rgba(0,0,0,.35);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+
+    width: min(100%, calc(var(--viewer-max-height) * var(--viewer-aspect)));
+    aspect-ratio: var(--viewer-aspect);
+    margin-left: auto;
+    margin-right: auto;
+
+    display: grid;
+    place-items: center;
+    position: relative;
+  }
+
+  canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  #emptyMessage {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: 20px;
+  }
+
+  select {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 9px 34px 9px 10px;
+    background-color: var(--panel2);
+    color: var(--text);
+    font: inherit;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image:
+      linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+      linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+    background-position:
+      calc(100% - 20px) 50%,
+      calc(100% - 14px) 50%;
+    background-size:
+      6px 6px,
+      6px 6px;
+    background-repeat: no-repeat;
+  }
+
+  select:disabled,
+  input:disabled,
+  button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+  }
+
+  .viewerControlsGrid {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+
+  .flipControls {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .displayControls {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .displayControl {
+    min-width: 0;
+  }
+
+  .displayControl label {
+    font-size: .88rem;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .controlHeaderActions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 0 auto;
+  }
+
+  #speedMaxSelect {
+    width: auto;
+    min-width: 5.9rem;
+    flex: 0 0 auto;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-radius: 10px;
+    font-size: .88rem;
+    line-height: 1.15;
+  }
+
+  button.smallPauseButton {
+    width: auto;
+    min-width: 7.5rem;
+    padding: 8px 10px;
+    border-radius: 10px;
+    font-size: .88rem;
+    line-height: 1.15;
+    white-space: nowrap;
+  }
+
+  .meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 18px;
+    color: var(--muted);
+    font-size: .93rem;
+  }
+
+  .pill {
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: rgba(255,255,255,.07);
+    overflow-wrap: anywhere;
+  }
+
+  .controlHeader {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .controlHeader label {
+    margin: 0;
+  }
+
+
+
+  .previewNavButton {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 4;
+    width: 44px;
+    height: 72px;
+    min-width: 0;
+    padding: 0;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,.18);
+    background: rgba(0,0,0,.34);
+    color: rgba(255,255,255,.82);
+    line-height: 1;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .previewNavButton:hover,
+  .previewNavButton:focus {
+    background: rgba(0,0,0,.52);
+    color: #fff;
+  }
+
+  .previewNavButton svg {
+    width: 27px;
+    height: 27px;
+    display: block;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    pointer-events: none;
+  }
+
+  .previewNavButton.visible {
+    display: flex;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.16s ease-in-out, background 0.16s ease-in-out, color 0.16s ease-in-out;
+  }
+
+  .viewerBox:hover .previewNavButton.visible,
+  .viewerBox:focus-within .previewNavButton.visible,
+  body.iosDevice .previewNavButton.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .previewNavButton.idle {
+    cursor: default;
+  }
+
+  .viewerBox:hover .previewNavButton.visible.idle,
+  .viewerBox:focus-within .previewNavButton.visible.idle,
+  body.iosDevice .previewNavButton.visible.idle {
+    opacity: .64;
+    pointer-events: auto;
+  }
+
+  .previewNavButton.idle svg {
+    opacity: .88;
+  }
+
+  .previewNavButton:disabled {
+    cursor: default;
+  }
+
+  body.iosDevice .previewNavButton {
+    background: rgba(0,0,0,.18);
+    border-color: rgba(255,255,255,.22);
+    color: rgba(255,255,255,.88);
+  }
+
+  body.iosDevice .previewNavButton:hover,
+  body.iosDevice .previewNavButton:focus {
+    background: rgba(0,0,0,.28);
+    color: #fff;
+  }
+
+  #firstImageButton { left: 10px; }
+  #prevImageButton { left: 64px; }
+  #nextImageButton { right: 64px; }
+  #lastImageButton { right: 10px; }
+
+  @media (max-width: 760px) {
+    .wrap {
+      width: min(100vw - 18px, 960px);
+      padding: 10px 0 28px;
+    }
+
+    header,
+    .card {
+      padding: 14px;
+      border-radius: 15px;
+      margin-bottom: 12px;
+    }
+
+    .viewerBox {
+      --viewer-max-height: min(58vh, calc(100dvh - 330px));
+    }
+
+    h1 {
+      font-size: clamp(1.2rem, 6vw, 1.55rem);
+    }
+
+    button.fullscreenButton {
+      top: 8px;
+      right: 8px;
+      width: 38px;
+      height: 38px;
+      padding: 7px;
+    }
+
+    button.fullscreenButton svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .subhead {
+      font-size: .92rem;
+    }
+
+    .meta {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .previewNavButton {
+      width: 38px;
+      height: 60px;
+      border-radius: 12px;
+    }
+
+    .previewNavButton svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    #firstImageButton { left: 8px; }
+    #prevImageButton { left: 54px; }
+    #nextImageButton { right: 54px; }
+    #lastImageButton { right: 8px; }
+
+    .displayControls {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .viewerBox {
+      --viewer-max-height: min(52vh, calc(100dvh - 300px));
+    }
+
+    input[type="file"],
+    button {
+      padding: 10px;
+    }
+
+    button.smallPauseButton {
+      min-width: 6.5rem;
+      padding: 8px 9px;
+    }
+
+    #speedMaxSelect {
+      min-width: 5.2rem;
+      padding-left: 8px;
+      padding-right: 26px;
+      font-size: .84rem;
+    }
+
+    .rangeValue {
+      min-width: 4.8rem;
+    }
+
+    .hint,
+    .meta {
+      font-size: .88rem;
+    }
+  }
+
+  .modal_instructions_background {
+    background-color: #000;
+    opacity: 0.45;
+  }
+
+  .modal_instructions_main {
+    border: 1px solid #333;
+    box-shadow: 0 0 15px -2px rgba(0,0,0,0.75);
+    width: min(780px, calc(100vw - 48px)) !important;
+    max-width: min(780px, calc(100vw - 48px)) !important;
+    height: min(72dvh, 760px) !important;
+    max-height: min(72dvh, 760px) !important;
+    overflow: hidden !important;
+  }
+
+  .modal_instructions_inner {
+    padding: 18px 0 22px 18px;
+    background: #fff;
+    color: #000;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .modal_instructions_content {
+    margin: 18px;
+    margin-bottom: 12px;
+    padding-right: 28px;
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch;
+    flex: 1 1 auto;
+    line-height: 1.5;
+    font-size: 16px;
+    color-scheme: light;
+  }
+
+  .modal_instructions_content h3 {
+    margin: 0 0 10px 0;
+    font-size: 22px;
+    line-height: 1.25;
+  }
+
+  .modal_instructions_content h4 {
+    margin: 18px 0 8px 0;
+    font-size: 17px;
+    line-height: 1.3;
+  }
+
+  .modal_instructions_content p,
+  .modal_instructions_content ul {
+    margin: 0 0 12px 0;
+  }
+
+  .modal_instructions_content ul {
+    padding-left: 22px;
+  }
+
+  .modal_instructions_content li {
+    margin-bottom: 8px;
+  }
+
+  .modal_instructions_buttons {
+    text-align: center;
+    margin-top: 14px;
+  }
+
+  .modal_instructions_buttons button {
+    margin: 0 8px;
+  }
+
+  .modal_instructions_main button {
+    background: #e8f1ff;
+    color: #000;
+    border: 1px solid #9dbaf2;
+    padding: 10px 20px;
+    cursor: pointer;
+    outline: none;
+    width: 110px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .modal_instructions_main button:hover {
+    background: #dbe8ff;
+    box-shadow: 0 0 6px rgba(80,120,220,0.35);
+  }
+
+  @media (max-width: 560px) {
+    .modal_instructions_main {
+      width: calc(100vw - 28px) !important;
+      max-width: calc(100vw - 28px) !important;
+      height: min(76dvh, 720px) !important;
+      max-height: min(76dvh, 720px) !important;
+    }
+
+    .modal_instructions_inner {
+      padding: 14px 0 18px 14px;
+    }
+
+    .modal_instructions_content {
+      margin: 14px;
+      padding-right: 18px;
+      font-size: 15px;
+    }
+  }
+
+  .instructions-body a{
+    color: #1a73e8;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    transition: color 0.15s ease, background 0.15s ease, text-decoration-thickness 0.15s ease;
+  }
+
+  .instructions-body a:visited{
+    color: #1a73e8;
+  }
+
+  .instructions-body a:hover{
+    color: #0b57d0;
+    text-decoration-thickness: 2px;
+    background: rgba(26,115,232,0.10);
+    border-radius: 4px;
+  }
+  
+</style>
+
+<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-VM0N9HL3MK"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-VM0N9HL3MK');
+</script> -->
+
+</head>
+
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Side-by-Side JPEG/TIFF Stereo Flip Viewer</h1>
+    <p class="subhead">
+      Open one or more left/right side-by-side JPEG/TIFF images and view them as flip stereo images.
+    </p>
+  </header>
+
+  <section class="card">
+    <div>
+      <label for="fileInput">Side-by-Side JPEG/TIFF Stereo Images:</label>
+      <input id="fileInput" type="file" accept=".jpg,.jpeg,.tif,.tiff,image/jpeg,image/tiff" multiple title="Open one or more side-by-side JPEG/TIFF stereo images.">
+      <div class="hint">You can also drag-and-drop one or more side-by-side JPEG/TIFF stereo image files onto the viewer area.</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="viewerBox" id="viewerBox">
+    <button id="fullscreenButton" class="fullscreenButton" type="button" title="Show the image full screen." aria-label="Show the image full screen">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M4 9V4h5"></path>
+        <path d="M20 9V4h-5"></path>
+        <path d="M4 15v5h5"></path>
+        <path d="M20 15v5h-5"></path>
+      </svg>
+    </button>
+      <button id="firstImageButton" class="previewNavButton" type="button" title="Show first image (Ctrl+Shift+[)" aria-label="Show first image">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M6 5v14"></path>
+          <path d="M18 6l-7 6 7 6"></path>
+        </svg>
+      </button>
+      <button id="prevImageButton" class="previewNavButton" type="button" title="Show previous image (Ctrl+[)" aria-label="Show previous image">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M15 6l-7 6 7 6"></path>
+        </svg>
+      </button>
+      <canvas id="viewerCanvas"></canvas>
+      <button id="nextImageButton" class="previewNavButton" type="button" title="Show next image (Ctrl+])" aria-label="Show next image">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M9 6l7 6-7 6"></path>
+        </svg>
+      </button>
+      <button id="lastImageButton" class="previewNavButton" type="button" title="Show last image (Ctrl+Shift+])" aria-label="Show last image">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M18 5v14"></path>
+          <path d="M6 6l7 6-7 6"></path>
+        </svg>
+      </button>
+      <div id="emptyMessage" class="hint">Stereo flip viewer output will appear here.</div>
+    </div>
+    <div class="viewerControlsGrid">
+      <div class="flipControls">
+        <div class="controlHeader">
+          <label for="speedRange">Flip Speed</label>
+          <div class="controlHeaderActions">
+            <select id="speedMaxSelect" title="Choose the maximum value available on the Flip Speed slider." aria-label="Maximum Flip Speed">
+              <option value="2.5">2.5 Hz Max</option>
+              <option value="5" selected>5 Hz Max</option>
+              <option value="10">10 Hz Max</option>
+              <option value="20">20 Hz Max</option>
+              <option value="30">30 Hz Max</option>
+            </select>
+            <span id="speedValue" class="rangeValue">1.2 Hz</span>
+            <button id="playPauseButton" class="smallPauseButton" type="button">Pause</button>
+          </div>
+        </div>
+        <div class="row">
+          <input id="speedRange" type="range" min="0.1" max="5" step="0.1" value="1.2">
+        </div>
+      </div>
+
+      <div class="displayControls">
+        <div class="displayControl">
+          <label for="displayMode">Display Mode</label>
+          <select id="displayMode" title="Choose whether to view the current image as an animated stereo flip or as the original full side-by-side JPEG/TIFF.">
+            <option value="flip">Flip Stereo View</option>
+            <option value="full">Original Side-by-Side Image</option>
+          </select>
+        </div>
+
+        <div class="displayControl" id="imageOrderControl">
+          <label for="fullImageOrder">Image Order</label>
+          <select id="fullImageOrder" title="Choose the left/right order when displaying the current original full side-by-side image. This is only available in Original Side-by-Side Image mode.">
+            <option value="normal">Original</option>
+            <option value="reverse">Swapped</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="meta">
+      <div id="fileMeta" class="pill">No file selected.</div>
+      <div id="sourceMeta" class="pill">No image loaded.</div>
+    </div>
+  </section>
+
+  <div class="card instructionsActions">
+    <button id="showInstructionsButton" type="button" title="Open instructions for using the Side-by-Side Stereo Flip Viewer, including multiple-image navigation.">Instructions</button>
+  </div>
+
+</div>
+
+<script type="text/javascript" src="UTIF.min.js"></script>
+<script type="text/javascript" src="daypilot-modal.min-3.10.1.js"></script>
+
+<script>
+(() => {
+  "use strict";
+
+  const fileInput = document.getElementById("fileInput");
+  const speedRange = document.getElementById("speedRange");
+  const speedValue = document.getElementById("speedValue");
+  const speedMaxSelect = document.getElementById("speedMaxSelect");
+  const playPauseButton = document.getElementById("playPauseButton");
+  const displayMode = document.getElementById("displayMode");
+  const fullImageOrder = document.getElementById("fullImageOrder");
+  const imageOrderControl = document.getElementById("imageOrderControl");
+  const canvas = document.getElementById("viewerCanvas");
+  const ctx = canvas.getContext("2d", { alpha: false });
+  const emptyMessage = document.getElementById("emptyMessage");
+  const viewerBox = document.getElementById("viewerBox");
+  const fileMeta = document.getElementById("fileMeta");
+  const sourceMeta = document.getElementById("sourceMeta");
+  const showInstructionsButton = document.getElementById("showInstructionsButton");
+  const fullscreenButton = document.getElementById("fullscreenButton");
+  const firstImageButton = document.getElementById("firstImageButton");
+  const prevImageButton = document.getElementById("prevImageButton");
+  const nextImageButton = document.getElementById("nextImageButton");
+  const lastImageButton = document.getElementById("lastImageButton");
+
+  let leftCanvas = null;
+  let rightCanvas = null;
+  let sourceFullCanvas = null;
+  let loadedImages = [];
+  let currentImageIndex = -1;
+  let loadGeneration = 0;
+  let imageNavigationInProgress = false;
+  let playing = true;
+  let animationStart = performance.now();
+  let lastFrameRequest = 0;
+  let scrollBeforeFullscreenX = 0;
+  let scrollBeforeFullscreenY = 0;
+  let shouldRestoreScrollAfterFullscreen = false;
+
+  const SPEED_MAX_STORAGE_KEY = "sbsFlipViewerSpeedMaximumHz";
+
+  function localStorageAvailable() {
+    try {
+      const testKey = "__sbs_flip_viewer_storage_test__";
+      window.localStorage.setItem(testKey, "1");
+      window.localStorage.removeItem(testKey);
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function isValidSpeedMaximum(value) {
+    const allowedValues = Array.from(speedMaxSelect.options).map(option => option.value);
+    return allowedValues.includes(String(value));
+  }
+
+  function loadSpeedMaximumFromStorage() {
+    if (!localStorageAvailable()) {
+      return speedMaxSelect.value;
+    }
+
+    try {
+      const storedValue = window.localStorage.getItem(SPEED_MAX_STORAGE_KEY);
+      return isValidSpeedMaximum(storedValue) ? storedValue : speedMaxSelect.value;
+    } catch (err) {
+      return speedMaxSelect.value;
+    }
+  }
+
+  function saveSpeedMaximumToStorage(value) {
+    if (!localStorageAvailable() || !isValidSpeedMaximum(value)) {
+      return;
+    }
+
+    try {
+      window.localStorage.setItem(SPEED_MAX_STORAGE_KEY, String(value));
+    } catch (err) {
+      // Ignore storage errors. The tool still works without persistence.
+    }
+  }
+
+  function applySpeedMaximum(value) {
+    const newMax = isValidSpeedMaximum(value) ? String(value) : "5";
+
+    speedMaxSelect.value = newMax;
+    speedRange.max = newMax;
+
+    if (Number(speedRange.value) > Number(newMax)) {
+      speedRange.value = newMax;
+    }
+  }
+
+
+  function getFullscreenElement() {
+    return document.fullscreenElement || document.webkitFullscreenElement || null;
+  }
+
+  function rememberScrollPositionBeforeFullscreen() {
+    scrollBeforeFullscreenX = window.scrollX || window.pageXOffset || 0;
+    scrollBeforeFullscreenY = window.scrollY || window.pageYOffset || 0;
+    shouldRestoreScrollAfterFullscreen = true;
+  }
+
+  function restoreScrollPositionAfterFullscreen() {
+    if (!shouldRestoreScrollAfterFullscreen || getFullscreenElement()) {
+      return;
+    }
+
+    shouldRestoreScrollAfterFullscreen = false;
+
+    const restore = () => {
+      window.scrollTo(scrollBeforeFullscreenX, scrollBeforeFullscreenY);
+    };
+
+    requestAnimationFrame(() => {
+      restore();
+      setTimeout(restore, 0);
+      setTimeout(restore, 80);
+    });
+  }
+
+  function updateFullscreenButtonLabel() {
+    if (!fullscreenButton) {
+      return;
+    }
+
+    fullscreenButton.title = "Show the image full screen.";
+    fullscreenButton.setAttribute("aria-label", "Show the image full screen");
+  }
+
+  function isIPhoneBrowser() {
+    const userAgent = navigator.userAgent || "";
+    const platform = navigator.platform || "";
+
+    return /iPhone|iPod/i.test(userAgent) || /iPhone|iPod/i.test(platform);
+  }
+
+  function isIPadBrowser() {
+    const userAgent = navigator.userAgent || "";
+    const platform = navigator.platform || "";
+
+    return /iPad/i.test(userAgent) ||
+      /iPad/i.test(platform) ||
+      (platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  }
+
+  function fullscreenApiAvailable() {
+    return !!(
+      viewerBox &&
+      (viewerBox.requestFullscreen || viewerBox.webkitRequestFullscreen) &&
+      (document.exitFullscreen || document.webkitExitFullscreen)
+    );
+  }
+
+  function updateFullscreenButtonAvailability() {
+    if (!fullscreenButton) {
+      return;
+    }
+
+    const isFullscreen = !!getFullscreenElement();
+    const shouldHide = isIPhoneBrowser() || !fullscreenApiAvailable() || isFullscreen;
+    const alwaysVisible = !shouldHide && isIPadBrowser();
+
+    fullscreenButton.hidden = shouldHide;
+    fullscreenButton.style.display = shouldHide ? "none" : "";
+
+    if (viewerBox) {
+      viewerBox.classList.toggle("fullscreenButtonAlwaysVisible", alwaysVisible);
+    }
+  }
+
+  async function toggleFullscreenView() {
+    if (getFullscreenElement()) {
+      if (document.exitFullscreen) {
+        await document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
+      return;
+    }
+
+    rememberScrollPositionBeforeFullscreen();
+
+    if (viewerBox.requestFullscreen) {
+      await viewerBox.requestFullscreen();
+    } else if (viewerBox.webkitRequestFullscreen) {
+      viewerBox.webkitRequestFullscreen();
+    }
+  }
+
+  function showInstructions() {
+    const html = `
+      <div class="instructions-body">
+        <h3 style="text-align:center;">Side-by-Side JPEG/TIFF Stereo Flip Viewer</h3>
+
+        <p>
+          This viewer opens one or more side-by-side JPEG/TIFF images and rapidly alternates between the left-eye and right-eye views for the currently displayed image.
+          The effect is often called a <b>flip</b> or <b>wiggle</b> stereo view.
+        </p>
+
+        <div style="text-align: center;margin-bottom:20px;">
+          This tool can be used to view side-by-side JPEG/TIFF images created<br/>with my stereo image converter tools:<br/>
+          <div style="margin-top:10px;">
+            <a href="https://michaeleskin.com/tools/apple-spatial-photo-to-sbs.html" target="_blank" rel="noopener noreferrer">Apple Spatial Photo → Side-by-Side or 3D Anaglyph</a><br/><br/>      
+            <a href="https://michaeleskin.com/tools/sbs-jpeg-tiff-to-sbs.html" target="_blank" rel="noopener noreferrer">Stereo JPEG/TIFF → Side-by-Side or 3D Anaglyph</a>
+          </div>
+        </div>
+
+        <h4>Opening images</h4>
+        <ul>
+          <li>Select one or more side-by-side JPEG/TIFF files using the file chooser.</li>
+          <li>On desktop browsers, you can also drag one or more side-by-side JPEG/TIFF files directly onto the viewer area.</li>
+          <li>Each image should contain the two stereo views side by side in a single JPEG/TIFF file.</li>
+          <li>When multiple images are loaded, use the First, Previous, Next, and Last buttons over the viewer to move through the collection. On desktop, these buttons appear when the mouse is over the viewer. On iOS, they remain visible. Keyboard shortcuts are also available throughout the main tool: <b>Ctrl+Shift+[</b> for first image, <b>Ctrl+[</b> for previous image, <b>Ctrl+]</b> for next image, and <b>Ctrl+Shift+]</b> for last image.</li>
+          <li>TIFF support is intended for standard 8-bit RGB side-by-side TIFF/TIF images, including uncompressed TIFFs and common LZW-compressed TIFFs with horizontal differencing predictor.</li>
+        </ul>
+
+        <h4>Display modes</h4>
+        <ul>
+          <li><b>Flip Stereo View</b> alternates between the left-eye and right-eye views.</li>
+          <li><b>Original Side-by-Side Image</b> shows the full side-by-side image without flipping.</li>
+          <li>When viewing the original side-by-side image, use <b>Image Order</b> to switch between Original and Swapped display.</li>
+          <li>The <b>Image Order</b> control is hidden in <b>Flip Stereo View</b> mode.</li>
+          <li>On desktop browsers, move the mouse over the viewer area to reveal the full-screen button at the top right of the viewer. On iPad, the button remains visible at the top right. The button is hidden on iPhone and while full-screen mode is active. Press Escape or use the browser full-screen control to return to the normal tool view.</li>
+          <li>When showing the original side-by-side image, to make the image smaller and help facilitate visually fusing the images, you can either zoom out the browser window or resize the window narrower to make the image smaller.</li>
+        </ul>
+
+        <h4>Image layout</h4>
+        <ul>
+          <li>The viewer assumes the left half of the JPEG/TIFF is one eye view and the right half is the other eye view.</li>
+          <li>Side-by-side images exported from the <b>Apple Spatial Photo → Side-by-Side or 3D Anaglyph</b>, or the <b>Stereo JPEG/TIFF → Side-by-Side or 3D Anaglyph</b> tools, are already in the expected format.</li>
+          <li>The viewer area is fixed at a comfortable 4:3 shape and the image is scaled to fit inside it.</li>
+        </ul>
+
+        <h4>Flip Speed</h4>
+        <ul>
+          <li>Use the <b>Hz Max</b> menu next to <b>Flip Speed</b> to choose whether the <b>Flip Speed</b> slider tops out at 2.5, 5, 10, 20, or 30 Hz. The default maximum is 5 Hz.</li>
+          <li>The selected maximum is saved in browser localStorage when available and restored the next time the tool is opened.</li>
+          <li>Not all devices/browsers may be able to handle the higher flip speeds.</li>
+          <li>Use <b>Flip Speed</b> to control how quickly the viewer alternates between the two eye views.</li>
+          <li>Slower speeds can be easier for inspecting alignment.</li>
+          <li>Faster speeds can make the stereo depth effect feel more immediate.</li>
+        </ul>
+
+        <h4>Pause / Play</h4>
+        <ul>
+          <li>Click <b>Pause</b> to stop the animation on the left-eye view.</li>
+          <li>Click <b>Play</b> to resume flipping between the two views.</li>
+        </ul>
+
+        <h4>Notes</h4>
+        <ul>
+          <li>This viewer does not create a new image file; it is only for viewing and checking side-by-side stereo images.</li>
+          <li>The flip effect is a visual approximation of stereo depth. It is not the same as a true stereoscope, VR viewer, or lenticular display.</li>
+        </ul>
+
+        <h4>Privacy</h4>
+        <ul>
+          <li>All processing is performed locally in your browser.</li>
+          <li>The selected JPEG/TIFF files are not uploaded to a server by this tool.</li>
+          <li>Google Analytics is used to collect aggregate usage statistics for the tool.</li>
+        </ul>
+
+        <hr style="margin-top:20px;">
+
+        <h4 style="text-align: center;">Tip Jars</h4>
+        <div style="text-align: center;margin-bottom:20px;">
+          <p class="instructions-title"> This tool was created by</p>
+          <p class="instructions-title"> <a href="https://michaeleskin.com" target="_blank" rel="noopener noreferrer" style="color:#1a73e8; text-decoration:underline;">Michael Eskin</a></p>
+          <div style="margin-top:10px;">
+            If the tool has been useful to you, please consider supporting ongoing<br/>development by tossing a few bucks into one of my online tip jars.
+          </div>
+          <div style="margin-top:10px;">
+            <b>PayPal</b><br/>
+            <a href="https://paypal.me/MichaelEskin" target="_blank" rel="noopener noreferrer" style="color:#1a73e8; text-decoration:underline;">https://paypal.me/MichaelEskin</a>
+          </div>
+          <div style="margin-top:10px;">
+            <b>Venmo</b><br/>
+            @MichaelEskin
+          </div>
+        </div>
+
+        <hr>
+
+        <h4 style="text-align: center;">Source Code on GitHub</h4>
+        <div style="text-align: center;margin-bottom:20px;">
+          The source code for this tool is available on GitHub<br/>
+           <div style="margin-top:10px;">
+            <a href="https://github.com/seisiuneer/abctools/tree/main/tools/apple-spatial-photo-to-sbs" target="_blank" rel="noopener noreferrer">Side-by-Side JPEG/TIFF Stereo Flip Viewer</a>
+          </div>
+        </div>
+
+        <hr>
+      </div>
+    `;
+
+    if (window.DayPilot && DayPilot.Modal && typeof DayPilot.Modal.alert === "function") {
+      DayPilot.Modal.alert(html, {
+        theme: "modal_instructions",
+        top: 80
+      });
+      return;
+    }
+
+    alert(
+      "Side-by-Side Stereo Flip Viewer\\n\\n" +
+      "Open one or more side-by-side JPEG/TIFF images and use Flip Speed to control how quickly the viewer alternates between the two eye views. " +
+      "Click Pause to stop the animation and Play to resume."
+    );
+  }
+
+  function formatBytes(bytes) {
+    const units = ["B", "KB", "MB", "GB"];
+    let value = bytes;
+    let unit = 0;
+
+    while (value >= 1024 && unit < units.length - 1) {
+      value /= 1024;
+      unit++;
+    }
+
+    return `${value.toFixed(unit ? 1 : 0)} ${units[unit]}`;
+  }
+
+  function updateControlLabels() {
+    const fullImageMode = displayMode.value === "full";
+
+    speedValue.textContent = `${Number(speedRange.value).toFixed(1)} Hz`;
+
+    speedRange.disabled = fullImageMode;
+    speedMaxSelect.disabled = fullImageMode;
+    playPauseButton.disabled = fullImageMode;
+    fullImageOrder.disabled = !fullImageMode;
+
+    if (imageOrderControl) {
+      imageOrderControl.style.display = fullImageMode ? "" : "none";
+    }
+  }
+
+  function createSplitSideBySideCanvases(full) {
+    const sourceWidth = full.width;
+    const sourceHeight = full.height;
+    const eyeWidth = Math.floor(sourceWidth / 2);
+    const eyeHeight = sourceHeight;
+
+    if (eyeWidth < 1 || eyeHeight < 1) {
+      throw new Error("Image is too small.");
+    }
+
+    const l = document.createElement("canvas");
+    const r = document.createElement("canvas");
+
+    l.width = eyeWidth;
+    l.height = eyeHeight;
+    r.width = eyeWidth;
+    r.height = eyeHeight;
+
+    const lctx = l.getContext("2d", { alpha: false });
+    const rctx = r.getContext("2d", { alpha: false });
+
+    lctx.drawImage(full, 0, 0, eyeWidth, eyeHeight, 0, 0, eyeWidth, eyeHeight);
+    rctx.drawImage(full, eyeWidth, 0, eyeWidth, eyeHeight, 0, 0, eyeWidth, eyeHeight);
+
+    return {
+      leftCanvas: l,
+      rightCanvas: r,
+      sourceFullCanvas: full,
+      eyeWidth,
+      eyeHeight
+    };
+  }
+
+  function splitSideBySideCanvas(full) {
+    const split = createSplitSideBySideCanvases(full);
+    leftCanvas = split.leftCanvas;
+    rightCanvas = split.rightCanvas;
+    sourceFullCanvas = split.sourceFullCanvas;
+    return split;
+  }
+
+  function splitSideBySideImage(img) {
+    const full = document.createElement("canvas");
+    full.width = img.naturalWidth;
+    full.height = img.naturalHeight;
+
+    const fullCtx = full.getContext("2d", { alpha: false });
+    fullCtx.drawImage(img, 0, 0);
+
+    splitSideBySideCanvas(full);
+  }
+
+  function resizeCanvasToViewer() {
+    const rect = viewerBox.getBoundingClientRect();
+    const dpr = Math.max(1, window.devicePixelRatio || 1);
+    const w = Math.max(1, Math.round(rect.width * dpr));
+    const h = Math.max(1, Math.round(rect.height * dpr));
+
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w;
+      canvas.height = h;
+    }
+  }
+
+  function clearCanvas() {
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function getContainRect(imageWidth, imageHeight, destinationWidth, destinationHeight) {
+    const scale = Math.min(destinationWidth / imageWidth, destinationHeight / imageHeight);
+
+    const w = imageWidth * scale;
+    const h = imageHeight * scale;
+    const x = (destinationWidth - w) / 2;
+    const y = (destinationHeight - h) / 2;
+
+    return { x, y, w, h };
+  }
+
+  function getFlipSide(now) {
+    if (!playing) {
+      return "left";
+    }
+
+    const hz = Number(speedRange.value);
+    const elapsed = (now - animationStart) / 1000;
+    const cycle = (elapsed * hz) % 1;
+
+    return cycle >= 0.5 ? "right" : "left";
+  }
+
+  function drawEyeImage(img, rect) {
+    ctx.drawImage(img, rect.x, rect.y, rect.w, rect.h);
+  }
+
+  function drawFullSideBySideImage() {
+    if (!sourceFullCanvas || !leftCanvas || !rightCanvas) {
+      return false;
+    }
+
+    const reverse = fullImageOrder.value === "reverse";
+
+    if (!reverse) {
+      const rect = getContainRect(sourceFullCanvas.width, sourceFullCanvas.height, canvas.width, canvas.height);
+      ctx.drawImage(sourceFullCanvas, rect.x, rect.y, rect.w, rect.h);
+      return true;
+    }
+
+    const combinedWidth = leftCanvas.width + rightCanvas.width;
+    const combinedHeight = leftCanvas.height;
+    const rect = getContainRect(combinedWidth, combinedHeight, canvas.width, canvas.height);
+    const eyeWidth = rect.w / 2;
+
+    ctx.drawImage(rightCanvas, rect.x, rect.y, eyeWidth, rect.h);
+    ctx.drawImage(leftCanvas, rect.x + eyeWidth, rect.y, eyeWidth, rect.h);
+
+    return true;
+  }
+
+  function render(now = performance.now()) {
+    resizeCanvasToViewer();
+    clearCanvas();
+    updateControlLabels();
+
+    if (!leftCanvas || !rightCanvas) {
+      lastFrameRequest = requestAnimationFrame(render);
+      return;
+    }
+
+    emptyMessage.style.display = "none";
+
+    if (displayMode.value === "full") {
+      drawFullSideBySideImage();
+      lastFrameRequest = requestAnimationFrame(render);
+      return;
+    }
+
+    const side = getFlipSide(now);
+    const eyeImage = side === "right" ? rightCanvas : leftCanvas;
+    const rect = getContainRect(eyeImage.width, eyeImage.height, canvas.width, canvas.height);
+
+    drawEyeImage(eyeImage, rect);
+
+    lastFrameRequest = requestAnimationFrame(render);
+  }
+
+  function requestRender() {
+    cancelAnimationFrame(lastFrameRequest);
+    lastFrameRequest = requestAnimationFrame(render);
+  }
+
+
+  function isJpegFile(file) {
+    return !!file &&
+      (
+        /^image\/jpe?g$/i.test(file.type || "") ||
+        /\.jpe?g$/i.test(file.name || "")
+      );
+  }
+
+  function isTiffFile(file) {
+    return !!file &&
+      (
+        /^image\/tiff$/i.test(file.type || "") ||
+        /\.tiff?$/i.test(file.name || "")
+      );
+  }
+
+  function isSupportedSourceFile(file) {
+    return isJpegFile(file) || isTiffFile(file);
+  }
+
+  function getSourceFileFormatLabel(file) {
+    return isTiffFile(file) ? "TIFF" : "JPEG";
+  }
+
+  async function decodeRasterImageToCanvas(file, errorLabel) {
+    const url = URL.createObjectURL(file);
+
+    try {
+      const img = new Image();
+      img.decoding = "async";
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = () => reject(new Error(`${errorLabel} could not be loaded by this browser.`));
+        img.src = url;
+      });
+
+      const full = document.createElement("canvas");
+      full.width = img.naturalWidth;
+      full.height = img.naturalHeight;
+
+      const fullCtx = full.getContext("2d", { alpha: false });
+      fullCtx.drawImage(img, 0, 0);
+
+      return full;
+    } finally {
+      URL.revokeObjectURL(url);
+    }
+  }
+
+  async function decodeJpegToCanvas(file) {
+    return decodeRasterImageToCanvas(file, "JPEG image");
+  }
+
+  function createTiffReader(buffer) {
+    const view = new DataView(buffer);
+    const byteOrder = view.getUint16(0, false);
+    const littleEndian = byteOrder === 0x4949;
+
+    if (byteOrder !== 0x4949 && byteOrder !== 0x4d4d) {
+      throw new Error("This is not a valid TIFF file.");
+    }
+
+    if (view.getUint16(2, littleEndian) !== 42) {
+      throw new Error("Unsupported TIFF header.");
+    }
+
+    return {
+      view,
+      littleEndian,
+      getUint16(offset) {
+        return view.getUint16(offset, littleEndian);
+      },
+      getUint32(offset) {
+        return view.getUint32(offset, littleEndian);
+      }
+    };
+  }
+
+  function getTiffTypeSize(type) {
+    switch (Number(type)) {
+      case 1: // BYTE
+      case 2: // ASCII
+      case 6: // SBYTE
+      case 7: // UNDEFINED
+        return 1;
+      case 3: // SHORT
+      case 8: // SSHORT
+        return 2;
+      case 4: // LONG
+      case 9: // SLONG
+      case 11: // FLOAT
+        return 4;
+      case 5: // RATIONAL
+      case 10: // SRATIONAL
+      case 12: // DOUBLE
+        return 8;
+      default:
+        return 1;
+    }
+  }
+
+  function readTiffTagValues(reader, type, count, valueOffset) {
+    const view = reader.view;
+    const littleEndian = reader.littleEndian;
+    const typeSize = getTiffTypeSize(type);
+    const totalSize = typeSize * count;
+    const dataOffset = totalSize <= 4 ? valueOffset : reader.getUint32(valueOffset);
+    const values = [];
+
+    for (let i = 0; i < count; i++) {
+      const offset = dataOffset + i * typeSize;
+
+      switch (Number(type)) {
+        case 1:
+        case 7:
+          values.push(view.getUint8(offset));
+          break;
+        case 3:
+          values.push(view.getUint16(offset, littleEndian));
+          break;
+        case 4:
+          values.push(view.getUint32(offset, littleEndian));
+          break;
+        case 8:
+          values.push(view.getInt16(offset, littleEndian));
+          break;
+        case 9:
+          values.push(view.getInt32(offset, littleEndian));
+          break;
+        case 5: {
+          const numerator = view.getUint32(offset, littleEndian);
+          const denominator = view.getUint32(offset + 4, littleEndian) || 1;
+          values.push(numerator / denominator);
+          break;
+        }
+        case 10: {
+          const numerator = view.getInt32(offset, littleEndian);
+          const denominator = view.getInt32(offset + 4, littleEndian) || 1;
+          values.push(numerator / denominator);
+          break;
+        }
+        default:
+          values.push(view.getUint8(offset));
+          break;
+      }
+    }
+
+    return values.length === 1 ? values[0] : values;
+  }
+
+  function readFirstTiffIfd(buffer) {
+    const reader = createTiffReader(buffer);
+    const firstIfdOffset = reader.getUint32(4);
+
+    if (!firstIfdOffset || firstIfdOffset >= buffer.byteLength) {
+      throw new Error("The TIFF image directory is invalid.");
+    }
+
+    const entryCount = reader.getUint16(firstIfdOffset);
+    const tags = {};
+
+    for (let i = 0; i < entryCount; i++) {
+      const entryOffset = firstIfdOffset + 2 + i * 12;
+
+      if (entryOffset + 12 > buffer.byteLength) {
+        break;
+      }
+
+      const tag = reader.getUint16(entryOffset);
+      const type = reader.getUint16(entryOffset + 2);
+      const count = reader.getUint32(entryOffset + 4);
+      const valueOffset = entryOffset + 8;
+
+      tags[tag] = readTiffTagValues(reader, type, count, valueOffset);
+    }
+
+    return tags;
+  }
+
+  function asTiffArray(value) {
+    if (Array.isArray(value)) {
+      return value;
+    }
+
+    if (value === undefined || value === null) {
+      return [];
+    }
+
+    return [value];
+  }
+
+  function firstTiffValue(value, fallback = 0) {
+    const values = asTiffArray(value);
+    return values.length ? Number(values[0]) : fallback;
+  }
+
+  function readBitsMsb(data, bitState, count) {
+    let value = 0;
+
+    for (let i = 0; i < count; i++) {
+      if (bitState.bitOffset >= data.length * 8) {
+        bitState.eof = true;
+        return value;
+      }
+
+      const byte = data[bitState.bitOffset >> 3];
+      const bit = (byte >> (7 - (bitState.bitOffset & 7))) & 1;
+
+      value = (value << 1) | bit;
+      bitState.bitOffset++;
+    }
+
+    return value;
+  }
+
+  function concatLzwEntry(previous, firstByte) {
+    const out = new Uint8Array(previous.length + 1);
+    out.set(previous, 0);
+    out[previous.length] = firstByte;
+    return out;
+  }
+
+  function decodeTiffLzwEarlyChange(data, expectedLength) {
+    const dictionary = new Array(4096);
+
+    function resetDictionary() {
+      for (let i = 0; i < 256; i++) {
+        dictionary[i] = Uint8Array.of(i);
+      }
+
+      for (let i = 258; i < dictionary.length; i++) {
+        dictionary[i] = undefined;
+      }
+
+      return {
+        nextCode: 258,
+        codeSize: 9
+      };
+    }
+
+    const output = new Uint8Array(expectedLength);
+    const bitState = { bitOffset: 0, eof: false };
+    let dictState = resetDictionary();
+    let previous = null;
+    let outOffset = 0;
+
+    while (!bitState.eof) {
+      const code = readBitsMsb(data, bitState, dictState.codeSize);
+
+      if (bitState.eof) {
+        break;
+      }
+
+      if (code === 256) {
+        dictState = resetDictionary();
+        previous = null;
+        continue;
+      }
+
+      if (code === 257) {
+        break;
+      }
+
+      let entry = dictionary[code];
+
+      if (!entry && code === dictState.nextCode && previous) {
+        entry = concatLzwEntry(previous, previous[0]);
+      }
+
+      if (!entry) {
+        throw new Error("Unsupported or corrupt TIFF LZW data.");
+      }
+
+      if (outOffset + entry.length > output.length) {
+        output.set(entry.subarray(0, output.length - outOffset), outOffset);
+        outOffset = output.length;
+        break;
+      }
+
+      output.set(entry, outOffset);
+      outOffset += entry.length;
+
+      if (previous && dictState.nextCode < 4096) {
+        dictionary[dictState.nextCode] = concatLzwEntry(previous, entry[0]);
+        dictState.nextCode++;
+
+        // TIFF LZW uses early-change code-size growth.
+        if (dictState.codeSize < 12 && dictState.nextCode === (1 << dictState.codeSize) - 1) {
+          dictState.codeSize++;
+        }
+      }
+
+      previous = entry;
+
+      if (outOffset >= output.length) {
+        break;
+      }
+    }
+
+    if (outOffset < expectedLength) {
+      throw new Error("TIFF LZW data ended before the image was complete.");
+    }
+
+    return output;
+  }
+
+  function applyHorizontalTiffPredictor(data, width, rows, samplesPerPixel) {
+    const stride = width * samplesPerPixel;
+
+    for (let y = 0; y < rows; y++) {
+      const rowStart = y * stride;
+      const rowEnd = rowStart + stride;
+
+      for (let x = rowStart + samplesPerPixel; x < rowEnd; x++) {
+        data[x] = (data[x] + data[x - samplesPerPixel]) & 255;
+      }
+    }
+  }
+
+  function decodeBasicRgbTiffToCanvas(buffer) {
+    const tags = readFirstTiffIfd(buffer);
+    const width = firstTiffValue(tags[256]);
+    const height = firstTiffValue(tags[257]);
+    const bitsPerSample = asTiffArray(tags[258]).map(Number);
+    const compression = firstTiffValue(tags[259], 1);
+    const photometric = firstTiffValue(tags[262], 2);
+    const stripOffsets = asTiffArray(tags[273]).map(Number);
+    const samplesPerPixel = firstTiffValue(tags[277], bitsPerSample.length || 3);
+    const rowsPerStrip = firstTiffValue(tags[278], height);
+    const stripByteCounts = asTiffArray(tags[279]).map(Number);
+    const planarConfiguration = firstTiffValue(tags[284], 1);
+    const predictor = firstTiffValue(tags[317], 1);
+
+    if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
+      throw new Error("The TIFF dimensions are invalid.");
+    }
+
+    if (photometric !== 2 || planarConfiguration !== 1 || samplesPerPixel < 3) {
+      throw new Error("Only standard chunky RGB TIFF images are supported.");
+    }
+
+    if (!bitsPerSample.length || bitsPerSample.some(value => Number(value) !== 8)) {
+      throw new Error("Only 8-bit RGB TIFF images are supported.");
+    }
+
+    if (compression !== 1 && compression !== 5) {
+      throw new Error("Only uncompressed and LZW-compressed TIFF images are supported.");
+    }
+
+    if (predictor !== 1 && predictor !== 2) {
+      throw new Error("Unsupported TIFF horizontal predictor.");
+    }
+
+    if (!stripOffsets.length || !stripByteCounts.length) {
+      throw new Error("The TIFF strip data is missing.");
+    }
+
+    const full = document.createElement("canvas");
+    full.width = width;
+    full.height = height;
+
+    const fullCtx = full.getContext("2d", { alpha: false });
+    const imageData = fullCtx.createImageData(width, height);
+    const rgbaOut = imageData.data;
+
+    let outputRow = 0;
+
+    for (let stripIndex = 0; stripIndex < stripOffsets.length && outputRow < height; stripIndex++) {
+      const offset = stripOffsets[stripIndex];
+      const byteCount = stripByteCounts[stripIndex];
+
+      if (!Number.isFinite(offset) || !Number.isFinite(byteCount) || offset < 0 || byteCount <= 0 || offset + byteCount > buffer.byteLength) {
+        throw new Error("The TIFF strip table is invalid.");
+      }
+
+      const rowsInStrip = Math.min(rowsPerStrip, height - outputRow);
+      const decodedLength = width * rowsInStrip * samplesPerPixel;
+      const compressed = new Uint8Array(buffer, offset, byteCount);
+      let decoded;
+
+      if (compression === 1) {
+        if (compressed.length < decodedLength) {
+          throw new Error("The uncompressed TIFF strip is shorter than expected.");
+        }
+
+        decoded = compressed.slice(0, decodedLength);
+      } else {
+        decoded = decodeTiffLzwEarlyChange(compressed, decodedLength);
+      }
+
+      if (predictor === 2) {
+        applyHorizontalTiffPredictor(decoded, width, rowsInStrip, samplesPerPixel);
+      }
+
+      for (let y = 0; y < rowsInStrip; y++) {
+        const sourceRowStart = y * width * samplesPerPixel;
+        const destRowStart = (outputRow + y) * width * 4;
+
+        for (let x = 0; x < width; x++) {
+          const sourceIndex = sourceRowStart + x * samplesPerPixel;
+          const destIndex = destRowStart + x * 4;
+
+          rgbaOut[destIndex] = decoded[sourceIndex];
+          rgbaOut[destIndex + 1] = decoded[sourceIndex + 1];
+          rgbaOut[destIndex + 2] = decoded[sourceIndex + 2];
+          rgbaOut[destIndex + 3] = 255;
+        }
+      }
+
+      outputRow += rowsInStrip;
+    }
+
+    if (outputRow < height) {
+      throw new Error("The TIFF image data ended before all rows were decoded.");
+    }
+
+    fullCtx.putImageData(imageData, 0, 0);
+    return full;
+  }
+
+  function firstUtifValue(value) {
+    if (Array.isArray(value)) {
+      return value.length ? value[0] : undefined;
+    }
+
+    return value;
+  }
+
+  function getUtifTagValue(ifd, tagNumber) {
+    if (!ifd) {
+      return undefined;
+    }
+
+    return firstUtifValue(ifd["t" + tagNumber]);
+  }
+
+  function getUtifImageWidth(ifd) {
+    return Number(ifd?.width ?? getUtifTagValue(ifd, 256));
+  }
+
+  function getUtifImageHeight(ifd) {
+    return Number(ifd?.height ?? getUtifTagValue(ifd, 257));
+  }
+
+  function findFirstDisplayableUtifIfd(ifds) {
+    if (!Array.isArray(ifds)) {
+      return null;
+    }
+
+    return ifds.find(ifd => {
+      const width = getUtifImageWidth(ifd);
+      const height = getUtifImageHeight(ifd);
+
+      return Number.isFinite(width) && width > 0 &&
+        Number.isFinite(height) && height > 0;
+    }) || null;
+  }
+
+  async function decodeTiffWithUtif(buffer) {
+    if (!window.UTIF || typeof UTIF.decode !== "function" || typeof UTIF.decodeImage !== "function" || typeof UTIF.toRGBA8 !== "function") {
+      throw new Error("The TIFF decoder is not available.");
+    }
+
+    const ifds = UTIF.decode(buffer);
+    const ifd = findFirstDisplayableUtifIfd(ifds);
+
+    if (!ifd) {
+      throw new Error("No displayable TIFF image was found.");
+    }
+
+    UTIF.decodeImage(buffer, ifd);
+
+    const rgba = UTIF.toRGBA8(ifd);
+    const width = getUtifImageWidth(ifd);
+    const height = getUtifImageHeight(ifd);
+
+    if (!Number.isFinite(width) || !Number.isFinite(height) ||
+        width <= 0 || height <= 0 ||
+        !rgba || rgba.length < width * height * 4) {
+      throw new Error("The TIFF image could not be decoded.");
+    }
+
+    const full = document.createElement("canvas");
+    full.width = width;
+    full.height = height;
+
+    const fullCtx = full.getContext("2d", { alpha: false });
+    const imageData = fullCtx.createImageData(width, height);
+    imageData.data.set(rgba.subarray(0, width * height * 4));
+    fullCtx.putImageData(imageData, 0, 0);
+
+    return full;
+  }
+
+  async function decodeTiffToCanvas(file) {
+    const buffer = await file.arrayBuffer();
+    const errors = [];
+
+    try {
+      return decodeBasicRgbTiffToCanvas(buffer);
+    } catch (basicError) {
+      errors.push(basicError && basicError.message ? basicError.message : String(basicError));
+    }
+
+    try {
+      return await decodeTiffWithUtif(buffer);
+    } catch (utifError) {
+      errors.push(utifError && utifError.message ? utifError.message : String(utifError));
+    }
+
+    try {
+      return await decodeRasterImageToCanvas(file, "TIFF image");
+    } catch (nativeError) {
+      errors.push(nativeError && nativeError.message ? nativeError.message : String(nativeError));
+    }
+
+    throw new Error(`Could not decode TIFF image. ${errors[0] || "Unsupported TIFF format."}`);
+  }
+
+  async function decodeSourceFileToCanvas(file) {
+    if (isTiffFile(file)) {
+      return decodeTiffToCanvas(file);
+    }
+
+    return decodeJpegToCanvas(file);
+  }
+
+  function clearLoadedImages(message = "No image loaded.") {
+    loadedImages = [];
+    currentImageIndex = -1;
+    leftCanvas = null;
+    rightCanvas = null;
+    sourceFullCanvas = null;
+    emptyMessage.style.display = "grid";
+    fileMeta.textContent = "No file selected.";
+    sourceMeta.textContent = message;
+    updateImageNavigationButtons();
+    requestRender();
+  }
+
+  function updateImageNavigationButtons() {
+    const buttons = [firstImageButton, prevImageButton, nextImageButton, lastImageButton].filter(Boolean);
+    const hasMultipleImages = loadedImages.length > 1;
+    const atFirst = currentImageIndex <= 0;
+    const atLast = currentImageIndex >= loadedImages.length - 1;
+
+    buttons.forEach(button => {
+      button.classList.toggle("visible", hasMultipleImages);
+      button.disabled = !hasMultipleImages || imageNavigationInProgress;
+      button.classList.remove("idle");
+    });
+
+    if (!hasMultipleImages) {
+      return;
+    }
+
+    if (firstImageButton) {
+      firstImageButton.classList.toggle("idle", atFirst);
+      firstImageButton.title = atFirst ? "Already showing first image (Ctrl+Shift+[)" : "Show first image (Ctrl+Shift+[)";
+    }
+    if (prevImageButton) {
+      prevImageButton.classList.toggle("idle", atFirst);
+      prevImageButton.title = atFirst ? "Already showing first image (Ctrl+[)" : "Show previous image (Ctrl+[)";
+    }
+    if (nextImageButton) {
+      nextImageButton.classList.toggle("idle", atLast);
+      nextImageButton.title = atLast ? "Already showing last image (Ctrl+])" : "Show next image (Ctrl+])";
+    }
+    if (lastImageButton) {
+      lastImageButton.classList.toggle("idle", atLast);
+      lastImageButton.title = atLast ? "Already showing last image (Ctrl+Shift+])" : "Show last image (Ctrl+Shift+])";
+    }
+  }
+
+  function setActiveImage(index) {
+    if (!loadedImages.length) {
+      clearLoadedImages();
+      return;
+    }
+
+    const clampedIndex = Math.max(0, Math.min(index, loadedImages.length - 1));
+    const item = loadedImages[clampedIndex];
+
+    currentImageIndex = clampedIndex;
+    leftCanvas = item.leftCanvas;
+    rightCanvas = item.rightCanvas;
+    sourceFullCanvas = item.sourceFullCanvas;
+
+    // Keep the viewer fixed at 4:3 / 1.333333.
+    viewerBox.style.height = "auto";
+
+    const prefix = loadedImages.length > 1 ? `Image ${clampedIndex + 1} of ${loadedImages.length}: ` : "";
+    fileMeta.textContent = `${prefix}${item.file.name} (${formatBytes(item.file.size)})`;
+    sourceMeta.textContent = `${item.formatLabel} source: ${item.sourceFullCanvas.width} × ${item.sourceFullCanvas.height}; each eye: ${item.eyeWidth} × ${item.eyeHeight}`;
+
+    emptyMessage.style.display = "none";
+    animationStart = performance.now();
+    updateImageNavigationButtons();
+    requestRender();
+  }
+
+  function showFirstImage() {
+    setActiveImage(0);
+  }
+
+  function showPreviousImage() {
+    if (currentImageIndex > 0) {
+      setActiveImage(currentImageIndex - 1);
+    }
+  }
+
+  function showNextImage() {
+    if (currentImageIndex < loadedImages.length - 1) {
+      setActiveImage(currentImageIndex + 1);
+    }
+  }
+
+  function showLastImage() {
+    setActiveImage(loadedImages.length - 1);
+  }
+
+  function navigateToImageIndex(index) {
+    if (imageNavigationInProgress || loadedImages.length <= 1) {
+      return;
+    }
+
+    const targetIndex = Math.max(0, Math.min(index, loadedImages.length - 1));
+
+    if (targetIndex === currentImageIndex) {
+      updateImageNavigationButtons();
+      return;
+    }
+
+    imageNavigationInProgress = true;
+    updateImageNavigationButtons();
+
+    try {
+      setActiveImage(targetIndex);
+    } finally {
+      imageNavigationInProgress = false;
+      updateImageNavigationButtons();
+    }
+  }
+
+  function isTextEntryInput(element) {
+    if (!element || element.tagName !== "INPUT") {
+      return false;
+    }
+
+    const type = String(element.getAttribute("type") || "text").toLowerCase();
+
+    return [
+      "text",
+      "search",
+      "url",
+      "tel",
+      "email",
+      "password",
+      "number",
+      "date",
+      "datetime-local",
+      "month",
+      "time",
+      "week"
+    ].includes(type);
+  }
+
+  function isKeyboardShortcutIgnoredTarget(target) {
+    if (!target) {
+      return false;
+    }
+
+    const element = target.nodeType === Node.ELEMENT_NODE ? target : target.parentElement;
+
+    if (!element) {
+      return false;
+    }
+
+    if (element.isContentEditable) {
+      return true;
+    }
+
+    // Keep keyboard image navigation active throughout the main tool, including
+    // sliders, selects, buttons, and file controls. Suppress it only while the
+    // user is typing/editing text or while a modal dialog is open.
+    return !!element.closest("textarea, [contenteditable='true'], .modal_default_main, .modal_compact_main, .modal_instructions_main") ||
+      isTextEntryInput(element);
+  }
+
+  function handleImageNavigationShortcut(event) {
+    if (!event || !event.ctrlKey || event.altKey || event.metaKey) {
+      return;
+    }
+
+    if (isKeyboardShortcutIgnoredTarget(event.target)) {
+      return;
+    }
+
+    const isLeftBracket = event.code === "BracketLeft" || event.key === "[" || event.key === "{";
+    const isRightBracket = event.code === "BracketRight" || event.key === "]" || event.key === "}";
+
+    if (!isLeftBracket && !isRightBracket) {
+      return;
+    }
+
+    if (loadedImages.length <= 1 || imageNavigationInProgress) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (isLeftBracket) {
+      navigateToImageIndex(event.shiftKey ? 0 : currentImageIndex - 1);
+    } else {
+      navigateToImageIndex(event.shiftKey ? loadedImages.length - 1 : currentImageIndex + 1);
+    }
+  }
+
+  async function decodeFileToLoadedImage(file) {
+    const full = await decodeSourceFileToCanvas(file);
+    const split = createSplitSideBySideCanvases(full);
+
+    return {
+      file,
+      formatLabel: getSourceFileFormatLabel(file),
+      sourceFullCanvas: split.sourceFullCanvas,
+      leftCanvas: split.leftCanvas,
+      rightCanvas: split.rightCanvas,
+      eyeWidth: split.eyeWidth,
+      eyeHeight: split.eyeHeight
+    };
+  }
+
+  async function loadImageFiles(fileList) {
+    const files = Array.from(fileList || []);
+    if (!files.length) {
+      return;
+    }
+
+    const generation = ++loadGeneration;
+    const supportedFiles = files.filter(isSupportedSourceFile);
+    const unsupportedCount = files.length - supportedFiles.length;
+
+    if (!supportedFiles.length) {
+      clearLoadedImages("Please choose JPEG/TIFF side-by-side images.");
+      if (files[0]) {
+        fileMeta.textContent = `${files[0].name} (${formatBytes(files[0].size)})`;
+      }
+      return;
+    }
+
+    leftCanvas = null;
+    rightCanvas = null;
+    sourceFullCanvas = null;
+    loadedImages = [];
+    currentImageIndex = -1;
+    emptyMessage.style.display = "grid";
+    fileMeta.textContent = supportedFiles.length === 1 ?
+      `Loading ${supportedFiles[0].name}…` :
+      `Loading ${supportedFiles.length} images…`;
+    sourceMeta.textContent = unsupportedCount ?
+      `Loading supported images; skipping ${unsupportedCount} unsupported file${unsupportedCount === 1 ? "" : "s"}.` :
+      "Loading images…";
+    updateImageNavigationButtons();
+    requestRender();
+
+    const loaded = [];
+    const failures = [];
+
+    for (const file of supportedFiles) {
+      if (generation !== loadGeneration) {
+        return;
+      }
+
+      try {
+        loaded.push(await decodeFileToLoadedImage(file));
+      } catch (err) {
+        failures.push({ file, message: err && err.message ? err.message : "Could not load image." });
+      }
+    }
+
+    if (generation !== loadGeneration) {
+      return;
+    }
+
+    if (!loaded.length) {
+      clearLoadedImages(failures[0]?.message || "Could not load image.");
+      if (supportedFiles[0]) {
+        fileMeta.textContent = `${supportedFiles[0].name} (${formatBytes(supportedFiles[0].size)})`;
+      }
+      return;
+    }
+
+    loadedImages = loaded;
+    setActiveImage(0);
+
+    const skipped = unsupportedCount + failures.length;
+    if (skipped) {
+      const currentText = sourceMeta.textContent;
+      sourceMeta.textContent = `${currentText}; skipped ${skipped} file${skipped === 1 ? "" : "s"}.`;
+    }
+  }
+
+  async function loadImageFile(file) {
+    return loadImageFiles(file ? [file] : []);
+  }
+
+
+
+  if (fullscreenButton) {
+    fullscreenButton.addEventListener("click", () => {
+      toggleFullscreenView().catch(() => {
+        sourceMeta.textContent = "Full-screen view is not available in this browser.";
+      });
+    });
+  }
+
+  document.addEventListener("fullscreenchange", () => {
+    updateFullscreenButtonAvailability();
+    updateFullscreenButtonLabel();
+    requestRender();
+    restoreScrollPositionAfterFullscreen();
+  });
+
+  document.addEventListener("webkitfullscreenchange", () => {
+    updateFullscreenButtonAvailability();
+    updateFullscreenButtonLabel();
+    requestRender();
+    restoreScrollPositionAfterFullscreen();
+  });
+
+  if (showInstructionsButton) {
+    showInstructionsButton.addEventListener("click", showInstructions);
+  }
+
+  fileInput.addEventListener("change", () => {
+    loadImageFiles(fileInput.files);
+  });
+
+  displayMode.addEventListener("change", () => {
+    updateControlLabels();
+    requestRender();
+  });
+
+  fullImageOrder.addEventListener("change", () => {
+    requestRender();
+  });
+
+  speedMaxSelect.addEventListener("change", () => {
+    applySpeedMaximum(speedMaxSelect.value);
+    saveSpeedMaximumToStorage(speedMaxSelect.value);
+    updateControlLabels();
+    requestRender();
+  });
+
+  speedRange.addEventListener("input", () => {
+    updateControlLabels();
+    requestRender();
+  });
+
+  speedRange.addEventListener("change", () => {
+    updateControlLabels();
+    requestRender();
+  });
+
+  playPauseButton.addEventListener("click", () => {
+    if (displayMode.value === "full") {
+      return;
+    }
+
+    playing = !playing;
+    playPauseButton.textContent = playing ? "Pause" : "Play";
+
+    if (playing) {
+      animationStart = performance.now();
+    }
+
+    requestRender();
+  });
+
+  document.addEventListener("keydown", handleImageNavigationShortcut, true);
+
+  if (firstImageButton) {
+    firstImageButton.addEventListener("click", event => {
+      event.preventDefault();
+      navigateToImageIndex(0);
+    });
+  }
+
+  if (prevImageButton) {
+    prevImageButton.addEventListener("click", event => {
+      event.preventDefault();
+      navigateToImageIndex(currentImageIndex - 1);
+    });
+  }
+
+  if (nextImageButton) {
+    nextImageButton.addEventListener("click", event => {
+      event.preventDefault();
+      navigateToImageIndex(currentImageIndex + 1);
+    });
+  }
+
+  if (lastImageButton) {
+    lastImageButton.addEventListener("click", event => {
+      event.preventDefault();
+      navigateToImageIndex(loadedImages.length - 1);
+    });
+  }
+
+  window.addEventListener("resize", () => {
+    updateFullscreenButtonAvailability();
+    requestRender();
+  });
+
+  viewerBox.addEventListener("dragover", event => {
+    event.preventDefault();
+    viewerBox.style.borderColor = "var(--accent)";
+  });
+
+  viewerBox.addEventListener("dragleave", () => {
+    viewerBox.style.borderColor = "var(--border)";
+  });
+
+  viewerBox.addEventListener("drop", event => {
+    event.preventDefault();
+    viewerBox.style.borderColor = "var(--border)";
+
+    const files = event.dataTransfer?.files;
+    if (files && files.length) {
+      loadImageFiles(files);
+    }
+  });
+
+  document.body.classList.toggle("iosDevice", isIPhoneBrowser() || isIPadBrowser());
+  applySpeedMaximum(loadSpeedMaximumFromStorage());
+  updateControlLabels();
+  updateImageNavigationButtons();
+  updateFullscreenButtonAvailability();
+  updateFullscreenButtonLabel();
+  requestRender();
+})();
+</script>
+</body>
+</html>

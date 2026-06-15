@@ -87,7 +87,7 @@ function getAbcInDeflate(ABCtoEncode, title) {
     titleURL = titleURL.replaceAll(" ", "_");
     titleURL = titleURL.replaceAll("#", "^");
 
-    var url = "https://michaeleskin.com/abctools/abctools.html?def=" + abcInDeflate + "&format=noten&ssp=10&name=" + titleURL + "&play=1";
+    var url = "https://abc.tunebook.app/abctools.html?def=" + abcInDeflate + "&format=noten&ssp=10&name=" + titleURL + "&play=1";
 
     return url;
 

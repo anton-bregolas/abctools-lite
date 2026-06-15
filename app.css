@@ -2113,7 +2113,7 @@ body.noui svg {
 .modal_flat_wide_content { font-family: var(--abctools-font-fallback-ui); margin: 20px 0px;}
 .modal_flat_wide_input { margin: 20px 0px;}
 .modal_flat_wide_buttons { text-align:center;margin-top: 40px; }
-.modal_flat_wide_buttons button { background-color: #ccc; color: #000; padding: 10px 20px; border: 0; cursor: pointer; outline: none; width: 125px;  }
+.modal_flat_wide_buttons button { background-color: #ccc; color: #000; padding: 10px 20px; border: 0; cursor: pointer; outline: none; width: 140px;  }
 .modal_flat_wide_cancel {margin-left: 5px;}
 
 
@@ -3669,7 +3669,7 @@ margin-top:-7px;
 font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
-margin-top:36px;
+margin-top:30px;
 }
 
 .configure_pdf_papersize_select>select{
@@ -3694,7 +3694,7 @@ margin-top:-7px;
 font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
-margin-top:30px;
+margin-top:24px;
 }
 
 .configure_pdf_orientation_select>select{
@@ -3719,7 +3719,7 @@ margin-top:-7px;
 font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
-margin-top:30px;
+margin-top:24px;
 }
 
 .configure_pdf_tunelayout_select>select{
@@ -3734,7 +3734,7 @@ background-repeat: no-repeat;
 background-color: #efefef;
 color:black;
 height:32px;
-width:345px;
+width:365px;
 margin-left:10px;
 padding-left:10px;
 margin-top:-7px;
@@ -3744,7 +3744,7 @@ margin-top:-7px;
 font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
-margin-top:30px;
+margin-top:24px;
 }
 
 .configure_pdf_incipitscolumns_select>select{
@@ -3768,7 +3768,7 @@ margin-top:-7px;
 font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
-margin-top:30px;
+margin-top:24px;
 }
 
 .configure_pdf_pagenumber_select>select{
@@ -3793,7 +3793,7 @@ margin-top:-7px;
 font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
-margin-top:30px;
+margin-top:24px;
 }
 
 .configure_pdf_fontname_select>select{
@@ -3818,7 +3818,7 @@ margin-top:-7px;
 font-size: var(--abctools-font-size-label-s-11);
 display:flex;
 margin-right:12px;
-margin-top:30px;
+margin-top:24px;
 }
 
 .configure_pdf_fontstyle_select>select{
@@ -3936,6 +3936,36 @@ width: 450px;
 margin-top:-9px;
 position:absolute;
 left:200px;
+}
+
+.configure_pdf_pagefit_scaling_preset_select{
+font-size:11pt;
+display:flex;
+margin-right:12px;
+margin-top:24px;
+}
+
+.configure_pdf_pagefit_scaling_preset_select>select{
+display:inline;
+-webkit-appearance: none;
+-moz-appearance: none;
+appearance: none;
+background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%238C98F2'><polygon points='0,0 100,0 50,50'/></svg>") no-repeat;
+background-size: 12px;
+background-position: calc(100% - 10px) center;
+background-repeat: no-repeat;
+background-color: #efefef;
+color:black;
+font-size:11pt;
+height:32px;
+width:170px;
+margin-left:10px;
+padding-left:10px;
+margin-top:-7px;
+}
+
+.modal_flat_form_item_label{
+font-size: var(--abctools-font-size-label-m-12);
 }
 
 .indrag{ 
@@ -5864,6 +5894,10 @@ body.dp-tabs-building .modal_flat_main {
   background-color: var(--abctools-color-litegreen);	
 }
 
+.btn-addtunebackupchords {
+  background-color: var(--abctools-color-litegreen);	
+}
+
 @media (hover: hover) {
 	
 	.btn
@@ -5996,3 +6030,114 @@ body.dp-tabs-building .modal_flat_main {
 		transform: scale(1.06);
 	}
 }
+/* =========================================================
+   Tune Backup Chord Matcher
+   ========================================================= */
+
+.chord_matcher_dialog_title {
+  text-align: center;
+  margin: 0 0 18px 0;
+  font-size: 1.333rem;
+}
+
+.chord_matcher_dialog_intro {
+  margin: 0 0 22px 0;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.chord_matcher_dialog_hint {
+  margin: 8px 0 14px 0;
+  font-size: 0.916rem;
+  line-height: 1.416rem;
+}
+
+.chord_matcher_dialog_section {
+  margin: 14px 0 5px 0;
+  font-size: 0.916rem;
+  line-height: 1.416rem;
+}
+
+.chord_matcher_dialog_advanced {
+  margin-top: 18px;
+}
+
+.chord_matcher_dialog_footnote {
+  margin: 20px 0 0 0;
+  font-size: 0.875rem;
+  line-height: 1.333rem;
+}
+
+.configure_chord_matcher_select {
+  display: flex;
+  align-items: center;
+  margin-top: 18px;
+  margin-right: 12px;
+  font-size: 1rem;
+}
+
+.configure_chord_matcher_select > select {
+  display: inline;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%238C98F2'><polygon points='0,0 100,0 50,50'/></svg>") no-repeat;
+  background-size: 12px;
+  background-position: calc(100% - 10px) center;
+  background-color: #efefef;
+  color: black;
+  font-size: 0.916rem;
+  height: 32px;
+  min-width: 120px;
+  margin-left: 10px;
+  margin-top: -7px;
+  padding: 0 34px 0 10px;
+  border: 1px solid #aaa;
+  border-radius: 2px;
+  box-sizing: border-box;
+}
+
+.configure_chord_matcher_scope_select > select {
+  min-width: 205px;
+}
+
+.configure_chord_matcher_checkbox {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 8px;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.configure_chord_matcher_checkbox_main {
+  margin-top: 18px;
+}
+
+.configure_chord_matcher_checkbox_indented {
+  margin-left: 18px;
+}
+
+.configure_chord_matcher_checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  margin-right: 8px;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 560px) {
+  .configure_chord_matcher_select {
+    display: block;
+  }
+
+  .configure_chord_matcher_select > select {
+    display: block;
+    width: 100%;
+    margin: 8px 0 0 0;
+  }
+
+  .configure_chord_matcher_checkbox_indented {
+    margin-left: 8px;
+  }
+}
+

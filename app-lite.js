@@ -6,7 +6,7 @@
 ///////////////////////////////////////////////////////////////////////
 
 // Custom global variables / constants
-var gLiteVersionNumber = 'lite-3206-1';
+var gLiteVersionNumber = 'lite-3259-1';
 
 var ABC_TOOLS_BASE_URL =
   window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
@@ -574,7 +574,7 @@ function liteOpenToolsLatestScreen() {
   // Modal Dialog Updates Header
   modal_msg += '<header class="modal-header-updates-container">';
   modal_msg += '<h2 class="modal-header-updates">ABC Tools Lite: Latest</h2>';
-  modal_msg += '<h3 class="modal-subheader modal-subheader-updates">Version ' + gLiteVersionNumber + ' (March 2026)</h3>';
+  modal_msg += '<h3 class="modal-subheader modal-subheader-updates">Version ' + gLiteVersionNumber + ' (June 2026)</h3>';
   modal_msg += '</header>';
 
   // Modal Dialog Updates Intro

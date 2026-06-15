@@ -196,32 +196,61 @@ class ContextMenu {
   // Lite: Customized
   // Handle with CSS Anchor Positioning
   // Fall back to JS if not supported
-  // Fall back to center-top if no 
-  // click coordinates (shortcut pressed)
   show(e) {
+
+    // Open first so the browser can calculate the menu size
+    this.menu.classList.add('is-open');
 
     const isAnchorPositioningSupported =
       CSS.supports('position-anchor: --test');
 
     if (!isAnchorPositioningSupported) {
 
-      // Keep the context menu from going off the right of the screen
-      if (e.pageX && isMobileBrowser()){
-        this.menu.style.left = `${e.pageX-200}px`;
-        this.menu.style.top = `${e.pageY}px`;
+      const margin = 8;
+
+      // On mobile, leave more room on the right edge so the menu
+      // does not feel jammed against the side of the screen.
+      const rightMargin = isMobileBrowser() ? 16 : margin;
+
+      // Start at the click/tap position
+      let left = e.pageX;
+      let top = e.pageY;
+
+      // Measure after opening
+      const menuRect = this.menu.getBoundingClientRect();
+
+      // Viewport bounds in page coordinates
+      const viewportLeft = window.pageXOffset;
+      const viewportTop = window.pageYOffset;
+      const viewportRight = viewportLeft + window.innerWidth;
+      const viewportBottom = viewportTop + window.innerHeight;
+
+      // Keep menu fully onscreen horizontally.
+      // On mobile, use a larger right margin so the menu is shifted
+      // slightly farther left when it would otherwise hit the right edge.
+      if (left + menuRect.width + rightMargin > viewportRight) {
+        left = viewportRight - menuRect.width - rightMargin;
       }
-      else if (e.pageX) {
-        this.menu.style.left = `${e.pageX}px`;
-        this.menu.style.top = `${e.pageY}px`;     
+
+      if (left < viewportLeft + margin) {
+        left = viewportLeft + margin;
       }
-      else {
-        this.menu.style.left = `calc(50% - 218px / 2)`;
-        this.menu.style.top = `50px`;
+
+      // Keep menu fully onscreen vertically
+      if (top + menuRect.height + margin > viewportBottom) {
+        top = viewportBottom - menuRect.height - margin;
       }
+
+      if (top < viewportTop + margin) {
+        top = viewportTop + margin;
+      }
+
+      this.menu.style.left = `${left}px`;
+      this.menu.style.top = `${top}px`;
     }
 
-    this.menu.classList.add('is-open');
     this.target = e.target;
+
 
     // Give context menu focus
     // Lite: Customized
@@ -298,7 +327,8 @@ class ContextMenu {
 }
 
 var gInContextMenu = false;
-// Listen for c event to show menu
+
+// Listen for click event to show menu
 document.addEventListener('click', (e) => {
   gCM_instances.forEach((menu) => {
     if (e.target.matches(menu.selector)) {

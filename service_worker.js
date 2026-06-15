@@ -10,7 +10,20 @@
 //
 //
 //
-// Updated 16 Mar 2026 1030
+//
+//
+//
+//
+//
+//
+//
+// Updated 14 Jun 2026 0800
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -20,12 +33,12 @@
 //
 //
 // ABC Tools Lite:
-// Last updated on 2026-03-16
+// Last updated on 2026-06-15
 
-const cacheName = 'abctoolscache-3206';
+const cacheName = 'abctoolscache-3259';
 
 const CACHE_PREFIX = 'abctools';
-const CACHE_VERSION = 'lite-3206-1';
+const CACHE_VERSION = 'lite-3259-1';
 const CACHE_NAME_LITE = `${CACHE_PREFIX}${CACHE_VERSION}`;
 
 const contentToCache = [
@@ -73,6 +86,7 @@ const contentToCache = [
     'codemirror-min.js',
     'simple.min.js',
     'placeholder.min.js',
+    'abc-chord-matcher.js',
     'favicon.ico',
     'favicon.svg',
     'fonts/FiraSans-Regular.woff2',

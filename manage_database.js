@@ -25,7 +25,7 @@ function UpdateToLatestVersion(){
 
 			setTimeout(function(){
 
-				var thePrompt = "<strong>All Changes Applied!</strong><br/><br/>Click OK to restart the tool.";
+				var thePrompt = "<strong>All Updates Applied!</strong><br/><br/>Click OK to restart the tool.";
 				
 				// Center the string in the prompt
 				thePrompt = makeCenteredPromptString(thePrompt);
@@ -59,7 +59,7 @@ function UpdateToLatestVersion(){
 
 function ForceUpdate(callback){
 
-	var thePrompt = "This will force the version of the tool stored in<br/>your browser to be updated after a restart.<br/><br/>After the restart, wait 10 seconds and then hard refresh<br/>the page one more time to use the update.<br/><br/>Are you sure?";
+	var thePrompt = "This will force the version of the tool stored in<br/>your browser to be updated to the latest after a restart.<br/><br/>After the restart, wait 10 seconds and then hard refresh<br/>the page one more time to use the update.<br/><br/>Are you sure?";
 
 	// Center the string in the prompt
 	thePrompt = makeCenteredPromptString(thePrompt);
@@ -1477,50 +1477,77 @@ function LoadSearchCollection(index){
 	
 	showTheSpinner("Loading tune search collection");
 
-	var url = "https://michaeleskin.com/abctools/abctunes_gavin_heneghan_10nov2023.json";
+	var url = TUNE_DB1_URL;
+	var dataVersion = TUNE_DB1_DATA_VERSION;
 
 	if (index == 1){
-		url = "https://michaeleskin.com/abctools/folkfriend-non-user-data_22dec2023.json";
+		url = TUNE_DB2_URL;
+		dataVersion = TUNE_DB2_DATA_VERSION;
 	}
 
-    fetchWithRetry(url,gTuneDatabaseRetryTimeMS,gTuneDatabaseRetryCount)
-    .then((response) => response.json())
-    .then((json) => {
+	fetchTuneDatabaseJSON(url, dataVersion)
+		.then((json) => {
 
-        // Persist the database for later reads
-        saveTuneDatabase_DB(json, (index==1));
+			// Persist the database for later reads
+			saveTuneDatabase_DB(json, (index == 1), {
+				dataVersion: dataVersion,
+				url: url,
+				savedAt: new Date().toISOString()
+			}, function(savedOK) {
 
-		hideTheSpinner();
+				hideTheSpinner();
 
-		gInSearchEngineRetrieval = false;
+				gInSearchEngineRetrieval = false;
 
-        var thePrompt = "Gavin Heneghan tune search library successfully saved!";
+				// If the database was already loaded in memory during this session,
+				// update the active in-memory copy immediately so searches use the
+				// refreshed data without requiring a page reload.
+				if (savedOK) {
 
-		if (index == 1){
-			thePrompt = "thesession.org tune search library successfully saved!";
-		}
-		
-		// Center the string in the prompt
-		thePrompt = makeCenteredPromptString(thePrompt);
-		
-		DayPilot.Modal.alert(thePrompt,{ theme: "modal_flat", top: 275, scrollWithPage: (AllowDialogsToScroll()) });
+					if (index == 1) {
+						gTheFolkFriendDatabase = json;
+					} else {
+						gTheParsedTuneDatabase = json;
+					}
+				}
 
-    })
-    .catch(function(error) {
+				var thePrompt = "Gavin Heneghan tune search library successfully saved!";
 
-		hideTheSpinner();
+				if (index == 1){
+					thePrompt = "The Session tune search library successfully saved!";
+				}
 
-		gInSearchEngineRetrieval = false;
+				if (!savedOK) {
+					thePrompt = "Unable to save tune search library.";
+				}
+				
+				// Center the string in the prompt
+				thePrompt = makeCenteredPromptString(thePrompt);
+				
+				DayPilot.Modal.alert(thePrompt,{ theme: "modal_flat", top: 275, scrollWithPage: (AllowDialogsToScroll()) });
+			});
 
-		var thePrompt = "Unable to load tune collection.";
-		
-		// Center the string in the prompt
-		thePrompt = makeCenteredPromptString(thePrompt);
-		
-		DayPilot.Modal.alert(thePrompt,{ theme: "modal_flat", top: 275, scrollWithPage: (AllowDialogsToScroll()) });
+		})
+		.catch(function(error) {
 
-    }); 
+			hideTheSpinner();
 
+			gInSearchEngineRetrieval = false;
+
+			var thePrompt = "Unable to load tune search library.";
+
+			if (index == 1){
+				thePrompt = "Unable to load The Session tune search library.";
+			}
+			else{
+				thePrompt = "Unable to load Gavin Heneghan tune search library.";
+			}
+			
+			// Center the string in the prompt
+			thePrompt = makeCenteredPromptString(thePrompt);
+			
+			DayPilot.Modal.alert(thePrompt,{ theme: "modal_flat", top: 275, scrollWithPage: (AllowDialogsToScroll()) });
+		});
 }
 
 function ManageSearchCollectionsDialog(){
@@ -1547,13 +1574,13 @@ function ManageSearchCollectionsDialog(){
 		'title="View documentation in new tab" ' +
 		'class="modal-header-ui modal-link-help dialogcornerbutton">?</a>' +
 		'<h2 class="modal-header">' +
-		'Manage Search Engine Libraries&nbsp;&nbsp;' +
+		'Manage Tune Search Engine Libraries&nbsp;&nbsp;' +
 		'</h2>';
 
 	modal_msg+='<p style="margin-top:24px;margin-bottom:12px;font-size:12pt;line-height:18pt;font-family:helvetica;text-align:center">Save a tune search library for offline use by clicking the buttons below:</p>',
 	modal_msg+='<p style="margin-top:24px;text-align:center">';
-	modal_msg+='<input id="managereverb" class="btn btn-managereverb managereverb" onclick="LoadSearchCollection(0)" type="button" value="Gavin Heneghan (20,000+ Tunes)" title="Load and save the Gavin Heneghan tune search collection">'
-	modal_msg+='<input id="managereverb" class="btn btn-managereverb managereverb" onclick="LoadSearchCollection(1)" type="button" value="thesession.org (45,000+ Tunes)" title="Load and save the thesession.org tune search collection">'
+	modal_msg+='<input id="managereverb" class="btn btn-managereverb managereverb" onclick="LoadSearchCollection(0)" type="button" value="Gavin Heneghan (20,000+ Tunes)" title="Load and save the Gavin Heneghan tune search library">'
+	modal_msg+='<input id="managereverb" class="btn btn-managereverb managereverb" onclick="LoadSearchCollection(1)" type="button" value="The Session (54,000+ Tunes)" title="Load and save the The Session tune search libary">'
 
 	modal_msg+='</p>';
 

@@ -1,0 +1,4689 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>ABC Tune Backup Chord Solver</title>
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="ABC Tune Backup Chord Solver" />
+  <meta property="og:description" content="Adds backup chords to traditional Irish tunes by matching them measure-per-measure against chorded settings from The Session." />
+  <meta property="og:url" content="https://michaeleskin.com/tools/abc_backup_chord_solver.html" />
+  <meta property="og:site_name" content="ABC Tune Backup Chord Solver" />
+  <meta property="og:image" content="https://michaeleskin.com/tools/img/abc_backup_chord_solver_og_1.jpg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://michaeleskin.com/abctools/img/abc-apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://michaeleskin.com/abctools/img/abc-favicon-32x32.png">
+
+  <style>
+    :root{
+      color-scheme: light;
+
+      --fs-base: clamp(15px, 1.05vw + 12px, 17px);
+      --fs-small: var(--fs-base);
+      --fs-h1: clamp(22px, 1.5vw + 18px, 32px);
+      --fs-h2: clamp(15px, 0.7vw + 13px, 17px);
+      --fs-h3: clamp(17px, 1.05vw + 14px, 20px);
+
+      --page-pad: 32px;
+      --page-pad-top: 18px;
+      --gap: 14px;
+      --card-pad: 14px;
+      --helpbar-pad-y: 12px;
+      --helpbar-est-height: 124px;
+
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --bd: 1px solid rgba(127,127,127,.35);
+    }
+
+    html, body{ height:100%; margin:0; }
+    *, *::before, *::after{ box-sizing:border-box; }
+
+    body{
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      font-size: var(--fs-base);
+      line-height: 1.35;
+      color:#000;
+      -webkit-text-size-adjust:100%;
+
+      padding:
+        calc(var(--page-pad-top) + env(safe-area-inset-top))
+        calc(var(--page-pad) + env(safe-area-inset-right))
+        calc(var(--page-pad) + env(safe-area-inset-bottom))
+        calc(var(--page-pad) + env(safe-area-inset-left));
+
+      overflow:auto;
+      background:#fff;
+    }
+
+    .app, .main, .left, .right, .card, .taWrap{ min-width:0; }
+
+    .app{
+      height: calc(100vh - (2 * var(--page-pad)));
+      display:flex;
+      flex-direction:column;
+      gap:var(--gap);
+      overflow:hidden;
+      min-height:0;
+      padding-bottom: calc(var(--helpbar-est-height) + env(safe-area-inset-bottom));
+    }
+
+    @supports (height: 100dvh){
+      .app{
+        height: calc(
+          100dvh
+          - (2 * var(--page-pad))
+          - env(safe-area-inset-top)
+          - env(safe-area-inset-bottom)
+        );
+      }
+    }
+
+    h1, h2, h3, h4, p{ margin:0; }
+    h1{ font-size:var(--fs-h1); line-height:1.12; letter-spacing:-0.01em; }
+    h2{ font-size:var(--fs-h2); font-weight:500; color:rgba(0,0,0,0.72); line-height:1.45; margin-top:8px; }
+    h3, .card_label{ font-size:var(--fs-h3); margin:0 0 12px; }
+    h4{ font-size:var(--fs-h3); margin:0 0 12px; }
+    .muted{ opacity:0.75; line-height:1.6; }
+    .small{ font-size:var(--fs-small); }
+    .smallnote{ font-size:var(--fs-small); line-height:1.6; color:#333; }
+
+    code{
+      background: rgba(127,127,127,.15);
+      padding:2px 5px;
+      border-radius:4px;
+      font-size:0.95em;
+    }
+
+    /* ============================================================
+       Main two-column layout
+       ============================================================ */
+    .main{
+      flex:1;
+      display:flex;
+      gap:var(--gap);
+      overflow:hidden;
+      min-height:0;
+      min-width:0;
+    }
+
+    .left, .right{
+      display:flex;
+      flex-direction:column;
+      gap:var(--gap);
+      min-height:0;
+      min-width:0;
+    }
+
+    .left{
+      flex:1 1 0;
+      overflow:auto;
+      -webkit-overflow-scrolling:touch;
+      padding-right:12px;
+      padding-bottom:0;
+      scrollbar-gutter:stable;
+    }
+
+    .right{
+      flex:1 1 0;
+      overflow:hidden;
+    }
+
+    .left > .card{ flex:0 0 auto; }
+    .right > .card{ min-height:0; }
+
+    /* ============================================================
+       Cards + hero
+       ============================================================ */
+    .card{
+      border:var(--bd);
+      border-radius:12px;
+      padding:var(--card-pad);
+      overflow:hidden;
+      background:transparent;
+    }
+
+    .heroCard{
+      position:relative;
+      border:1px solid rgba(127,127,127,.22);
+      border-radius:18px;
+      padding:18px 20px 16px 20px;
+      background:linear-gradient(180deg, rgba(244,248,255,0.95) 0%, rgba(252,252,252,0.98) 100%);
+      overflow:hidden;
+      flex:0 0 auto;
+    }
+
+    .heroTitle{ margin:0; }
+    .heroText{
+      margin:10px 0 0 0;
+      max-width:96ch;
+      color:rgba(0,0,0,0.74);
+      line-height:1.55;
+      font-size:clamp(14.5px, 0.5vw + 13px, 16.5px);
+    }
+
+    .row{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+      min-width:0;
+    }
+
+    /* ============================================================
+       Controls and flat buttons
+       ============================================================ */
+    input, textarea, button, select{
+      font:inherit;
+      color:inherit;
+      max-width:100%;
+    }
+
+    input[type="text"], input[type="number"], select{
+      -webkit-appearance:none;
+      appearance:none;
+      border:var(--bd);
+      background:#fff;
+      color:#000;
+      border-radius:10px;
+      padding:10px 12px;
+      line-height:1.2;
+      min-width:0;
+    }
+
+    input[type="number"]{ width:90px; }
+
+    button,
+    .btn,
+    input[type="file"]::file-selector-button{
+      -webkit-appearance:none;
+      appearance:none;
+      border:1px solid rgba(127,127,127,.35);
+      background:rgba(127,127,127,.12);
+      color:#000;
+      border-radius:12px;
+      padding:10px 14px;
+      line-height:1.15;
+      font-family:inherit !important;
+      font-size:inherit !important;
+      font-weight:600;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      user-select:none;
+      -webkit-tap-highlight-color:transparent;
+      min-width:0;
+      text-decoration:none;
+      box-shadow:none;
+      transition:
+        filter 0.12s ease,
+        transform 0.08s ease,
+        box-shadow 0.12s ease;
+    }
+
+    .btn:after{ display:none !important; }
+
+    @media (hover:hover) and (pointer:fine){
+      button:hover:not(:disabled):not([disabled]),
+      .btn:hover:not(:disabled):not([disabled]),
+      input[type="file"]::file-selector-button:hover{
+        filter:brightness(0.97);
+        box-shadow:0 1px 3px rgba(0,0,0,0.18);
+      }
+    }
+
+    button:active:not(:disabled):not([disabled]),
+    .btn:active:not(:disabled):not([disabled]){
+      transform:translateY(1px);
+      box-shadow:0 0 1px rgba(0,0,0,0.15);
+    }
+
+    button:disabled,
+    button[disabled],
+    .btn:disabled,
+    .btn[disabled]{
+      opacity:0.4;
+      cursor:default;
+      transform:none;
+      box-shadow:none;
+      filter:none;
+    }
+
+    .row button,
+    .row .btn{
+      white-space:normal;
+      text-align:center;
+      flex:1 1 180px;
+    }
+
+    .btn-generate,
+    #generatebutton,
+    .primary{
+      background:#e8f1ff;
+      border-color:#9dbaf2;
+      color:#000;
+    }
+
+    .btn-controls,
+    #copybutton,
+    #savebutton,
+    #testbutton,
+    #instructionsbutton,
+    #abctoolsbutton{
+      background:#f0f3f8;
+      border-color:#d3dbe7;
+      color:#000;
+    }
+
+    #clearbutton{
+      background:#f3f3f3;
+      border-color:#d4d4d4;
+      color:#000;
+    }
+
+    #settingssavebutton{
+      background:#eef7f1;
+      border-color:#c9ded1;
+      color:#000;
+    }
+
+    #settingsresetbutton{
+      background:#f3eef8;
+      border-color:#d7cdea;
+      color:#000;
+    }
+
+    input[type="file"]::file-selector-button{
+      margin-right:12px;
+      background:#eef7f1;
+      border-color:#c9ded1;
+    }
+
+    .full_width_tool_button{ width:100%; box-sizing:border-box; }
+
+    /* ============================================================
+       Input and output panels
+       ============================================================ */
+    #cardInput{
+      flex:1 1 auto !important;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:320px !important;
+    }
+
+    #cardInput .taWrap{
+      flex:1 1 auto;
+      min-height:220px;
+    }
+
+    #cardInput.drag_over{
+      border-color:#9dbaf2;
+      box-shadow:0 0 0 3px rgba(157,186,242,0.25);
+      background:rgba(232,241,255,0.75);
+    }
+
+    .inputHeader{
+      display:flex;
+      gap:18px;
+      align-items:center;
+      justify-content:flex-start;
+      flex-wrap:nowrap;
+      margin-bottom:10px;
+    }
+
+    .inputHeader h3{
+      white-space:nowrap;
+      margin:0;
+      flex:0 0 auto;
+    }
+
+    .inputFileRow{
+      flex:1 1 auto;
+      min-width:0;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:nowrap;
+      overflow:hidden;
+    }
+
+    .inputFileRow .muted{
+      white-space:nowrap;
+      flex:0 0 auto;
+    }
+
+    #selectabcfile{
+      flex:1 1 auto;
+      min-width:260px;
+    }
+
+    .taWrap{
+      flex:1;
+      min-height:0;
+      overflow:hidden;
+      border:var(--bd);
+      background:Canvas;
+      display:flex;
+      padding:1px;
+      border-radius:10px;
+    }
+
+    textarea{
+      flex:1 1 auto;
+      width:100%;
+      min-height:0;
+      height:auto;
+      padding:12px;
+      border:0;
+      background:transparent;
+      resize:none;
+      overflow:auto;
+      font-family:var(--mono);
+      font-size:0.98em;
+      line-height:1.35;
+      overflow-wrap:anywhere;
+      -webkit-overflow-scrolling:touch;
+      display:block;
+    }
+
+    #input, #output{ height:auto; min-height:0; }
+
+    #cardOutput{
+      flex:1 1 auto;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+      overflow:hidden;
+    }
+
+    #cardOutput .taWrap{
+      flex:1 1 auto;
+      min-height:300px;
+    }
+
+    .output_button_row{
+      display:flex;
+      gap:12px;
+      margin-top:12px;
+      width:100%;
+    }
+
+    .output_button_row .btn{
+      flex:1 1 0;
+      box-sizing:border-box;
+      text-align:center;
+      margin-left:0 !important;
+      white-space:normal;
+    }
+
+    /* ============================================================
+       Settings bubble/card
+       ============================================================ */
+    #cardSettings{
+      background:linear-gradient(180deg, rgba(244,248,255,0.82) 0%, rgba(252,252,252,0.96) 100%);
+      border-color:rgba(127,127,127,.25);
+      border-radius:18px;
+    }
+
+    .settings_grid{
+      display:grid;
+      grid-template-columns:max-content 100px;
+      gap:12px 24px;
+      align-items:center;
+      justify-content:start;
+    }
+
+    .settings_grid label,
+    label.option{
+      font-weight:600;
+      line-height:1.35;
+    }
+
+    .settings_check{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      line-height:1.45;
+    }
+
+    .settings_check input[type="checkbox"]{
+      width:18px;
+      height:18px;
+      margin-top:2px;
+      flex:0 0 auto;
+    }
+
+    .options_hint{
+      margin-top:10px;
+      color:#444;
+      font-size:0.95em;
+      line-height:1.55;
+    }
+
+    .options_substitution_list{
+      margin-top:8px;
+      padding-left:0;
+      margin-bottom:8px;
+    }
+
+    .options_substitution_list div{ margin-top:3px; }
+
+    .options_substitution_choices{
+      margin-top:8px;
+      margin-bottom:8px;
+      padding-left:0;
+    }
+
+    .options_substitution_choices.disabled{
+      opacity:0.45;
+    }
+
+    .options_substitution_choice{
+      display:flex;
+      gap:8px;
+      align-items:flex-start;
+      margin-top:6px;
+      line-height:1.35;
+    }
+
+    .options_substitution_choice input[type="checkbox"]{
+      width:16px;
+      height:16px;
+      margin-top:2px;
+      flex:0 0 auto;
+    }
+
+    .settings_buttons{
+      display:flex;
+      gap:10px;
+      margin-top:14px;
+      width:100%;
+    }
+
+    .settings_buttons .btn{ flex:1 1 0; }
+
+    /* ============================================================
+       Status + fixed instructions bar
+       ============================================================ */
+    .status{
+      white-space:pre-wrap;
+      font-family:var(--mono);
+      overflow:auto;
+      max-height:240px;
+      font-size:0.95em;
+      line-height:1.45;
+      overflow-wrap:anywhere;
+      word-break:break-word;
+      -webkit-overflow-scrolling:touch;
+      opacity:0.9;
+      margin-top:8px;
+      padding:10px;
+      background:transparent;
+      border:var(--bd);
+      border-radius:10px;
+    }
+
+    #cardHelp{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      z-index:1000;
+      margin:0;
+      border-radius:0;
+      border-left:none;
+      border-right:none;
+      border-bottom:none;
+      background:Canvas;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      padding:
+        var(--helpbar-pad-y)
+        calc(var(--page-pad) + env(safe-area-inset-right))
+        calc(var(--helpbar-pad-y) + env(safe-area-inset-bottom))
+        calc(var(--page-pad) + env(safe-area-inset-left));
+    }
+
+    #instructionsbutton,
+    #abctoolsbutton{ width:100%; }
+
+    .instructions_content{
+      font-family:Helvetica, Arial, sans-serif;
+      font-size:12pt;
+      line-height:1.45;
+      max-height:60vh;
+      overflow-y:auto;
+      padding:0 22px;
+    }
+    .instructions_content h3{ margin-top:0; margin-bottom:20px; font-size:16pt; }
+    .instructions_content p{ font-size:12pt; line-height:1.45; margin:0 0 10px 0; }
+    .instructions_content ul{ margin-top:4px; padding-left:24px; }
+    .instructions_content li{ margin-bottom:6px; }
+    .instructions_content pre{
+      margin:10px 0 14px 0;
+      padding:12px;
+      overflow-x:auto;
+      white-space:pre;
+      font-family:var(--mono);
+      font-size:10.5pt;
+      line-height:1.4;
+      background:#f5f5f5;
+      border:1px solid #ddd;
+      border-radius:8px;
+      -webkit-overflow-scrolling:touch;
+    }
+    .instructions_content pre code{
+      padding:0;
+      background:transparent;
+      border-radius:0;
+      font-size:inherit;
+    }
+
+    /* ============================================================
+       DayPilot modal theme
+       ============================================================ */
+    .modal_flat_background{ background-color:#000; opacity:0.4; }
+    .modal_flat_main{ border:1px solid #333; box-shadow:0 0 15px -2px rgba(0,0,0,0.75); }
+    .modal_flat_main, .modal_flat_main input, .modal_flat_main button{ font-size:16px; }
+    .modal_flat_main input, .modal_flat_main button{ padding:6px; box-sizing:border-box; }
+    .modal_flat_inner{ padding:16px; background:#fff; color:#000; }
+    .modal_flat_content{ font-family:Helvetica, Arial, sans-serif; margin:20px 0; }
+    .modal_flat_input{ margin:20px 0; }
+    .modal_flat_buttons{ text-align:center; margin-top:40px; padding-bottom:20px; }
+    .modal_flat_main button{
+      background:#f0f3f8;
+      color:#000;
+      border:1px solid #d3dbe7;
+      padding:10px 20px;
+      cursor:pointer;
+      outline:none;
+      width:100px;
+      border-radius:10px;
+      font-weight:600;
+      transition:filter 0.12s ease, transform 0.08s ease, box-shadow 0.12s ease;
+    }
+    @media (hover:hover) and (pointer:fine){
+      .modal_flat_main button:hover{ filter:brightness(0.97); box-shadow:0 1px 3px rgba(0,0,0,0.18); }
+    }
+    .modal_flat_main button:active{ transform:translateY(1px); box-shadow:0 0 1px rgba(0,0,0,0.15); }
+    .modal_flat_buttons .modal_flat_ok{ background:#e8f1ff !important; border-color:#9dbaf2 !important; }
+    .modal_flat_buttons .modal_flat_cancel{ background:#f3f3f3 !important; border-color:#d4d4d4 !important; }
+    .modal_flat_cancel{ margin-left:6px; }
+    .modal_flat_main{ max-width:calc(100vw - 24px) !important; box-sizing:border-box; }
+    .modal_flat_inner{ box-sizing:border-box; max-width:100%; }
+    .modal_flat_main input{ width:100% !important; max-width:100% !important; box-sizing:border-box; }
+    .modal_flat_content{ overflow-wrap:anywhere; }
+
+    /* ============================================================
+       Progress modal
+       ============================================================ */
+    #progress_modal_overlay{
+      display:none;
+      position:fixed;
+      z-index:9999;
+      left:0;
+      top:0;
+      width:100%;
+      height:100%;
+      background:rgba(0,0,0,0.40);
+    }
+
+    #progress_modal_box{
+      position:absolute;
+      left:50%;
+      top:150px;
+      transform:translateX(-50%);
+      width:720px;
+      max-width:calc(100vw - 48px);
+      background:#fff;
+      color:#000;
+      border:1px solid #333;
+      box-shadow:0 0 15px -2px rgba(0,0,0,0.75);
+      padding:26px 30px;
+      font-family:Helvetica, Arial, sans-serif;
+      border-radius:12px;
+      box-sizing:border-box;
+    }
+
+    #progress_modal_box h3{ margin:0 0 14px 0; font-size:16pt; }
+    #progress_modal_status{
+      font-size:12pt;
+      line-height:1.45;
+      height:calc(11.6em + 22px);
+      min-height:calc(11.6em + 22px);
+      max-height:calc(11.6em + 22px);
+      overflow-y:auto;
+      padding:10px;
+      background:#f5f5ff;
+      border:1px solid #ddd;
+      border-radius:8px;
+      box-sizing:border-box;
+    }
+
+    #progress_modal_progress{
+      position:relative;
+      width:100%;
+      height:28px;
+      margin-top:14px;
+      overflow:hidden;
+      background:#f5f5ff;
+      border:1px solid #ddd;
+      border-radius:6px;
+      box-sizing:border-box;
+      box-shadow:inset 0 1px 2px rgba(0,0,0,0.08);
+    }
+
+    #progress_modal_progress_fill{
+      position:absolute;
+      left:0;
+      top:0;
+      bottom:0;
+      width:0%;
+      background:#7FE47F;
+      border-radius:5px;
+      transition:width 120ms linear;
+    }
+
+    #progress_modal_progress_label{
+      position:absolute;
+      left:0;
+      top:0;
+      width:100%;
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#000;
+      font-family:Helvetica, Arial, sans-serif;
+      font-size:11pt;
+      font-weight:bold;
+      line-height:1;
+      text-align:center;
+      pointer-events:none;
+    }
+
+    #progress_modal_buttons{ text-align:center; margin-top:22px; }
+
+    /* ============================================================
+       Responsive layout
+       ============================================================ */
+    @media (max-width:980px){
+      body{
+        overflow:auto;
+        -webkit-overflow-scrolling:touch;
+        padding-bottom:calc(var(--page-pad) + env(safe-area-inset-bottom) + 12px);
+      }
+
+      .app{
+        height:auto;
+        overflow:visible;
+        padding-bottom:calc(var(--helpbar-est-height) + env(safe-area-inset-bottom));
+      }
+
+      .main{
+        flex-direction:column;
+        overflow:visible;
+        min-height:auto;
+      }
+
+      .left, .right{
+        overflow:visible;
+        min-height:auto;
+        padding-bottom:0;
+      }
+
+      .left{
+        padding-right:0;
+        scrollbar-gutter:auto;
+      }
+
+      #cardInput{ flex:0 0 auto !important; min-height:auto !important; }
+      .taWrap{ height:clamp(220px, 30vh, 320px); min-height:220px; }
+      #cardOutput .taWrap{ height:clamp(320px, 45vh, 520px); min-height:320px; }
+      .right{ padding-bottom:12px; }
+    }
+
+    @media (max-width:720px){
+      body{
+        padding-left:16px;
+        padding-right:16px;
+      }
+
+      .heroCard{
+        padding:16px 14px 14px 14px;
+        border-radius:16px;
+      }
+
+      .heroTitle{ font-size:clamp(22px, 5vw, 28px); }
+      .heroText{ max-width:none; }
+
+      .row{ gap:10px; }
+      .row button, .row .btn{ flex-basis:100%; }
+      .inputHeader{ flex-direction:column; align-items:stretch; gap:10px; }
+      .inputFileRow{ flex-direction:column; align-items:stretch; }
+      #selectabcfile{ min-width:0; width:100%; }
+
+      .settings_grid{ grid-template-columns:1fr; gap:8px; }
+      .settings_buttons{ flex-direction:column; }
+      .output_button_row{ flex-direction:column; gap:10px; }
+      .output_button_row .btn{ width:100%; }
+
+      .taWrap{ height:clamp(220px, 32vh, 320px); min-height:220px; }
+      #cardOutput .taWrap{ height:clamp(340px, 50vh, 560px); min-height:340px; }
+
+      .modal_flat_main{
+        width:calc(100vw - 24px) !important;
+        max-width:calc(100vw - 24px) !important;
+        max-height:calc(100dvh - 24px) !important;
+        overflow:hidden !important;
+      }
+      .modal_flat_inner{
+        max-height:calc(100dvh - 24px) !important;
+        overflow:auto !important;
+        -webkit-overflow-scrolling:touch;
+      }
+
+      .instructions_content{
+        padding-left:12px;
+        padding-right:12px;
+      }
+
+      #progress_modal_box{
+        width:calc(100vw - 24px);
+        top:50%;
+        transform:translate(-50%, -50%);
+        padding:20px;
+      }
+      #progress_modal_progress{ height:20px; margin-top:12px; }
+      #progress_modal_progress_label{ font-size:9.5pt; }
+    }
+
+    @media (min-width:1100px) and (min-height:800px){
+      #cardInput{ min-height:360px !important; }
+      #cardInput .taWrap{ min-height:250px; }
+    }
+
+    @media (min-width:1100px) and (min-height:950px){
+      #cardInput{ min-height:430px !important; }
+      #cardInput .taWrap{ min-height:320px; }
+    }
+  </style>
+  
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-VM0N9HL3MK"></script> -->
+  <!-- <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-VM0N9HL3MK');
+  </script> -->
+
+  <script type="text/javascript" src="daypilot-modal.min-3.10.1.js"></script>
+  <script type="text/javascript" src="pako.min.js"></script>
+
+  <script>
+  /*
+    ABC Tune Backup Chord Solver
+    Michael Eskin-style standalone ABC batch utility.
+
+    Tune database:
+      The chord-source tune database is loaded from the fixed hosted URL:
+        https://michaeleskin.com/abctools/abctunes_thesession_28may2026.json
+
+    This tool does not infer harmony from melody. It only transfers chord symbols
+    from already-chorded matching tunes in the hosted database.
+  */
+
+  //
+  // Send a Google analytics event
+  //
+  function sendGoogleAnalytics(theCategory, theAction, theLabel) {
+
+    // Don't send analytics on iOS Safari
+    if (isIOSDevice()) {
+      return;
+    }
+
+    if (typeof gtag !== "undefined") {
+
+      if ((gtag) && (gtag instanceof Function)) {
+
+        if (!theLabel) {
+          theLabel = "none";
+        }
+
+        gtag("event", "chord_solver_" + theCategory + "_" + theAction, {
+          event_category: theCategory,
+          event_action: theAction,
+          event_label: theLabel
+        });
+
+      }
+    }
+  }
+  
+  var gDatabase = null;
+  var gChordIndex = null;
+  var gSaveFilename = "abc_backup_chords.abc";
+  var gInputFilename = "";
+  var gLastStats = null;
+  var gCancelRequested = false;
+  var gInputInitialized = false;
+  var gProcessingControlsEnabled = true;
+  var gOutputShareURL = "";
+  var gRemoteSubmissionMode = false;
+  var gRemoteCallbackURL = "";
+  var gRemoteSubmissionStarted = false;
+  var REMOTE_SUBMISSION_SELF_URL = "https://michaeleskin.com/tools/abc_backup_chord_solver.html";
+  var DEFAULT_KEY_MODE_SUBSTITUTION_OPTIONS = {
+    Dmajor: true,
+    Gmajor: true,
+    Cmajor: true,
+    Fmajor: true,
+    Gmajor_Eminor: false,
+    Amajor_Bdorian: false
+  };
+
+  var gSettings = {
+    threshold: 0.75,
+    fallbackMatchPercentage: 75,
+    keyModeSubstitutionEnabled: true,
+    keyModeSubstitutionOptions: Object.assign({}, DEFAULT_KEY_MODE_SUBSTITUTION_OPTIONS)
+  };
+  var gDefaultInputABC = "%\n% Click \"Generate Backup Chords\" to add backup chords to these examples:\n%\n\nX: 1\nT: Cooley's\nC: Traditional\nR: Reel\nM: 4/4\nL: 1/8\nQ: 1/2=90\nK: Edor\n%swing 0.15\n|:EBBA B2 EB|B2 AB dBAG|F/E/D AD BDAD|F/E/D AD BAGF|\nEBBA B2 EB|B2 AB defg|afge dBAF|1 DEFD E3D:|2 DEFD E2gf||\n|:eB (3BBB eBgf|eBB2 gedB|A/A/A FA DAFA|A/A/A FA defg|\neB (3BBB eBgf|eBBB defg|afge dBAF|1 DEFD E2gf:|2 DEFD E4|]\n\nX: 2\nT: The Kesh\nC: Traditional\nR: Jig\nM: 6/8\nL: 1/8\nQ: 3/8=120\nK: Gmaj\n%swing 0.25\n|:GAG GAB|ABA ABd|edd gdd|edB dBA|\nGAG GAB|ABA ABd|edd gdB|AGF G3:|\n|:BAB dBd|ege dBA|BAB dBG|ABA AGA|\nBAB dBd|ege dBd|gfg aga|bgf g3:|\n\nX: 3\nT: Alexander's\nC: Traditional\nR: Hornpipe\nM: 4/4\nL: 1/8\nQ: 1/2=80\nK: Dmaj\n%swing 0.25\n|:(3gfe|dAFA DFAd|fdcd Adef|g2 ge fdcd|(3efe (3dcB A2 (3gfe|\ndAFA DFAd|fdcd Adef|g2 ge fdcd|(3efe dcd2:|\n|:AG|FAdA FAdA|GBdB GBdB|Acec Acec|dfaf (3gfe (3dAG|\nFAdA FAdA|GBdB GBdB|Acef gecd|(3efe dcd2:|\n";
+
+  var NOTE_RE = /(?:\^\^|__|\^|_|=)?[A-Ga-g][,']*(?:\d+\/\d+|\d+\/|\/\d+|\d+|\/)?/y;
+
+  function escapeHTML(s) {
+    return String(s).replace(/[&<>"']/g, function(c) {
+      return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];
+    });
+  }
+
+  function setStatus(msg) {
+    document.getElementById("status").innerHTML = msg;
+  }
+
+  function updateOutputActionButtons(outputText) {
+    var hasOutput = !!(outputText && outputText.length);
+
+    var copyButton = document.getElementById("copybutton");
+    if (copyButton) {
+      copyButton.disabled = !hasOutput;
+      copyButton.title = hasOutput ? "Copy the generated output to the Clipboard" : "Generate output before copying";
+    }
+
+    var saveButton = document.getElementById("savebutton");
+    if (saveButton) {
+      saveButton.disabled = !hasOutput;
+      saveButton.title = hasOutput ? "Save the generated output to a file" : "Generate output before saving";
+    }
+  }
+
+  function clearOutputArea() {
+    var output = document.getElementById("output");
+    if (output) output.value = "";
+
+    var copyButton = document.getElementById("copybutton");
+    if (copyButton) copyButton.innerHTML = "Copy Output to the Clipboard";
+
+    updateOutputActionButtons("");
+    updateShareLinkForOutput("");
+  }
+
+
+
+  function getDefaultKeyModeSubstitutionOptions() {
+    return Object.assign({}, DEFAULT_KEY_MODE_SUBSTITUTION_OPTIONS);
+  }
+
+  function applyDefaultToolSettings() {
+    // Remote submissions must be deterministic and must never inherit settings
+    // previously saved by the user in this browser.
+    gSettings.threshold = 0.75;
+    gSettings.fallbackMatchPercentage = 75;
+    gSettings.keyModeSubstitutionEnabled = true;
+    gSettings.keyModeSubstitutionOptions = getDefaultKeyModeSubstitutionOptions();
+  }
+
+  function normalizeSavedKeyModeSubstitutionOptions(savedOptions) {
+    var normalized = getDefaultKeyModeSubstitutionOptions();
+
+    if (savedOptions && typeof savedOptions === "object") {
+      Object.keys(DEFAULT_KEY_MODE_SUBSTITUTION_OPTIONS).forEach(function(key) {
+        if (typeof savedOptions[key] === "boolean") {
+          normalized[key] = savedOptions[key];
+        }
+      });
+    }
+
+    return normalized;
+  }
+
+  function loadToolSettings() {
+    try {
+      var saved = localStorage.getItem("abcBackupChordSolverSettings");
+      if (!saved) return;
+      var parsed = JSON.parse(saved);
+      if (parsed && isFinite(parsed.threshold)) {
+        gSettings.threshold = Math.max(0.10, Math.min(1.00, Number(parsed.threshold)));
+      }
+      if (parsed && isFinite(parsed.fallbackMatchPercentage)) {
+        gSettings.fallbackMatchPercentage = Math.max(50, Math.min(100, Math.round(Number(parsed.fallbackMatchPercentage) / 5) * 5));
+      }
+      if (parsed && typeof parsed.keyModeSubstitutionEnabled === "boolean") {
+        gSettings.keyModeSubstitutionEnabled = parsed.keyModeSubstitutionEnabled;
+      }
+      if (parsed && parsed.keyModeSubstitutionOptions) {
+        gSettings.keyModeSubstitutionOptions = normalizeSavedKeyModeSubstitutionOptions(parsed.keyModeSubstitutionOptions);
+      } else {
+        gSettings.keyModeSubstitutionOptions = normalizeSavedKeyModeSubstitutionOptions(gSettings.keyModeSubstitutionOptions);
+      }
+    } catch (err) {
+      console.warn("Could not load ABC Backup Chord Solver settings:", err);
+    }
+  }
+
+  function saveToolSettings() {
+    try {
+      localStorage.setItem("abcBackupChordSolverSettings", JSON.stringify(gSettings));
+    } catch (err) {
+      console.warn("Could not save ABC Backup Chord Solver settings:", err);
+    }
+  }
+
+  function getCurrentThresholdSetting() {
+    var threshold = Number(gSettings.threshold);
+    if (!isFinite(threshold)) threshold = 0.75;
+    return Math.max(0.10, Math.min(1.00, threshold));
+  }
+
+  function getCurrentFallbackMatchPercentageSetting() {
+    var percentage = Number(gSettings.fallbackMatchPercentage);
+    if (!isFinite(percentage)) percentage = 75;
+    percentage = Math.max(50, Math.min(100, Math.round(percentage / 5) * 5));
+    return percentage;
+  }
+
+  function getCurrentFallbackThresholdScaleSetting() {
+    return getCurrentFallbackMatchPercentageSetting() / 100;
+  }
+
+  function syncKeyModeSubstitutionControlsEnabled() {
+    var keyMode = document.getElementById("options_keymode_substitution");
+    var enabled = !!(keyMode && keyMode.checked);
+    var wrapper = document.getElementById("options_substitution_choices");
+
+    if (wrapper) {
+      wrapper.classList.toggle("disabled", !enabled);
+    }
+
+    Object.keys(DEFAULT_KEY_MODE_SUBSTITUTION_OPTIONS).forEach(function(key) {
+      var control = document.getElementById("options_substitution_" + key);
+      if (control) control.disabled = !enabled;
+    });
+  }
+
+  function syncSettingsControls() {
+    gSettings.keyModeSubstitutionOptions = normalizeSavedKeyModeSubstitutionOptions(gSettings.keyModeSubstitutionOptions);
+
+    var threshold = document.getElementById("options_threshold");
+    if (threshold) threshold.value = getCurrentThresholdSetting().toFixed(2);
+
+    var fallbackMatchPercentage = document.getElementById("options_fallback_match_percentage");
+    if (fallbackMatchPercentage) fallbackMatchPercentage.value = String(getCurrentFallbackMatchPercentageSetting());
+
+    var keyMode = document.getElementById("options_keymode_substitution");
+    if (keyMode) keyMode.checked = !!gSettings.keyModeSubstitutionEnabled;
+
+    Object.keys(DEFAULT_KEY_MODE_SUBSTITUTION_OPTIONS).forEach(function(key) {
+      var control = document.getElementById("options_substitution_" + key);
+      if (control) control.checked = gSettings.keyModeSubstitutionOptions[key] !== false;
+    });
+
+    syncKeyModeSubstitutionControlsEnabled();
+  }
+
+  function resetSettingsControls() {
+    applyDefaultToolSettings();
+    saveToolSettings();
+    syncSettingsControls();
+    setStatus("Settings reset to defaults.");
+  }
+
+  function applySettingsControlsToCurrentSettings() {
+    var thresholdInput = document.getElementById("options_threshold");
+    var threshold = thresholdInput ? parseFloat(thresholdInput.value) : 0.75;
+    if (!isFinite(threshold)) threshold = 0.75;
+    gSettings.threshold = Math.max(0.10, Math.min(1.00, threshold));
+
+    var fallbackMatchPercentageInput = document.getElementById("options_fallback_match_percentage");
+    var fallbackMatchPercentage = fallbackMatchPercentageInput ? parseFloat(fallbackMatchPercentageInput.value) : 75;
+    if (!isFinite(fallbackMatchPercentage)) fallbackMatchPercentage = 75;
+    fallbackMatchPercentage = Math.max(50, Math.min(100, Math.round(fallbackMatchPercentage / 5) * 5));
+    gSettings.fallbackMatchPercentage = fallbackMatchPercentage;
+    if (fallbackMatchPercentageInput) fallbackMatchPercentageInput.value = String(fallbackMatchPercentage);
+
+    var keyMode = document.getElementById("options_keymode_substitution");
+    gSettings.keyModeSubstitutionEnabled = !!(keyMode && keyMode.checked);
+
+    var options = {};
+    Object.keys(DEFAULT_KEY_MODE_SUBSTITUTION_OPTIONS).forEach(function(key) {
+      var control = document.getElementById("options_substitution_" + key);
+      options[key] = control ? !!control.checked : true;
+    });
+    gSettings.keyModeSubstitutionOptions = options;
+
+    syncKeyModeSubstitutionControlsEnabled();
+  }
+
+  function saveSettingsControls() {
+    applySettingsControlsToCurrentSettings();
+    saveToolSettings();
+    setStatus("Settings saved.");
+  }
+
+  function buildABCTranscriptionToolsShareURL(abcText) {
+    if (!abcText || !abcText.length) return "";
+
+    var shareName = "ABC_Backup_Chord_Solver_Test";
+    var abcInDeflate = compressABCDeflateForShareLink(abcText);
+
+    var params = new URLSearchParams();
+    params.set("def", abcInDeflate);
+    params.set("format", "noten");
+    params.set("name", shareName);
+    params.set("editor", "1");
+
+    return "https://abc.tunebook.app/abctools.html?" + params.toString();
+  }
+
+  function compressABCDeflateForShareLink(abcText) {
+    if (typeof pako === "undefined") {
+      throw new Error("pako is not loaded. Include pako.min.js before using share links.");
+    }
+    if (typeof TextEncoder === "undefined") {
+      throw new Error("TextEncoder is not available in this browser.");
+    }
+
+    var utf8Bytes = new TextEncoder().encode(abcText || "");
+    var deflatedBytes = pako.deflate(utf8Bytes, { level: 6 });
+    return bytesToBase64URL(deflatedBytes);
+  }
+
+
+  function base64URLToBytes(base64URLText) {
+    var base64 = String(base64URLText || "")
+      .replace(/-/g, "+")
+      .replace(/_/g, "/");
+
+    while (base64.length % 4) base64 += "=";
+
+    var binary = atob(base64);
+    var bytes = new Uint8Array(binary.length);
+    for (var i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    return bytes;
+  }
+
+  function decompressABCDeflateFromShareLink(defText) {
+    if (typeof pako === "undefined") {
+      throw new Error("pako is not loaded. Include pako.min.js before using deflate share links.");
+    }
+    if (typeof TextDecoder === "undefined") {
+      throw new Error("TextDecoder is not available in this browser.");
+    }
+
+    var compressedBytes = base64URLToBytes(defText);
+    var inflatedBytes = pako.inflate(compressedBytes);
+    return new TextDecoder("utf-8").decode(inflatedBytes);
+  }
+
+  function getDeflatedABCFromURL() {
+    try {
+      var params = new URLSearchParams(window.location.search || "");
+      var defText = params.get("def");
+      if (!defText) return null;
+      return decompressABCDeflateFromShareLink(defText);
+    } catch (err) {
+      console.error("Could not decode def= ABC share-link parameter:", err);
+      return null;
+    }
+  }
+
+  function getRawURLParameter(name) {
+    var query = String(window.location.search || "").replace(/^\?/, "");
+    if (!query) return null;
+
+    var parts = query.split("&");
+    for (var i = 0; i < parts.length; i++) {
+      var equalsIndex = parts[i].indexOf("=");
+      var rawName = equalsIndex >= 0 ? parts[i].slice(0, equalsIndex) : parts[i];
+      var rawValue = equalsIndex >= 0 ? parts[i].slice(equalsIndex + 1) : "";
+
+      try {
+        if (decodeURIComponent(rawName.replace(/\+/g, "%20")) === name) {
+          return rawValue;
+        }
+      } catch (err) {
+        // Ignore malformed parameter names and continue looking.
+      }
+    }
+
+    return null;
+  }
+
+  function parseRemoteBooleanParameter(params, name, defaultValue) {
+    if (!params.has(name)) return defaultValue;
+
+    var value = String(params.get(name) || "").trim().toLowerCase();
+
+    if (value === "1" || value === "true" || value === "yes" || value === "on") {
+      return true;
+    }
+
+    if (value === "0" || value === "false" || value === "no" || value === "off") {
+      return false;
+    }
+
+    throw new Error(
+      "The " + name + " parameter must be true or false " +
+      "(also accepted: 1/0, yes/no, or on/off)."
+    );
+  }
+
+  function parseRemoteNumberParameter(params, name, defaultValue, minimum, maximum, step) {
+    if (!params.has(name)) return defaultValue;
+
+    var rawValue = String(params.get(name) || "").trim();
+    var value = Number(rawValue);
+
+    if (!rawValue || !isFinite(value)) {
+      throw new Error("The " + name + " parameter must be a number.");
+    }
+
+    if (value < minimum || value > maximum) {
+      throw new Error(
+        "The " + name + " parameter must be between " +
+        minimum + " and " + maximum + "."
+      );
+    }
+
+    var stepCount = Math.round((value - minimum) / step);
+    var steppedValue = minimum + (stepCount * step);
+
+    if (Math.abs(steppedValue - value) > 0.000001) {
+      throw new Error(
+        "The " + name + " parameter must use increments of " + step + "."
+      );
+    }
+
+    return Number(value.toFixed(10));
+  }
+
+  function getRemoteSubmissionSettings(params) {
+    // Begin with the built-in defaults. Each URL parameter is optional and
+    // overrides only its corresponding control. These parameters are read only
+    // after callbackURL has been confirmed to be present and valid.
+    return {
+      threshold: parseRemoteNumberParameter(
+        params,
+        "min",
+        0.75,
+        0.10,
+        1.00,
+        0.05
+      ),
+      fallbackMatchPercentage: parseRemoteNumberParameter(
+        params,
+        "fallback",
+        75,
+        50,
+        100,
+        5
+      ),
+      keyModeSubstitutionEnabled: parseRemoteBooleanParameter(
+        params,
+        "subs",
+        true
+      ),
+      keyModeSubstitutionOptions: {
+        Dmajor: parseRemoteBooleanParameter(
+          params,
+          "dmaj",
+          true
+        ),
+        Gmajor: parseRemoteBooleanParameter(
+          params,
+          "gmaj",
+          true
+        ),
+        Cmajor: parseRemoteBooleanParameter(
+          params,
+          "cmaj",
+          true
+        ),
+        Fmajor: parseRemoteBooleanParameter(
+          params,
+          "fmaj",
+          true
+        ),
+        Gmajor_Eminor: parseRemoteBooleanParameter(
+          params,
+          "gemin",
+          false
+        ),
+        Amajor_Bdorian: parseRemoteBooleanParameter(
+          params,
+          "abdor",
+          false
+        )
+      }
+    };
+  }
+
+  function applyRemoteSubmissionSettings(settings) {
+    settings = settings || {};
+
+    gSettings.threshold = settings.threshold;
+    gSettings.fallbackMatchPercentage = settings.fallbackMatchPercentage;
+    gSettings.keyModeSubstitutionEnabled = !!settings.keyModeSubstitutionEnabled;
+    gSettings.keyModeSubstitutionOptions =
+      normalizeSavedKeyModeSubstitutionOptions(settings.keyModeSubstitutionOptions);
+  }
+
+  function getRemoteSubmissionRequest() {
+    var params = new URLSearchParams(window.location.search || "");
+    var defText = params.get("def");
+    var rawCallbackURL = getRawURLParameter("callbackURL");
+
+    if (!defText || rawCallbackURL === null || rawCallbackURL === "") {
+      return null;
+    }
+
+    var callbackURLText;
+    try {
+      // Read the raw query-string value so callbackURL is decoded exactly once,
+      // as requested, rather than relying on URLSearchParams' automatic decode.
+      callbackURLText = decodeURIComponent(rawCallbackURL.replace(/\+/g, "%20"));
+    } catch (err) {
+      throw new Error("The callbackURL parameter could not be decoded.");
+    }
+
+    var callbackURL;
+    try {
+      callbackURL = new URL(callbackURLText, window.location.href);
+    } catch (err) {
+      throw new Error("The callbackURL parameter is not a valid URL.");
+    }
+
+    if (!/^https?:$/.test(callbackURL.protocol)) {
+      throw new Error("The callbackURL must use http:// or https://.");
+    }
+
+    var selfURL = new URL(REMOTE_SUBMISSION_SELF_URL);
+    var callbackBase =
+      callbackURL.protocol.toLowerCase() + "//" +
+      callbackURL.host.toLowerCase() +
+      callbackURL.pathname.replace(/\/+$/, "");
+    var selfBase =
+      selfURL.protocol.toLowerCase() + "//" +
+      selfURL.host.toLowerCase() +
+      selfURL.pathname.replace(/\/+$/, "");
+
+    if (callbackBase === selfBase) {
+      throw new Error(
+        "The callbackURL points back to the ABC Tune Backup Chord Solver. " +
+        "Remote processing has been stopped to prevent recursion."
+      );
+    }
+
+    // Remote control parameters are intentionally ignored unless callbackURL
+    // exists and has passed all validation above.
+    var remoteSettings = getRemoteSubmissionSettings(params);
+
+    var abcText;
+    try {
+      abcText = decompressABCDeflateFromShareLink(defText);
+    } catch (err) {
+      throw new Error("The def parameter could not be decoded as ABC notation.");
+    }
+
+    if (!abcText || !abcText.trim()) {
+      throw new Error("The def parameter did not contain any ABC notation.");
+    }
+
+    return {
+      abcText: abcText,
+      callbackURL: callbackURL.href,
+      settings: remoteSettings
+    };
+  }
+
+  function buildRemoteCallbackResultURL(callbackURLText, abcText) {
+    var callbackURL = new URL(callbackURLText, window.location.href);
+    callbackURL.searchParams.set("def", compressABCDeflateForShareLink(abcText));
+    return callbackURL.href;
+  }
+
+  function navigateToRemoteCallbackResult(abcText) {
+    var resultURL = buildRemoteCallbackResultURL(gRemoteCallbackURL, abcText);
+
+    // Replace the current solver page with the callback result. This avoids
+    // opening a second tab and therefore avoids callback popup blocking.
+    window.location.replace(resultURL);
+
+    return resultURL;
+  }
+
+  function bytesToBase64(bytes) {
+    var binary = "";
+    for (var i = 0; i < bytes.length; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+  }
+
+  function bytesToBase64URL(bytes) {
+    return bytesToBase64(bytes)
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
+  }
+
+  function updateShareLinkForOutput(outputText) {
+    var testButton = document.getElementById("testbutton");
+    gOutputShareURL = "";
+
+    if (!testButton) return;
+
+    if (!outputText || !outputText.length) {
+      testButton.disabled = true;
+      testButton.title = "Generate output before testing it in the ABC Transcription Tools";
+      return;
+    }
+
+    var url = buildABCTranscriptionToolsShareURL(outputText);
+    if (url.length <= 8100) {
+      gOutputShareURL = url;
+      testButton.disabled = false;
+      testButton.title = "Open the generated output in the ABC Transcription Tools";
+    } else {
+      testButton.disabled = true;
+      testButton.title = "Output is too long to test directly in the ABC Transcription Tools. Please save or copy the output instead.";
+    }
+  }
+
+  function setOutputArea(outputText) {
+    outputText = outputText || "";
+    var output = document.getElementById("output");
+    if (output) output.value = outputText;
+    updateOutputActionButtons(outputText);
+    updateShareLinkForOutput(outputText);
+  }
+
+  function handleInputChanged() {
+    updateGenerateButtonState();
+
+    if (!gInputInitialized) return;
+
+    clearOutputArea();
+
+    var input = document.getElementById("input");
+    if (input && input.value && input.value.trim().length) {
+      setStatus("Input changed. Click Generate Backup Chords to create new output.");
+    } else {
+      setStatus("Input cleared. Enter or open ABC notation to enable Generate Backup Chords.");
+    }
+  }
+
+  function setProgressModalPercent(percent) {
+    percent = Number(percent);
+    if (!isFinite(percent)) percent = 0;
+    percent = Math.max(0, Math.min(100, Math.round(percent)));
+
+    var bar = document.getElementById("progress_modal_progress");
+    var fill = document.getElementById("progress_modal_progress_fill");
+    var label = document.getElementById("progress_modal_progress_label");
+
+    if (fill) fill.style.width = percent + "%";
+    if (label) label.textContent = percent + "%";
+    if (bar) bar.setAttribute("aria-valuenow", String(percent));
+  }
+
+  function showProgressModal(message) {
+    var overlay = document.getElementById("progress_modal_overlay");
+    var title = document.getElementById("progress_modal_title");
+    var status = document.getElementById("progress_modal_status");
+    if (!overlay || !status) return;
+
+    // Identify callback-driven processing without changing the title used for
+    // normal interactive chord-matching operations.
+    if (title) {
+      title.textContent = gRemoteSubmissionMode
+        ? "Matching Backup Chords (Remote)"
+        : "Matching Backup Chords";
+    }
+
+    setProgressModalPercent(0);
+    status.innerHTML = message || "Starting...";
+    overlay.style.display = "block";
+  }
+
+  function updateProgressModal(message) {
+    var status = document.getElementById("progress_modal_status");
+    if (status) status.innerHTML = message;
+  }
+
+  function hideProgressModal() {
+    var overlay = document.getElementById("progress_modal_overlay");
+    if (overlay) overlay.style.display = "none";
+    setProgressModalPercent(0);
+  }
+
+  function cancelProcessing() {
+    gCancelRequested = true;
+    clearOutputArea();
+    updateProgressModal("Cancelling... Output has been cleared.");
+    setStatus("Cancelling measure matching...");
+  }
+
+  function throwIfCancelled() {
+    if (gCancelRequested) throw new Error("USER_CANCELLED");
+  }
+
+  function allowBrowserToUpdate() {
+    return new Promise(function(resolve) {
+      setTimeout(resolve, 0);
+    });
+  }
+
+  function formatElapsed(ms) {
+    var seconds = Math.max(0, Math.round(ms / 1000));
+    var minutes = Math.floor(seconds / 60);
+    seconds = seconds % 60;
+    if (minutes > 0) return minutes + "m " + seconds + "s";
+    return seconds + "s";
+  }
+
+  function formatProgressTuneHeader(progressState, title) {
+    return "Tune <b>" + progressState.tuneNumber + "</b> of <b>" + progressState.tuneCount +
+      "</b>: <b>" + escapeHTML(title) + "</b><br>";
+  }
+
+  function pluralWord(count, singular, plural) {
+    return count === 1 ? singular : plural;
+  }
+
+  function updateGenerateButtonState() {
+    var btn = document.getElementById("generatebutton");
+    if (!btn) return;
+
+    var input = document.getElementById("input");
+    var hasInput = !!(input && input.value && input.value.trim().length);
+
+    btn.disabled = !gProcessingControlsEnabled || !hasInput;
+    btn.title = hasInput ? "Generate suggested backup chords for the input ABC notation" : "Enter or open ABC notation before generating backup chords";
+  }
+
+  function setProcessingControlsEnabled(enabled) {
+    gProcessingControlsEnabled = !!enabled;
+
+    updateGenerateButtonState();
+
+    var input = document.getElementById("selectabcfile");
+    if (input) input.disabled = !enabled;
+    var clearButton = document.getElementById("clearbutton");
+    if (clearButton) clearButton.disabled = !enabled;
+  }
+
+  async function initializeTool() {
+    gCancelRequested = false;
+    hideProgressModal();
+
+    var remoteRequest = null;
+    try {
+      remoteRequest = getRemoteSubmissionRequest();
+    } catch (err) {
+      applyDefaultToolSettings();
+      syncSettingsControls();
+      clearOutputArea();
+      setProcessingControlsEnabled(false);
+      setStatus("<b>Error:</b> " + escapeHTML(err.message));
+      showMessageDialog("<b>Remote submission error:</b><br><br>" + escapeHTML(err.message));
+      return;
+    }
+
+    if (remoteRequest) {
+      // The initial page navigation can produce both pageshow and load events.
+      // Never allow the same callback submission to launch two concurrent
+      // chord-matching loops.
+      if (gRemoteSubmissionStarted) return;
+      gRemoteSubmissionStarted = true;
+
+      gRemoteSubmissionMode = true;
+      gRemoteCallbackURL = remoteRequest.callbackURL;
+
+      // Do not read or write the user's saved settings in remote mode.
+      // Start with defaults, then apply only validated URL overrides.
+      applyDefaultToolSettings();
+      applyRemoteSubmissionSettings(remoteRequest.settings);
+      syncSettingsControls();
+
+      var remoteInput = document.getElementById("input");
+      if (remoteInput) remoteInput.value = remoteRequest.abcText;
+
+      clearOutputArea();
+
+      var remoteFileInput = document.getElementById("selectabcfile");
+      if (remoteFileInput) {
+        remoteFileInput.value = "";
+        configureFileOpenAccept();
+      }
+
+      gSaveFilename = "abc_backup_chords.abc";
+      gInputFilename = "";
+      setProcessingControlsEnabled(false);
+
+      var remoteTuneCount = splitTunes(remoteRequest.abcText).length;
+
+      sendGoogleAnalytics("action", "remote");
+
+      setStatus(
+        "Remote submission received with <b>" + remoteTuneCount + "</b> " +
+        pluralWord(remoteTuneCount, "tune", "tunes") +
+        ". Running with the requested remote chord-matching settings..."
+      );
+
+      await generateBackupChords(true);
+      return;
+    }
+
+    gRemoteSubmissionMode = false;
+    gRemoteCallbackURL = "";
+    gRemoteSubmissionStarted = false;
+
+    loadToolSettings();
+    syncSettingsControls();
+
+    var sharedABC = getDeflatedABCFromURL();
+    var input = document.getElementById("input");
+    if (input) input.value = (sharedABC !== null) ? sharedABC : gDefaultInputABC;
+
+    clearOutputArea();
+
+    var fileInput = document.getElementById("selectabcfile");
+    if (fileInput) {
+      fileInput.value = "";
+      configureFileOpenAccept();
+    }
+
+    gSaveFilename = "abc_backup_chords.abc";
+    gInputFilename = "";
+    setProcessingControlsEnabled(true);
+
+    if (sharedABC !== null) {
+      var sharedTuneCount = splitTunes(sharedABC).length;
+      setStatus("Loaded ABC notation from the share link with " + sharedTuneCount + " " + pluralWord(sharedTuneCount, "tune", "tunes") + ".");
+    } else if ((window.location.search || "").indexOf("def=") >= 0) {
+      setStatus("Could not decode the ABC notation from the def= share-link parameter.");
+    } else {
+      setStatus("Ready.");
+    }
+  }
+
+  function getResponsiveModalWidth(desktopWidth) {
+    var viewportWidth = 0;
+
+    if (window.visualViewport && window.visualViewport.width) {
+      viewportWidth = window.visualViewport.width;
+    } else if (window.innerWidth) {
+      viewportWidth = window.innerWidth;
+    } else {
+      viewportWidth = document.documentElement.clientWidth || desktopWidth;
+    }
+
+    // Leave visible side margins on phones so DayPilot alert and prompt dialogs
+    // do not extend past the viewport, especially when the iOS keyboard is open.
+    return Math.max(280, Math.min(desktopWidth, Math.floor(viewportWidth - 24)));
+  }
+
+  function showMessageDialog(message) {
+    if (window.DayPilot && DayPilot.Modal) {
+      DayPilot.Modal.alert(message, {
+        theme: "modal_flat",
+        width: getResponsiveModalWidth(420),
+        top: 150,
+        scrollWithPage: true
+      });
+    } else {
+      alert(message.replace(/<[^>]*>/g, ""));
+    }
+  }
+
+  function openABCTranscriptionTools() {
+    window.open("https://abc.tunebook.app/abctools.html", "_blank", "noopener,noreferrer");
+  }
+
+  function showDeveloperInstructions() {
+    var html = [
+      "<div class=\"instructions_content\">\n",
+      "<h3 style=\"text-align:center;\">Developer Integration</h3>\n",
+      "\n",
+      "<h4>What the Remote Callback Feature Is For</h4>\n",
+      "<p>The remote callback feature is designed for browser-based applications that already contain ABC notation and want to send one or more tunes to the ABC Tune Backup Chord Solver, have the chords added automatically, and receive the completed ABC back in a designated callback page.</p>\n",
+      "<p>The calling application may open the solver in the current tab or in a separate tab. The supplied Live Callback Demo uses the current tab. The solver decodes the submitted ABC, processes it without requiring further interaction, and then replaces the solver page with the callback URL. The completed ABC is returned in that callback URL's <b>def=</b> parameter.</p>\n",
+      "<p>This is a URL-based browser integration rather than a server API. It is best suited to modest-size ABC collections that fit safely in browser URLs. Because the ABC travels in query strings, do not use this mechanism for confidential material.</p>\n",
+      "\n",
+      "<h4>Example Live Callback Demo Web Application</h4>\n",
+      "<p>To facilitate building third-party ABC tools that use the callback mechanism, I've created a simple sample Live Callback Demo client-side web application you can modify to your own requirements:</p>\n",
+      "<p style=\"text-align:center;margin:12px 0 18px 0\"><a href=\"https://youtu.be/CnR8Owcc9Y8\" target=\"_blank\">Complete Walkthrough of the Live Callback Demo on YouTube</a></p>\n",
+      "<p style=\"text-align:center;margin:12px 0 18px 0;\">\n",
+      "<a href=\"https://michaeleskin.com/tools/abc_backup_chord_solver_callback_demo.html\" target=\"_blank\" rel=\"noopener noreferrer\">Open the Live Callback Demo</a>\n",
+      "</p>\n",
+      "<p style=\"text-align:center;margin:12px 0 18px 0;\">\n",
+      "<a href=\"https://github.com/seisiuneer/abctools/blob/main/tools/abc_backup_chord_solver_callback_demo.html\" target=\"_blank\" rel=\"noopener noreferrer\">Live Callback Demo Source on GitHub</a>\n",
+      "</p>\n",
+      "\n",
+      "<h4>Required Request Parameters</h4>\n",
+      "<p>Remote processing starts only when both of these case-sensitive parameters are present and valid:</p>\n",
+      "<ul>\n",
+      "<li><b>def</b> \u2014 The source ABC encoded as UTF-8, compressed with zlib/deflate, converted to unpadded URL-safe Base64, and placed in the <b>def=</b> parameter.</li>\n",
+      "<li><b>callbackURL</b> \u2014 The HTTP or HTTPS location that should receive the result. An absolute URL is strongly recommended. The current implementation also accepts a relative URL and resolves it against the solver page, but that is usually not useful for an external integration.</li>\n",
+      "</ul>\n",
+      "<p>When manually constructing a request string, percent-encode the callback URL exactly once. When using the browser <b>URL</b> and <b>URLSearchParams</b> APIs, pass the ordinary, unencoded callback URL to <code>searchParams.set()</code> and allow the browser to encode it.</p>\n",
+      "\n",
+      "<p>The basic request form is:</p>\n",
+      "<pre><code>https://michaeleskin.com/tools/abc_backup_chord_solver.html?def=ENCODED_ABC&amp;callbackURL=ENCODED_CALLBACK_URL&amp;cachebuster=TIMESTAMP</code></pre>\n",
+      "\n",
+      "<h4>Optional Remote Settings</h4>\n",
+      "<p>The following optional parameters override the solver's built-in defaults for that remote request. They are read only when both <b>def</b> and a valid <b>callbackURL</b> are present. Missing parameters retain their defaults.</p>\n",
+      "<ul>\n",
+      "<li><b>min</b> \u2014 Minimum match score from <b>0.10</b> through <b>1.00</b>, in increments of <b>0.05</b>. Default: <b>0.75</b>.</li>\n",
+      "<li><b>fallback</b> \u2014 Fallback match percentage from <b>50</b> through <b>100</b>, in increments of <b>5</b>. Default: <b>75</b>.</li>\n",
+      "<li><b>subs</b> \u2014 Enables or disables all limited key/mode substitution checking. Default: <b>true</b>.</li>\n",
+      "<li><b>dmaj</b> \u2014 Tests D major as E Dorian, B minor, or A Mixolydian. Default: <b>true</b>.</li>\n",
+      "<li><b>gmaj</b> \u2014 Tests G major as D Mixolydian or A Dorian. Default: <b>true</b>.</li>\n",
+      "<li><b>cmaj</b> \u2014 Tests C major as D Dorian or A minor. Default: <b>true</b>.</li>\n",
+      "<li><b>fmaj</b> \u2014 Tests F major as G Dorian or D minor. Default: <b>true</b>.</li>\n",
+      "<li><b>gemin</b> \u2014 Tests G major as E minor. Default: <b>false</b>.</li>\n",
+      "<li><b>abdor</b> \u2014 Tests A major as B Dorian. Default: <b>false</b>.</li>\n",
+      "</ul>\n",
+      "<p>Boolean parameters accept <b>true</b> or <b>false</b>. The equivalent values <b>1/0</b>, <b>yes/no</b>, and <b>on/off</b> are also accepted. This allows every checkbox option to be explicitly enabled or disabled.</p>\n",
+      "<p>An invalid supplied setting causes the remote submission to stop with an error; it is not silently replaced by the default.</p>\n",
+      "\n",
+      "<p>Example request with custom settings:</p>\n",
+      "<pre><code>https://michaeleskin.com/tools/abc_backup_chord_solver.html?def=ENCODED_ABC&amp;callbackURL=ENCODED_CALLBACK_URL&amp;min=0.80&amp;fallback=70&amp;subs=true&amp;dmaj=true&amp;gmaj=false&amp;cmaj=true&amp;fmaj=true&amp;gemin=false&amp;abdor=true&amp;cachebuster=TIMESTAMP</code></pre>\n",
+      "\n",
+      "<h4>Cachebusting and URL Length</h4>\n",
+      "<p>The optional <b>cachebuster</b> parameter is ignored by the chord-matching logic. Append a unique value such as <code>Date.now()</code> as the final query parameter to discourage a browser, proxy, or intermediary cache from reusing an otherwise identical request.</p>\n",
+      "<p>Always add the cachebuster before measuring the final URL. The example below uses a practical maximum of <b>8,100 characters</b>, matching the supplied callback demo. This is an integration safeguard rather than a guarantee that every browser, proxy, or server accepts URLs of that size.</p>\n",
+      "<p>The returned callback URL also contains the compressed result in a query string and may be longer than the original request because chords and explanatory notes can be added. Keep submitted collections comfortably below the limit. The request's cachebuster is not copied into the callback URL unless it was separately included inside the callback URL itself.</p>\n",
+      "\n",
+      "<h4>Opening the Solver in the Same Tab or a Separate Tab</h4>\n",
+      "<p>The generated solver URL may be opened in either the current tab or a separate tab. In both cases, after successful processing, the solver replaces the page that contains it with the callback URL and returned <b>def=</b> result.</p>\n",
+      "<ul>\n",
+      "<li><b>Same tab</b> — Use <code>window.location.assign(finalURL)</code>. This avoids popup blockers and is the approach used by the supplied Live Callback Demo. The calling page is replaced by the solver, and the solver is then replaced by the callback page. Because <code>assign()</code> is used, the original calling page normally remains in browser history.</li>\n",
+      "<li><b>Separate tab</b> — Use <code>window.open(finalURL, &quot;_blank&quot;, &quot;noopener,noreferrer&quot;)</code>. The calling application remains open in its original tab while the solver tab processes the ABC and then navigates to the callback page. Call <code>window.open()</code> directly from a user action to reduce the chance of popup blocking.</li>\n",
+      "</ul>\n",
+      "<p>The callback destination itself does not need to know which launch mode was used. It receives the completed ABC in the same <b>def=</b> parameter either way.</p>\n",
+      "\n",
+      "<h4>Complete Submission Example</h4>\n",
+      "<p>This example requires <b>pako</b> on the calling page:</p>\n",
+      "<pre><code>&lt;script src=\"https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js\"&gt;&lt;/script&gt;</code></pre>\n",
+      "\n",
+      "<pre><code>const SOLVER_URL =\n",
+      "  \"https://michaeleskin.com/tools/abc_backup_chord_solver.html\";\n",
+      "\n",
+      "const MAX_SOLVER_URL_LENGTH = 8100;\n",
+      "\n",
+      "function bytesToBase64URL(bytes) {\n",
+      "  let binary = \"\";\n",
+      "\n",
+      "  for (let i = 0; i &lt; bytes.length; i++) {\n",
+      "    binary += String.fromCharCode(bytes[i]);\n",
+      "  }\n",
+      "\n",
+      "  return btoa(binary)\n",
+      "    .replace(/\\+/g, \"-\")\n",
+      "    .replace(/\\//g, \"_\")\n",
+      "    .replace(/=+$/, \"\");\n",
+      "}\n",
+      "\n",
+      "function encodeABCForChordSolver(abcText) {\n",
+      "  if (typeof pako === \"undefined\") {\n",
+      "    throw new Error(\"The pako compression library is not loaded.\");\n",
+      "  }\n",
+      "\n",
+      "  if (typeof TextEncoder === \"undefined\") {\n",
+      "    throw new Error(\"This browser does not provide TextEncoder.\");\n",
+      "  }\n",
+      "\n",
+      "  const utf8 = new TextEncoder().encode(abcText);\n",
+      "  const compressed = pako.deflate(utf8, { level: 6 });\n",
+      "  return bytesToBase64URL(compressed);\n",
+      "}\n",
+      "\n",
+      "function submitABCForBackupChords(abcText, callbackURL, options = {}) {\n",
+      "  if (!String(abcText || \"\").trim()) {\n",
+      "    throw new Error(\"At least one ABC tune is required.\");\n",
+      "  }\n",
+      "\n",
+      "  // Require an absolute HTTP or HTTPS callback in this calling application.\n",
+      "  // The solver itself can resolve relative values, but absolute URLs are safer\n",
+      "  // and clearer for integrations between different sites.\n",
+      "  const callback = new URL(callbackURL);\n",
+      "\n",
+      "  if (!/^https?:$/.test(callback.protocol)) {\n",
+      "    throw new Error(\"The callback URL must use http:// or https://.\");\n",
+      "  }\n",
+      "\n",
+      "  const solverURL = new URL(SOLVER_URL);\n",
+      "\n",
+      "  solverURL.searchParams.set(\n",
+      "    \"def\",\n",
+      "    encodeABCForChordSolver(abcText)\n",
+      "  );\n",
+      "\n",
+      "  // Pass the ordinary callback URL. URLSearchParams performs the required\n",
+      "  // percent-encoding; do not encode it a second time.\n",
+      "  solverURL.searchParams.set(\"callbackURL\", callback.href);\n",
+      "\n",
+      "  for (const [name, value] of Object.entries(options)) {\n",
+      "    if (value !== undefined &amp;&amp; value !== null) {\n",
+      "      solverURL.searchParams.set(name, String(value));\n",
+      "    }\n",
+      "  }\n",
+      "\n",
+      "  // Add the cachebuster last so it is included in the final length check.\n",
+      "  solverURL.searchParams.set(\"cachebuster\", String(Date.now()));\n",
+      "\n",
+      "  const finalURL = solverURL.href;\n",
+      "\n",
+      "  if (finalURL.length &gt; MAX_SOLVER_URL_LENGTH) {\n",
+      "    throw new Error(\n",
+      "      \"Encoded URL is too long to send to the \" +\n",
+      "      \"ABC Tune Backup Chord Solver.\"\n",
+      "    );\n",
+      "  }\n",
+      "\n",
+      "  // The supplied demo uses same-tab navigation. This avoids popup blockers.\n",
+      "  window.location.assign(finalURL);\n",
+      "}</code></pre>\n",
+      "<p>To open the solver in a separate tab instead, replace the final line with:</p>\n",
+      "<pre><code>window.open(finalURL, \"_blank\", \"noopener,noreferrer\");</code></pre>\n",
+      "<p>When using the separate-tab form, call it directly from a user action. Do not rely on the return value of <code>window.open()</code> to decide whether the tab opened, because browsers may return <code>null</code> when <code>noopener</code> is used even if the new tab was created successfully.</p>\n",
+      "\n",
+      "<p>Example call:</p>\n",
+      "<pre><code>const abc = `X:1\n",
+      "T:Example Reel\n",
+      "R:Reel\n",
+      "M:4/4\n",
+      "L:1/8\n",
+      "K:D\n",
+      "|:DEFG ABcd|efed cBA2:|`;\n",
+      "\n",
+      "// Application-owned values placed inside callbackURL are preserved and\n",
+      "// returned with the completed def= result.\n",
+      "const callbackURL = new URL(\n",
+      "  \"https://example.com/chord-solver-result.html\"\n",
+      ");\n",
+      "\n",
+      "callbackURL.searchParams.set(\"source\", \"myapp\");\n",
+      "callbackURL.searchParams.set(\"documentId\", \"42\");\n",
+      "callbackURL.searchParams.set(\"requestId\", crypto.randomUUID());\n",
+      "\n",
+      "submitABCForBackupChords(\n",
+      "  abc,\n",
+      "  callbackURL.href,\n",
+      "  {\n",
+      "    min: 0.80,\n",
+      "    fallback: 70,\n",
+      "    subs: true,\n",
+      "    dmaj: true,\n",
+      "    gmaj: false,\n",
+      "    cmaj: true,\n",
+      "    fmaj: true,\n",
+      "    gemin: false,\n",
+      "    abdor: true\n",
+      "  }\n",
+      ");</code></pre>\n",
+      "\n",
+      "<h4>What the Solver Does</h4>\n",
+      "<p>When both required parameters and all supplied settings are valid, the solver:</p>\n",
+      "<ol>\n",
+      "<li>Decodes and inflates the ABC in <b>def=</b>.</li>\n",
+      "<li>Ignores settings previously saved in that browser.</li>\n",
+      "<li>Starts with the built-in remote defaults and applies the validated optional URL overrides.</li>\n",
+      "<li>Processes all submitted tunes. The progress dialog is labeled <b>Matching Backup Chords (Remote)</b>.</li>\n",
+      "<li>Deflate-encodes the completed ABC using the same URL-safe format.</li>\n",
+      "<li>Replaces the solver page—whether it was opened in the current tab or a separate tab—with the callback URL using <code>window.location.replace()</code>.</li>\n",
+      "<li>Places the completed ABC in the callback URL's <b>def=</b> parameter.</li>\n",
+      "</ol>\n",
+      "<p>The callback occurs only after successful completion. A cancelled or failed operation does not navigate to the callback result.</p>\n",
+      "\n",
+      "<h4>Callback URL Behavior</h4>\n",
+      "<p>The callback URL must resolve to HTTP or HTTPS. It may not resolve to the solver's own protocol, host, and path, because that request is rejected to prevent an automatic recursion loop. Query parameters and fragments do not bypass that recursion check.</p>\n",
+      "\n",
+      "<h4>Passing Application Data Through the Callback URL</h4>\n",
+      "<p>You may place additional application-specific query parameters inside <b>callbackURL</b>. The solver preserves those parameters and adds or replaces only the callback URL's <b>def</b> parameter with the compressed chorded ABC.</p>\n",
+      "<p>This is useful for carrying a document ID, request ID, source name, editor state identifier, return mode, or other small piece of application context through the solver. The receiving page can read those values from its own URL alongside <b>def=</b> and associate the returned ABC with the correct document or workflow.</p>\n",
+      "<p>For example:</p>\n",
+      "<pre><code>Callback supplied:\n",
+      "https://example.com/chord-solver-result.html?source=myapp&amp;documentId=42&amp;requestId=abc123\n",
+      "\n",
+      "Callback loaded in the solver tab after processing:\n",
+      "https://example.com/chord-solver-result.html?source=myapp&amp;documentId=42&amp;requestId=abc123&amp;def=ENCODED_RESULTS</code></pre>\n",
+      "<p>If the supplied callback URL already contains a <b>def</b> parameter, that value is replaced by the completed ABC. All other callback query parameters are retained. A URL fragment is also retained.</p>\n",
+      "<p>Only parameters embedded inside <b>callbackURL</b> are automatically returned. Extra parameters placed directly on the outer solver URL are not forwarded unless they are one of the solver's documented remote-control parameters.</p>\n",
+      "<p>Because the callback URL is itself encoded inside the solver URL, its additional parameters also contribute to the complete request length. Keep application metadata short and include it in the final URL-length check.</p>\n",
+      "<p>The request-level <b>cachebuster</b> is not copied into the callback URL. To receive a cachebuster or similar value at callback time, include it separately inside <b>callbackURL</b>.</p>\n",
+      "<p>The receiving page can read both its application parameters and the result with the same <code>URLSearchParams</code> object:</p>\n",
+      "<pre><code>const resultParams = new URLSearchParams(window.location.search);\n",
+      "\n",
+      "const source = resultParams.get(\"source\");\n",
+      "const documentId = resultParams.get(\"documentId\");\n",
+      "const requestId = resultParams.get(\"requestId\");\n",
+      "const encodedResult = resultParams.get(\"def\");</code></pre>\n",
+      "<p>The navigation is a normal page load, not a cross-origin data request, so the callback mechanism itself does not require CORS permission.</p>\n",
+      "\n",
+      "<h4>Reading the Result on the Callback Page</h4>\n",
+      "<p>The callback page must load <b>pako</b> and decode the returned <b>def</b> value:</p>\n",
+      "<pre><code>function base64URLToBytes(base64URLText) {\n",
+      "  let base64 = String(base64URLText || \"\")\n",
+      "    .replace(/-/g, \"+\")\n",
+      "    .replace(/_/g, \"/\");\n",
+      "\n",
+      "  while (base64.length % 4) {\n",
+      "    base64 += \"=\";\n",
+      "  }\n",
+      "\n",
+      "  const binary = atob(base64);\n",
+      "  const bytes = new Uint8Array(binary.length);\n",
+      "\n",
+      "  for (let i = 0; i &lt; binary.length; i++) {\n",
+      "    bytes[i] = binary.charCodeAt(i);\n",
+      "  }\n",
+      "\n",
+      "  return bytes;\n",
+      "}\n",
+      "\n",
+      "function readChordSolverResult() {\n",
+      "  const params = new URLSearchParams(window.location.search);\n",
+      "  const encodedResult = params.get(\"def\");\n",
+      "\n",
+      "  if (!encodedResult) {\n",
+      "    return null;\n",
+      "  }\n",
+      "\n",
+      "  if (typeof pako === \"undefined\") {\n",
+      "    throw new Error(\"The pako compression library is not loaded.\");\n",
+      "  }\n",
+      "\n",
+      "  if (typeof TextDecoder === \"undefined\") {\n",
+      "    throw new Error(\"This browser does not provide TextDecoder.\");\n",
+      "  }\n",
+      "\n",
+      "  const compressed = base64URLToBytes(encodedResult);\n",
+      "  const utf8 = pako.inflate(compressed);\n",
+      "  return new TextDecoder(\"utf-8\").decode(utf8);\n",
+      "}\n",
+      "\n",
+      "try {\n",
+      "  const chordedABC = readChordSolverResult();\n",
+      "\n",
+      "  if (chordedABC !== null) {\n",
+      "    // Load chordedABC into your application's editor or processing workflow.\n",
+      "    console.log(chordedABC);\n",
+      "  }\n",
+      "} catch (error) {\n",
+      "  console.error(\"Could not decode the chord-solver result:\", error);\n",
+      "}</code></pre>\n",
+      "\n",
+      "<h4>Testing a Callback on localhost</h4>\n",
+      "<p>During development, the callback page may be served from a local web server such as <code>http://localhost:8000</code>. The callback does not need to be publicly hosted, because the solver navigates the user's browser directly to the supplied callback URL after processing.</p>\n",
+      "<p>For example, if your local callback page is available at:</p>\n",
+      "<pre><code>http://localhost:8000/chord-solver-result.html</code></pre>\n",
+      "<p>construct the callback URL normally and pass it through <code>URLSearchParams</code>:</p>\n",
+      "<pre><code>const callbackURL = new URL(\n",
+      "  \"http://localhost:8000/chord-solver-result.html\"\n",
+      ");\n",
+      "\n",
+      "callbackURL.searchParams.set(\"source\", \"local-test\");\n",
+      "callbackURL.searchParams.set(\"requestId\", \"test-001\");\n",
+      "\n",
+      "submitABCForBackupChords(\n",
+      "  abc,\n",
+      "  callbackURL.href,\n",
+      "  { min: 0.75, fallback: 75 }\n",
+      ");</code></pre>\n",
+      "<p>Port <b>8000</b> is only an example. Any available local port may be used, such as <code>3000</code>, <code>5173</code>, <code>8080</code>, or another port selected by your development server. The port in <b>callbackURL</b> must match the port on which the local callback page is actually being served.</p>\n",
+      "<p>A simple local server can be started from the folder containing the callback page with Python:</p>\n",
+      "<pre><code>python3 -m http.server 8000</code></pre>\n",
+      "<p>Then open <code>http://localhost:8000/chord-solver-result.html</code> directly once to verify that the page loads before testing the solver callback.</p>\n",
+      "<p>Use an HTTP server rather than opening the callback page directly with a <code>file://</code> URL. The solver accepts callback URLs that resolve to <b>http://</b> or <b>https://</b>, but not <code>file://</code>.</p>\n",
+      "<p><b>Important:</b> <code>localhost</code> always refers to the device running the browser. If the solver is opened on another computer, phone, tablet, virtual machine, or emulator, <code>http://localhost:8000</code> refers to that other device—not to the development computer. For testing from another device, use an HTTP URL containing the development computer's reachable local-network hostname or IP address, and make sure the local server and firewall allow that connection.</p>\n",
+      "<p>The browser may show a mixed-content warning when navigating from the HTTPS-hosted solver to an HTTP localhost callback. Modern browsers generally allow top-level navigation to <code>http://localhost</code>, but local browser policy or development security settings can vary. Using a local HTTPS development server is also valid when required.</p>\n",
+      "\n",
+
+      "<h4>Error and Integration Notes</h4>\n",
+      "<ul>\n",
+      "<li>If either required parameter is missing, the page does not enter remote mode. A valid <b>def</b> without <b>callbackURL</b> is handled as an ordinary share link.</li>\n",
+      "<li>If a remote request is detected but its callback, ABC, or supplied setting is invalid, processing stops and the solver displays a remote-submission error. No callback result is sent.</li>\n",
+      "<li>Remote setting parameters have no effect on normal interactive use or on ordinary <b>def=</b> share links without a valid <b>callbackURL</b>.</li>\n",
+      "<li>The callback mechanism returns the completed ABC in <b>def=</b>. Any other values you want returned must be included as query parameters inside <b>callbackURL</b>. Progress details and final statistics are not returned as separate callback parameters.</li>\n",
+      "<li>The callback replaces the solver page in whichever tab contains it. With same-tab navigation, the calling page is replaced by the solver and then by the callback page. With separate-tab navigation, the calling application remains open in its original tab.</li>\n",
+      "<li>Same-tab navigation with <code>window.location.assign()</code> is not subject to popup blocking. If using <code>window.open()</code> for a separate tab, call it directly from a user gesture such as a button click.</li>\n",
+      "<li>Do not rely on the return value of <code>window.open()</code> to determine whether the solver tab opened when using <code>noopener</code>.</li>\n",
+      "</ul>\n",
+      "</div>"
+    ].join("");
+
+    if (window.DayPilot && DayPilot.Modal) {
+      DayPilot.Modal.alert(html, {
+        theme: "modal_flat",
+        width: getResponsiveModalWidth(760),
+        scrollWithPage: true
+      });
+    } else {
+      alert(
+        "Developer integration instructions are available when " +
+        "DayPilot.Modal is loaded. Please include the DayPilot.Modal " +
+        "library before using this button."
+      );
+    }
+  }
+
+  function showInstructions() {
+    var html = '' +
+      '<div class="instructions_content">' +
+      '<h3 style="text-align:center;">Instructions</h3>' +
+      '<p><b>ABC Tune Backup Chord Solver</b> adds backup chords to one or more ABC tunes.</p>' +
+      '<p>It does <b>not</b> try to figure out chords directly from the notes.</p>' +
+      '<p>Instead, it searches the thesession.org tune database for already-chorded measures from tunes with a compatible normalized meter, key, and mode, then copies chords from the closest matching measures.</p>' +
+      '<p>The output is intended as a practical starting point for traditional Irish-style tunes.</p>' +
+      '<p>Tunes in unusual keys, modes, meters, or other musical styles may produce limited, unexpected, or hilarious results.</p>' +
+      '<p style="text-align:center;"><a href="https://youtu.be/CnR8Owcc9Y8" target="_blank">Complete Walkthrough Video on YouTube</a></p>' +
+      '<h4>Setup</h4>' +
+      '<ul>' +
+      '<li>Open one or more <b>.abc</b> or <b>.txt</b> files, paste ABC text into the input box, or on desktop browsers drag and drop one or more supported <b>.abc</b> or <b>.txt</b> files onto the input area. Multiple tunes are supported.</li>' +
+      '<li>The tool can also accept an ABC Transcription Tools <b>?def=</b> share-link URL parameter containing deflate-encoded ABC tunes.</li>' +
+      '<li>For automatic remote processing, provide both a deflate-encoded <b>def=</b> parameter and a URL-encoded <b>callbackURL=</b> parameter. The tool immediately runs with its built-in default settings, ignoring saved browser settings, and replaces the solver page with the callback URL, with the chorded ABC returned in a new <b>def=</b> parameter.</li>' +
+      '<li>A callback URL that points back to this solver is rejected to prevent recursive submissions. The callback must use <b>http://</b> or <b>https://</b>.</li>' +
+      '<li>When multiple files are opened or dropped, their contents are concatenated in the input area separated by a blank line.</li>' +
+      '<li>The <b>Generate Backup Chords</b> button is enabled only when the input box contains text.</li>' +
+      '<li>Use the Settings controls to set the minimum match score, fallback match percentage, and key/mode substitution checking.</li>' +
+      '<li>Click the <b>Clear</b> button to clear both the input and output areas.</li>' +
+      '</ul>' +
+      '<h4>Settings</h4>' +
+      '<ul>' +
+      '<li><b>Minimum match score</b> controls how close a database measure must be before its chords are copied. The default is <b>0.75</b>. Lower values find more matches, but may be less selective.</li>' +
+      '<li>Higher values are stricter, but may leave more measures unchanged.</li>' +
+      '<li><b>Enable limited key/mode substitution checking</b> is enabled by default. When enabled, the tool can test the selected common cases where an ABC tune uses the key signature in the <b>K:</b> tag instead of the tune’s actual key and mode.</li>' +
+      '<li>The substitution choices are controlled by separate checkboxes:' +
+      '<ul>' +
+      '<li><b>K:D</b> (two sharps) may also be tested as <b>Edor</b>, <b>Bmin</b>, or <b>Amix</b>.</li>' +
+      '<li><b>K:G</b> (one sharp) may also be tested as <b>Dmix</b> or <b>Ador</b>.</li>' +
+      '<li><b>K:C</b> (no sharps or flats) may also be tested as <b>Ddor</b> or <b>Amin</b>.</li>' +
+      '<li><b>K:F</b> (one flat) may also be tested as <b>Gdor</b> or <b>Dmin</b>.</li>' +
+      '</ul>' +
+      '</li>' +
+      '<li>Additional key/mode choices are unchecked by default. Only enable these if your source tunes have <b>K:G</b> or <b>K:A</b> tags and you do not get good results using the more common substitutions above:' +
+      '<ul>' +
+      '<li><b>K:G</b> (one sharp) may also be tested as <b>Emin</b>.</li>' +
+      '<li><b>K:A</b> (three sharps) may also be tested as <b>Bdor</b>.</li>' +
+      '</ul>' +
+      '</li>' +
+      '<li>The tool only uses an alternate key or mode if it gives a clearly better match. It does not rewrite the tune’s <b>K:</b> tag in the output.</li>' +
+      '<li>When enabled, chord matching may be slower because tunes with one of the selected <b>K:</b> tags are also tested against the selected alternate key/mode choices.</li>' +
+      '<li>If you are confident that you have proper keys and modes in the <b>K:</b> tags for all of your tunes, you can turn this feature off to avoid the additional key/mode substitution tests.</li>' +
+      '<li>In all cases, even with this feature disabled, minor and Dorian tunes may also be scored against the same-tonic companion mode, for example <b>Emin</b> against <b>Edor</b>, and vice versa.</li>' +
+      '<li><b>Fallback match percentage</b> controls how low the tool may go when no normal match is found for a general measure.</li>' +
+      '<li>The fallback value is a percentage of the <b>Minimum match score</b>. For example, with a minimum match score of <b>0.75</b> and a fallback match percentage of <b>75%</b>, the lowest fallback score allowed is about <b>0.56</b>.</li>' +
+      '<li>Lower fallback percentages may add chords to more measures, but the copied chords may be less reliable. Higher fallback percentages are more selective and may leave more measures unchanged.</li>' +
+      '<li>Range is 50% - 100%. The default is <b>75%</b>.</li>' +
+      '<li>This setting is provided for additional match flexibility, but in most cases, it is probably best left at the default value.</li>' +
+      '<li>Click <b>Save Settings</b> to save the current settings in this browser so they are restored the next time the tool is opened. You do not need to click <b>Save Settings</b> before generating chords; the current visible settings and checked substitution choices are used for the next run.</li>' +
+      '</ul>' +
+      '<h4>How matching works</h4>' +
+      '<div style="text-align:center;margin:4px 0 18px 0;">' +
+      '<a href="https://michaeleskin.com/tools/img/ABC_Chord_Matching_Algorithm_10jun2026.jpg" target="_blank" rel="noopener noreferrer" title="Open the full-size ABC Chord Matching Algorithm infographic in a new tab" style="display:inline-block;max-width:95%;text-decoration:none;">' +
+      'Infographic explaining how the ABC Chord Matching Algorithm works' +
+      '</a>' +
+      '<div style="margin-top:7px;font-size:10.5pt;color:#444;"></div>' +
+      '</div>' +
+      '<ul>' +
+      '<li>Existing chord symbols in the input tunes are stripped before processing.</li>' +
+      '<li>Each input measure is compared against already-chorded database measures. The melodic score is based on the ordered normalized note sequence (70%), shared adjacent note pairs (20%), and shared adjacent note triples (10%), with a small penalty when the measures contain different numbers of notes. Chord suitability is then used as a tie-breaker between essentially equal melodic matches.</li>' +
+      '<li>Match scores range from <b>0.00</b> to <b>1.00</b>, where <b>1.00</b> represents the strongest possible match.</li>' +
+      '<li>The default minimum match score is <b>0.75</b>, and can be changed in the <b>Settings</b>. Higher values are stricter and may leave more measures unchanged; lower values find more matches, but may be less selective.</li>' +
+      '<li>If no normal match is found for a general measure, the tool can accept the best available match down to the selected <b>Fallback match percentage</b> of the minimum match score.</li>' +
+      '<li>For starts and endings of tunes, parts, repeated sections, and first/second endings, the tool first tries matching against database measures that are also starts or endings, then falls back to the general same rhythm/meter/key/mode candidate pool if needed.</li>' +
+      '<li>Tune starts, repeat starts, part endings, and first/second endings are treated more flexibly so the generated chords do not disappear at important musical boundaries.</li>' +
+      '<li>When two candidate measures have essentially the same melody match score, the tool uses the current tune key and mode as a tie-breaker and prefers the chord pattern that is more compatible with that key/mode.</li>' +
+      '<li>If no matching database measure with usable chords meets the threshold, that input measure is left unchanged.</li>' +
+      '</ul>' +
+      '<h4>Important: K: tag key and mode accuracy</h4>' +
+      '<ul>' +
+      '<li>The solver uses the key and mode from the <b>K:</b> tag to decide which database measures are musically comparable.</li>' +
+      '<li>Correct <b>K:</b> tags still give the best results. A tune marked with the wrong key or mode may be matched against the wrong database material, which can produce poor chord choices.</li>' +
+      '<li>If you are not sure that all of the tunes have accurate key and mode declarations, leave <b>Enable limited key/mode substitution checking</b> turned on in the <b>Settings</b>.</li>' +
+      '<li>When enabled, the tool can test the checked alternate key/mode choices listed in the <b>Settings</b> section above and use an alternate only if it gives a clearly better match.</li>' +
+      '<li>The tool does not rewrite the tune’s <b>K:</b> tag. If an alternate key or mode is used for the solution, explanatory <b>N:</b> tags are added to the end of that tune.</li>' +
+      '<li>If you are confident that all of your <b>K:</b> tags are correct, you can turn this feature off to avoid the additional key/mode substitution tests.</li>' +
+      '</ul>' +
+      '<h4>Running and output</h4>' +
+      '<ul>' +
+      '<li>Click <b>Generate Backup Chords</b>. A progress dialog shows the current tune, measure, candidate count, match count, and overall percentage complete.</li>' +
+      '<li>Click <b>Cancel</b> in the progress dialog to stop processing and clear the output area.</li>' +
+      '<li>When processing completes, the dialog closes and a summary appears in the main status area.</li>' +
+      '<li>During a remote submission, the completed ABC is deflate-encoded and returned to the decoded callback URL as its <b>def=</b> parameter. The callback replaces the current solver page in the same tab.</li>' +
+      '<li>The <b>Copy Output to the Clipboard</b>, <b>Save Output to a File</b>, and <b>Test Output in the ABC Transcription Tools</b> buttons are updated after processing completes or is cancelled.</li>' +
+      '<li>On iOS, saving uses the Share Sheet to allow you save the ABC to the Files area or share it with other applications.</li>' +
+      '<li>The <b>Test Output in the ABC Transcription Tools</b> button is enabled only when the generated share link is short enough for direct transfer.</li>' +
+      '<li>Click the <b>Open ABC Transcription Tools</b> button at the bottom of the page to open the ABC Transcription Tools in a new browser tab without a share link. This is useful when the generated output is too large for direct transfer; copy the output here, open the tools, then paste the ABC there.</li>' +
+      '<li>It is a good idea to have the browser tab for the tool visible when solving the chords for a large number of tunes. Browser tabs that are not visible often have their performance throttled by the browser.</li>' +
+      '</ul>' +
+      '<h4>About the source database</h4>' +
+      '<ul>' +
+      '<li>The chord source database is based on tune settings from The Session.</li>' +
+      '<li>Those settings are crowdsourced. That means the chords in the database reflect what individual contributors entered for particular tune settings.</li>' +
+      '<li>Most of the time, this is useful because the solver can compare many similar measures and choose from real chorded examples.</li>' +
+      '<li>However, if the database only has a few similar measure patterns for a tune, and one of those source settings has unusual or poor chord choices, the solver may copy those choices.</li>' +
+      '<li>The tool does not know whether a database chord setting is musically ideal. It only knows that the measure pattern is similar and that the source measure already had chords.</li>' +
+      '<li>For that reason, the output should be treated as a starting point for review and editing, not as a final authoritative chord setting.</li>' +
+      '</ul>' +
+      '<h4>Limitations</h4>' +
+      '<ul>' +
+      '<li>Tunes that change key or mode mid-tune are skipped and copied unchanged to the output with an explanatory <b>N:</b> tag added at the end.</li>' +
+      '<li>Tunes with more than one <b>V:</b> voice tag are skipped and copied unchanged to the output with an explanatory <b>N:</b> tag added at the end.</li>' +
+      '<li>Tunes containing <b>w:</b> or <b>W:</b> lyrics tags are skipped and copied unchanged to the output with an explanatory <b>N:</b> tag added at the end.</li>' +
+      '</ul>' +
+      '<h4>Credits</h4>' +
+      '<ul>' +
+      '<li>The complete tune settings JSON for thesession.org, available at <a href="https://github.com/adactio/TheSession-data" title="TheSession-data" target="_blank">TheSession-data</a> by Jeremy Keith, is used for the tune database under a <a href="https://michaeleskin.com/abctools/ODbL.txt" target="_blank">Open Database License (ODbL)</a> license.</li>' +
+      '</ul>' +
+      `<hr style="margin-top:20px;">
+      <h4 style="text-align: center;">Developer Integration</h4>
+      <div style="text-align:center;margin-bottom:20px;">
+        <button type="button" class="btn btn-controls" style="width:100%;max-width:420px;" onclick="showDeveloperInstructions();">Click Here for Developer Integration Instructions</button>
+      </div>
+      <hr style="margin-top:20px;">
+      <h4 style="text-align: center;">Tip Jars</h4>
+      <div style="text-align: center;margin-bottom:20px;">
+        <p class="instructions-title"> This tool was created by</p>
+        <p class="instructions-title"> <a href="https://michaeleskin.com" target="_blank" rel="noopener noreferrer" style="color:#1a73e8; text-decoration:underline;">Michael Eskin</a></p>
+        <div style="margin-top:10px;">
+          If the tool has been useful to you, please consider supporting ongoing<br/>development by tossing a few bucks into one of my online tip jars.
+        </div>
+        <div style="margin-top:10px;">
+          <b>PayPal</b><br/>
+          <a href="https://paypal.me/MichaelEskin" target="_blank" rel="noopener noreferrer" style="color:#1a73e8; text-decoration:underline;">https://paypal.me/MichaelEskin</a>
+        </div>
+        <div style="margin-top:10px;">
+          <b>Venmo</b><br/>
+          @MichaelEskin
+        </div>
+      </div>
+      <hr>
+      <h4 style="text-align: center;">Source Code on GitHub</h4>
+      <div style="text-align: center;margin-bottom:20px;">
+        The source code for this tool is available on GitHub<br/>
+         <div style="margin-top:10px;">
+          <a href="https://github.com/seisiuneer/abctools/blob/main/tools/abc_backup_chord_solver.html" target="_blank" rel="noopener noreferrer">ABC Tune Backup Chord Solver on GitHub</a>
+        </div>
+      </div>
+      <hr>`+
+      '</div>';
+
+    if (window.DayPilot && DayPilot.Modal) {
+      DayPilot.Modal.alert(html, {
+        theme: 'modal_flat',
+        width: getResponsiveModalWidth(720),
+        scrollWithPage: true
+      });
+    } else {
+      alert('Instructions are available when DayPilot.Modal is loaded. Please include the DayPilot.Modal library before using this button.');
+    }
+  }
+
+  function normalizeMeter(m) {
+    m = (m || "").trim().replace(/\s+/g, "");
+
+    // ABC shorthand meter aliases:
+    //   M:C  is common time, equivalent here to 4/4.
+    //   M:C| is cut/common shorthand, but these tunebook reels/hornpipes
+    //   are written as eight 1/8-note units per bar, so use the same
+    //   matching and chord-placement bucket as 4/4.
+    //
+    // 2/2 is deliberately normalized into the same bucket as 4/4. This means:
+    //   - a 2/2 input tune searches both 2/2 and 4/4 database tunes because
+    //     database 2/2 and database 4/4 entries are indexed under the same key;
+    //   - a 4/4 input tune can also use compatible 2/2 database material;
+    //   - chord placement still lands on the start and midpoint of the measure,
+    //     which are beats 1 and 2 in 2/2, and beats 1 and 3 in 4/4.
+    //
+    // Normalizing these aliases is important because the chord database
+    // often stores the same style of tune as 4/4, while source tunebooks
+    // commonly write reels and hornpipes as M:C| or 2/2.
+    if (/^C$/i.test(m)) return "4/4";
+    if (/^C\|$/i.test(m)) return "4/4";
+    if (/^2\/2$/i.test(m)) return "4/4";
+
+    return m;
+  }
+
+  function normalizeMode(k) {
+    k = (k || "").trim();
+    k = k.replace(/%.*/, "").trim();
+    k = k.replace(/\s+/g, "");
+    k = k.replace(/^K:/i, "");
+    k = k.replace(/^(HP|Hp|hp)$/, "");
+    k = k.replace(/^(none|None)$/i, "");
+    k = k.replace(/([A-Ga-g])#/g, function(_, n) { return n.toUpperCase() + "#"; });
+    k = k.replace(/([A-Ga-g])b/g, function(_, n) { return n.toUpperCase() + "b"; });
+    k = k.replace(/^([a-g])/, function(_, n) { return n.toUpperCase(); });
+
+    var m = k.match(/^([A-G](?:#|b)?)(.*)$/);
+    if (!m) return k.toLowerCase();
+
+    var root = m[1];
+    var mode = (m[2] || "").toLowerCase();
+
+    mode = mode.replace(/^maj(or)?$/, "major");
+    mode = mode.replace(/^min(or)?$/, "minor");
+    mode = mode.replace(/^m$/, "minor");
+    mode = mode.replace(/^dor(ian)?$/, "dorian");
+    mode = mode.replace(/^mix(olydian)?$/, "mixolydian");
+    mode = mode.replace(/^aeo(lian)?$/, "aeolian");
+    mode = mode.replace(/^ion(ian)?$/, "major");
+    mode = mode.replace(/^phr(ygian)?$/, "phrygian");
+    mode = mode.replace(/^lyd(ian)?$/, "lydian");
+    mode = mode.replace(/^loc(rian)?$/, "locrian");
+
+    if (!mode) mode = "major";
+    return root + mode;
+  }
+
+  function normalizeTuneType(typeText) {
+    typeText = (typeText || "").toLowerCase().trim();
+    typeText = typeText.replace(/%.*/, "").trim();
+    typeText = typeText.replace(/[^a-z0-9 ]+/g, " ");
+    typeText = typeText.replace(/\s+/g, " ").trim();
+
+    // Normalize common spelling and naming variants from ABC R: fields and
+    // thesession.org tune-type metadata so rhythm/style buckets are useful
+    // without being too fragmented.
+    if (!typeText) return "";
+    if (/reel/.test(typeText)) return "reel";
+    if (/hornpipe/.test(typeText)) return "hornpipe";
+    if (/slip\s*jig/.test(typeText)) return "slip jig";
+    if (/slide/.test(typeText)) return "slide";
+    if (/single\s*jig/.test(typeText)) return "single jig";
+    if (/double\s*jig/.test(typeText)) return "jig";
+    if (/jig/.test(typeText)) return "jig";
+    if (/polka/.test(typeText)) return "polka";
+    if (/waltz/.test(typeText)) return "waltz";
+    if (/strathspey/.test(typeText)) return "strathspey";
+    if (/barndance|barn\s*dance/.test(typeText)) return "barndance";
+    if (/mazurka/.test(typeText)) return "mazurka";
+    if (/march/.test(typeText)) return "march";
+    if (/highland/.test(typeText)) return "highland";
+
+    return typeText;
+  }
+
+  function getInputTuneType(header, meter) {
+    var rhythm = normalizeTuneType(getHeaderValue(header, "R"));
+
+    // Many 4/4 ABC collections omit R: even when the tune is a reel. Use reel
+    // only as a rhythm-priority hint; fallback still searches the full
+    // same-meter/key/mode bucket if no good reel match is found.
+    if (!rhythm && normalizeMeter(meter) === "4/4") rhythm = "reel";
+
+    return rhythm;
+  }
+
+  function getHeaderValue(tune, letter) {
+    var re = new RegExp("^" + letter + ":\\s*(.*)$", "im");
+    var m = tune.match(re);
+    return m ? m[1].trim() : "";
+  }
+
+  function getABCPreTuneText(abcText) {
+    abcText = abcText.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+    var m = /^X:\s*.*$/gmi.exec(abcText);
+    if (!m || m.index <= 0) return "";
+    return abcText.slice(0, m.index).trimEnd();
+  }
+
+  function splitTunes(abcText) {
+    abcText = abcText.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+    var starts = [];
+    var re = /^X:\s*.*$/gmi;
+    var m;
+    while ((m = re.exec(abcText)) !== null) starts.push(m.index);
+    if (!starts.length) return abcText.trim() ? [abcText] : [];
+    var tunes = [];
+    for (var i = 0; i < starts.length; i++) {
+      var start = starts[i];
+      var end = (i + 1 < starts.length) ? starts[i + 1] : abcText.length;
+      tunes.push(abcText.slice(start, end).trimEnd());
+    }
+    return tunes;
+  }
+
+  function splitHeaderBody(tune) {
+    var lines = tune.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
+    var bodyStart = lines.findIndex(function(line) {
+      return !/^\s*$/.test(line) && !/^\s*[A-Za-z]:/.test(line) && !/^\s*%%/.test(line) && !/^\s*%/.test(line);
+    });
+    if (bodyStart < 0) return { header: tune, body: "" };
+    return {
+      header: lines.slice(0, bodyStart).join("\n"),
+      body: lines.slice(bodyStart).join("\n")
+    };
+  }
+
+  function stripABCGraceNotes(s) {
+    // ABC grace notes are enclosed in curly braces, for example {B} or {BAG}.
+    // They should not participate in measure matching or measure-duration math.
+    return (s || "").replace(/\{[^}]*\}/g, "");
+  }
+
+  function removeABCDecorations(s, keepChords) {
+    s = s || "";
+    if (!keepChords) s = s.replace(/"(?:[^"\\]|\\.)*"/g, "");
+    s = s.replace(/%.*$/gm, "");
+    s = s.replace(/!.*?!/g, "");
+    s = s.replace(/\+.*?\+/g, "");
+    s = stripABCGraceNotes(s);
+    s = s.replace(/\[[A-Za-z]:[^\]]*\]/g, "");
+    // Leave ABC tuplets such as (3 in place here so parseMeasureText() can
+    // account for their duration while still ignoring the marker as a note.
+    // Roll marks (~) and other decorations are removed for matching/timing.
+    s = s.replace(/[.~HLMOPSTuv]/g, "");
+    return s;
+  }
+
+  function parseDuration(note) {
+    var m = note.match(/(\d+\/\d+|\d+\/|\/\d+|\d+|\/)$/);
+    if (!m) return 1;
+    var d = m[1];
+    if (/^\d+$/.test(d)) return parseInt(d, 10);
+    if (d === "/") return 0.5;
+    if (/^\d+\/$/.test(d)) return parseInt(d, 10) / 2;
+    if (/^\/\d+$/.test(d)) return 1 / parseInt(d.slice(1), 10);
+    var parts = d.split("/");
+    return parseInt(parts[0], 10) / parseInt(parts[1], 10);
+  }
+
+  function normalizeNoteToken(note) {
+    var m = note.match(/^((?:\^\^|__|\^|_|=)?)([A-Ga-g])([,']*)/);
+    if (!m) return "";
+    var acc = m[1] || "";
+    var letter = m[2].toUpperCase();
+    return acc + letter;
+  }
+
+  function notePitchClass(note) {
+    var n = normalizeNoteToken(note);
+    return n.replace(/[,']/g, "").toUpperCase();
+  }
+
+  // Return the unique contiguous note groups of the requested size.
+  // These sets are calculated once when a measure is parsed and then reused
+  // for every database comparison involving that measure.
+  function ngrams(arr, n) {
+    var set = new Set();
+    for (var i = 0; i <= arr.length - n; i++) {
+      set.add(arr.slice(i, i + n).join(" "));
+    }
+    return set;
+  }
+
+  function parseMeasureText(text) {
+    var stripped = removeABCDecorations(text, false);
+    var notes = [];
+    var pitchClasses = [];
+    var noteStartOffsets = [];
+    var duration = 0;
+    var tripletNotesRemaining = 0;
+
+    for (var i = 0; i < stripped.length; i++) {
+      // Handle the common ABC triplet form, for example (3ABC. With a (3
+      // triplet, the following three notes take the time normally occupied by
+      // two notes, so each note duration is scaled by 2/3. The (3 marker is
+      // ignored for note-sequence matching but preserved in the final output.
+      if (stripped[i] === "(" && /[23456789]/.test(stripped[i + 1] || "")) {
+        if (stripped[i + 1] === "3") tripletNotesRemaining = 3;
+        i++;
+        continue;
+      }
+
+      NOTE_RE.lastIndex = i;
+      var m = NOTE_RE.exec(stripped);
+      if (m) {
+        var token = m[0];
+        var noteDuration = parseDuration(token);
+        if (tripletNotesRemaining > 0) {
+          noteDuration *= (2 / 3);
+          tripletNotesRemaining--;
+        }
+        noteStartOffsets.push(duration);
+        notes.push(normalizeNoteToken(token));
+        pitchClasses.push(notePitchClass(token));
+        duration += noteDuration;
+        i = NOTE_RE.lastIndex - 1;
+      }
+    }
+    return {
+      notes: notes,
+      pitchClasses: pitchClasses,
+      noteStartOffsets: noteStartOffsets,
+      duration: duration,
+      noteString: notes.join(" "),
+      pcString: pitchClasses.join(" "),
+
+      // Precompute these once. Previously they were rebuilt for both measures
+      // during every similarity comparison.
+      noteBigrams: ngrams(notes, 2),
+      noteTrigrams: ngrams(notes, 3)
+    };
+  }
+
+  function extractChordsWithNoteIndexes(text) {
+    var chords = [];
+    var noteIndex = 0;
+    var i = 0;
+    while (i < text.length) {
+      var c = text[i];
+
+      if (c === '"') {
+        var j = i + 1;
+        var chord = "";
+        while (j < text.length) {
+          if (text[j] === '"' && text[j - 1] !== "\\") break;
+          chord += text[j];
+          j++;
+        }
+        if (j < text.length && chord.trim()) {
+          chords.push({ chord: chord.trim(), noteIndex: noteIndex });
+          i = j + 1;
+          continue;
+        }
+      }
+
+      // Grace notes do not count as real melody notes for chord placement.
+      if (c === "{") {
+        var graceEnd = text.indexOf("}", i + 1);
+        i = (graceEnd >= 0) ? graceEnd + 1 : i + 1;
+        continue;
+      }
+
+      // Tuplet markers such as (3 are timing markers, not notes.
+      if (c === "(" && /[23456789]/.test(text[i + 1] || "")) {
+        i += 2;
+        continue;
+      }
+
+      NOTE_RE.lastIndex = i;
+      var m = NOTE_RE.exec(text);
+      if (m) {
+        noteIndex++;
+        i = NOTE_RE.lastIndex;
+        continue;
+      }
+      i++;
+    }
+    return chords;
+  }
+
+  function isAllowedPlainMajorMinorChord(chord) {
+    // Allow only plain uppercase-root major/minor triads, for example:
+    // D, G, Em, Bbm, F#m.
+    // Reject lowercase roots (d, e, am), slash chords (D/F#), power chords (D5),
+    // seventh chords (D7, Dmaj7), and any other extensions or modifiers.
+    chord = (chord || "").trim();
+    return /^[A-G](?:#|b)?m?$/.test(chord);
+  }
+
+  function measureHasOnlyAllowedChords(measure) {
+    if (!measure.chords || !measure.chords.length) return false;
+    return measure.chords.every(function(c) {
+      return isAllowedPlainMajorMinorChord(c.chord);
+    });
+  }
+
+  function splitBodyIntoMeasures(body) {
+    var measures = [];
+    var prefix = "";
+    var content = "";
+    var i = 0;
+    var barRe = /:\||\|:|\|\]|\[\||\|\||\|/y;
+
+    function hasMusicalContent(s) {
+      // Whitespace between barlines should not become its own measure.
+      return /[^\s]/.test(s || "");
+    }
+
+    while (i < body.length) {
+      barRe.lastIndex = i;
+      var m = barRe.exec(body);
+      if (m) {
+        var bar = m[0];
+
+        // If we have only whitespace before this barline, keep that whitespace
+        // with the next measure. This is especially important for repeated
+        // parts written on a new line, e.g. "||\n|:BAG...".
+        if (!hasMusicalContent(content)) {
+          prefix += content + bar;
+          content = "";
+          i = barRe.lastIndex;
+          continue;
+        }
+
+        if (bar === "|:") {
+          // "|:" both closes the previous measure and starts the next repeat
+          // section. Keep a normal bar as the suffix of the previous measure,
+          // then attach "|:" to the prefix of the following measure so that
+          // the following real measure is correctly marked as a repeat start.
+          measures.push({ prefix: prefix, content: content, suffix: "|" });
+          prefix = "|:";
+          content = "";
+        } else {
+          measures.push({ prefix: prefix, content: content, suffix: bar });
+          prefix = "";
+          content = "";
+        }
+        i = barRe.lastIndex;
+      } else {
+        content += body[i];
+        i++;
+      }
+    }
+
+    if (content.length || prefix.length) {
+      measures.push({ prefix: prefix, content: content, suffix: "" });
+    }
+    return measures;
+  }
+
+  function getFullMeasureDuration(meter, unitNoteLength) {
+    meter = normalizeMeter(meter);
+    var mm = meter.match(/^(\d+)\/(\d+)$/);
+    if (!mm) return 0;
+    var num = parseInt(mm[1], 10);
+    var den = parseInt(mm[2], 10);
+    var l = parseUnitLength(unitNoteLength || "");
+    if (!l) {
+      // ABC default: for meter < 3/4 use 1/16, otherwise 1/8.
+      l = (num / den < 0.75) ? (1 / 16) : (1 / 8);
+    }
+    return (num / den) / l;
+  }
+
+  function parseUnitLength(L) {
+    L = (L || "").trim();
+    var m = L.match(/^(\d+)\/(\d+)$/);
+    if (!m) return 0;
+    return parseInt(m[1], 10) / parseInt(m[2], 10);
+  }
+
+
+  function getAlternateEndingNumber(measurePart) {
+    // ABC first/second endings are commonly written immediately after the
+    // preceding barline, for example:
+    //   |1 AFE D3 :|
+    //   |2 AFE D2e ||
+    //   [1 A2 AB :|
+    //
+    // splitBodyIntoMeasures() keeps the "1" or "2" marker at the start of the
+    // measure content, so detect it there. Treat any numeric ending marker as
+    // an ending boundary for matching, threshold, and repeated-chord handling.
+    var m = String(measurePart || "").match(/^\s*\[?\s*(\d+)\s*/);
+    return m ? parseInt(m[1], 10) : 0;
+  }
+
+  function buildMeasureObjects(body, meter, unitNoteLength) {
+    var raw = splitBodyIntoMeasures(body);
+    var full = getFullMeasureDuration(meter, unitNoteLength);
+    var firstFullSeen = false;
+    var measures = raw.map(function(r, idx) {
+      var parsed = parseMeasureText(r.content);
+      var hasNotes = parsed.notes.length > 0;
+      var isFull = full ? Math.abs(parsed.duration - full) < 0.01 : hasNotes;
+      var isInitialPickup = hasNotes && !firstFullSeen && full && parsed.duration < full - 0.01;
+      if (isFull && hasNotes) firstFullSeen = true;
+      return Object.assign({}, r, parsed, {
+        index: idx,
+        isFullMeasure: isFull,
+        isPartialMeasure: hasNotes && full && parsed.duration < full - 0.01,
+        isInitialPickup: isInitialPickup,
+        isRepeatStart: /\|:/.test(r.prefix + r.suffix),
+        isRepeatEnd: /:\|/.test(r.suffix || ""),
+        alternateEndingNumber: getAlternateEndingNumber(r.content),
+        isFirstEnding: getAlternateEndingNumber(r.content) === 1,
+        isSecondEnding: getAlternateEndingNumber(r.content) === 2,
+        isAlternateEnding: getAlternateEndingNumber(r.content) > 0,
+        isBoundaryStart: false,
+        isBoundaryEnd: false,
+        chords: extractChordsWithNoteIndexes(r.content)
+      });
+    });
+
+    // Add phrase-boundary metadata used when choosing candidate database
+    // measures. Starts and endings of tunes/parts often have characteristic
+    // chord behavior, so boundary source measures can first be compared
+    // against boundary candidate measures before falling back to the general
+    // measure pool.
+    var musicalIndexes = [];
+    measures.forEach(function(m, idx) {
+      if (m.notes && m.notes.length) musicalIndexes.push(idx);
+    });
+
+    for (var mi = 0; mi < musicalIndexes.length; mi++) {
+      var idx = musicalIndexes[mi];
+      var m = measures[idx];
+      var prev = mi > 0 ? measures[musicalIndexes[mi - 1]] : null;
+      var next = mi + 1 < musicalIndexes.length ? measures[musicalIndexes[mi + 1]] : null;
+
+      var startsAfterPickup = !!(prev && prev.isPartialMeasure && !prev.isRepeatEnd);
+      var isFirstFullMeasure = m.isFullMeasure && !measures.some(function(other, otherIdx) {
+        return otherIdx < idx && other.notes && other.notes.length && other.isFullMeasure;
+      });
+
+      m.isBoundaryStart = !!(isFirstFullMeasure || m.isRepeatStart || startsAfterPickup);
+
+      // Treat first/second endings, explicit repeat endings, double/final bars,
+      // and the last musical measure of the tune as ending boundaries. Also mark
+      // the measure before a new repeat start as an ending boundary when it has
+      // real notes. This lets alternate endings use ending-priority candidates,
+      // the lower boundary threshold, and ending-specific repeated-chord restore.
+      m.isBoundaryEnd = !!(
+        m.isAlternateEnding ||
+        m.isRepeatEnd ||
+        /\|\||\|\]/.test(m.suffix || "") ||
+        !next ||
+        (next && next.isRepeatStart)
+      );
+    }
+
+    return measures;
+  }
+
+  function stripExistingChords(text) {
+    return text.replace(/"(?:[^"\\]|\\.)*"/g, "");
+  }
+
+  function normalizeInputMeterHeader(tune) {
+    // Normalize ABC shorthand meters in the source tune itself, not only for
+    // matching. Tunes using M:C or M:C| are processed and output as M:4/4 so
+    // the generated ABC has the same meter spelling used for matching, measure
+    // duration, and chord placement.
+    return tune.replace(/^M:\s*(C\|?|c\|?)\s*$/gm, "M:4/4");
+  }
+
+  function removeBlankLinesFromABCBody(body) {
+    // If the input contains a line that only has an ABC chord/text annotation,
+    // for example "D mix", stripping existing quoted chord/text strings leaves
+    // an empty notation line. Remove blank-only body lines so the solved tune
+    // does not end up with an empty line between the K: tag and the notation,
+    // or anywhere else in the generated notation body.
+    return String(body || "").replace(/^\s*$/gm, "").replace(/\n{2,}/g, "\n").replace(/^\n+|\n+$/g, "");
+  }
+
+  function stripExistingChordsFromTune(tune) {
+    // Remove any existing ABC chord symbols from the source tune before matching.
+    // Header text is left alone; only the notation body is stripped. The database
+    // tunes are not stripped because their chord symbols are the source material.
+    var hb = splitHeaderBody(tune);
+    if (!hb.body) return normalizeInputMeterHeader(tune);
+    var strippedBody = removeBlankLinesFromABCBody(stripExistingChords(hb.body));
+    return normalizeInputMeterHeader(hb.header + (hb.header && strippedBody ? "\n" : "") + strippedBody);
+  }
+
+  function countVoiceTags(tune) {
+    var matches = (tune || "").match(/^\s*V:\s*.*$/gmi);
+    return matches ? matches.length : 0;
+  }
+
+  function hasLyricsTags(tune) {
+    // Skip tunes containing either body-aligned lyrics (w:) or
+    // full-verse lyrics (W:). Lyrics text can contain note letters that the
+    // measure parser would otherwise mistake for melody notes.
+    return /^\s*[wW]:/m.test(tune || "");
+  }
+
+  function hasMidTuneKeyChange(tune) {
+    var hb = splitHeaderBody(tune || "");
+    if (!hb.body) return false;
+
+    // A K: field at the start of the tune header is normal. A later K: field
+    // on its own line, after the ABC body has started, means the tune changes
+    // key/mode mid-tune and should be skipped.
+    if (/^\s*K:\s*.*$/gmi.test(hb.body)) return true;
+
+    // Inline key changes can appear anywhere in the notation body, for example
+    // [K:G] or [K:Ador]. These also make the tune unsuitable for single-key
+    // measure matching.
+    return /\[\s*K:\s*[^\]]+\]/i.test(hb.body);
+  }
+
+  function getTuneSkipReason(tune) {
+    if (countVoiceTags(tune) > 1) {
+      return "Skipped by the Chord Solver because the tune has multiple voices";
+    }
+    if (hasLyricsTags(tune)) {
+      return "Skipped by the Chord Solver because the tune has w: or W: lyrics tags";
+    }
+    if (hasMidTuneKeyChange(tune)) {
+      return "Skipped by the Chord Solver because of key/mode changes mid-tune";
+    }
+    return "";
+  }
+
+  function isChordSolverGeneratedNoteLine(line) {
+    line = String(line || "").trim();
+
+    return /^N:\s*The Chord Solver matched this tune as .+ instead of .+\.\s*$/.test(line) ||
+      /^N:\s*The original K: tag has not been changed\.\s*$/.test(line) ||
+      /^N:\s*Skipped by the Chord Solver because .+\s*$/.test(line);
+  }
+
+  function removePreviousChordSolverNotes(tune) {
+    // Remove only N: fields generated by this feature. This prevents repeated
+    // runs from stacking duplicate or stale result notes while preserving every
+    // unrelated user-supplied N: field.
+    var lines = String(tune || "")
+      .replace(/\r\n/g, "\n")
+      .replace(/\r/g, "\n")
+      .split("\n");
+
+    var removeIndexes = new Set();
+
+    lines.forEach(function(line, index) {
+      if (isChordSolverGeneratedNoteLine(line)) {
+        removeIndexes.add(index);
+      }
+    });
+
+    // Each generated note block is preceded by a comment-only "%" spacer.
+    // Remove that spacer only when it belongs directly to a generated block.
+    removeIndexes.forEach(function(index) {
+      var previousIndex = index - 1;
+
+      while (previousIndex >= 0 && removeIndexes.has(previousIndex)) {
+        previousIndex--;
+      }
+
+      if (previousIndex >= 0 &&
+          /^\s*%\s*$/.test(lines[previousIndex] || "")) {
+        removeIndexes.add(previousIndex);
+      }
+    });
+
+    return lines.filter(function(_, index) {
+      return !removeIndexes.has(index);
+    }).join("\n");
+  }
+
+  function appendSkipNoteToRawTune(tune, reason) {
+    // Replace prior solver-generated status notes instead of stacking them.
+    tune = removePreviousChordSolverNotes(tune);
+    tune = (tune || "").replace(/\s+$/g, "");
+
+    // Some tunebooks place a tune-separator marker such as %%% after the
+    // notation. The skip note should belong to the tune itself, so insert it
+    // before any trailing separator-only lines rather than after them.
+    var trailingSeparator = "";
+    var separatorMatch = tune.match(/(?:\n[ \t]*%%%[ \t]*)+$/);
+    if (separatorMatch) {
+      trailingSeparator = separatorMatch[0];
+      tune = tune.slice(0, tune.length - trailingSeparator.length).replace(/\s+$/g, "");
+    }
+
+    return tune + "\n% \nN: " + reason + trailingSeparator;
+  }
+
+
+  function appendNoteToTuneEnd(tune, noteText) {
+    // Replace prior solver-generated status notes instead of stacking them.
+    tune = removePreviousChordSolverNotes(tune);
+    tune = (tune || "").replace(/\s+$/g, "");
+
+    var trailingSeparator = "";
+    var separatorMatch = tune.match(/(?:\n[ \t]*%%%[ \t]*)+$/);
+    if (separatorMatch) {
+      trailingSeparator = separatorMatch[0];
+      tune = tune.slice(0, tune.length - trailingSeparator.length).replace(/\s+$/g, "");
+    }
+
+    return tune + "\n% \nN: " + noteText + "\nN: The original K: tag has not been changed."+ trailingSeparator;
+  }
+
+  function formatKeyModeSubstitutionNote(selection) {
+    return "The Chord Solver matched this tune as " +
+      (selection && selection.alternateMode ? formatShortModeName(selection.alternateMode) : "an alternate key/mode") +
+      " instead of " +
+      (selection && selection.declaredMode ? formatShortModeName(selection.declaredMode) : "key/mode") +
+      ".";
+  }
+
+  function getAllowedChordOffsetsForMeter(meter, unitNoteLength) {
+    var full = getFullMeasureDuration(meter, unitNoteLength);
+    if (!full) return [0];
+
+    switch (normalizeMeter(meter)) {
+      case "4/4":
+        return [0, full / 2];          // 4/4 beats 1 and 3, and normalized 2/2 beats 1 and 2.
+      case "2/4":
+        return [0, full / 2];          // Beats 1 and 2.
+      case "6/8":
+        return [0, full / 2];          // Beats 1 and 4.
+      case "9/8":
+        return [0, full / 3, full * 2 / 3];  // Beats 1, 4, and 7.
+      case "12/8":
+        return [0, full / 4, full / 2, full * 3 / 4];  // Beats 1, 4, 7, and 10.
+      case "3/4":
+        return [0, full / 3, full * 2 / 3];  // Beats 1, 2, and 3.
+      default:
+        // For meters not explicitly listed above, only allow a chord at the
+        // start of the measure. This avoids copying database chord placements
+        // onto unexpected beats in less common meters.
+        return [0];
+    }
+  }
+
+  function nearlyEqual(a, b) {
+    return Math.abs(a - b) < 0.01;
+  }
+
+  function findMatchingAllowedOffset(offset, allowedOffsets) {
+    for (var i = 0; i < allowedOffsets.length; i++) {
+      if (nearlyEqual(offset, allowedOffsets[i])) return allowedOffsets[i];
+    }
+    return null;
+  }
+
+  function findSourceNoteIndexAtOffset(sourceMeasure, offset) {
+    for (var i = 0; i < sourceMeasure.noteStartOffsets.length; i++) {
+      if (nearlyEqual(sourceMeasure.noteStartOffsets[i], offset)) return i;
+    }
+    return null;
+  }
+
+  function getCandidateChordOffset(candidateMeasure, chord) {
+    if (!chord || chord.noteIndex <= 0) return 0;
+    if (chord.noteIndex < candidateMeasure.noteStartOffsets.length) {
+      return candidateMeasure.noteStartOffsets[chord.noteIndex];
+    }
+    // If a source database chord is somehow attached beyond the last note, treat
+    // it as unusable for beat-restricted placement.
+    return null;
+  }
+
+  function mapCandidateChordsToAllowedSourceBeats(sourceMeasure, candidateMeasure, meter, unitNoteLength, forceStartChord) {
+    var allowedOffsets = getAllowedChordOffsetsForMeter(meter, unitNoteLength);
+    var mapped = [];
+    var firstChord = candidateMeasure.chords && candidateMeasure.chords[0] ? candidateMeasure.chords[0].chord : "";
+
+    if (forceStartChord && firstChord) {
+      mapped.push({ chord: firstChord, noteIndex: 0, forced: true });
+    }
+
+    candidateMeasure.chords.forEach(function(chord) {
+      var candidateOffset = getCandidateChordOffset(candidateMeasure, chord);
+      if (candidateOffset === null) return;
+
+      var allowedOffset = findMatchingAllowedOffset(candidateOffset, allowedOffsets);
+      if (allowedOffset === null) return;
+
+      var sourceNoteIndex = findSourceNoteIndexAtOffset(sourceMeasure, allowedOffset);
+      if (sourceNoteIndex === null) return;
+
+      // Avoid duplicating the forced opening chord.
+      if (forceStartChord && sourceNoteIndex === 0 && chord.chord === firstChord) return;
+
+      mapped.push({
+        chord: chord.chord,
+        noteIndex: sourceNoteIndex,
+        forced: false
+      });
+    });
+
+    mapped.sort(function(a, b) {
+      if (a.noteIndex !== b.noteIndex) return a.noteIndex - b.noteIndex;
+      if (a.forced && !b.forced) return -1;
+      if (!a.forced && b.forced) return 1;
+      return 0;
+    });
+
+    var compact = [];
+    mapped.forEach(function(chord) {
+      var last = compact[compact.length - 1];
+      if (!last || last.noteIndex !== chord.noteIndex || last.chord !== chord.chord || chord.forced) {
+        compact.push(chord);
+      }
+    });
+
+    return compact;
+  }
+
+  function getGraceAwareRealNoteInfos(text) {
+    var infos = [];
+    var noteIndex = 0;
+    var i = 0;
+
+    while (i < text.length) {
+      var c = text[i];
+
+      if (c === "{") {
+        var graceEnd = text.indexOf("}", i + 1);
+        i = (graceEnd >= 0) ? graceEnd + 1 : i + 1;
+        continue;
+      }
+
+      if (c === "(" && /[23456789]/.test(text[i + 1] || "")) {
+        i += 2;
+        continue;
+      }
+
+      NOTE_RE.lastIndex = i;
+      var m = NOTE_RE.exec(text);
+      if (m) {
+        var injectIndex = i;
+        var before = text.slice(0, i);
+
+        // If the real note is preceded by ABC grace notes and/or a roll mark,
+        // inject the chord before those prefixes so the ornament stays attached
+        // to the note, for example:
+        //   {BAG}G  -> "G"{BAG}G
+        //   ~G      -> "G"~G
+        var ornamentPrefixMatch = before.match(/(?:\{[^}]*\}\s*|~\s*)+$/);
+        if (ornamentPrefixMatch) injectIndex = i - ornamentPrefixMatch[0].length;
+
+        infos.push({
+          noteIndex: noteIndex,
+          start: i,
+          end: NOTE_RE.lastIndex,
+          injectIndex: injectIndex
+        });
+
+        noteIndex++;
+        i = NOTE_RE.lastIndex;
+        continue;
+      }
+
+      i++;
+    }
+
+    return infos;
+  }
+
+  function insertChordsIntoMeasure(sourceText, candidateChords, forceStartChord) {
+    if (!candidateChords || !candidateChords.length) return sourceText;
+
+    var chords = candidateChords.slice().sort(function(a, b) { return a.noteIndex - b.noteIndex; });
+    var firstChord = chords[0].chord;
+
+    if (forceStartChord && chords[0].noteIndex !== 0) {
+      chords.unshift({ chord: firstChord, noteIndex: 0, forced: true });
+    }
+
+    // Remove repeated identical chord symbols in the same measure.
+    var compact = [];
+    var last = null;
+    chords.forEach(function(c) {
+      if (c.chord !== last || c.forced) compact.push(c);
+      last = c.chord;
+    });
+    chords = compact;
+
+    var text = stripExistingChords(sourceText);
+    var noteInfos = getGraceAwareRealNoteInfos(text);
+
+    if (!noteInfos.length) {
+      return forceStartChord ? ('"' + firstChord + '"' + text) : text;
+    }
+
+    var chordsByNoteIndex = new Map();
+    chords.forEach(function(c) {
+      if (!chordsByNoteIndex.has(c.noteIndex)) chordsByNoteIndex.set(c.noteIndex, []);
+      chordsByNoteIndex.get(c.noteIndex).push(c.chord);
+    });
+
+    var out = "";
+    var lastPos = 0;
+    var insertedAny = false;
+
+    noteInfos.forEach(function(info) {
+      var noteChords = chordsByNoteIndex.get(info.noteIndex);
+      if (!noteChords || !noteChords.length) return;
+
+      var injectAt = Math.max(info.injectIndex, lastPos);
+
+      // Preserve the source tune's existing spacing exactly. Do not trim
+      // spaces before injected chord symbols and do not add any extra spaces;
+      // the chord marker is inserted directly at the calculated note position.
+      out += text.slice(lastPos, injectAt);
+      noteChords.forEach(function(chord) {
+        out += '"' + chord + '"';
+        insertedAny = true;
+      });
+      lastPos = injectAt;
+    });
+
+    out += text.slice(lastPos);
+
+    if (!insertedAny && forceStartChord) {
+      out = '"' + firstChord + '"' + text;
+    }
+    return out;
+  }
+
+  function lcsLength(a, b) {
+    var m = a.length, n = b.length;
+    if (!m || !n) return 0;
+    var prev = new Array(n + 1).fill(0);
+    var curr = new Array(n + 1).fill(0);
+    for (var i = 1; i <= m; i++) {
+      for (var j = 1; j <= n; j++) {
+        curr[j] = (a[i - 1] === b[j - 1]) ? prev[j - 1] + 1 : Math.max(prev[j], curr[j - 1]);
+      }
+      var t = prev; prev = curr; curr = t; curr.fill(0);
+    }
+    return prev[n];
+  }
+
+  function jaccard(a, b) {
+    if (!a.size && !b.size) return 0;
+    var inter = 0;
+    a.forEach(function(x) { if (b.has(x)) inter++; });
+    return inter / (a.size + b.size - inter);
+  }
+
+  function measureSimilarity(a, b) {
+    if (!a.notes.length || !b.notes.length) return 0;
+
+    // notes and pitchClasses are identical under the current normalization
+    // rules, so the former 45% note LCS plus 25% pitch-class LCS is exactly
+    // equivalent to one normalized-note LCS weighted at 70%.
+    var sequenceLcs =
+      lcsLength(a.notes, b.notes) /
+      Math.max(a.notes.length, b.notes.length);
+
+    var bi = jaccard(a.noteBigrams, b.noteBigrams);
+    var tri = jaccard(a.noteTrigrams, b.noteTrigrams);
+    var lenPenalty =
+      Math.abs(a.notes.length - b.notes.length) /
+      Math.max(a.notes.length, b.notes.length, 1);
+
+    // Preserve the original floating-point evaluation order exactly. Although
+    // these two contributions conceptually total 70%, multiplying once by
+    // 0.70 can round differently and alter the winner in an exact score tie.
+    return (
+      (sequenceLcs * 0.45) +
+      (sequenceLcs * 0.25) +
+      (bi * 0.20) +
+      (tri * 0.10) -
+      (lenPenalty * 0.10)
+    );
+  }
+
+  function chordRootToPitchClass(root) {
+    var pitchClasses = {
+      "C": 0, "C#": 1, "Db": 1,
+      "D": 2, "D#": 3, "Eb": 3,
+      "E": 4,
+      "F": 5, "F#": 6, "Gb": 6,
+      "G": 7, "G#": 8, "Ab": 8,
+      "A": 9, "A#": 10, "Bb": 10,
+      "B": 11
+    };
+    return Object.prototype.hasOwnProperty.call(pitchClasses, root) ? pitchClasses[root] : null;
+  }
+
+  function getModeScaleIntervals(modeName) {
+    modeName = (modeName || "major").toLowerCase();
+    if (modeName === "minor" || modeName === "aeolian") return [0, 2, 3, 5, 7, 8, 10];
+    if (modeName === "dorian") return [0, 2, 3, 5, 7, 9, 10];
+    if (modeName === "mixolydian") return [0, 2, 4, 5, 7, 9, 10];
+    if (modeName === "phrygian") return [0, 1, 3, 5, 7, 8, 10];
+    if (modeName === "lydian") return [0, 2, 4, 6, 7, 9, 11];
+    if (modeName === "locrian") return [0, 1, 3, 5, 6, 8, 10];
+    return [0, 2, 4, 5, 7, 9, 11];
+  }
+
+  function getDiatonicTriadQualities(scaleIntervals) {
+    return scaleIntervals.map(function(rootInterval, degreeIndex) {
+      var third = (scaleIntervals[(degreeIndex + 2) % 7] + (degreeIndex + 2 >= 7 ? 12 : 0)) - rootInterval;
+      var fifth = (scaleIntervals[(degreeIndex + 4) % 7] + (degreeIndex + 4 >= 7 ? 12 : 0)) - rootInterval;
+
+      if (third === 4 && fifth === 7) return "major";
+      if (third === 3 && fifth === 7) return "minor";
+      if (third === 3 && fifth === 6) return "diminished";
+      return "other";
+    });
+  }
+
+  function parsePlainChordRootAndQuality(chord) {
+    var m = String(chord || "").trim().match(/^([A-G](?:#|b)?)(m?)$/);
+    if (!m) return null;
+    return {
+      root: m[1],
+      pitchClass: chordRootToPitchClass(m[1]),
+      quality: m[2] === "m" ? "minor" : "major"
+    };
+  }
+
+  function getDegreePreferenceWeight(degree, modeName) {
+    modeName = (modeName || "major").toLowerCase();
+
+    // These weights are deliberately conservative. They are only used as a
+    // tie-breaker between same-score or near-same-score melodic matches, not as
+    // a replacement for measure similarity. They prefer common backup-chord
+    // choices for the current key/mode, especially the tonic and close tonal
+    // anchors, while still allowing less-common diatonic choices when they are
+    // the best melodic match.
+    if (modeName === "minor" || modeName === "aeolian" || modeName === "dorian") {
+      var modalWeights = [12, 4, 7, 8, 7, 5, 9];
+      return modalWeights[degree - 1] || 0;
+    }
+
+    if (modeName === "mixolydian") {
+      var mixolydianWeights = [12, 5, 3, 8, 9, 5, 7];
+      return mixolydianWeights[degree - 1] || 0;
+    }
+
+    var majorWeights = [12, 6, 2, 8, 9, 5, 3];
+    return majorWeights[degree - 1] || 0;
+  }
+
+  function getChordCompatibilityScore(chord, normalizedMode) {
+    var parsedChord = parsePlainChordRootAndQuality(chord);
+    if (!parsedChord || parsedChord.pitchClass === null) return -8;
+
+    var modeParts = splitNormalizedMode(normalizedMode || "");
+    var tonicPc = chordRootToPitchClass(modeParts.root || "");
+    if (tonicPc === null) return 0;
+
+    var modeName = modeParts.mode || "major";
+    var scaleIntervals = getModeScaleIntervals(modeName);
+    var chordInterval = (parsedChord.pitchClass - tonicPc + 12) % 12;
+    var degreeIndex = scaleIntervals.indexOf(chordInterval);
+
+    if (degreeIndex < 0) {
+      // Non-scale chords are not forbidden, but they should lose a tie against
+      // a normal in-key backup chord when the melodic match is otherwise equal.
+      return -6;
+    }
+
+    var degree = degreeIndex + 1;
+    var score = getDegreePreferenceWeight(degree, modeName);
+    var expectedQualities = getDiatonicTriadQualities(scaleIntervals);
+    var expectedQuality = expectedQualities[degreeIndex];
+
+    if (expectedQuality === parsedChord.quality) score += 4;
+    else if (expectedQuality === "diminished") score -= 2;
+    else score -= 1;
+
+    // Give a small extra nudge to an exact tonic chord so tied matches like
+    // G vs. Bm in G major prefer the more expected tonal-center chord.
+    if (degree === 1) score += 2;
+
+    return score;
+  }
+
+  function getMeasureChordCompatibilityScore(candidateMeasure, normalizedMode) {
+    if (!candidateMeasure || !candidateMeasure.chords || !candidateMeasure.chords.length) return 0;
+
+    var total = 0;
+    var count = 0;
+    var firstScore = null;
+
+    candidateMeasure.chords.forEach(function(chordInfo) {
+      var score = getChordCompatibilityScore(chordInfo.chord, normalizedMode);
+      if (firstScore === null) firstScore = score;
+      total += score;
+      count++;
+    });
+
+    if (!count) return 0;
+
+    // Average score keeps measures with more chords from automatically winning.
+    // A small first-chord weighting helps with the most common case where the
+    // competing measures are melodically identical but begin with different
+    // backup chords.
+    return (total / count) + ((firstScore || 0) * 0.25);
+  }
+
+  function tuneKey(meter, mode) {
+    return normalizeMeter(meter) + "\t" + normalizeMode(mode);
+  }
+
+  function splitNormalizedMode(normalizedMode) {
+    normalizedMode = normalizeMode(normalizedMode || "");
+    var m = normalizedMode.match(/^([A-G](?:#|b)?)(.*)$/);
+    if (!m) return { root: "", mode: normalizedMode };
+    return { root: m[1], mode: (m[2] || "major") };
+  }
+
+
+  function formatShortModeName(normalizedMode) {
+    var parsed = splitNormalizedMode(normalizedMode || "");
+    var mode = (parsed.mode || "").toLowerCase();
+    var abbreviations = {
+      major: "maj",
+      minor: "min",
+      dorian: "dor",
+      mixolydian: "mix",
+      aeolian: "aeo",
+      phrygian: "phr",
+      lydian: "lyd",
+      locrian: "loc"
+    };
+    return (parsed.root || "") + (abbreviations[mode] || mode.slice(0, 3));
+  }
+
+  function tuneKeyFromNormalizedMode(meter, normalizedMode) {
+    return normalizeMeter(meter) + "\t" + normalizedMode;
+  }
+
+  function getCandidateBucketsForMeterMode(meter, mode) {
+    var normalizedMeter = normalizeMeter(meter);
+    var normalizedMode = normalizeMode(mode);
+    var parsedMode = splitNormalizedMode(normalizedMode);
+    var buckets = [{ key: tuneKeyFromNormalizedMode(normalizedMeter, normalizedMode), label: normalizedMode, primary: true }];
+
+    // Minor and Dorian tunes are often close enough that one can provide a
+    // better backup-chord source for the other. Search the exact mode first,
+    // then also search the same tonic in the related minor/Dorian mode and let
+    // the best measure-level score win.
+    if (parsedMode.root && parsedMode.mode === "minor") {
+      buckets.push({
+        key: tuneKeyFromNormalizedMode(normalizedMeter, parsedMode.root + "dorian"),
+        label: parsedMode.root + "dorian",
+        primary: false
+      });
+    } else if (parsedMode.root && parsedMode.mode === "dorian") {
+      buckets.push({
+        key: tuneKeyFromNormalizedMode(normalizedMeter, parsedMode.root + "minor"),
+        label: parsedMode.root + "minor",
+        primary: false
+      });
+    }
+
+    return buckets;
+  }
+
+  function getCandidatesForMeterMode(meter, mode, rhythmType) {
+    rhythmType = normalizeTuneType(rhythmType || "");
+
+    var buckets = getCandidateBucketsForMeterMode(meter, mode);
+    var broadCandidates = [];
+    var rhythmCandidates = [];
+    var seenBroad = new Set();
+    var seenRhythm = new Set();
+    var usedBuckets = [];
+
+    buckets.forEach(function(bucket) {
+      var bucketCandidates = gChordIndex.get(bucket.key) || [];
+      if (bucketCandidates.length) {
+        var rhythmCount = rhythmType ? bucketCandidates.filter(function(c) { return c.sourceType === rhythmType; }).length : 0;
+        usedBuckets.push({
+          label: bucket.label,
+          shortLabel: formatShortModeName(bucket.label),
+          count: bucketCandidates.length,
+          rhythmCount: rhythmCount,
+          rhythmType: rhythmType,
+          primary: bucket.primary
+        });
+      }
+
+      bucketCandidates.forEach(function(candidate, idx) {
+        // Candidate objects from different buckets should normally be distinct,
+        // but keep this defensive de-duplication to avoid scanning the exact
+        // same setting/measure twice if the database contains aliases.
+        var id = (candidate.sourceSettingId || "") + "|" + (candidate.index || idx) + "|" + bucket.key;
+
+        if (!seenBroad.has(id)) {
+          seenBroad.add(id);
+          broadCandidates.push(candidate);
+        }
+
+        if (rhythmType && candidate.sourceType === rhythmType && !seenRhythm.has(id)) {
+          seenRhythm.add(id);
+          rhythmCandidates.push(candidate);
+        }
+      });
+    });
+
+    return {
+      candidates: broadCandidates,
+      rhythmCandidates: rhythmCandidates,
+      hasRhythmPreference: !!(rhythmType && rhythmCandidates.length),
+      rhythmType: rhythmType,
+      buckets: usedBuckets
+    };
+  }
+
+  var COMMON_DECLARED_KEY_MODE_ALTERNATES = {
+    "Dmajor": ["Edorian", "Bminor", "Amixolydian"],
+    "Gmajor": ["Dmixolydian", "Adorian"],
+    "Cmajor": ["Ddorian", "Aminor"],
+    "Fmajor": ["Gdorian", "Dminor"]
+  };
+
+  function getKeyModeSubstitutionOptions(options) {
+    if (options && options.keyModeSubstitutionOptions) {
+      return normalizeSavedKeyModeSubstitutionOptions(options.keyModeSubstitutionOptions);
+    }
+
+    return normalizeSavedKeyModeSubstitutionOptions(gSettings.keyModeSubstitutionOptions);
+  }
+
+  function getCommonDeclaredKeyModeAlternates(normalizedMode, options) {
+    normalizedMode = normalizeMode(normalizedMode || "");
+    var enabledOptions = getKeyModeSubstitutionOptions(options);
+    var alternates = [];
+
+    if (enabledOptions[normalizedMode] !== false && COMMON_DECLARED_KEY_MODE_ALTERNATES[normalizedMode]) {
+      alternates = COMMON_DECLARED_KEY_MODE_ALTERNATES[normalizedMode].slice();
+    }
+
+    // Advanced substitutions are deliberately separate from the normal
+    // same-key-signature substitution groups so they can remain disabled by
+    // default and be enabled only for source material that appears to need them.
+    if (normalizedMode === "Gmajor" && enabledOptions.Gmajor_Eminor === true) {
+      alternates.push("Eminor");
+    }
+
+    if (normalizedMode === "Amajor" && enabledOptions.Amajor_Bdorian === true) {
+      alternates.push("Bdorian");
+    }
+
+    return alternates;
+  }
+
+  function getTrialMeasuresForKeyModeSelection(measures) {
+    // Use a representative subset so the key/mode sanity check stays fast on
+    // large batches. Include starts/endings when possible because those are the
+    // measures where a wrong key/mode usually produces the most obvious chord
+    // problems.
+    var usable = (measures || []).filter(function(m) {
+      return m.notes && m.notes.length && !m.isInitialPickup && !(m.isPartialMeasure && !m.isBoundaryEnd);
+    });
+
+    var prioritized = [];
+    usable.forEach(function(m) {
+      if (m.isBoundaryStart || m.isBoundaryEnd) prioritized.push(m);
+    });
+    usable.forEach(function(m) {
+      if (!m.isBoundaryStart && !m.isBoundaryEnd) prioritized.push(m);
+    });
+
+    return prioritized.slice(0, 32);
+  }
+
+  function getBestTrialScoreForMeasure(sourceMeasure, candidates, normalizedMode) {
+    var bestScore = 0;
+    var bestCompatibility = -Infinity;
+
+    if (!sourceMeasure || !candidates || !candidates.length) {
+      return { score: 0, compatibility: 0 };
+    }
+
+    for (var i = 0; i < candidates.length; i++) {
+      var c = candidates[i];
+      var score = measureSimilarity(sourceMeasure, c);
+      var compatibility = getMeasureChordCompatibilityScore(c, normalizedMode);
+
+      if (score > bestScore + 0.01 ||
+          (Math.abs(score - bestScore) <= 0.01 && compatibility > bestCompatibility)) {
+        bestScore = score;
+        bestCompatibility = compatibility;
+      }
+    }
+
+    return {
+      score: bestScore,
+      compatibility: isFinite(bestCompatibility) ? bestCompatibility : 0
+    };
+  }
+
+  function evaluateKeyModeCandidateInfo(measures, candidateInfo, normalizedMode, options) {
+    var trialMeasures = getTrialMeasuresForKeyModeSelection(measures);
+    var threshold = options && isFinite(options.threshold) ? options.threshold : 0.75;
+    var fallbackThreshold = threshold * ((options && options.fallbackThresholdScale) || 0.75);
+    var searchCandidates = (candidateInfo && candidateInfo.hasRhythmPreference) ?
+      candidateInfo.rhythmCandidates :
+      (candidateInfo ? candidateInfo.candidates : []);
+
+    var matched = 0;
+    var strongMatched = 0;
+    var totalScore = 0;
+    var totalCompatibility = 0;
+
+    trialMeasures.forEach(function(m) {
+      var trial = getBestTrialScoreForMeasure(m, searchCandidates, normalizedMode);
+      if (trial.score >= fallbackThreshold) {
+        matched++;
+        totalScore += trial.score;
+        totalCompatibility += trial.compatibility;
+      }
+      if (trial.score >= threshold) strongMatched++;
+    });
+
+    return {
+      sampleCount: trialMeasures.length,
+      matched: matched,
+      strongMatched: strongMatched,
+      averageScore: matched ? totalScore / matched : 0,
+      averageCompatibility: matched ? totalCompatibility / matched : 0,
+      candidateCount: searchCandidates.length
+    };
+  }
+
+  function shouldUseAlternateKeyMode(declaredEval, alternateEval) {
+    if (!alternateEval || !alternateEval.sampleCount || !alternateEval.candidateCount) return false;
+
+    var sampleCount = alternateEval.sampleCount;
+    var minimumUsefulMatches = Math.max(3, Math.ceil(sampleCount * 0.30));
+    if (alternateEval.matched < minimumUsefulMatches) return false;
+
+    declaredEval = declaredEval || { matched: 0, strongMatched: 0, averageScore: 0, averageCompatibility: 0 };
+
+    var requiredMatchGain = Math.max(2, Math.ceil(sampleCount * 0.15));
+    if (alternateEval.matched >= declaredEval.matched + requiredMatchGain) return true;
+
+    if (alternateEval.strongMatched >= declaredEval.strongMatched + requiredMatchGain) return true;
+
+    if (alternateEval.matched >= declaredEval.matched &&
+        alternateEval.averageScore >= declaredEval.averageScore + 0.04 &&
+        alternateEval.averageCompatibility >= declaredEval.averageCompatibility - 1) {
+      return true;
+    }
+
+    if (alternateEval.matched === declaredEval.matched &&
+        alternateEval.averageScore >= declaredEval.averageScore + 0.025 &&
+        alternateEval.averageCompatibility >= declaredEval.averageCompatibility + 4) {
+      return true;
+    }
+
+    return false;
+  }
+
+  function compareKeyModeEvaluations(a, b) {
+    a = a || { matched: 0, strongMatched: 0, averageScore: 0, averageCompatibility: 0, candidateCount: 0 };
+    b = b || { matched: 0, strongMatched: 0, averageScore: 0, averageCompatibility: 0, candidateCount: 0 };
+
+    if (a.matched !== b.matched) return a.matched - b.matched;
+    if (a.strongMatched !== b.strongMatched) return a.strongMatched - b.strongMatched;
+    if (Math.abs(a.averageScore - b.averageScore) > 0.001) return a.averageScore - b.averageScore;
+    if (Math.abs(a.averageCompatibility - b.averageCompatibility) > 0.001) return a.averageCompatibility - b.averageCompatibility;
+    return a.candidateCount - b.candidateCount;
+  }
+
+  function selectCandidateInfoWithKeyModeSubstitution(meter, declaredMode, rhythmType, measures, options) {
+    var normalizedDeclaredMode = normalizeMode(declaredMode || "");
+    var selected = {
+      mode: declaredMode,
+      normalizedMode: normalizedDeclaredMode,
+      candidateInfo: getCandidatesForMeterMode(meter, declaredMode, rhythmType),
+      substituted: false,
+      declaredMode: normalizedDeclaredMode,
+      alternateMode: "",
+      declaredEval: null,
+      alternateEval: null,
+      testedAlternates: []
+    };
+
+    if (!options || !options.keyModeSubstitutionEnabled) return selected;
+
+    var alternates = getCommonDeclaredKeyModeAlternates(normalizedDeclaredMode, options);
+    if (!alternates.length || !measures || !measures.length) return selected;
+
+    selected.declaredEval = evaluateKeyModeCandidateInfo(measures, selected.candidateInfo, normalizedDeclaredMode, options || {});
+
+    var bestAlternate = null;
+
+    alternates.forEach(function(alternateMode) {
+      var normalizedAlternateMode = normalizeMode(alternateMode);
+      var alternateCandidateInfo = getCandidatesForMeterMode(meter, normalizedAlternateMode, rhythmType);
+      var alternateEval = evaluateKeyModeCandidateInfo(measures, alternateCandidateInfo, normalizedAlternateMode, options || {});
+
+      selected.testedAlternates.push({
+        mode: normalizedAlternateMode,
+        eval: alternateEval
+      });
+
+      if (shouldUseAlternateKeyMode(selected.declaredEval, alternateEval) &&
+          (!bestAlternate || compareKeyModeEvaluations(alternateEval, bestAlternate.eval) > 0)) {
+        bestAlternate = {
+          mode: normalizedAlternateMode,
+          candidateInfo: alternateCandidateInfo,
+          eval: alternateEval
+        };
+      }
+    });
+
+    if (bestAlternate) {
+      selected.mode = bestAlternate.mode;
+      selected.normalizedMode = bestAlternate.mode;
+      selected.candidateInfo = bestAlternate.candidateInfo;
+      selected.substituted = true;
+      selected.alternateMode = bestAlternate.mode;
+      selected.alternateEval = bestAlternate.eval;
+    }
+
+    return selected;
+  }
+
+  function getBoundaryPriorityCandidates(candidates, sourceMeasure, forceStartChord) {
+    if (!candidates || !candidates.length) return [];
+
+    // When a source measure is at the start of a tune/part/repeat, first try
+    // candidate measures that are also starts. When a source measure is at an
+    // ending boundary, first try candidate measures that are also endings.
+    // This is only a priority pass; the normal full candidate pool is still
+    // searched if no boundary-specific match succeeds.
+    if (forceStartChord) {
+      return candidates.filter(function(c) { return c.isBoundaryStart; });
+    }
+
+    if (sourceMeasure && sourceMeasure.isBoundaryEnd) {
+      return candidates.filter(function(c) { return c.isBoundaryEnd; });
+    }
+
+    return [];
+  }
+
+  function describeCandidateBuckets(candidateInfo) {
+    if (!candidateInfo || !candidateInfo.buckets || !candidateInfo.buckets.length) return "";
+    return candidateInfo.buckets.map(function(bucket) {
+      var label = bucket.shortLabel || formatShortModeName(bucket.label);
+      var s = escapeHTML(label) + ": <b>" + bucket.count + "</b>";
+      if (candidateInfo.hasRhythmPreference && bucket.rhythmType) {
+        s += " (" + escapeHTML(bucket.rhythmType) + ": <b>" + bucket.rhythmCount + "</b>)";
+      }
+      return s;
+    }).join(", ");
+  }
+
+  function buildChordIndex(db) {
+    var index = new Map();
+    var chordedTunes = 0;
+    var chordedMeasures = 0;
+    var skippedKeyChangeTunes = 0;
+    var skippedMultiVoiceTunes = 0;
+    var skippedLyricsTunes = 0;
+
+    db.forEach(function(t) {
+      if (!t || !t.abc || !/"/.test(t.abc)) return;
+
+      // Apply the same skip rules to database tunes that are applied to input
+      // tunes. A database setting that changes key/mode mid-tune, has
+      // multiple voices, or contains lyrics is not a reliable single-key/
+      // single-melody source for measure-level chord transfer.
+      var dbSkipReason = getTuneSkipReason(t.abc || "");
+      if (dbSkipReason) {
+        if (/multiple voices/.test(dbSkipReason)) skippedMultiVoiceTunes++;
+        else if (/lyrics tags/.test(dbSkipReason)) skippedLyricsTunes++;
+        else if (/key\/mode changes/.test(dbSkipReason)) skippedKeyChangeTunes++;
+        return;
+      }
+
+      var meter = normalizeMeter(t.meter || "");
+      var mode = normalizeMode(t.mode || "");
+      var rhythmType = normalizeTuneType(t.type || "");
+      if (!meter || !mode) return;
+      var key = tuneKey(meter, mode);
+      var measures = buildMeasureObjects(t.abc, meter, "").filter(function(m) {
+        // Entire database measures are rejected unless every chord marker in the
+        // measure is a plain uppercase-root major/minor triad. This prevents
+        // copying lowercase chords, slash chords, 5 chords, 7 chords, and other
+        // extended/modified chord spellings into the source tune.
+        return m.notes.length && measureHasOnlyAllowedChords(m);
+      }).map(function(m) {
+        m.sourceName = t.name || "";
+        m.sourceSettingId = t.setting_id || "";
+        m.sourceType = rhythmType;
+        return m;
+      });
+      if (!measures.length) return;
+      chordedTunes++;
+      chordedMeasures += measures.length;
+      if (!index.has(key)) index.set(key, []);
+      Array.prototype.push.apply(index.get(key), measures);
+    });
+
+    gLastStats = {
+      chordedTunes: chordedTunes,
+      chordedMeasures: chordedMeasures,
+      keys: index.size,
+      skippedKeyChangeTunes: skippedKeyChangeTunes,
+      skippedMultiVoiceTunes: skippedMultiVoiceTunes,
+      skippedLyricsTunes: skippedLyricsTunes
+    };
+    return index;
+  }
+
+  async function loadDatabase() {
+    if (gDatabase && gChordIndex) return;
+
+    if (window.abctunes_thesession_28may2026 && Array.isArray(window.abctunes_thesession_28may2026)) {
+      gDatabase = window.abctunes_thesession_28may2026;
+    } else if (window.ABCTUNES_THESESSION_28MAY2026 && Array.isArray(window.ABCTUNES_THESESSION_28MAY2026)) {
+      gDatabase = window.ABCTUNES_THESESSION_28MAY2026;
+    } else {
+      var response = await fetch("https://michaeleskin.com/abctools/abctunes_thesession_28may2026.json", { cache: "no-store" });
+      if (!response.ok) throw new Error("Could not load the hosted tune database from michaeleskin.com.");
+      gDatabase = await response.json();
+    }
+
+    if (!Array.isArray(gDatabase)) throw new Error("The tune database did not contain a JSON array.");
+    gChordIndex = buildChordIndex(gDatabase);
+  }
+
+  async function findBestMeasureMatchAsync(sourceMeasure, candidates, threshold, progress, normalizedMode) {
+    var best = null;
+    var bestScore = 0;
+    var bestChordCompatibilityScore = -Infinity;
+    var lastYield = performance.now();
+
+    // Normal measures keep a tight tie-break window so melody similarity stays
+    // dominant. For tune/part/repeat starts, allow a slightly wider near-tie
+    // window so the key/mode chord-compatibility check can prefer a stronger
+    // opening chord, for example Em over C at the start of the B part of an
+    // E Dorian tune when the melody scores are close.
+    var tieBreakEpsilon = (sourceMeasure && sourceMeasure.isBoundaryStart) ? 0.025 : 0.01;
+
+    for (var i = 0; i < candidates.length; i++) {
+      throwIfCancelled();
+      var c = candidates[i];
+      var score = measureSimilarity(sourceMeasure, c);
+      var chordCompatibilityScore = getMeasureChordCompatibilityScore(c, normalizedMode);
+
+      if (
+        !best ||
+        score > bestScore + tieBreakEpsilon ||
+        (
+          Math.abs(score - bestScore) <= tieBreakEpsilon &&
+          (bestScore < threshold || score >= threshold) &&
+          chordCompatibilityScore > bestChordCompatibilityScore + 0.001
+        )
+      ) {
+        bestScore = score;
+        bestChordCompatibilityScore = chordCompatibilityScore;
+        best = c;
+      }
+
+      var now = performance.now();
+      if (now - lastYield > 100) {
+        if (progress) progress(i + 1, candidates.length, bestScore);
+        await allowBrowserToUpdate();
+        lastYield = performance.now();
+      }
+    }
+
+    if (progress) progress(candidates.length, candidates.length, bestScore);
+    if (!best || bestScore < threshold) return null;
+    return { measure: best, score: bestScore, chordCompatibilityScore: bestChordCompatibilityScore };
+  }
+
+  function getEffectiveMeasureThreshold(baseThreshold, forceBoundaryThreshold, options) {
+    baseThreshold = isFinite(baseThreshold) ? baseThreshold : 0.75;
+
+    // Normal measures first try the user's requested threshold. Since the
+    // matching pass already finds the best candidate measure, accepting a best
+    // match down to this fallback value is equivalent to doing a second pass
+    // only when the normal threshold fails, but avoids scanning the candidate
+    // bucket twice.
+    var generalFallbackThreshold = baseThreshold * (options.fallbackThresholdScale || 0.75);
+
+    // Critical boundaries use the existing more permissive threshold so starts,
+    // endings, and repeat/part boundaries have the best chance of getting an
+    // explicit marker when any usable match exists.
+    if (forceBoundaryThreshold) {
+      return Math.min(baseThreshold, options.boundaryThreshold || 0.35);
+    }
+
+    return Math.min(baseThreshold, generalFallbackThreshold);
+  }
+
+  async function processTuneAsync(tune, options, progressState) {
+    // Remove stale solver notes before skip tests, measure parsing, or matching.
+    // This also prevents their text from affecting a later solver run.
+    var rawTune = removePreviousChordSolverNotes(tune);
+    tune = rawTune;
+    var skipReason = getTuneSkipReason(rawTune);
+    if (skipReason) {
+      var rawTitle = getHeaderValue(rawTune, "T") || "Untitled";
+      if (progressState) {
+        updateProgressModal(
+          formatProgressTuneHeader(progressState, rawTitle) +
+          "Matching chords...<br>" +
+          escapeHTML(skipReason) + "."
+        );
+        await allowBrowserToUpdate();
+      }
+      return {
+        text: appendSkipNoteToRawTune(rawTune, skipReason),
+        stats: { title: rawTitle, matched: 0, total: 0, skippedPickup: 0, fallbackMatched: 0, rhythmFallbackMatched: 0, candidates: 0, rhythmCandidates: 0, candidateBuckets: [], skippedTune: true, skipReason: skipReason }
+      };
+    }
+
+    tune = stripExistingChordsFromTune(tune);
+    var hb = splitHeaderBody(tune);
+    var meter = getHeaderValue(hb.header, "M") || "4/4";
+    var mode = getHeaderValue(hb.header, "K");
+    var unitLength = getHeaderValue(hb.header, "L");
+    var title = getHeaderValue(hb.header, "T") || "Untitled";
+    var rhythmType = getInputTuneType(hb.header, meter);
+    var measures = buildMeasureObjects(hb.body, meter, unitLength);
+    var keyModeSelection = selectCandidateInfoWithKeyModeSubstitution(meter, mode, rhythmType, measures, options);
+    var selectedModeForMatching = keyModeSelection.normalizedMode || normalizeMode(mode);
+    var candidateInfo = keyModeSelection.candidateInfo;
+    var broadCandidates = candidateInfo.candidates;
+    var rhythmCandidates = candidateInfo.rhythmCandidates;
+    var candidateBucketSummary = describeCandidateBuckets(candidateInfo);
+    if (keyModeSelection.testedAlternates && keyModeSelection.testedAlternates.length) {
+      var testedModes = keyModeSelection.testedAlternates.map(function(item) {
+        return formatShortModeName(item.mode);
+      }).join(", ");
+
+      var substitutionSummary = escapeHTML(formatShortModeName(keyModeSelection.declaredMode)) +
+        " → " + escapeHTML(testedModes);
+
+      if (keyModeSelection.substituted) {
+        substitutionSummary += "; using " + escapeHTML(formatShortModeName(keyModeSelection.alternateMode));
+      }
+
+      candidateBucketSummary = substitutionSummary +
+        (candidateBucketSummary ? "; " + candidateBucketSummary : "");
+    }
+
+    if (!hb.body.trim() || !broadCandidates.length) {
+      if (progressState) {
+        var noCandidateMeasureCount = measures.filter(function(m) { return m.notes && m.notes.length; }).length;
+        progressState.completedMeasures += noCandidateMeasureCount;
+        updateProgressModal(
+          formatProgressTuneHeader(progressState, title) +
+          "Matching chords...<br>" +
+          "No compatible same-meter chord candidates were found for this tune."
+        );
+        setProgressModalPercent(progressState.totalMeasuresToMatch ?
+          Math.round((progressState.completedMeasures / progressState.totalMeasuresToMatch) * 100) : 100);
+        await allowBrowserToUpdate();
+      }
+      return { text: tune, stats: { title: title, matched: 0, total: 0, skippedPickup: 0, candidates: broadCandidates.length, rhythmCandidates: rhythmCandidates.length, rhythmFallbackMatched: 0, candidateBuckets: [], keyModeSubstitution: keyModeSelection.substituted ? keyModeSelection : null } };
+    }
+
+    var matched = 0;
+    var total = 0;
+    var skippedPickup = 0;
+    var fallbackMatched = 0;
+    var rhythmFallbackMatched = 0;
+    var lastChord = "";
+    var firstChordInserted = false;
+    var outParts = [];
+    var totalMeasureCount = measures.filter(function(m) { return m.notes.length > 0; }).length;
+    var processedMeasureCount = 0;
+    var forceNextFullMeasureChord = false;
+
+    for (var mi = 0; mi < measures.length; mi++) {
+      throwIfCancelled();
+      var m = measures[mi];
+
+      if (!m.notes.length) {
+        outParts.push(m.prefix + m.content + m.suffix);
+        continue;
+      }
+
+      total++;
+      processedMeasureCount++;
+
+      if (m.isInitialPickup) {
+        skippedPickup++;
+        outParts.push(m.prefix + stripExistingChords(m.content) + m.suffix);
+        continue;
+      }
+
+      // Do not inject chords on short pickup notes that lead into the next full
+      // phrase or repeated part. The exception is a partial measure that is an
+      // ending boundary, including first/second endings, repeat endings,
+      // double/final endings, or the last musical measure. Those measures are
+      // allowed to carry an explicit chord marker when a match is found.
+      //
+      // When such a pickup is skipped, force an explicit chord on the next full
+      // measure. This handles common ABC like ":| d|ea...", where the single
+      // pickup note belongs to the new part but should not itself be chorded.
+      if (m.isPartialMeasure && !m.isBoundaryEnd) {
+        skippedPickup++;
+        forceNextFullMeasureChord = true;
+        outParts.push(m.prefix + stripExistingChords(m.content) + m.suffix);
+        continue;
+      }
+
+      var forceStartChord = !firstChordInserted || m.isRepeatStart || forceNextFullMeasureChord;
+      var forceBoundaryThreshold = forceStartChord || m.isBoundaryEnd;
+      var normalThreshold = options.threshold;
+      var relaxedThreshold = getEffectiveMeasureThreshold(normalThreshold, forceBoundaryThreshold, options);
+      var best = null;
+
+      async function runSearchPass(candidates, threshold, label, isRhythmFallbackPass) {
+        if (!candidates || !candidates.length) return null;
+
+        return await findBestMeasureMatchAsync(
+          m,
+          candidates,
+          threshold,
+          function(candidateDone, candidateTotal, bestScore) {
+            var overallPercent = progressState.totalMeasuresToMatch ?
+              Math.round(((progressState.completedMeasures + processedMeasureCount - 1) / progressState.totalMeasuresToMatch) * 100) : 0;
+            setProgressModalPercent(overallPercent);
+
+            updateProgressModal(
+              formatProgressTuneHeader(progressState, title) +
+              "Matching chords...<br>" +
+              (candidateBucketSummary ? "Candidate keys/modes: " + candidateBucketSummary + "<br>" : "") +
+              "Measure <b>" + processedMeasureCount + "</b> of <b>" + totalMeasureCount + "</b> in this tune<br/>" +
+              "Database candidates checked <b>" + candidateDone + "</b> of <b>" + candidateTotal + "</b><br>" +
+              "Matches so far: <b>" + (progressState.totalMatched + matched) + "</b>; " +
+              (isRhythmFallbackPass ?
+                ("Rhythm fallbacks: <b>" + ((progressState.totalRhythmFallbackMatched || 0) + rhythmFallbackMatched) + "</b>") :
+                ("Fallback matches: <b>" + ((progressState.totalFallbackMatched || 0) + fallbackMatched) + "</b>")) +
+              "<br/>Current best score: <b>" + bestScore.toFixed(3) + "</b>"
+            );
+          },
+          selectedModeForMatching
+        );
+      }
+
+      async function runOriginalThenRelaxed(candidates, baseLabel, isRhythmFallbackPass) {
+        var passBest = await runSearchPass(candidates, normalThreshold, baseLabel, isRhythmFallbackPass);
+        if (!passBest && relaxedThreshold < normalThreshold) {
+          passBest = await runSearchPass(candidates, relaxedThreshold, baseLabel + " loosened threshold", isRhythmFallbackPass);
+        }
+        return passBest;
+      }
+
+      async function runBoundaryAwareSearch(candidates, baseLabel, isRhythmFallbackPass) {
+        var boundaryCandidates = getBoundaryPriorityCandidates(candidates, m, forceStartChord);
+        if (boundaryCandidates.length && boundaryCandidates.length < candidates.length) {
+          var boundaryLabel = baseLabel + (forceStartChord ? " start-boundary priority" : " end-boundary priority");
+          var boundaryBest = await runOriginalThenRelaxed(boundaryCandidates, boundaryLabel, isRhythmFallbackPass);
+          if (boundaryBest) return boundaryBest;
+        }
+
+        return await runOriginalThenRelaxed(candidates, baseLabel, isRhythmFallbackPass);
+      }
+
+      var searchCandidates = candidateInfo.hasRhythmPreference ? rhythmCandidates : broadCandidates;
+      var searchLabel = candidateInfo.hasRhythmPreference ? (rhythmType + " rhythm-priority") : "same meter/key/mode";
+
+      best = await runBoundaryAwareSearch(searchCandidates, searchLabel, false);
+
+      if (!best && candidateInfo.hasRhythmPreference && broadCandidates.length > rhythmCandidates.length) {
+        var fallbackGroups = [];
+
+        // For reels, prefer hornpipes as the first rhythm fallback before
+        // trying the rest of the compatible 4/4 meter/key/mode bucket. Reels
+        // and hornpipes often share enough phrase shape that hornpipes can be
+        // a better fallback than unrelated 4/4 types such as marches or
+        // strathspeys.
+        if (rhythmType === "reel" && normalizeMeter(meter) === "4/4") {
+          var hornpipeCandidates = broadCandidates.filter(function(c) { return c.sourceType === "hornpipe"; });
+          if (hornpipeCandidates.length) {
+            fallbackGroups.push({
+              label: "hornpipe rhythm fallback",
+              candidates: hornpipeCandidates
+            });
+          }
+
+          var otherFourFourCandidates = broadCandidates.filter(function(c) {
+            return c.sourceType !== rhythmType && c.sourceType !== "hornpipe";
+          });
+          if (otherFourFourCandidates.length) {
+            fallbackGroups.push({
+              label: "other 4/4 rhythm fallback",
+              candidates: otherFourFourCandidates
+            });
+          }
+        } else {
+          var broadOnlyCandidates = broadCandidates.filter(function(c) { return c.sourceType !== rhythmType; });
+          if (broadOnlyCandidates.length) {
+            fallbackGroups.push({
+              label: "same meter/key/mode fallback",
+              candidates: broadOnlyCandidates
+            });
+          }
+        }
+
+        for (var fallbackIndex = 0; !best && fallbackIndex < fallbackGroups.length; fallbackIndex++) {
+          var fallbackGroup = fallbackGroups[fallbackIndex];
+          best = await runBoundaryAwareSearch(fallbackGroup.candidates, fallbackGroup.label, true);
+          if (best) rhythmFallbackMatched++;
+        }
+      }
+
+      if (!best) {
+        forceNextFullMeasureChord = false;
+        outParts.push(m.prefix + stripExistingChords(m.content) + m.suffix);
+        continue;
+      }
+
+      var chords = mapCandidateChordsToAllowedSourceBeats(m, best.measure, meter, unitLength, forceStartChord);
+      var originalMappedChords = chords.slice();
+
+      // Chords copied from the database are only allowed on musically appropriate
+      // beat locations for the current meter:
+      //   4/4: beats 1 and 3
+      //   2/2: beats 1 and 2, handled in the normalized 4/4 bucket
+      //   2/4: beats 1 and 2
+      //   6/8: beats 1 and 4
+      //   9/8: beats 1, 4, and 7
+      //   12/8: beats 1, 4, 7, and 10
+      //   3/4: beats 1, 2, and 3
+      // Boundary chords for tune starts and repeat starts are still forced
+      // onto the start of the measure when a matching database measure is found.
+      // Ending boundaries use the lower boundary threshold, but repeated
+      // opening chords can still be suppressed if another chord remains
+      // in the measure.
+
+      if (!options.repeatSameChord) {
+        var previousEmittedChord = lastChord;
+        var filteredChords = [];
+
+        chords.forEach(function(c) {
+          // Forced boundary chords must survive repeated-chord suppression,
+          // even when they repeat the previous chord from an earlier measure.
+          if (c.forced) {
+            filteredChords.push(c);
+            previousEmittedChord = c.chord;
+            return;
+          }
+
+          // Suppress any repeated chord that immediately continues from the
+          // last emitted chord, whether it appears at the start of a measure,
+          // later in the same measure, or across one or more measure lines.
+          if (c.chord === previousEmittedChord) return;
+
+          filteredChords.push(c);
+          previousEmittedChord = c.chord;
+        });
+
+        chords = filteredChords;
+
+        // Ending-boundary measures may need an explicit chord marker when a usable
+        // match exists, but do not restore a chord that merely repeats the previous
+        // emitted chord for ordinary endings. This avoids redundant endings such as:
+        //
+        //   "D"AFA dAF|"D"DED D2 :|
+        //
+        // Alternate endings are different: first/second endings need their own chord
+        // markers for correct display and playback, even when the chord repeats the
+        // previous ending's chord.
+        if (!chords.length && m.isBoundaryEnd && originalMappedChords.length) {
+          var restoredEndingChord = originalMappedChords[0].chord;
+
+          if (m.isAlternateEnding || restoredEndingChord !== lastChord) {
+            chords = [Object.assign({}, originalMappedChords[0], { forced: true })];
+          }
+        }
+      }
+
+      if (!chords.length) {
+        forceNextFullMeasureChord = false;
+        outParts.push(m.prefix + stripExistingChords(m.content) + m.suffix);
+        continue;
+      }
+
+      if (!forceStartChord && best.score < normalThreshold) fallbackMatched++;
+
+      var injected = insertChordsIntoMeasure(m.content, chords, forceStartChord);
+      if (chords.length) lastChord = chords[chords.length - 1].chord;
+      firstChordInserted = true;
+      forceNextFullMeasureChord = false;
+      matched++;
+      outParts.push(m.prefix + injected + m.suffix);
+    }
+
+    if (progressState) {
+      progressState.completedMeasures += total;
+      progressState.totalMatched += matched;
+      progressState.totalSkippedPickup += skippedPickup;
+      progressState.totalFallbackMatched = (progressState.totalFallbackMatched || 0) + fallbackMatched;
+      progressState.totalRhythmFallbackMatched = (progressState.totalRhythmFallbackMatched || 0) + rhythmFallbackMatched;
+    }
+
+    var outBody = removeBlankLinesFromABCBody(outParts.join(""));
+    var outTune = hb.header + (hb.header && outBody ? "\n" : "") + outBody;
+
+    if (keyModeSelection.substituted) {
+      outTune = appendNoteToTuneEnd(outTune, formatKeyModeSubstitutionNote(keyModeSelection));
+    }
+
+    return {
+      text: outTune,
+      stats: { title: title, matched: matched, total: total, skippedPickup: skippedPickup, fallbackMatched: fallbackMatched, rhythmFallbackMatched: rhythmFallbackMatched, candidates: broadCandidates.length, rhythmCandidates: rhythmCandidates.length, candidateBuckets: candidateInfo.buckets, keyModeSubstitution: keyModeSelection.substituted ? keyModeSelection : null }
+    };
+  }
+
+  async function generateBackupChords(remoteSubmission) {
+    remoteSubmission = !!remoteSubmission;
+
+    if (remoteSubmission) {
+      // Remote settings were already reset to defaults and then overridden by
+      // validated URL parameters during initializeTool(). Do not replace them.
+      syncSettingsControls();
+    } else {
+      applySettingsControlsToCurrentSettings();
+    }
+
+    var input = document.getElementById("input").value;
+    if (!input.trim()) {
+      showMessageDialog("Please enter or open some ABC notation first.");
+      return;
+    }
+
+    gCancelRequested = false;
+    clearOutputArea();
+    setProcessingControlsEnabled(false);
+    setStatus("Processing...");
+    showProgressModal("Loading and indexing tune database...");
+    await allowBrowserToUpdate();
+
+    try {
+      await loadDatabase();
+    } catch (err) {
+      setProcessingControlsEnabled(!remoteSubmission);
+      hideProgressModal();
+      clearOutputArea();
+      setStatus("<b>Error:</b> " + escapeHTML(err.message) + "<br><br>The tune database is loaded from <b>https://michaeleskin.com/abctools/abctunes_thesession_28may2026.json</b>. Please check your network connection and try again.");
+      if (remoteSubmission) {
+        showMessageDialog("<b>Remote submission error:</b><br><br>" + escapeHTML(err.message));
+      }
+      return;
+    }
+
+    var threshold = getCurrentThresholdSetting();
+    var fallbackThresholdScale = getCurrentFallbackThresholdScaleSetting();
+    var preTuneText = getABCPreTuneText(input);
+    var tunes = splitTunes(input);
+    var results = [];
+    var allStats = [];
+
+    var preParsedTunes = tunes.map(function(t) {
+      // Remove stale solver notes before calculating progress totals.
+      t = removePreviousChordSolverNotes(t);
+      var skipReason = getTuneSkipReason(t);
+      var normalizedTune = skipReason ? t : stripExistingChordsFromTune(t);
+      var hb = splitHeaderBody(normalizedTune);
+      var meter = getHeaderValue(hb.header, "M") || "4/4";
+      var mode = getHeaderValue(hb.header, "K");
+      var unitLength = getHeaderValue(hb.header, "L");
+      return {
+        tune: normalizedTune,
+        hb: hb,
+        title: getHeaderValue(hb.header, "T") || "Untitled",
+        skipReason: skipReason,
+        measureCount: skipReason ? 0 : buildMeasureObjects(hb.body, meter, unitLength).filter(function(m) { return m.notes.length > 0; }).length
+      };
+    });
+
+    var totalMeasuresToMatch = preParsedTunes.reduce(function(a, t) { return a + t.measureCount; }, 0);
+    var progressState = {
+      startedAt: performance.now(),
+      tuneCount: tunes.length,
+      tuneNumber: 0,
+      totalMeasuresToMatch: totalMeasuresToMatch,
+      completedMeasures: 0,
+      totalMatched: 0,
+      totalSkippedPickup: 0,
+      totalFallbackMatched: 0,
+      totalRhythmFallbackMatched: 0
+    };
+
+    setProgressModalPercent(0);
+    updateProgressModal(
+      "Starting measure matching...<br>" +
+      "Tunes: <b>" + tunes.length + "</b>; Measures to examine: <b>" + totalMeasuresToMatch + "</b>.<br>" +
+      "Database index: <b>" + gLastStats.chordedTunes + "</b> chorded tune settings, <b>" + gLastStats.chordedMeasures + "</b> chorded measures, <b>" + gLastStats.keys + "</b> meter/key/mode buckets.<br>" +
+      "Database tunes skipped from matching: <b>" + ((gLastStats.skippedKeyChangeTunes || 0) + (gLastStats.skippedMultiVoiceTunes || 0) + (gLastStats.skippedLyricsTunes || 0)) + "</b> key-change, multi-voice, or lyrics setting(s)."
+    );
+    await allowBrowserToUpdate();
+
+    try {
+      for (var i = 0; i < tunes.length; i++) {
+        progressState.tuneNumber = i + 1;
+        throwIfCancelled();
+        setProgressModalPercent(progressState.totalMeasuresToMatch ?
+          Math.round((progressState.completedMeasures / progressState.totalMeasuresToMatch) * 100) : 0);
+        updateProgressModal(
+          formatProgressTuneHeader(progressState, preParsedTunes[i].title) +
+          "Matching chords...<br>" +
+          "Total measures matched so far: <b>" + progressState.totalMatched + "</b>"
+        );
+        await allowBrowserToUpdate();
+
+        var r = await processTuneAsync(tunes[i], { threshold: threshold, fallbackThresholdScale: fallbackThresholdScale, boundaryThreshold: 0.35, repeatSameChord: false, keyModeSubstitutionEnabled: !!gSettings.keyModeSubstitutionEnabled, keyModeSubstitutionOptions: Object.assign({}, gSettings.keyModeSubstitutionOptions) }, progressState);
+        results.push(r.text);
+        allStats.push(r.stats);
+        setProgressModalPercent(progressState.totalMeasuresToMatch ?
+          Math.round((progressState.completedMeasures / progressState.totalMeasuresToMatch) * 100) : 100);
+
+        await allowBrowserToUpdate();
+      }
+    } catch (err) {
+      setProcessingControlsEnabled(!remoteSubmission);
+      hideProgressModal();
+      if (err && err.message === "USER_CANCELLED") {
+        clearOutputArea();
+        setStatus("Chord generation cancelled.");
+        return;
+      }
+      clearOutputArea();
+      var processingErrorMessage = err && err.message ? err.message : String(err);
+      setStatus("<b>Error:</b> " + escapeHTML(processingErrorMessage));
+      if (remoteSubmission) {
+        showMessageDialog("<b>Remote submission error:</b><br><br>" + escapeHTML(processingErrorMessage));
+      }
+      return;
+    } finally {
+      setProcessingControlsEnabled(!remoteSubmission);
+    }
+
+    hideProgressModal();
+    var output = results.join("\n\n").trim();
+    if (preTuneText) output = preTuneText + "\n\n" + output;
+    output += "\n";
+    setOutputArea(output);
+
+    var skippedTunes = allStats.filter(function(s) {
+      return s.skippedTune;
+    }).length;
+    var processedTunes = allStats.length - skippedTunes;
+    var chordedTunes = allStats.filter(function(s) {
+      return !s.skippedTune && (s.matched || 0) > 0;
+    }).length;
+    var noMatchTunes = processedTunes - chordedTunes;
+    var alternateKeyModeTunes = allStats.filter(function(s) {
+      return !s.skippedTune && !!s.keyModeSubstitution;
+    }).length;
+    var elapsed = performance.now() - progressState.startedAt;
+
+    var finalStatus = "";
+
+    if (gInputFilename) {
+      finalStatus += "File: <b>" + escapeHTML(gInputFilename) + "</b><br/>";
+    }
+
+    finalStatus +=
+      "Done in <b>" + formatElapsed(elapsed) + "</b>.<br/>" +
+      "Successfully processed <b>" + processedTunes + "</b> " +
+      pluralWord(processedTunes, "tune", "tunes") + ".<br/>" +
+      "Added chords to <b>" + chordedTunes + "</b> " +
+      pluralWord(chordedTunes, "tune", "tunes") + ".";
+
+    if (alternateKeyModeTunes > 0) {
+      finalStatus +=
+        "<br/>Matched a different key/mode than the tune's K: tag for <b>" +
+        alternateKeyModeTunes + "</b> " +
+        pluralWord(alternateKeyModeTunes, "tune", "tunes") + ".";
+    }
+
+    if (noMatchTunes > 0) {
+      finalStatus +=
+        "<br/>No compatible measure matches were found for <b>" +
+        noMatchTunes + "</b> " +
+        pluralWord(noMatchTunes, "tune", "tunes") + ".";
+    }
+
+    if (skippedTunes > 0) {
+      finalStatus +=
+        "<br/>Skipped <b>" + skippedTunes + "</b> " +
+        pluralWord(skippedTunes, "tune", "tunes") +
+        " with multiple voices, lyrics, or mid-tune key changes.";
+    }
+
+    if (remoteSubmission) {
+      try {
+        finalStatus +=
+          "<br/>Returning the chorded ABC to the callback URL in this tab...";
+        setStatus(finalStatus);
+        navigateToRemoteCallbackResult(output);
+      } catch (err) {
+        finalStatus += "<br/><b>Callback error:</b> " + escapeHTML(err.message);
+        setStatus(finalStatus);
+        showMessageDialog("<b>Remote callback error:</b><br><br>" + escapeHTML(err.message));
+      }
+      return;
+    }
+
+    setStatus(finalStatus);
+  }
+
+  function isSupportedABCInputFile(file) {
+    if (!file) return false;
+
+    var name = file.name || "";
+
+    // Only allow explicit ABC/text filename extensions. Do not allow by MIME
+    // type because browsers report .html files as text/html, and accepting all
+    // text/* MIME types would allow HTML and other non-ABC/text inputs.
+    return /\.(abc|txt)$/i.test(name);
+  }
+
+  function readABCInputFile(file) {
+    return new Promise(function(resolve, reject) {
+      var reader = new FileReader();
+
+      reader.onload = function(e) {
+        resolve({
+          file: file,
+          text: (e.target && e.target.result) ? String(e.target.result) : ""
+        });
+      };
+
+      reader.onerror = function() {
+        reject(new Error("Could not read " + (file && file.name ? file.name : "file")));
+      };
+
+      reader.readAsText(file);
+    });
+  }
+
+  function formatInputFileSummary(files) {
+    files = Array.prototype.slice.call(files || []);
+    if (!files.length) return "";
+
+    var firstName = files[0] && files[0].name ? files[0].name : "Untitled";
+    if (files.length === 1) return firstName;
+
+    return firstName + " + " + (files.length - 1) + " other " +
+      pluralWord(files.length - 1, "file", "files");
+  }
+
+  async function loadABCInputFiles(fileList, sourceLabel) {
+    var files = Array.prototype.slice.call(fileList || []);
+    if (!files.length) return;
+
+    var supportedFiles = files.filter(isSupportedABCInputFile);
+    var skippedFiles = files.filter(function(file) {
+      return !isSupportedABCInputFile(file);
+    });
+
+    if (!supportedFiles.length) {
+      showMessageDialog("No supported ABC or text files were found. Please use only .abc, .ABC, .txt, or .TXT files.");
+      return;
+    }
+
+    clearOutputArea();
+    setStatus("Loading <b>" + supportedFiles.length + "</b> " +
+      pluralWord(supportedFiles.length, "file", "files") + "...");
+
+    try {
+      var loaded = await Promise.all(supportedFiles.map(readABCInputFile));
+      var loadedText = loaded.map(function(item) {
+        return (item.text || "").trimEnd();
+      }).join("\n\n");
+
+      var input = document.getElementById("input");
+      if (input) input.value = loadedText;
+
+      updateGenerateButtonState();
+      clearOutputArea();
+
+      gSaveFilename = "abc_backup_chords.abc";
+      gInputFilename = formatInputFileSummary(loaded.map(function(item) {
+        return item.file;
+      }));
+
+      var tuneCount = splitTunes(loadedText).length;
+      var status = (sourceLabel || "Loaded") + " <b>" + escapeHTML(gInputFilename || "Untitled") +
+        "</b> with <b>" + tuneCount + "</b> " + pluralWord(tuneCount, "tune", "tunes") + ".";
+
+      if (skippedFiles.length) {
+        status += "<br/>Skipped <b>" + skippedFiles.length + "</b> unsupported " +
+          pluralWord(skippedFiles.length, "file", "files") + ".";
+      }
+
+      setStatus(status);
+    } catch (err) {
+      console.error(err);
+      setStatus("Could not load one or more selected files.");
+      showMessageDialog("Could not load one or more selected files.");
+    }
+  }
+
+  function openABCFile(evt) {
+    var files = evt.target.files;
+    if (!files || !files.length) return;
+    loadABCInputFiles(files, "Loaded");
+  }
+
+  function setupInputDragAndDrop() {
+    if (isIOSDevice()) return;
+
+    var dropTarget = document.getElementById("cardInput");
+    if (!dropTarget) return;
+
+    function hasFiles(evt) {
+      var types = evt.dataTransfer && evt.dataTransfer.types;
+      if (!types) return false;
+      for (var i = 0; i < types.length; i++) {
+        if (types[i] === "Files") return true;
+      }
+      return false;
+    }
+
+    function dragHasPossibleABCTextFiles(evt) {
+      var items = evt.dataTransfer && evt.dataTransfer.items;
+
+      // Drag events often expose MIME type but not filename. Since final
+      // validation is extension-only at drop time, only use this to suppress
+      // obviously unsupported drags such as text/html. Empty/unknown types are
+      // allowed here so .abc files from browsers that omit MIME type can still
+      // show the drag highlight before final validation.
+      if (!items || !items.length) return true;
+
+      for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        if (!item || item.kind !== "file") continue;
+
+        var type = (item.type || "").toLowerCase();
+        if (!type) return true;
+        if (type === "text/plain") return true;
+        if (type === "application/vnd.abc") return true;
+      }
+
+      return false;
+    }
+
+    function stopDrag(evt) {
+      if (!hasFiles(evt)) return false;
+      evt.preventDefault();
+      evt.stopPropagation();
+      return true;
+    }
+
+    ["dragenter", "dragover"].forEach(function(eventName) {
+      dropTarget.addEventListener(eventName, function(evt) {
+        if (!stopDrag(evt)) return;
+        if (dragHasPossibleABCTextFiles(evt)) {
+          dropTarget.classList.add("drag_over");
+          if (evt.dataTransfer) evt.dataTransfer.dropEffect = "copy";
+        } else {
+          dropTarget.classList.remove("drag_over");
+          if (evt.dataTransfer) evt.dataTransfer.dropEffect = "none";
+        }
+      });
+    });
+
+    ["dragleave", "dragend"].forEach(function(eventName) {
+      dropTarget.addEventListener(eventName, function(evt) {
+        stopDrag(evt);
+        dropTarget.classList.remove("drag_over");
+      });
+    });
+
+    dropTarget.addEventListener("drop", function(evt) {
+      stopDrag(evt);
+      dropTarget.classList.remove("drag_over");
+      var files = evt.dataTransfer && evt.dataTransfer.files;
+      if (files && files.length) {
+        // A drag/drop replaces the current input just like opening new files.
+        // Clear the file picker so its native label does not keep showing any
+        // previously selected files, for example "2 files" after dropping one.
+        var fileInput = document.getElementById("selectabcfile");
+        if (fileInput) fileInput.value = "";
+        loadABCInputFiles(files, "Dropped");
+      }
+    });
+  }
+
+  function clearInputAndOutput() {
+    var input = document.getElementById("input");
+    if (input) input.value = "";
+    updateGenerateButtonState();
+    clearOutputArea();
+    gSaveFilename = "abc_backup_chords.abc";
+    gInputFilename = "";
+
+    var fileInput = document.getElementById("selectabcfile");
+    if (fileInput) fileInput.value = "";
+
+    setStatus("Input and output cleared.");
+  }
+
+  async function requestSaveFilename(defaultName) {
+    defaultName = normalizeSaveFilename(defaultName || "abc_backup_chords.abc");
+
+    if (window.DayPilot && DayPilot.Modal && DayPilot.Modal.prompt) {
+      try {
+        var args = await DayPilot.Modal.prompt("Please enter a filename for your output ABC file:", defaultName, {
+          theme: "modal_flat",
+          width: getResponsiveModalWidth(520),
+          top: 150,
+          scrollWithPage: true
+        });
+
+        if (!args || args.canceled) return null;
+        return args.result;
+      } catch (err) {
+        // Fall through to the browser prompt if the DayPilot prompt API is
+        // unavailable or behaves differently in a locally included version.
+      }
+    }
+
+    return prompt("Please enter a filename for your output ABC file:", defaultName);
+  }
+
+  function normalizeSaveFilename(fname) {
+    fname = (fname || "").replace(/[^a-zA-Z0-9_\-. ]+/g, "").trim();
+    if (!fname) return "";
+
+    // Only .abc and .txt are valid output extensions. If the user enters
+    // another extension, replace that extension with .abc. If they enter no
+    // extension, add .abc.
+    if (/\.(abc|txt)$/i.test(fname)) return fname;
+    if (/\.[^.\/]+$/.test(fname)) return fname.replace(/\.[^.\/]+$/, ".abc");
+    return fname + ".abc";
+  }
+
+  function isIOSDevice() {
+    // Detect iPhone/iPad/iPod, including modern iPadOS Safari which can report
+    // itself as Macintosh while still supporting touch events.
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  }
+
+  function configureFileOpenAccept() {
+    var fileInput = document.getElementById("selectabcfile");
+    if (!fileInput) return;
+
+    fileInput.setAttribute("multiple", "multiple");
+
+    // iOS/iPadOS Files can be overly strict about the accept list and may
+    // gray out .abc files if the extension is not mapped to a known system
+    // document type. On iOS, remove the accept filter entirely so ABC files
+    // remain selectable. Other platforms keep a strict extension-only ABC/text filter.
+    if (isIOSDevice()) {
+      fileInput.removeAttribute("accept");
+    } else {
+      fileInput.setAttribute("accept", ".abc,.ABC,.txt,.TXT");
+    }
+  }
+
+  async function shareOutputFileOnIOS(data, fname) {
+    if (!isIOSDevice()) return false;
+
+    if (!window.File || !navigator.share || !navigator.canShare) return false;
+
+    var file = new File([data], fname, { type: "application/octet-stream" });
+    var shareData = {
+      files: [file]
+    };
+
+    if (!navigator.canShare(shareData)) return false;
+
+    await navigator.share(shareData);
+    return true;
+  }
+
+  async function saveOutput() {
+    var data = document.getElementById("output").value;
+    if (!data.length) { showMessageDialog("Nothing to Save"); return; }
+
+    var fname = await requestSaveFilename(gSaveFilename || "abc_backup_chords.abc");
+    if (fname === null || fname === undefined) return;
+
+    fname = normalizeSaveFilename(fname);
+    if (!fname) return;
+
+    gSaveFilename = fname;
+
+    // On iOS, use the Share Sheet with a real File object instead of the
+    // browser download path. This avoids Safari appending .txt to filenames
+    // such as myfile.abc when saving text/plain downloads.
+    try {
+      if (await shareOutputFileOnIOS(data, fname)) {
+        setStatus("Shared <b>" + escapeHTML(fname) + "</b> using the iOS Share Sheet.");
+        return;
+      }
+    } catch (err) {
+      // If the user cancels the Share Sheet, do not fall back to a download on
+      // iOS because that is the path that can add an unwanted .txt extension.
+      if (isIOSDevice()) {
+        return;
+      }
+    }
+
+    var blob = new Blob([data], { type: "application/octet-stream" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.style.display = "none";
+    a.href = url;
+    a.download = fname;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+  }
+
+  function copyOutputToClipboard() {
+    var text = document.getElementById("output").value;
+    if (!text.length) { showMessageDialog("Nothing to copy to the Clipboard"); return; }
+    copyToClipboard(text).then(function() {
+      var btn = document.getElementById("copybutton");
+      btn.innerHTML = "Output copied to the Clipboard!";
+      setTimeout(function() { btn.innerHTML = "Copy Output to the Clipboard"; }, 1250);
+    }).catch(function() { showMessageDialog("Unable to copy to Clipboard."); });
+  }
+
+  function copyToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+    return new Promise(function(resolve, reject) {
+      var textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      textArea.style.top = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try { document.execCommand("copy") ? resolve() : reject(); }
+      catch (err) { reject(err); }
+      textArea.remove();
+    });
+  }
+
+  function testOutput() {
+    var abcText = document.getElementById("output").value;
+    updateShareLinkForOutput(abcText);
+
+    if (!abcText.length) {
+      showMessageDialog("Nothing to test!");
+      return;
+    }
+
+    if (!gOutputShareURL) {
+      showMessageDialog("Output too long to test directly in ABC Transcription Tools. Please Save or Copy the output instead.");
+      return;
+    }
+
+    window.open(gOutputShareURL, "_blank");
+  }
+
+  window.addEventListener("pageshow", function(event) {
+    // pageshow also fires during the initial page load. Running initializeTool()
+    // there and again in load would start callback processing twice. Only
+    // reinitialize here when the page is restored from the back-forward cache.
+    if (event.persisted && gInputInitialized) {
+      initializeTool();
+    }
+  });
+
+  window.addEventListener("load", async function() {
+    document.getElementById("selectabcfile").addEventListener("change", openABCFile);
+    setupInputDragAndDrop();
+    var input = document.getElementById("input");
+    if (input) input.addEventListener("input", handleInputChanged);
+    var output = document.getElementById("output");
+    if (output) output.addEventListener("input", function() {
+      updateOutputActionButtons(output.value);
+      updateShareLinkForOutput(output.value);
+    });
+    await initializeTool();
+    gInputInitialized = true;
+
+    syncSettingsControls();
+  });
+
+  </script>
+</head>
+<body>
+<div id="progress_modal_overlay" aria-live="polite">
+  <div id="progress_modal_box">
+    <h3 id="progress_modal_title">Matching Backup Chords</h3>
+    <div id="progress_modal_status">Starting...</div>
+    <div id="progress_modal_progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <div id="progress_modal_progress_fill"></div>
+      <div id="progress_modal_progress_label">0%</div>
+    </div>
+    <div id="progress_modal_buttons">
+      <button class="btn btn-controls" onclick="cancelProcessing();" title="Stop measure matching and clear the output area">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="app">
+  <div class="heroCard">
+    <h1 class="heroTitle">ABC Tune Backup Chord Solver</h1>
+    <p class="heroText">
+      Adds backup chords to traditional Irish tunes by matching them measure-per-measure against chorded settings from The Session.
+    </p>
+  </div>
+
+  <div class="main">
+    <div class="left">
+      <div id="cardInput" class="card">
+        <div class="inputHeader">
+          <h3>ABC Input</h3>
+          <div class="inputFileRow">
+            <span class="muted small">Open ABC file(s):</span>
+            <input type="file" id="selectabcfile" accept=".abc,.ABC,.txt,.TXT" multiple title="Open one or more existing .abc or .txt files. You may also drag and drop one or more .abc or .txt files onto the input area." />
+          </div>
+        </div>
+        <div class="taWrap">
+          <textarea id="input" placeholder="Type or paste ABC tunes here..." spellcheck="false" autocorrect="off" autocapitalize="none" autocomplete="off"></textarea>
+        </div>
+      </div>
+
+      <div id="cardControls" class="card">
+        <div class="row">
+          <button id="generatebutton" class="btn btn-generate" onclick="generateBackupChords();" title="Generate suggested backup chords for the input ABC notation">Generate Backup Chords</button>
+          <button id="clearbutton" class="btn" onclick="clearInputAndOutput();" title="Clear both the input and output areas">Clear</button>
+        </div>
+      </div>
+
+      <div id="cardStatus" class="card">
+        <h3 class="card_label">Status</h3>
+        <div id="status" class="status">Ready.</div>
+      </div>
+
+      <div id="cardSettings" class="card">
+        <h3 class="card_label">Settings</h3>
+        <div class="settings_grid">
+          <label for="options_threshold">Minimum match score</label>
+          <input id="options_threshold" type="number" min="0.10" max="1.00" step="0.01" value="0.75" title="Minimum measure similarity score required before copying chords">
+        </div>
+        <div class="options_hint">
+          Default is <b>0.75</b>.&nbsp;&nbsp;Lower values find more matches but may be less selective.<br/>Higher values are stricter but may leave more measures unchanged.
+        </div>
+
+        <div class="settings_check" style="margin-top:14px;">
+          <input id="options_keymode_substitution" type="checkbox" checked onchange="syncKeyModeSubstitutionControlsEnabled();">
+          <label for="options_keymode_substitution">
+            <strong>Enable limited key/mode substitution checking</strong><br>
+            <span class="muted small">Tests selected alternate key/mode choices for uncertain or incorrect <b>K:</b> tags.<br/>Chord matching may be slower when substitutions are used.</span>
+          </label>
+        </div>
+
+        <div class="options_hint">
+          Enabled substitution choices:
+          <div id="options_substitution_choices" class="options_substitution_choices">
+            <label class="options_substitution_choice" for="options_substitution_Dmajor">
+              <input id="options_substitution_Dmajor" type="checkbox" checked>
+              <span><b>K:D</b> (two sharps) may also be tested as <b>Edor</b>, <b>Bmin</b>, or <b>Amix</b>.</span>
+            </label>
+            <label class="options_substitution_choice" for="options_substitution_Gmajor">
+              <input id="options_substitution_Gmajor" type="checkbox" checked>
+              <span><b>K:G</b> (one sharp) may also be tested as <b>Dmix</b> or <b>Ador</b>.</span>
+            </label>
+            <label class="options_substitution_choice" for="options_substitution_Cmajor">
+              <input id="options_substitution_Cmajor" type="checkbox" checked>
+              <span><b>K:C</b> (no sharps or flats) may also be tested as <b>Ddor</b> or <b>Amin</b>.</span>
+            </label>
+            <label class="options_substitution_choice" for="options_substitution_Fmajor">
+              <input id="options_substitution_Fmajor" type="checkbox" checked>
+              <span><b>K:F</b> (one flat) may also be tested as <b>Gdor</b> or <b>Dmin</b>.</span>
+            </label>
+            <div class="options_hint" style="margin-top:12px;">
+              <b>Additional key/mode options:</b><br/>Only enable these if your source tunes have <b>K:G</b> or <b>K:A</b> tags and you do not get good results using the more common substitutions above.
+            </div>
+            <label class="options_substitution_choice" for="options_substitution_Gmajor_Eminor">
+              <input id="options_substitution_Gmajor_Eminor" type="checkbox">
+              <span><b>K:G</b> (one sharp) may also be tested as <b>Emin</b>.</span>
+            </label>
+            <label class="options_substitution_choice" for="options_substitution_Amajor_Bdorian">
+              <input id="options_substitution_Amajor_Bdorian" type="checkbox">
+              <span><b>K:A</b> (three sharps) may also be tested as <b>Bdor</b>.</span>
+            </label>
+          </div>
+        </div>
+
+        <h3 class="card_label" style="margin-top:18px;">Advanced Settings</h3>
+
+        <div class="settings_grid" style="margin-top:12px;">
+          <label for="options_fallback_match_percentage">Fallback match percentage</label>
+          <input id="options_fallback_match_percentage" type="number" min="50" max="100" step="5" value="75" title="Lowest fallback matching allowed, as a percentage of the minimum match score. Range is 50% to 100%.">
+        </div>
+        <div class="options_hint">
+          Default is <b>75%</b>.&nbsp;&nbsp;If no normal match is found, the tool will use a lower-scoring fallback match down to this percentage of the <b>Minimum match score</b>.<br/>Lower values add more chords but may be less accurate; higher values are more selective.
+        </div>
+
+        <div class="settings_buttons">
+          <button id="settingssavebutton" class="btn" onclick="saveSettingsControls();" title="Save these settings for future runs">Save Settings</button>
+          <button id="settingsresetbutton" class="btn" onclick="resetSettingsControls();" title="Restore the default backup chord settings">Reset Defaults</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="right">
+      <div id="cardOutput" class="card">
+        <h3 class="card_label">Processed ABC Output with Suggested Backup Chords</h3>
+        <div class="taWrap">
+          <textarea id="output" placeholder="Processed ABC output with suggested backup chords will appear here" spellcheck="false" autocorrect="off" autocapitalize="none"></textarea>
+        </div>
+        <div class="output_button_row">
+          <button id="copybutton" class="btn btn-controls" onclick="copyOutputToClipboard();" disabled title="Generate output before copying">Copy Output to the Clipboard</button>
+          <button id="savebutton" class="btn btn-controls" onclick="saveOutput();" disabled title="Generate output before saving">Save Output to a File</button>
+          <button id="testbutton" class="btn btn-controls" onclick="testOutput();" disabled title="Generate output before testing it in the ABC Transcription Tools">Test Output in the ABC Transcription Tools</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="cardHelp" class="card">
+    <button id="abctoolsbutton" class="btn btn-controls" onclick="openABCTranscriptionTools();" title="Open the ABC Transcription Tools in a new browser tab without sending a share link">Open ABC Transcription Tools</button>
+    <button id="instructionsbutton" class="btn btn-controls" onclick="showInstructions();" title="Show instructions for using the ABC Tune Backup Chord Solver">Instructions</button>
+  </div>
+</div>
+</body>
+</html>

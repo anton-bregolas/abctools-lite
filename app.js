@@ -31,7 +31,7 @@
  **/
 
 // Version number for the settings dialog
-var gVersionNumber = "3206_031626_1030";
+var gVersionNumber = "3259_061426_0800";
 
 var gMIDIInitStillWaiting = false;
 
@@ -209,6 +209,30 @@ var gPDFPaperSize = "letter";
 var gPageWidth = 535;
 var gRenderPixelRatio = 2.0;
 
+// PDF multi-tune page fit mode.
+// 0 = normal behavior, 2 = prefer two tunes per page, 3 = prefer three tunes per page, 4 = prefer four tunes per page.
+var gPDFPageFitTargetTunes = 0;
+var gPDFPageFitTuneScales = [];
+var gPDFPageFitMinScale = 0.72;
+var gPDFPageFitMinScaleOneTune = 0.65;
+var gPDFPageFitMinScaleTwoTunes = 0.72;
+var gPDFPageFitMinScaleThreeTunes = 0.55;
+var gPDFPageFitMinScaleFourTunes = 0.4;
+var gPDFCenteredOnePageTuneStartY = [];
+
+// PDF export staff width preset for notation layouts.
+// The Standard preset uses the current rendered notation as-is.
+// The wider presets are applied at PDF export time by temporarily injecting
+// %%staffwidth and forcing a full re-render before PDF rasterization.
+// Used by One Tune per Page, Multiple Tunes per Page (Natural Flow),
+// and Multiple Tunes per Page (Prefer 2/3/4 Tunes/Page).
+// Persistence/restoration is handled separately.
+var gPDFPageFitScalingPreset = "standard";
+
+// Temporary ABC used while exporting fitted PDF layouts.
+var gPDFPageFitStaffWidthTempABC = null;
+var gPDFPageFitStaffWidthTempActive = false;
+
 // PDF hidden titles
 var gPDFIncludeHiddenTitles = true;
 
@@ -308,7 +332,11 @@ var gRenderingFonts = {
 var gMP3Bitrate = 224;
 
 // Soundfont to use
-var gDefaultSoundFont = "https://paulrosen.github.io/midi-js-soundfonts/FluidR3_GM/";
+var gDefaultSoundFont = "https://michaeleskin.com/abctools/soundfonts/fatboy_4/";
+
+// Old version
+// var gDefaultSoundFont = "https://paulrosen.github.io/midi-js-soundfonts/FluidR3_GM/";
+
 var gTheActiveSoundFont = gDefaultSoundFont;
 
 // Bodhran pitch
@@ -543,6 +571,9 @@ var gAlwaysFlattenParts = false;
 // Flat look UI?
 // var gUseFlatButtons = true;
 
+// BWW uses custom instrument
+var gBWWUseCustomInstrument = false;
+
 // Global reference to the ABC editor
 var gTheABC = document.getElementById("abc");
 
@@ -584,129 +615,177 @@ function getFirstPage() {
 
 /**
  * Build a single ABC tune composed of concatenated incipits for each detected part.
- *
- * Options:
- *  - measuresPerPart: number of measures to keep for EVERY detected part (A, B, C, …).
- *  - options.voice: (optional) string voice ID to select from multi-voice sources.
- *  - options.partsOnNewLines: (optional) boolean — when true, each part is on its own line.
- *
  */
 function buildABCIncipitsSingleTune(abcText, measuresPerPart, options = {}) {
   const FIELD_RE = /^\s*[A-Za-z]\s*:\s*/;
-  const MUSIC_HINT_RE = /[\|\[\]:]|["'][^"']*["']|[A-Ga-gzxy]/;
+  const MUSIC_HINT_RE = /[\|\[\]:]|"[^"]*"|[A-Ga-gzxy]/;
 
   function splitHeaderAndBody(full) {
     const lines = full.replace(/\r/g, "").split("\n");
     const headerLines = [];
     let musicStartIdx = 0;
+
     for (let i = 0; i < lines.length; i++) {
       const ln = lines[i];
       const isBlank = /^\s*$/.test(ln);
       const isPercent = /^\s*%/.test(ln);
       const isField = FIELD_RE.test(ln);
       const looksLikeMusic = MUSIC_HINT_RE.test(ln);
-      if (!isBlank && !isPercent && !isField && looksLikeMusic) { musicStartIdx = i; break; }
+
+      if (!isBlank && !isPercent && !isField && looksLikeMusic) {
+        musicStartIdx = i;
+        break;
+      }
+
       headerLines.push(ln);
       musicStartIdx = i + 1;
     }
-    return { headerText: headerLines.join("\n"), bodyText: lines.slice(musicStartIdx).join("\n") };
+
+    return {
+      headerText: headerLines.join("\n"),
+      bodyText: lines.slice(musicStartIdx).join("\n")
+    };
   }
 
   function filterToVoice(body, desiredVoice) {
     const hasVoices = /\nV\s*:/i.test("\n" + body);
     if (!hasVoices) return body;
+
     const chunks = body.split(/\n(?=V\s*:[^\n]*\n?)/i);
     const voiceBlocks = new Map();
+
     const idOf = (vLine) => vLine.replace(/^V\s*:\s*/i, "").trim().split(/\s+/)[0];
+
     for (const chunk of chunks) {
-      if (!/^\s*V\s*:/i.test(chunk)) { voiceBlocks.set("_PRE_", (voiceBlocks.get("_PRE_") || "") + chunk); continue; }
+      if (!/^\s*V\s*:/i.test(chunk)) {
+        voiceBlocks.set("_PRE_", (voiceBlocks.get("_PRE_") || "") + chunk);
+        continue;
+      }
+
       const lines = chunk.split("\n");
       const vid = idOf(lines[0]);
       const music = lines.slice(1).join("\n");
+
       voiceBlocks.set(vid, (voiceBlocks.get(vid) || "") + music);
     }
+
     const chosen = desiredVoice || [...voiceBlocks.keys()].find((k) => k !== "_PRE_");
     let out = (voiceBlocks.get(chosen) || "").trim();
-    if (voiceBlocks.has("_PRE_")) out = (voiceBlocks.get("_PRE_") + "\n" + out).trim();
+
+    if (voiceBlocks.has("_PRE_")) {
+      out = (voiceBlocks.get("_PRE_") + "\n" + out).trim();
+    }
+
     return out;
   }
 
-  // ---------- Measure slicing & anchors ----------
   function sliceMeasures(music) {
     let s = music.replace(/\r/g, "");
-    // drop inline fields inside body (P:, K:, V:, etc.)
-    s = s.replace(/\n(?:[A-Za-z]\s*:[^\n]*)/g, "\n");
 
-    // ignore any trailing '!' or '\' at end of lines (don’t touch mid-line !trill!)
+    s = s.replace(/(^|\n)\s*[A-Za-z]\s*:[^\n]*/g, "$1");
     s = s.replace(/[!\\]+\s*(?=\n|$)/g, "");
 
     const measures = [];
-    const anchors  = [];   // indices where the NEXT measure starts a new part
-    const barTypes = [];   // bar type that closed each flushed measure
+    const anchors = [];
+    const barTypes = [];
     let buf = "";
 
     const flush = (barType = null) => {
       const t = buf.trim();
-      if (t) { measures.push(t); barTypes.push(barType); }
+      if (t) {
+        measures.push(t);
+        barTypes.push(barType);
+      }
       buf = "";
     };
 
-    const isWs = (ch) => ch === ' ' || ch === '\t' || ch === '\n';
+    const isWs = (ch) => ch === " " || ch === "\t" || ch === "\n";
 
     for (let i = 0; i < s.length; i++) {
-      // Voltas like "|1", "|2"
-      if (s[i] === '|' && /[0-9]/.test(s[i + 1] || '')) {
-        flush('volta');
-        i += 1;
-        while (/[0-9]/.test(s[i + 1] || '')) i += 1;
-        while (s[i + 1] === ' ') i += 1;
+
+      if (s[i] === '"') {
+        let j = i + 1;
+        while (j < s.length) {
+          if (s[j] === '"') break;
+          j++;
+        }
+
+        if (j < s.length && s[j] === '"') {
+          buf += s.slice(i, j + 1);
+          i = j;
+          continue;
+        }
+
+        buf += s[i];
         continue;
       }
-      // Voltas like "[1", "[2"
-      if (s[i] === '[' && /[0-9]/.test(s[i + 1] || '')) {
-        flush('volta');
+
+      if (s[i] === "|" && /[0-9]/.test(s[i + 1] || "")) {
+        flush("volta");
         i += 1;
-        while (/[0-9]/.test(s[i + 1] || '')) i += 1;
-        while (s[i + 1] === ' ') i += 1;
+        while (/[0-9]/.test(s[i + 1] || "")) i += 1;
+        while (s[i + 1] === " ") i += 1;
+        continue;
+      }
+
+      if (s[i] === "[" && /[0-9]/.test(s[i + 1] || "")) {
+        flush("volta");
+        i += 1;
+        while (/[0-9]/.test(s[i + 1] || "")) i += 1;
+        while (s[i + 1] === " ") i += 1;
         continue;
       }
 
       const three = s.slice(i, i + 3);
-      const two   = s.slice(i, i + 2);
+      const two = s.slice(i, i + 2);
       let bar = null;
+
       if (three === "[|]" || three === "|||") bar = three;
       else if (two === "|:" || two === ":|" || two === "::" || two === "||" || two === "|]" || two === "[|") bar = two;
       else if (s[i] === "|") bar = "|";
 
       if (bar) {
-        let thisBarType = 'other';
-        if (bar === "|:") thisBarType = 'start_repeat';
-        else if (bar === ":|") thisBarType = 'end_repeat';
-        // treat |], [|] as double bars too
-        else if (bar === "||" || bar === "|||" || bar === "|]" || bar === "[|]") thisBarType = 'double';
-        else if (bar === "|") thisBarType = 'single';
+        let thisBarType = "other";
+
+        if (bar === "|:") thisBarType = "start_repeat";
+        else if (bar === ":|") thisBarType = "end_repeat";
+        else if (bar === "||" || bar === "|||" || bar === "|]" || bar === "[|]") thisBarType = "double";
+        else if (bar === "|") thisBarType = "single";
 
         flush(thisBarType);
 
         if (bar === "|:") {
           anchors.push(measures.length);
-
-        } else if (bar === ":|") {
-          // Look ahead ACROSS WHITESPACE/NEWLINES for optional '[' and digits
+        }
+        else if (bar === ":|") {
           let j = i + 2;
-          while (isWs(s[j])) j++;
-          if (s[j] === '[') { j++; while (isWs(s[j])) j++; }
-          let isSecondEnding = false;
-          if (/[0-9]/.test(s[j] || '')) {
-            if (s[j] === '2') isSecondEnding = true;
-            while (/[0-9]/.test(s[j] || '')) j++;
-            while (isWs(s[j])) j++;
-          }
-          if (!isSecondEnding) anchors.push(measures.length);
-          i = j - 1;
 
-        } else if (thisBarType === 'double') {
-          // Double bars always start a new part (dedupe later prevents :|| double-anchors)
+          while (isWs(s[j])) j++;
+
+          let k = j;
+          if (s[k] === "[") {
+            k++;
+            while (isWs(s[k])) k++;
+          }
+
+          let hasEndingNumber = false;
+          let isSecondEnding = false;
+
+          if (/[0-9]/.test(s[k] || "")) {
+            hasEndingNumber = true;
+            if (s[k] === "2") isSecondEnding = true;
+
+            while (/[0-9]/.test(s[k] || "")) k++;
+            while (isWs(s[k])) k++;
+          }
+
+          if (!isSecondEnding) anchors.push(measures.length);
+
+          if (hasEndingNumber) {
+            i = k - bar.length;
+          }
+        }
+        else if (thisBarType === "double") {
           anchors.push(measures.length);
         }
 
@@ -718,11 +797,15 @@ function buildABCIncipitsSingleTune(abcText, measuresPerPart, options = {}) {
     }
 
     const tail = buf.trim();
-    if (tail) { measures.push(tail); barTypes.push(null); }
+    if (tail) {
+      measures.push(tail);
+      barTypes.push(null);
+    }
 
-    // strictly increasing anchors
     const uniq = [];
-    for (const a of anchors) { if (!uniq.length || a > uniq[uniq.length - 1]) uniq.push(a); }
+    for (const a of anchors) {
+      if (!uniq.length || a > uniq[uniq.length - 1]) uniq.push(a);
+    }
 
     return { measures, anchors: uniq, barTypes };
   }
@@ -732,93 +815,143 @@ function buildABCIncipitsSingleTune(abcText, measuresPerPart, options = {}) {
     return take.join(" | ");
   }
 
-  function withQuotedCaret(snippet, label) {
+  function withPartLabel(snippet, label) {
     const t = snippet.trim();
-    return t ? `"^${label}" ${t}` : t;
+    if (!t) return t;
+
+    const placement = options.partLabelsBelowStaff ? "_" : "^";
+    return `"${placement}${label}" ${t}`;
   }
 
-  const neat = (s) => s.replace(/[ \t]+/g, " ")
-                       .replace(/\s*\|\s*/g, " | ")
-                       .replace(/\s+\n/g, "\n")
-                       .trim();
+  function neatOutsideQuotes(s) {
+    let out = "";
+    let inQuote = false;
 
-  // Remove stray leading ":" or "|" that might survive edge cases
+    for (let i = 0; i < s.length; i++) {
+      const ch = s[i];
+
+      if (ch === '"') {
+        inQuote = !inQuote;
+        out += ch;
+        continue;
+      }
+
+      if (!inQuote && (ch === " " || ch === "\t")) {
+        out += " ";
+        while (s[i + 1] === " " || s[i + 1] === "\t") i++;
+        continue;
+      }
+
+      out += ch;
+    }
+
+    out = out.replace(/\s+\n/g, "\n").trim();
+
+    let finalOut = "";
+    inQuote = false;
+
+    for (let i = 0; i < out.length; i++) {
+      const ch = out[i];
+
+      if (ch === '"') {
+        inQuote = !inQuote;
+        finalOut += ch;
+        continue;
+      }
+
+      if (!inQuote && ch === "|") {
+        finalOut = finalOut.replace(/[ \t]+$/g, "");
+        finalOut += " | ";
+        while (out[i + 1] === " " || out[i + 1] === "\t") i++;
+        continue;
+      }
+
+      finalOut += ch;
+    }
+
+    return finalOut.trim();
+  }
+
   function cleanPartStart(s) {
     return s.replace(/^\s*:+/, "").replace(/^\s*\|+/, "").trim();
   }
 
-  // Decide whether a caret-starting snippet is an annotation (needs opening quote) or a sharped note.
   function fixLeadingCaretAnnotation(s) {
     const trimmed = s.replace(/^\s+/, "");
-    if (!trimmed.startsWith("^")) return s;       // nothing to do
-    if (/^\s*"/.test(s)) return s;                // already quoted
+    if (!trimmed.startsWith("^")) return s;
+    if (/^\s*"/.test(s)) return s;
 
-    // Examine what follows the caret
     const after = trimmed.slice(1);
-
-    // If it matches a *note* start (^[A-Ga-g][,']*(len)? then optional tie/boundary), do NOT quote.
-    // - length: digits and optional slash, e.g., 2 or 3/ or 3/2
-    // - boundary: space, bar, close bracket/paren, end, or tie '-'
     const noteLike = /^[A-Ga-g][,']*(?:\d+(?:\/\d*)?)?(?=$|[\s\|\]\)-]|-)/.test(after);
-    if (noteLike) return s; // sharped note, not an annotation
 
-    // Otherwise, treat it as an annotation that lost its opening quote
+    if (noteLike) return s;
+
     return '"' + s;
   }
 
-  // ---------- main ----------
   const { headerText, bodyText } = splitHeaderAndBody(abcText);
   const sampledBody = filterToVoice(bodyText, options?.voice);
   const { measures, anchors, barTypes } = sliceMeasures(sampledBody);
 
-  // Pickup-aware Part-A start (|: only):
   let startA = 0;
-  if (anchors.length && anchors[0] === 1 && barTypes[0] === 'start_repeat') {
-    startA = 1; // upbeat inside opening repeat
-  } else if (barTypes.length >= 2 && barTypes[0] === 'single' && barTypes[1] === 'start_repeat' && anchors.length) {
-    startA = anchors[0]; // pickup before first |:
-  } else if (anchors.length && anchors[0] === 0) {
-    startA = 0; // tune starts with |:
+
+  if (anchors.length && anchors[0] === 1 && barTypes[0] === "start_repeat") {
+    startA = 1;
+  }
+  else if (barTypes.length >= 2 && barTypes[0] === "single" && barTypes[1] === "start_repeat" && anchors.length) {
+    startA = anchors[0];
+  }
+  else if (anchors.length && anchors[0] === 0) {
+    startA = 0;
   }
 
-  // Part starts: startA, then every anchor > startA
   const starts = [startA];
-  for (const a of anchors) if (a > startA) starts.push(a);
+  for (const a of anchors) {
+    if (a > startA) starts.push(a);
+  }
 
-  // Emit all parts, each N measures
   const N = Number(measuresPerPart);
   const pieces = [];
+
   for (let p = 0; p < starts.length; p++) {
     const start = Math.min(starts[p], measures.length);
     if (start >= measures.length) break;
 
     let snippet = buildPart(measures, start, N);
-    snippet = neat(snippet);
+    snippet = neatOutsideQuotes(snippet);
     snippet = cleanPartStart(snippet);
-    snippet = fixLeadingCaretAnnotation(snippet); // refined: only quote caret if not a sharped note
+    snippet = fixLeadingCaretAnnotation(snippet);
+
     if (!snippet) continue;
 
-    const label = indexToLetters(p) + " Part"; // A, B, C...
-    pieces.push(withQuotedCaret(snippet, `${label}`));
+    const label = indexToLetters(p) + " Part";
+    pieces.push(withPartLabel(snippet, label));
   }
 
-  // If there are no notes, just return the original ABC (section headers, for example)
   if (!pieces.length) return abcText;
 
-  // Optional: put parts on separate lines
   const partsOnNewLines = !!options.partsOnNewLines;
+
   let combinedBody = partsOnNewLines
     ? pieces.join(" ||\n")
     : pieces.join(" || ");
 
   combinedBody = combinedBody.replace(/\s+$/g, "");
+
   if (!/\|\|\s*$/.test(combinedBody)) combinedBody += " ||";
 
   return headerText.replace(/\s+$/g, "") + "\n" + combinedBody + "\n";
 
   function indexToLetters(idx) {
-    let n = idx + 1, out = "";
-    while (n > 0) { const r = (n - 1) % 26; out = String.fromCharCode(65 + r) + out; n = Math.floor((n - 1) / 26); }
+    let n = idx + 1;
+    let out = "";
+
+    while (n > 0) {
+      const r = (n - 1) % 26;
+      out = String.fromCharCode(65 + r) + out;
+      n = Math.floor((n - 1) / 26);
+    }
+
     return out;
   }
 }
@@ -8170,6 +8303,541 @@ function getDescriptiveFileName(tuneCount, bAllowSpaces) {
 }
 
 //
+// PDF page-fit helpers for Prefer 2/3/4 Tunes per Page
+//
+function isPDFCenteredOnePageLayout(thePageOptions) {
+
+  return ((thePageOptions == "one_centered") ||
+          (thePageOptions == "one_centered_a4"));
+
+}
+
+function isPDFPageFitLayout(thePageOptions) {
+
+  return ((thePageOptions == "multi_fit_2") ||
+          (thePageOptions == "multi_fit_2_a4") ||
+          (thePageOptions == "multi_fit_3") ||
+          (thePageOptions == "multi_fit_3_a4") ||
+          (thePageOptions == "multi_fit_4") ||
+          (thePageOptions == "multi_fit_4_a4"));
+
+}
+
+//
+// PDF staff-width preset helpers for notation PDF layouts.
+// These are broader than page-fit layout: staff-width presets can also be
+// used for One Tune per Page and Multiple Tunes per Page (Natural Flow).
+//
+function isPDFStaffWidthPresetLayout(thePageOptions) {
+
+  return ((thePageOptions == "one") ||
+          (thePageOptions == "one_a4") ||
+          (thePageOptions == "one_centered") ||
+          (thePageOptions == "one_centered_a4") ||
+          (thePageOptions == "multi") ||
+          (thePageOptions == "multi_a4") ||
+          (thePageOptions == "multi_fit_2") ||
+          (thePageOptions == "multi_fit_2_a4") ||
+          (thePageOptions == "multi_fit_3") ||
+          (thePageOptions == "multi_fit_3_a4") ||
+          (thePageOptions == "multi_fit_4") ||
+          (thePageOptions == "multi_fit_4_a4"));
+
+}
+
+function getPDFPageFitTargetFromLayout(thePageOptions) {
+
+  if (isPDFCenteredOnePageLayout(thePageOptions)) {
+    return 1;
+  }
+
+  if ((thePageOptions == "multi_fit_2") || (thePageOptions == "multi_fit_2_a4")) {
+    return 2;
+  }
+
+  if ((thePageOptions == "multi_fit_3") || (thePageOptions == "multi_fit_3_a4")) {
+    return 3;
+  }
+
+  if ((thePageOptions == "multi_fit_4") || (thePageOptions == "multi_fit_4_a4")) {
+    return 4;
+  }
+
+  return 0;
+
+}
+
+function normalizePDFPageFitStaffWidthPreset(thePreset) {
+
+  // Backward compatibility with the previous scale-oriented preset names.
+  switch (thePreset) {
+
+    case "standard":
+      return "standard";
+
+    case "semi_compact":
+      return "semi_compact";
+
+    case "compact":
+      return "compact";
+
+    case "more_compact":
+      return "more_compact";
+
+    case "most_compact":
+      return "most_compact";
+
+    default:
+      return "standard";
+  }
+}
+
+function applyPDFPageFitScalingPreset(thePreset) {
+
+  // Historical function name retained so existing save/restore code and dialog
+  // handling do not need to change. The preset now controls temporary
+  // %%staffwidth injection instead of changing the page-fit scale limits.
+  gPDFPageFitScalingPreset = normalizePDFPageFitStaffWidthPreset(thePreset);
+
+  // Keep the actual page-fit fallback scale limits fixed at the previous
+  // balanced values. The compactness now comes from the temporary staffwidth
+  // render, not from changing these scale limits.
+  gPDFPageFitMinScaleOneTune = 0.65;
+  gPDFPageFitMinScaleTwoTunes = 0.72;
+  gPDFPageFitMinScaleThreeTunes = 0.55;
+  gPDFPageFitMinScaleFourTunes = 0.4;
+  gPDFPageFitMinScale = gPDFPageFitMinScaleTwoTunes;
+
+}
+
+function getPDFPageFitStaffWidthForPreset(thePreset) {
+
+  var preset = normalizePDFPageFitStaffWidthPreset(thePreset);
+
+  switch (preset) {
+
+    case "semi_compact":
+      return 650;
+
+    case "compact":
+      return 750;
+
+    case "more_compact":
+      return 850;
+
+    case "most_compact":
+      return 950;
+
+    case "standard":
+    default:
+      // Standard means use the notation that is already rendered.
+      // Do not inject %%staffwidth 556 or force an extra render.
+      return null;
+  }
+}
+
+function getPDFPageFitMinScale(targetTunesPerPage) {
+
+  // Keep the scale limits fixed. Staffwidth presets affect the pre-PDF render
+  // width/compactness, while these remain as safety fallback limits.
+  gPDFPageFitMinScaleOneTune = 0.65;
+  gPDFPageFitMinScaleTwoTunes = 0.72;
+  gPDFPageFitMinScaleThreeTunes = 0.55;
+  gPDFPageFitMinScaleFourTunes = 0.4;
+  gPDFPageFitMinScale = gPDFPageFitMinScaleTwoTunes;
+
+  if (targetTunesPerPage == 1) {
+    return gPDFPageFitMinScaleOneTune;
+  }
+
+  if (targetTunesPerPage == 3) {
+    return gPDFPageFitMinScaleThreeTunes;
+  }
+
+  if (targetTunesPerPage == 4) {
+    return gPDFPageFitMinScaleFourTunes;
+  }
+
+  if (targetTunesPerPage == 2) {
+    return gPDFPageFitMinScaleTwoTunes;
+  }
+
+  return gPDFPageFitMinScale;
+
+}
+
+function beginPDFPageFitStaffWidthRenderIfNeeded(callback) {
+
+  var thePageOptions = getPDFFormat();
+
+  if (!isPDFStaffWidthPresetLayout(thePageOptions)) {
+    callback();
+    return;
+  }
+
+  applyPDFPageFitScalingPreset(gPDFPageFitScalingPreset);
+
+  var preset = normalizePDFPageFitStaffWidthPreset(gPDFPageFitScalingPreset);
+
+  // Standard means use the notation that is already rendered.
+  // No temporary ABC injection and no extra render are needed.
+  if (preset == "standard") {
+    callback();
+    return;
+  }
+
+  var staffWidth = getPDFPageFitStaffWidthForPreset(preset);
+
+  if (!staffWidth) {
+    callback();
+    return;
+  }
+
+  // If a previous temporary export state somehow survived, restore it first.
+  endPDFPageFitStaffWidthRenderIfNeeded(false);
+
+  gPDFPageFitStaffWidthTempABC = getABCEditorText();
+  gPDFPageFitStaffWidthTempActive = true;
+
+  setABCEditorText("%%staffwidth " + staffWidth + "\n" + "%%stretchlast true" + "\n" + gPDFPageFitStaffWidthTempABC);
+
+  // Force a full render with the temporary staffwidth before PDF generation.
+  RenderAsync(true, null, function() {
+    callback();
+  });
+}
+
+function endPDFPageFitStaffWidthRenderIfNeeded(doRender, callback = null) {
+
+  if (!gPDFPageFitStaffWidthTempActive) {
+
+    if (typeof callback === "function") {
+      callback();
+    }
+
+    return;
+  }
+
+  var originalABC = gPDFPageFitStaffWidthTempABC;
+
+  gPDFPageFitStaffWidthTempABC = null;
+  gPDFPageFitStaffWidthTempActive = false;
+
+  if (originalABC !== null) {
+    setABCEditorText(originalABC);
+  }
+
+  if (doRender) {
+
+    RenderAsync(true, null, function() {
+
+      if (typeof callback === "function") {
+        callback();
+      }
+
+    });
+
+  } else {
+
+    if (typeof callback === "function") {
+      callback();
+    }
+    
+  }
+}
+
+function getPDFTuneIndexFromBlockID(theBlock) {
+
+  if (!theBlock || !theBlock.id) {
+    return -1;
+  }
+
+  var theMatch = theBlock.id.match(/^block_(\d+)_/);
+
+  if (theMatch && theMatch.length > 1) {
+    return parseInt(theMatch[1], 10);
+  }
+
+  return -1;
+
+}
+
+function getPDFPageFitScaleForBlock(theBlock, doIncipits) {
+
+  if (doIncipits || (gPDFPageFitTargetTunes == 0)) {
+    return 1.0;
+  }
+
+  var tuneIndex = getPDFTuneIndexFromBlockID(theBlock);
+
+  if ((tuneIndex >= 0) && gPDFPageFitTuneScales && gPDFPageFitTuneScales.length) {
+
+    var theScale = gPDFPageFitTuneScales[tuneIndex];
+
+    if (!isNaN(theScale) && (theScale > 0)) {
+      return theScale;
+    }
+  }
+
+  return 1.0;
+
+}
+
+function measurePDFTuneHeightsForPageFit(nTunes, doIncipits) {
+
+  var renderingDivs = [];
+
+  for (var i = 0; i < nTunes; ++i) {
+
+    var theElem = document.getElementById("notation" + i);
+
+    if (!theElem) {
+      renderingDivs.push({ height: 0, staffHeights: [] });
+      continue;
+    }
+
+    var theElemHeight = theElem.offsetHeight / PDFSCALEFACTOR;
+    var theStaffHeights = [];
+    var theBlocks = theElem.children;
+    var nBlocks = theBlocks.length;
+    var scale_factor = 1.0;
+
+    if (doIncipits) {
+
+      if (nBlocks > 2) {
+        nBlocks = 2;
+      }
+
+      if (gIncipitsColumns == 2) {
+        scale_factor = 2.0;
+      }
+    }
+
+    var accumHeight = 0;
+
+    for (var j = 0; j < nBlocks; ++j) {
+
+      var currentBlock = theBlocks.item(j);
+      var theBlockHeight = currentBlock.offsetHeight / PDFSCALEFACTOR;
+      theBlockHeight /= scale_factor;
+
+      theStaffHeights.push(theBlockHeight);
+      accumHeight += theBlockHeight;
+    }
+
+    if (doIncipits) {
+      theElemHeight = accumHeight;
+    }
+
+    var theRenderingDivsHeight = theElemHeight;
+
+    // Match the same width/orientation adjustment used by ProcessTunesForContinuousLayout().
+    if ((gPDFNotationWidthOverrideRequested || gPDFNotationWidthAutoOverrideRequested) && (!doIncipits)) {
+
+      theRenderingDivsHeight = (theRenderingDivsHeight * gPageWidth) / 535;
+
+    } else {
+
+      if (gPDFOrientation == "landscape") {
+
+        if (gPDFPaperSize == "letter") {
+          theRenderingDivsHeight = (theRenderingDivsHeight * 718) / 535;
+        } else {
+          theRenderingDivsHeight = (theRenderingDivsHeight * 785) / 535;
+        }
+      }
+    }
+
+    var thisTuneHeight = theRenderingDivsHeight + theStaffHeights.length;
+
+    renderingDivs.push({
+      height: thisTuneHeight,
+      staffHeights: theStaffHeights
+    });
+  }
+
+  return renderingDivs;
+
+}
+
+
+function getPDFPaperHeightForExport(paperStyle) {
+
+  if (gPDFOrientation == "landscape") {
+
+    if (paperStyle == "a4") {
+      return PAGEHEIGHTA4_LANDSCAPE;
+    }
+
+    return PAGEHEIGHTLETTER_LANDSCAPE;
+  }
+
+  if (paperStyle == "a4") {
+    return PAGEHEIGHTA4;
+  }
+
+  return PAGEHEIGHTLETTER;
+
+}
+
+function preparePDFCenteredOnePageLayout(nTunes, paperStyle, doIncipits) {
+
+  gPDFPageFitTuneScales = [];
+  gPDFCenteredOnePageTuneStartY = [];
+
+  for (var i = 0; i < nTunes; ++i) {
+    gPDFPageFitTuneScales.push(1.0);
+    gPDFCenteredOnePageTuneStartY.push(PAGETOPOFFSET);
+  }
+
+  if (doIncipits || (nTunes <= 0)) {
+    return;
+  }
+
+  var renderingDivs = measurePDFTuneHeightsForPageFit(nTunes, false);
+  var pageHeight = getPDFPaperHeightForExport(paperStyle);
+  var pageSizeWithMargins = pageHeight - (PAGETOPOFFSET + PAGEBOTTOMOFFSET);
+  var minScaleForThisMode = getPDFPageFitMinScale(1);
+
+  for (var j = 0; j < nTunes; ++j) {
+
+    var tuneHeight = renderingDivs[j].height;
+    var finalScale = 1.0;
+
+    if (tuneHeight > pageSizeWithMargins) {
+      finalScale = pageSizeWithMargins / tuneHeight;
+
+      if (finalScale < minScaleForThisMode) {
+        finalScale = minScaleForThisMode;
+      }
+    }
+
+    var scaledHeight = tuneHeight * finalScale;
+    var startY = PAGETOPOFFSET;
+
+    if (scaledHeight < pageSizeWithMargins) {
+
+      // True vertical centering uses 0.50, but notation tends to look
+      // visually too low when mathematically centered. Use a slightly
+      // upper-biased optical center instead.
+      var opticalCenterBias = 0.35;
+
+      startY = PAGETOPOFFSET + ((pageSizeWithMargins - scaledHeight) * opticalCenterBias);
+    }
+
+    gPDFPageFitTuneScales[j] = finalScale;
+    gPDFCenteredOnePageTuneStartY[j] = startY;
+  }
+}
+
+function getPDFCenteredOnePageStartYForBlock(theBlock) {
+
+  if (!isPDFCenteredOnePageLayout(getPDFFormat())) {
+    return null;
+  }
+
+  var tuneIndex = getPDFTuneIndexFromBlockID(theBlock);
+
+  if ((tuneIndex >= 0) && gPDFCenteredOnePageTuneStartY && (tuneIndex < gPDFCenteredOnePageTuneStartY.length)) {
+    return gPDFCenteredOnePageTuneStartY[tuneIndex];
+  }
+
+  return null;
+
+}
+
+function ProcessTunesForPageFitLayout(pageBreakList, pageHeight, doIncipits, targetTunesPerPage) {
+
+  var nTunes = pageBreakList.length;
+
+  gPDFPageFitTuneScales = [];
+
+  for (var i = 0; i < nTunes; ++i) {
+    gPDFPageFitTuneScales.push(1.0);
+  }
+
+  if (doIncipits || (targetTunesPerPage <= 1) || (nTunes <= 1)) {
+    return ProcessTunesForContinuousLayout(pageBreakList, pageHeight, doIncipits);
+  }
+
+  var renderingDivs = measurePDFTuneHeightsForPageFit(nTunes, doIncipits);
+
+  var pageSizeWithMargins = pageHeight - (PAGETOPOFFSET + PAGEBOTTOMOFFSET);
+  var minScaleForThisMode = getPDFPageFitMinScale(targetTunesPerPage);
+
+  var iTune = 0;
+
+  while (iTune < nTunes) {
+
+    var groupCount = Math.min(targetTunesPerPage, nTunes - iTune);
+
+    // Do not pack across a manual %%newpage or section-header page break.
+    for (var j = 1; j < groupCount; ++j) {
+      if (pageBreakList[iTune + j - 1]) {
+        groupCount = j;
+        break;
+      }
+    }
+
+    var finalGroupCount = groupCount;
+    var finalScale = 1.0;
+
+    // Prefer the requested number of tunes, but do not shrink below the readability floor
+    // unless the group has only one tune left.
+    while (finalGroupCount > 0) {
+
+      var totalHeight = 0;
+
+      for (var k = 0; k < finalGroupCount; ++k) {
+        totalHeight += renderingDivs[iTune + k].height;
+      }
+
+      if (finalGroupCount > 1) {
+        totalHeight += (BETWEENTUNESPACE * (finalGroupCount - 1));
+      }
+
+      finalScale = 1.0;
+
+      if (totalHeight > pageSizeWithMargins) {
+        finalScale = pageSizeWithMargins / totalHeight;
+      }
+
+      if ((finalScale >= minScaleForThisMode) || (finalGroupCount == 1)) {
+        break;
+      }
+
+      finalGroupCount--;
+    }
+
+    if (finalGroupCount < 1) {
+      finalGroupCount = 1;
+      finalScale = 1.0;
+    }
+
+    // Preserve readability for a single oversize tune. It can still flow across pages normally.
+    if ((finalGroupCount == 1) && (finalScale < minScaleForThisMode)) {
+      finalScale = 1.0;
+    }
+
+    for (var m = 0; m < finalGroupCount; ++m) {
+      gPDFPageFitTuneScales[iTune + m] = finalScale;
+    }
+
+    var nextTune = iTune + finalGroupCount;
+
+    // Force the next page after the completed target group.
+    if (nextTune < nTunes) {
+      pageBreakList[nextTune - 1] = true;
+    }
+
+    iTune = nextTune;
+  }
+
+  return pageBreakList;
+
+}
+
+//
 // Measure all the tunes for PDF layout
 //
 function ProcessTunesForContinuousLayout(pageBreakList, pageHeight, doIncipits) {
@@ -8491,7 +9159,15 @@ function scanTunesForPageBreaks(pdf, paperStyle, doIncipits) {
   }
 
   // Measure the tunes and insert any automatic page breaks
-  pageBreakRequested = ProcessTunesForContinuousLayout(pageBreakRequested, thePaperHeight, doIncipits);
+  if (gPDFPageFitTargetTunes > 0) {
+
+    pageBreakRequested = ProcessTunesForPageFitLayout(pageBreakRequested, thePaperHeight, doIncipits, gPDFPageFitTargetTunes);
+
+  } else {
+
+    pageBreakRequested = ProcessTunesForContinuousLayout(pageBreakRequested, thePaperHeight, doIncipits);
+
+  }
 
   return pageBreakRequested;
 }
@@ -8513,13 +9189,15 @@ function formatDate(format) {
     day = '0' + day;
 
   if (format == 0) {
-
     return [month, day, year].join('-');
-
-  } else {
-
+  } else 
+  if (format == 1) {
     return [year, month, day].join('-');
-
+  } else if (format == 2){
+    return [day, month, year].join('-');
+  }
+  else{
+    return [month, day, year].join('-');
   }
 
 }
@@ -10151,6 +10829,7 @@ function ParseCommentCommands(theNotes) {
 // $PAGENUMBER - Current page number
 // $DATEMDY - Current date in M-D-Y format
 // $DATEYMD - Current date in Y-M-D format
+// $DATEDMY - Current date in D-M-Y format
 // $TIME - Current time in HH:MM format
 // $TUNECOUNT - Number of tunes in the ABC
 // $TUNENAMES - All the tune names in the ABC
@@ -10194,10 +10873,14 @@ function ProcessHeaderFooter(str, pageNumber, pageCount) {
 
   var dateFormatMDY = formatDate(0);
   var dateFormatYMD = formatDate(1);
+  var dateFormatDMY = formatDate(2);
 
   workstr = workstr.replace("$DATEMDY", dateFormatMDY);
 
   workstr = workstr.replace("$DATEYMD", dateFormatYMD);
+
+  workstr = workstr.replace("$DATEDMY", dateFormatDMY);
+
 
   var theTime = formatTime();
 
@@ -10706,6 +11389,8 @@ function RenderPDFBlock(theBlock, blockIndex, doSinglePage, pageBreakList, addPa
 
       var theBlockID = theBlock.id + ".block";
 
+      var pageFitScale = getPDFPageFitScaleForBlock(theBlock, doIncipits);
+
       var isFirstBlock = false;
 
       // Insert a new page for each tune
@@ -10808,7 +11493,7 @@ function RenderPDFBlock(theBlock, blockIndex, doSinglePage, pageBreakList, addPa
             } else {
 
               // Otherwise, move it down the current page a bit
-              running_height += (BETWEENTUNESPACE / scale_factor);
+              running_height += (BETWEENTUNESPACE / scale_factor) * pageFitScale;
 
               // Add hidden text for search
               injectHiddenSearchText(running_height, doIncipits, gIncipitsColumns, column_number);
@@ -10829,6 +11514,12 @@ function RenderPDFBlock(theBlock, blockIndex, doSinglePage, pageBreakList, addPa
 
         }
 
+        var centeredOnePageStartY = getPDFCenteredOnePageStartYForBlock(theBlock);
+
+        if (centeredOnePageStartY !== null) {
+          running_height = centeredOnePageStartY;
+        }
+
         // Save the tune page number
         theTunePageMap[tunesProcessed] = theCurrentPageNumber;
 
@@ -10847,10 +11538,18 @@ function RenderPDFBlock(theBlock, blockIndex, doSinglePage, pageBreakList, addPa
 
       height /= scale_factor;
 
+      var drawWidth = (gPageWidth / scale_factor) * pageFitScale;
+      var drawHeight = height * pageFitScale;
+
+      // In the page-fit modes, center the proportionally scaled tune block horizontally.
+      if ((gPDFPageFitTargetTunes > 0) && (!doIncipits)) {
+        hoff = (pdf.internal.pageSize.getWidth() - drawWidth) / 2;
+      }
+
       // the first two values mean x,y coordinates for the upper left corner. Enlarge to get larger margin.
       // then comes width, then height. The second value can be freely selected - then it leaves more space at the top.
 
-      if (running_height + height <= thePageHeight - PAGEBOTTOMOFFSET) // i.e. if a block of notes would get in the way with the bottom margin (30 pt), then a new one please...
+      if (running_height + drawHeight <= thePageHeight - PAGEBOTTOMOFFSET) // i.e. if a block of notes would get in the way with the bottom margin (30 pt), then a new one please...
       {
 
         if (isFirstBlock) {
@@ -10859,14 +11558,14 @@ function RenderPDFBlock(theBlock, blockIndex, doSinglePage, pageBreakList, addPa
             page: theCurrentPageNumber,
             x: hoff,
             y: running_height,
-            width: (gPageWidth / scale_factor),
-            height: height,
+            width: drawWidth,
+            height: drawHeight,
             url: ""
           });
 
         }
 
-        pdf.addImage(imgData, 'JPG', hoff, running_height, (gPageWidth / scale_factor), height);
+        pdf.addImage(imgData, 'JPG', hoff, running_height, drawWidth, drawHeight);
 
 
       } else {
@@ -10883,8 +11582,8 @@ function RenderPDFBlock(theBlock, blockIndex, doSinglePage, pageBreakList, addPa
             page: theCurrentPageNumber,
             x: hoff,
             y: running_height,
-            width: (gPageWidth / scale_factor),
-            height: height,
+            width: drawWidth,
+            height: drawHeight,
             url: ""
           });
 
@@ -10896,13 +11595,13 @@ function RenderPDFBlock(theBlock, blockIndex, doSinglePage, pageBreakList, addPa
 
         pdf.addPage(paperStyle, gPDFOrientation); //... create a page in letter or a4 format, then leave a 30 pt margin at the top and continue.
 
-        pdf.addImage(imgData, 'JPG', hoff, running_height, (gPageWidth / scale_factor), height);
+        pdf.addImage(imgData, 'JPG', hoff, running_height, drawWidth, drawHeight);
 
         document.getElementById("pagestatustext").innerHTML = "Rendered <font color=\"red\">" + theCurrentPageNumber + "</font> pages";
       }
 
       // so that it starts the new one exactly one pt behind the current one.
-      running_height = running_height + height + (1 / scale_factor);
+      running_height = running_height + drawHeight + ((1 / scale_factor) * pageFitScale);
 
       callback(true);
 
@@ -11250,7 +11949,11 @@ function ExportPDF() {
           // Fix the size for the PDF rendering
           gTheNotation.style.width = "850px";
 
-          ExportNotationPDF(fname);
+          beginPDFPageFitStaffWidthRenderIfNeeded(function() {
+
+            ExportNotationPDF(fname);
+
+          });
         }
       });
     } else {
@@ -11287,6 +11990,10 @@ function ExportTextIncipitsPDF(title, bDoFullTunes, bDoCCETransform, bDoQRCodes)
   // Show the PDF status modal
   var pdfstatus = document.getElementById("pdf-controls");
   pdfstatus.style.display = "block";
+
+  // Setup optional multi-tune page-fit mode.
+  gPDFPageFitTargetTunes = getPDFPageFitTargetFromLayout(thePageOptions);
+  gPDFPageFitTuneScales = [];
 
   // Page number location
   var pageNumberLocation = getPageNumbers();
@@ -11781,21 +12488,32 @@ function ExportTextIncipitsPDF(title, bDoFullTunes, bDoCCETransform, bDoQRCodes)
             setTimeout(async function() {
 
               // Start the PDF save
-              if (gIsIOS) {
+              if (isMobileBrowser()) {
 
                 var theBlob = pdf.output('blob', {
                   filename: (title)
                 });
 
-                await shareOrDownloadFile(theBlob, title, "application/pdf");
-
-              } else if (isMobileBrowser()) {
-
-                var theBlob = pdf.output('blob', {
-                  filename: (title)
+                var newBlob = new Blob([theBlob], {
+                  type: 'application/octet-stream'
                 });
 
-                await shareOrDownloadFile(theBlob, title, "application/pdf");
+                var a = document.createElement("a");
+
+                document.body.appendChild(a);
+
+                a.style = "display: none";
+
+                var url = window.URL.createObjectURL(newBlob);
+                a.href = url;
+                a.download = (title);
+                a.click();
+
+                document.body.removeChild(a);
+
+                setTimeout(function() {
+                  window.URL.revokeObjectURL(url);
+                }, 1000);
 
               } else {
 
@@ -11860,12 +12578,18 @@ function ExportNotationPDF(title) {
     thePageOptions = "one";
   }
 
+  // Setup optional multi-tune page-fit mode.
+  gPDFPageFitTargetTunes = getPDFPageFitTargetFromLayout(thePageOptions);
+  gPDFPageFitTuneScales = [];
+
   // Page number location
   var pageNumberLocation = getPageNumbers();
 
   var doPDFPerTune = (thePageOptions == "pdf_per_tune") || (thePageOptions == "pdf_per_tune_a4");
 
-  var doSinglePage = ((thePageOptions == "one") || (thePageOptions == "one_a4") || doPDFPerTune);
+  var doSinglePage = ((thePageOptions == "one") || (thePageOptions == "one_a4") ||
+                      (thePageOptions == "one_centered") || (thePageOptions == "one_centered_a4") ||
+                      doPDFPerTune);
 
   // Add page numbers?
   var addPageNumbers = (pageNumberLocation != "none");
@@ -11873,7 +12597,9 @@ function ExportNotationPDF(title) {
   // What size paper? Letter or A4?
   var paperStyle = "letter";
 
-  if ((thePageOptions == "one_a4") || (thePageOptions == "multi_a4") || (thePageOptions == "incipits_a4") || (thePageOptions == "pdf_per_tune_a4")) {
+  if ((thePageOptions == "one_a4") || (thePageOptions == "one_centered_a4") || (thePageOptions == "multi_a4") ||
+      (thePageOptions == "multi_fit_2_a4") || (thePageOptions == "multi_fit_3_a4") ||
+      (thePageOptions == "multi_fit_4_a4") || (thePageOptions == "incipits_a4") || (thePageOptions == "pdf_per_tune_a4")) {
 
     paperStyle = "a4";
 
@@ -12257,6 +12983,10 @@ function ExportNotationPDF(title) {
     // just mark the existing divs for later SVG scraping during PDF rasterization
     PrepareSVGDivsForRasterization();
 
+    if (isPDFCenteredOnePageLayout(thePageOptions)) {
+      preparePDFCenteredOnePageLayout(totalTunes, paperStyle, incipitsRequested);
+    }
+
     document.getElementById("statustunecount").innerHTML = "Rendering tune <font color=\"red\">1</font>" + " of  <font color=\"red\">" + totalTunes + "</font>"
 
     // Save the first tune page number
@@ -12336,7 +13066,12 @@ function ExportNotationPDF(title) {
           // Did incipit generation require a re-render?
           if (requirePostRender) {
 
-            document.getElementById("statuspdfname").innerHTML = "<font color=\"red\">Cleaning up after PDF generation</font>";
+            // Restore any temporary staffwidth ABC used for notation PDF output.
+            endPDFPageFitStaffWidthRenderIfNeeded(false);
+
+            document.getElementById("statuspdfname").innerHTML = "&nbsp;";
+            document.getElementById("statustunecount").innerHTML = "<font color=\"red\">Cleaning up after PDF generation</font>";
+            document.getElementById("pagestatustext").innerHTML = "&nbsp;";
 
             RenderAsync(true, null, function() {
 
@@ -12352,12 +13087,33 @@ function ExportNotationPDF(title) {
 
           } else {
 
-            // Hide the PDF status modal
-            var pdfstatus = document.getElementById("pdf-controls");
-            pdfstatus.style.display = "none";
-
             // Just clean up the div IDs and classes
             RestoreSVGDivsAfterRasterization();
+
+            // Restore any temporary staffwidth ABC used for notation PDF output.
+            // If a re-render is needed, keep the PDF status dialog visible until
+            // the cleanup render has completed.
+            if (gPDFPageFitStaffWidthTempActive) {
+
+              document.getElementById("statuspdfname").innerHTML = "&nbsp;";
+              document.getElementById("statustunecount").innerHTML = "<font color=\"red\">Cleaning up after PDF generation</font>";
+              document.getElementById("pagestatustext").innerHTML = "&nbsp;";
+
+              endPDFPageFitStaffWidthRenderIfNeeded(true, function() {
+
+                // Hide the PDF status modal
+                var pdfstatus = document.getElementById("pdf-controls");
+                pdfstatus.style.display = "none";
+
+              });
+
+            } else {
+
+              // Hide the PDF status modal
+              var pdfstatus = document.getElementById("pdf-controls");
+              pdfstatus.style.display = "none";
+
+            }
 
           }
 
@@ -12665,21 +13421,32 @@ function ExportNotationPDF(title) {
                   // Start the normal PDF save
                   setTimeout(async function() {
 
-                    if (gIsIOS) {
+                    if (isMobileBrowser()) {
 
                       var theBlob = pdf.output('blob', {
                         filename: (title)
                       });
 
-                      await shareOrDownloadFile(theBlob, title, "application/pdf");
-
-                    } else if (isMobileBrowser()) {
-
-                      var theBlob = pdf.output('blob', {
-                        filename: (title)
+                      var newBlob = new Blob([theBlob], {
+                        type: 'application/octet-stream'
                       });
 
-                      await shareOrDownloadFile(theBlob, title, "application/pdf");
+                      var a = document.createElement("a");
+
+                      document.body.appendChild(a);
+
+                      a.style = "display: none";
+
+                      var url = window.URL.createObjectURL(newBlob);
+                      a.href = url;
+                      a.download = (title);
+                      a.click();
+
+                      document.body.removeChild(a);
+
+                      setTimeout(function() {
+                        window.URL.revokeObjectURL(url);
+                      }, 1000);
 
                     } else {
 
@@ -12698,7 +13465,9 @@ function ExportNotationPDF(title) {
                   // Did incipit generation require a re-render?
                   if (requirePostRender) {
 
-                    document.getElementById("statuspdfname").innerHTML = "<font color=\"red\">Cleaning up after PDF generation</font>";
+                    document.getElementById("statuspdfname").innerHTML = "&nbsp;";
+                    document.getElementById("statustunecount").innerHTML = "<font color=\"red\">Cleaning up after PDF generation</font>";
+                    document.getElementById("pagestatustext").innerHTML = "&nbsp;";
 
                     // Need some time for UI update
                     setTimeout(function() {
@@ -12710,6 +13479,9 @@ function ExportNotationPDF(title) {
                       // Fix up any display width changes done for the PDF export
                       // gTheNotation.style.width = gOriginalWidthBeforePDFExport;
                       gTheNotation.style.removeProperty("width");
+
+                      // Restore any temporary staffwidth ABC used for notation PDF output.
+                      endPDFPageFitStaffWidthRenderIfNeeded(false);
 
                       Render(true, null);
 
@@ -12725,8 +13497,6 @@ function ExportNotationPDF(title) {
                     // Catch up on any UI changes during the PDF rendering
                     RestoreSVGDivsAfterRasterization();
 
-                    finalize_pdf_export_stage_2();
-
                     gRenderingPDF = false;
 
                     clearGetTuneByIndexCache();
@@ -12735,15 +13505,65 @@ function ExportNotationPDF(title) {
                     // gTheNotation.style.width = gOriginalWidthBeforePDFExport;
                     gTheNotation.style.removeProperty("width");
 
+                    // Restore any temporary staffwidth ABC used for notation PDF output.
+                    // If a re-render is needed, keep the PDF status dialog visible until
+                    // the cleanup render has completed.
+                    if (gPDFPageFitStaffWidthTempActive) {
+
+                      document.getElementById("statuspdfname").innerHTML = "&nbsp;";
+                      document.getElementById("statustunecount").innerHTML = "<font color=\"red\">Cleaning up after PDF generation</font>";
+                      document.getElementById("pagestatustext").innerHTML = "&nbsp;";
+
+                      // Need some time for the UI status update to display before the render.
+                      setTimeout(function() {
+
+                        endPDFPageFitStaffWidthRenderIfNeeded(true, function() {
+
+                          finalize_pdf_export_stage_2();
+
+                        });
+
+                      }, 100);
+
+                    } else {
+
+                      finalize_pdf_export_stage_2();
+
+                    }
+
+                    // Restore any temporary staffwidth ABC used for notation PDF output.
+                    // If a re-render is needed, keep the PDF status dialog visible until
+                    // the cleanup render has completed.
+                    if (gPDFPageFitStaffWidthTempActive) {
+
+                      document.getElementById("statuspdfname").innerHTML = "&nbsp;";
+                      document.getElementById("statustunecount").innerHTML = "<font color=\"red\">Cleaning up after PDF generation</font>";
+                      document.getElementById("pagestatustext").innerHTML = "&nbsp;";
+
+                      // Need some time for the UI status update to display before the render.
+                      setTimeout(function() {
+
+                        endPDFPageFitStaffWidthRenderIfNeeded(true, function() {
+
+                          finalize_pdf_export_stage_2();
+
+                        });
+
+                      }, 100);
+
+                    } else {
+
+                      finalize_pdf_export_stage_2();
+
+                    }
+
                   }
                 }
 
                 function finalize_pdf_export_stage_2() {
 
                   document.getElementById("statuspdfname").innerHTML = "&nbsp;";
-
                   document.getElementById("statustunecount").innerHTML = "&nbsp;";
-
                   document.getElementById("pagestatustext").innerHTML = "&nbsp;";
 
                   // Hide the PDF status modal
@@ -13244,7 +14064,9 @@ function GetABCJSParams(instrument) {
       oneSvgPerLine: 'true',
       expandToWidest: 'true',
       selectTypes: false,
-      format: commonFontFormat
+      format: commonFontFormat,
+      disallowTablatureOnly:true
+
     };
     instrument = "";
   } else if (instrument == "noten") {
@@ -13254,7 +14076,8 @@ function GetABCJSParams(instrument) {
       oneSvgPerLine: 'true',
       expandToWidest: 'true',
       selectTypes: false,
-      format: commonFontFormat
+      format: commonFontFormat,
+      disallowTablatureOnly:true
     };
   } else if (instrument == "mandolin") {
     params = {
@@ -13393,7 +14216,8 @@ function GetABCJSParams(instrument) {
       oneSvgPerLine: 'true',
       expandToWidest: 'true',
       selectTypes: false,
-      format: commonFontFormat
+      format: commonFontFormat,
+      disallowTablatureOnly:true
     }
   } else if (instrument == "whistle") {
     // Suppress the tab icon
@@ -13410,7 +14234,8 @@ function GetABCJSParams(instrument) {
       oneSvgPerLine: 'true',
       expandToWidest: 'true',
       selectTypes: false,
-      format: commonFontFormat
+      format: commonFontFormat,
+      disallowTablatureOnly:true
     }
   } else if (instrument == "recorder") {
     // Suppress the tab icon
@@ -13427,7 +14252,8 @@ function GetABCJSParams(instrument) {
       oneSvgPerLine: 'true',
       expandToWidest: 'true',
       selectTypes: false,
-      format: commonFontFormat
+      format: commonFontFormat,
+      disallowTablatureOnly:true
     }
   } else {
     // Default for deprecated instruments
@@ -13437,7 +14263,8 @@ function GetABCJSParams(instrument) {
       responsive: 'resize',
       oneSvgPerLine: 'true',
       selectTypes: false,
-      format: commonFontFormat
+      format: commonFontFormat,
+      disallowTablatureOnly:true
     };
   }
 
@@ -13544,6 +14371,9 @@ function UpdateLocalStorage() {
 
     // Save the auto page number state
     localStorage.PDFAutoPageNumbers = gPDFAutoPageNumbers;
+
+    // Save the balanced scaling preset
+    localStorage.PDFPageFitScalingPreset = gPDFPageFitScalingPreset;
   }
 
 }
@@ -16395,12 +17225,12 @@ function PDFTunebookBuilder() {
     id: "fluidhq"
   }];
 
-  for (var i = 0; i <= MIDI_PATCH_COUNT; ++i) {
-    midi_program_list.push({
-      name: "  " + generalMIDISoundNames[i],
-      id: i
-    });
-  }
+  // for (var i = 0; i <= MIDI_PATCH_COUNT; ++i) {
+  //   midi_program_list.push({
+  //     name: "  " + generalMIDISoundNames[i],
+  //     id: i
+  //   });
+  // }
 
   // Lite: Customized
   // Replace inline styles with reusable classes
@@ -16887,12 +17717,12 @@ function PDFTunebookBuilderPlayOnly() {
     id: "fluidhq"
   }];
 
-  for (var i = 0; i <= MIDI_PATCH_COUNT; ++i) {
-    midi_program_list.push({
-      name: "  " + generalMIDISoundNames[i],
-      id: i
-    });
-  }
+  // for (var i = 0; i <= MIDI_PATCH_COUNT; ++i) {
+  //   midi_program_list.push({
+  //     name: "  " + generalMIDISoundNames[i],
+  //     id: i
+  //   });
+  // }
 
   // Lite: Customized
   // Replace inline styles with reusable classes
@@ -17302,8 +18132,6 @@ function searchForTunes() {
 
       return;
     }
-
-
   }
 
   var tuneNameToSearch = document.getElementById("tuneNameToSearch").value;
@@ -17475,35 +18303,10 @@ function searchForTunes() {
 
     var onlyFirstVariation = document.getElementById('only_first_variation').checked;
 
-    // Search FolkFriend session.org database
-    var rawSettings = gTheFolkFriendDatabase.settings;
-
-    var settingsMap = [];
-
-    for (let key in rawSettings) {
-
-      if (rawSettings.hasOwnProperty(key)) {
-        settingsMap.push(key);
-      }
-    }
-
-    var nSettings = settingsMap.length;
-
-    //console.log("nSettings = "+nSettings);
-
-    var rawAliases = gTheFolkFriendDatabase.aliases;
-
-    var aliasMap = [];
-
-    for (let key in rawAliases) {
-
-      if (rawAliases.hasOwnProperty(key)) {
-        aliasMap.push(key);
-      }
-
-    }
-
-    var nAliaseSets = aliasMap.length;
+    // Search thesession.org tune database.
+    // The current database format is a flat array of setting records:
+    // tune_id, setting_id, name, type, meter, mode, abc, username, composer, etc.
+    var nTunes = gTheFolkFriendDatabase.length;
 
     var theOutput = "";
 
@@ -17514,197 +18317,149 @@ function searchForTunes() {
     var variations_found = [];
 
     for (var i = 0;
-      ((i < nAliaseSets) && (!maxResultsHit)); ++i) {
+      ((i < nTunes) && (!maxResultsHit)); ++i) {
 
-      var thisAlias = gTheFolkFriendDatabase.aliases[aliasMap[i]];
+      var theABCInfo = gTheFolkFriendDatabase[i];
 
-      var theAliases = [];
+      if (!theABCInfo) {
+        continue;
+      }
 
-      for (let key in thisAlias) {
+      // Filtering by style?
+      if (gTheTuneSearchStyle != "") {
 
-        if (thisAlias.hasOwnProperty(key)) {
-          theAliases.push(key);
+        var thisStyle = theABCInfo.type;
+
+        if (!thisStyle) {
+          continue;
+        }
+
+        thisStyle = thisStyle.toLowerCase();
+
+        if (thisStyle != gTheTuneSearchStyle) {
+          continue;
         }
 
       }
 
-      var nAliases = theAliases.length;
+      var thisTitle = theABCInfo.name;
 
-      for (var j = 0;
-        ((j < nAliases) && (!maxResultsHit)); ++j) {
+      if (!thisTitle) {
+        continue;
+      }
 
-        // Alias ID maps to the tune_id in the setting
-        var thisTitle = thisAlias[theAliases[j]];
+      var theOriginalTitle = thisTitle;
 
-        var theOriginalTitle = thisTitle;
+      thisTitle = thisTitle.toLowerCase();
 
-        thisTitle = thisTitle.toLowerCase();
+      thisTitle = thisTitle.replace("'", "");
+      thisTitle = thisTitle.replace('"', "");
 
-        thisTitle = thisTitle.replace("'", "");
-        thisTitle = thisTitle.replace('"', "");
+      if (((!matchTitleStart) && (thisTitle.indexOf(tuneNameToSearch) != -1)) || ((matchTitleStart) && (thisTitle.indexOf(tuneNameToSearch) == 0))) {
 
-        if (((!matchTitleStart) && (thisTitle.indexOf(tuneNameToSearch) != -1)) || ((matchTitleStart) && (thisTitle.indexOf(tuneNameToSearch) == 0))) {
+        // Searching by key?
+        if (gTheTuneSearchKey != "") {
 
-          thisTitle = theOriginalTitle;
+          var thisMode = theABCInfo.mode;
 
-          for (var k = 0;
-            ((k < nSettings) && (!maxResultsHit)); ++k) {
+          if (!thisMode) {
+            continue;
+          }
 
-            var theABCInfo = gTheFolkFriendDatabase.settings[settingsMap[k]];
+          if (thisMode != gTheTuneSearchKey) {
+            //console.log("Got match, but wrong key");
+            continue;
+          }
+          //console.log("Got match, correct key");
+        }
 
+        var ok_to_process = true;
 
-            // Filtering by style?
-            if (gTheTuneSearchStyle != "") {
+        // If only returning first variation, see if the tune_id has already been seen
+        if (onlyFirstVariation) {
 
-              var thisStyle = theABCInfo.dance;
+          var nVariationsSeen = variations_found.length;
 
-              if (!thisStyle) {
-                continue;
-              }
-
-              thisStyle = thisStyle.toLowerCase();
-
-              if (thisStyle != gTheTuneSearchStyle) {
-                continue;
-              }
-
+          for (var ii = 0; ii < nVariationsSeen; ++ii) {
+            if (variations_found[ii] == theABCInfo.tune_id) {
+              ok_to_process = false;
             }
+          }
 
-            if (theABCInfo.tune_id == aliasMap[i]) {
+          variations_found.push(theABCInfo.tune_id);
 
-              // Searching by key?
-              if (gTheTuneSearchKey != "") {
+        }
 
-                var thisMode = theABCInfo.mode;
+        if (ok_to_process) {
 
-                if (!thisMode) {
-                  continue;
-                }
+          var thisABC = theABCInfo.abc;
 
-                if (thisMode != gTheTuneSearchKey) {
-                  //console.log("Got match, but wrong key");
-                  continue;
-                }
-                //console.log("Got match, correct key");
-              }
+          if (!thisABC) {
+            continue;
+          }
 
-              var ok_to_process = true;
+          // Are we only returning tunes with chords?
+          if (returnOnlyWithChords) {
 
-              // If only returning first variation, see if the tune_id has already been seen
-              if (onlyFirstVariation) {
+            var searchRegExp = /"[^"]*"/gm
 
-                var nVariationsSeen = variations_found.length;
+            var chordsPresent = thisABC.match(searchRegExp);
 
-                for (var ii = 0; ii < nVariationsSeen; ++ii) {
-                  if (variations_found[ii] == theABCInfo.tune_id) {
-                    ok_to_process = false;
-                  }
-                }
+            if ((!chordsPresent) || (chordsPresent.length == 0)) {
+              continue;
+            }
+          }
 
-                variations_found.push(theABCInfo.tune_id);
+          theTotal++;
 
-              }
+          var theCapitalizedTitle = capitalizeSongName(theOriginalTitle);
 
-              if (ok_to_process) {
+          theCapitalizedTitle = capitalizeAfterO(theCapitalizedTitle);
 
-                // Are we only returning tunes with chords?
-                if (returnOnlyWithChords) {
+          theOutput += "X: " + theTotal + "\n";
 
-                  var searchRegExp = /"[^"]*"/gm
+          theOutput += "T: " + theCapitalizedTitle + "\n";
 
-                  var chordsPresent = theABCInfo.abc.match(searchRegExp);
+          theOutput += "S: https://thesession.org/tunes/" + theABCInfo.tune_id + "\n";
 
-                  if ((chordsPresent) && (chordsPresent.length > 0)) {
+          if (theABCInfo.composer) {
+            theOutput += "C: " + theABCInfo.composer + "\n";
+          }
 
-                    theTotal++;
+          if (theABCInfo.username) {
+            theOutput += "Z: " + theABCInfo.username + "\n";
+          }
 
-                    var theCapitalizedTitle = capitalizeSongName(thisTitle);
+          var doLTag = false;
 
-                    theCapitalizedTitle = capitalizeAfterO(theCapitalizedTitle);
-
-                    theOutput += "X: " + theTotal + "\n";
-
-                    theOutput += "T: " + theCapitalizedTitle + "\n";
-
-                    theOutput += "S: https://thesession.org/tunes/" + theABCInfo.tune_id + "\n";
-
-                    var doLTag = false;
-
-                    if (theABCInfo.dance) {
-                      theOutput += "R: " + theABCInfo.dance + "\n";
-                      if (theABCInfo.dance == "polka") {
-                        doLTag = true;
-                      }
-                    }
-                    if (theABCInfo.meter) {
-                      theOutput += "M: " + theABCInfo.meter + "\n";
-                      if (doLTag) {
-                        if (theABCInfo.meter == "2/4") {
-                          theOutput += "L: 1/8\n";
-                        }
-                      }
-                    }
-                    if (theABCInfo.mode) {
-                      theOutput += "K: " + theABCInfo.mode + "\n";
-                    }
-
-                    theOutput += theABCInfo.abc + "\n\n";
-
-                    // Have we hit the max results count?
-                    if (theTotal == gTheMaxDatabaseResults) {
-                      maxResultsHit = true;
-                    }
-                  }
-
-                } else {
-
-                  theTotal++;
-
-                  var theCapitalizedTitle = capitalizeSongName(thisTitle);
-
-                  theCapitalizedTitle = capitalizeAfterO(theCapitalizedTitle);
-
-                  theOutput += "X: " + theTotal + "\n";
-
-                  theOutput += "T: " + theCapitalizedTitle + "\n";
-
-                  theOutput += "S: https://thesession.org/tunes/" + theABCInfo.tune_id + "\n";
-
-                  var doLTag = false;
-
-                  if (theABCInfo.dance) {
-                    theOutput += "R: " + theABCInfo.dance + "\n";
-                    if (theABCInfo.dance == "polka") {
-                      doLTag = true;
-                    }
-                  }
-                  if (theABCInfo.meter) {
-                    theOutput += "M: " + theABCInfo.meter + "\n";
-                    if (doLTag) {
-                      if (theABCInfo.meter == "2/4") {
-                        theOutput += "L: 1/8\n";
-                      }
-                    }
-                  }
-                  if (theABCInfo.mode) {
-                    theOutput += "K: " + theABCInfo.mode + "\n";
-                  }
-
-                  theOutput += theABCInfo.abc + "\n\n";
-
-                  // Have we hit the max results count?
-                  if (theTotal == gTheMaxDatabaseResults) {
-                    maxResultsHit = true;
-                  }
-                }
+          if (theABCInfo.type) {
+            theOutput += "R: " + theABCInfo.type + "\n";
+            if (theABCInfo.type == "polka") {
+              doLTag = true;
+            }
+          }
+          if (theABCInfo.meter) {
+            theOutput += "M: " + theABCInfo.meter + "\n";
+            if (doLTag) {
+              if (theABCInfo.meter == "2/4") {
+                theOutput += "L: 1/8\n";
               }
             }
+          }
+          if (theABCInfo.mode) {
+            theOutput += "K: " + theABCInfo.mode + "\n";
+          }
+
+          theOutput += thisABC + "\n\n";
+
+          // Have we hit the max results count?
+          if (theTotal == gTheMaxDatabaseResults) {
+            maxResultsHit = true;
           }
         }
       }
     }
   }
-
   var elem = document.getElementById("search_result");
   elem.innerHTML = "Search Results:&nbsp;&nbsp;" + theTotal + " found";
 
@@ -17964,11 +18719,77 @@ function fetchWithRetry(url, delay, tries, fetchOptions = {}) {
 //
 // Switch the search database
 //
+
+function isValidSavedHeneghanTuneDatabase(theTunes) {
+
+  if (!theTunes) {
+    return false;
+  }
+
+  if (theTunes.length == 0) {
+    return false;
+  }
+
+  if (!Array.isArray(theTunes[0])) {
+    return false;
+  }
+
+  return true;
+}
+
+function isValidSavedTheSessionTuneDatabase(theTunes) {
+
+  if (!theTunes) {
+    return false;
+  }
+
+  if (theTunes.length == 0) {
+    return false;
+  }
+
+  // The new thesession.org database format is a flat array of setting records.
+  // Old FolkFriend data was an object containing settings/aliases, so reject it.
+  if (!Array.isArray(theTunes[0])) {
+    return false;
+  }
+
+  return true;
+}
+
+//
+// Switch the search database
+//
 function SwitchTuneDatabase() {
 
   //console.log("SwitchTuneDatabase")
 
-  var theDatabase = document.getElementById("databaseselect").value;
+  // initTuneDB() performs an automatic tunedb2 freshness check/update.
+  // If the user opens the tune search UI immediately at startup, wait until
+  // that check completes before reading from IndexedDB. This prevents reading
+  // an old-format tunedb2 record into gTheFolkFriendDatabase while the refresh
+  // is still in progress.
+  if ((typeof gTuneDBInitComplete !== "undefined") && (!gTuneDBInitComplete)) {
+
+    var elem = document.getElementById("status");
+
+    if (elem) {
+      elem.innerHTML = "&nbsp;&nbsp;&nbsp;Waiting for tune collection to load...";
+    }
+
+    setTimeout(SwitchTuneDatabase, 250);
+
+    return;
+  }
+
+  // The tune search dialog may have been closed before a delayed
+  // SwitchTuneDatabase() retry fires, so guard against missing UI elements.
+  var databaseSelect = document.getElementById("databaseselect");
+
+  if (!databaseSelect) {
+    return;
+  }
+
+  var theDatabase = databaseSelect.value;
 
   switch (theDatabase) {
 
@@ -17984,11 +18805,12 @@ function SwitchTuneDatabase() {
 
           //debugger;
 
-          if (theTunes && (theTunes.length > 0)) {
+          if (isValidSavedHeneghanTuneDatabase(theTunes)) {
 
             //console.log("Heneghan database was found")
 
             var elem = document.getElementById("status");
+
             if (elem) {
               document.getElementById("status").innerHTML = "&nbsp;&nbsp;&nbsp;Ready to search";
             }
@@ -18000,13 +18822,13 @@ function SwitchTuneDatabase() {
             //console.log("Heneghan tunes not in database, fetching...");
 
             // Fetch the Gavin Heneghan tune database
-            fetchWithRetry('https://michaeleskin.com/abctools/abctunes_gavin_heneghan_10nov2023.json', gTuneDatabaseRetryTimeMS, gTuneDatabaseRetryCount)
-              .then((response) => response.json())
+            fetchTuneDatabaseJSON(TUNE_DB1_URL, TUNE_DB1_DATA_VERSION)
               .then((json) => {
 
                 //console.log("got abctunes_gavin_heneghan_10nov2023 data");
 
                 var elem = document.getElementById("status");
+
                 if (elem) {
                   if (gTheCurrentTuneDatabase == 0) {
                     document.getElementById("status").innerHTML = "&nbsp;&nbsp;&nbsp;Ready to search";
@@ -18015,8 +18837,13 @@ function SwitchTuneDatabase() {
 
                 gTheParsedTuneDatabase = json;
 
-                // Persist the database for later reads
-                saveTuneDatabase_DB(json, false);
+                // Persist the database for later reads, including metadata so
+                // future loads can identify the saved database version.
+                saveTuneDatabase_DB(json, false, {
+                  dataVersion: TUNE_DB1_DATA_VERSION,
+                  url: TUNE_DB1_URL,
+                  savedAt: new Date().toISOString()
+                });
               })
               .catch(function(error) {
 
@@ -18034,9 +18861,9 @@ function SwitchTuneDatabase() {
         });
 
       } else {
+
         document.getElementById("status").innerHTML = "&nbsp;&nbsp;&nbsp;Ready to search";
       }
-
 
       // Reset the dialog fields
       document.getElementById('search_results').value = "";
@@ -18059,11 +18886,12 @@ function SwitchTuneDatabase() {
 
           //debugger;
 
-          if (theTunes && (theTunes.length > 0)) {
+          if (isValidSavedTheSessionTuneDatabase(theTunes)) {
 
-            //console.log("FolkFriend database was found")
+            //console.log("TheSession database was found")
 
             var elem = document.getElementById("status");
+
             if (elem) {
               document.getElementById("status").innerHTML = "&nbsp;&nbsp;&nbsp;Ready to search";
             }
@@ -18072,16 +18900,16 @@ function SwitchTuneDatabase() {
 
           } else {
 
-            //console.log("FolkFriend tunes not in database, fetching...");
+            //console.log("TheSession tunes not in database, fetching...");
 
-            // Fetch the FolkFriend database
-            fetchWithRetry('https://michaeleskin.com/abctools/folkfriend-non-user-data_22dec2023.json', gTuneDatabaseRetryTimeMS, gTuneDatabaseRetryCount)
-              .then((response) => response.json())
+            // Fetch the thesession.org database
+            fetchTuneDatabaseJSON(TUNE_DB2_URL, TUNE_DB2_DATA_VERSION)
               .then((json) => {
 
-                //console.log("got folkfriend-non-user-data_21dec2023 data");
+                //console.log("got abctunes_thesession_28may2026 data");
 
                 var elem = document.getElementById("status");
+
                 if (elem) {
                   if (gTheCurrentTuneDatabase == 1) {
                     document.getElementById("status").innerHTML = "&nbsp;&nbsp;&nbsp;Ready to search";
@@ -18090,8 +18918,13 @@ function SwitchTuneDatabase() {
 
                 gTheFolkFriendDatabase = json;
 
-                // Persist the database for later reads
-                saveTuneDatabase_DB(json, true);
+                // Persist the database for later reads, including metadata so
+                // future startup checks can determine whether tunedb2 is current.
+                saveTuneDatabase_DB(json, true, {
+                  dataVersion: TUNE_DB2_DATA_VERSION,
+                  url: TUNE_DB2_URL,
+                  savedAt: new Date().toISOString()
+                });
 
               })
               .catch(function(error) {
@@ -18099,6 +18932,7 @@ function SwitchTuneDatabase() {
                 var elem = document.getElementById("status");
 
                 if (elem) {
+
                   if (gTheCurrentTuneDatabase == 1) {
                     document.getElementById("status").innerHTML = "&nbsp;&nbsp;&nbsp;Unable to load tune collection, please retry later...";
                   }
@@ -18107,7 +18941,9 @@ function SwitchTuneDatabase() {
               });
           }
         });
+
       } else {
+
         document.getElementById("status").innerHTML = "&nbsp;&nbsp;&nbsp;Ready to search";
       }
 
@@ -18178,7 +19014,7 @@ function AddFromSearch(e, callback) {
 		'Tune Search Engine&nbsp;&nbsp;' +
 		'</h2>';
 
-  modal_msg += '<p style="font-size:12pt;line-height:24pt;margin-top:20px;margin-bottom:12px;" class="switchtunedatabase">Tune Collection to Search: <select id="databaseselect" onchange="SwitchTuneDatabase();" title="Select your tune search database"><option value="0">Gavin Heneghan\'s Collection (20,000+ Tune Settings)</option><option value="1">thesession.org Collection (45,000+ Tune Settings)</option></select></p>';
+  modal_msg += '<p style="font-size:12pt;line-height:24pt;margin-top:20px;margin-bottom:12px;" class="switchtunedatabase">Tune Collection to Search: <select id="databaseselect" onchange="SwitchTuneDatabase();" title="Select your tune search database"><option value="0">Gavin Heneghan\'s Collection (20,000+ Tune Settings)</option><option value="1">The Session Collection (54,000+ Tune Settings)</option></select></p>';
 
   modal_msg += '<p style="font-size:12pt;line-height:24pt;margin-top:0px;margin-bottom:18px;">Search for text in the tune name:&nbsp;&nbsp;<input style="width:100%;font-size:12pt;line-height:18px;padding:6px;" id="tuneNameToSearch" type="text" title="Enter your search text here" autocomplete="off" autocorrect="off" placeholder="Enter your search text here"/> </p>';
 
@@ -19161,6 +19997,12 @@ function generateIndexedRepeatedString(str, itemCount, repeatCount) {
 }
 
 function processTuneSet(tuneSet, tuneNames, bRepeat, nRepeat, bIsVerbose) {
+
+  // Run the article reverser on the tune names before concatenating
+  var nTitles = tuneNames.length;
+  for (var i=0;i<nTitles;++i){
+    tuneNames[i] = titleReverser(tuneNames[i]);
+  }
 
   var setName = tuneNames.join(' / ');
 
@@ -20632,17 +21474,17 @@ function AppendSampleReel() {
   theValue += "Q: 1/2=90\n";
   theValue += "K: Edor\n";
   // theValue += "%\n";
-  // theValue += "% Use the fluid soundfont:\n";
-  // theValue += '%soundfont fluid\n';
+  // theValue += "% Use the FatBoy soundfont:\n";
+  // theValue += '%soundfont fatboy\n';
   // theValue += "%\n";
-  // theValue += "% Use an Acoustic Grand Piano sound for the melody:\n";
+  // theValue += "% Use an Acoustic Grand Piano sound for the Melody, Bass, and Chords:\n";
   // theValue += "%%MIDI program 0\n";
-  // theValue += "%\n";
-  // theValue += "% Use an Acoustic Grand Piano sound for the chords:\n";
+  // theValue += "%%MIDI bassprog 0\n";
   // theValue += "%%MIDI chordprog 0\n";
   // theValue += "%\n";
-  // theValue += "% Use an Synth Bass sound for the bass:\n";
-  // theValue += "%%MIDI bassprog 38\n";
+  // theValue += "% Set the Bass and Chord volumes (0-127):\n";
+  // theValue += "%%MIDI bassvol 64\n";
+  // theValue += "%%MIDI chordvol 64\n";
   // theValue += "%\n";
   // theValue += "% Set a specific amount of swing:\n";
   theValue += '%swing 0.15\n';
@@ -20681,17 +21523,17 @@ function AppendSampleJig() {
   theValue += "Q: 3/8=120\n";
   theValue += "K: Gmaj\n";
   // theValue += "%\n";
-  // theValue += "% Use the fluid soundfont:\n";
-  // theValue += '%soundfont fluid\n';
+  // theValue += "% Use the FatBoy soundfont:\n";
+  // theValue += '%soundfont fatboy\n';
   // theValue += "%\n";
-  // theValue += "% Use an Acoustic Grand Piano sound for the melody:\n";
+  // theValue += "% Use an Acoustic Grand Piano sound for the Melody, Bass, and Chords:\n";
   // theValue += "%%MIDI program 0\n";
-  // theValue += "%\n";
-  // theValue += "% Use an Acoustic Grand Piano for the chords:\n";
+  // theValue += "%%MIDI bassprog 0\n";
   // theValue += "%%MIDI chordprog 0\n";
   // theValue += "%\n";
-  // theValue += "% Use an Synth Bass sound for the bass:\n";
-  // theValue += "%%MIDI bassprog 38\n";
+  // theValue += "% Set the Bass and Chord volumes (0-127):\n";
+  // theValue += "%%MIDI bassvol 64\n";
+  // theValue += "%%MIDI chordvol 64\n";
   // theValue += "%\n";
   // theValue += "% Set a specific amount of swing:\n";
   theValue += '%swing 0.25\n';
@@ -20731,17 +21573,17 @@ function AppendSampleHornpipe() {
   theValue += 'Q: 1/2=80\n';
   theValue += 'K: Dmaj\n';
   // theValue += "%\n";
-  // theValue += "% Use the fluid soundfont:\n";
-  // theValue += '%soundfont fluid\n';
+  // theValue += "% Use the FatBoy soundfont:\n";
+  // theValue += '%soundfont fatboy\n';
   // theValue += "%\n";
-  // theValue += "% Use an Acoustic Grand Piano sound for the melody:\n";
+  // theValue += "% Use an Acoustic Grand Piano sound for the Melody, Bass, and Chords:\n";
   // theValue += "%%MIDI program 0\n";
-  // theValue += "%\n";
-  // theValue += "% Use an Acoustic Grand Piano for the chords:\n";
+  // theValue += "%%MIDI bassprog 0\n";
   // theValue += "%%MIDI chordprog 0\n";
   // theValue += "%\n";
-  // theValue += "% Use an Synth Bass sound for the bass:\n";
-  // theValue += "%%MIDI bassprog 38\n";
+  // theValue += "% Set the Bass and Chord volumes (0-127):\n";
+  // theValue += "%%MIDI bassvol 64\n";
+  // theValue += "%%MIDI chordvol 64\n";
   // theValue += "%\n";
   // theValue += "% Set a specific amount of swing:\n";
   theValue += '%swing 0.25\n';
@@ -20790,17 +21632,17 @@ function AppendTuneTempate() {
   theValue += '% Soundfont\n';
   theValue += '% Available soundfonts are:\n';
   theValue += '% fluid, fluidhq, musyng, fatboy, canvas, mscore, arachno:\n';
-  theValue += '%soundfont fluid\n';
+  theValue += '%soundfont fatboy\n';
   theValue += '%\n';
-  theValue += '% Use an Acoustic Grand Piano sound for the melody:\n';
-  theValue += '%%MIDI program 0\n';
+  theValue += "% Use an Acoustic Grand Piano sound for the Melody, Bass, and Chords:\n";
+  theValue += "%%MIDI program 0\n";
+  theValue += "%%MIDI bassprog 0\n";
+  theValue += "%%MIDI chordprog 0\n";
   theValue += '%\n';
-  theValue += '% Use an Acoustic Grand Piano for the chords:\n';
-  theValue += '%%MIDI chordprog 0\n';
-  theValue += '%\n';
-  theValue += '% Use an Synth Bass sound for the bass:\n';
-  theValue += '%%MIDI bassprog 38\n';
-  theValue += '%\n';
+  theValue += "% Set the Bass and Chord volumes (0-127):\n";
+  theValue += "%%MIDI bassvol 64\n";
+  theValue += "%%MIDI chordvol 64\n";
+  theValue += "%\n";
   theValue += "% Add your tune's ABC below:\n";
   theValue += '"C"C2 D2 E2 F2| G2 A2 B2 c2|]';
 
@@ -21055,7 +21897,7 @@ function AddPDFAnnotationsTemplate() {
   theValue += '%indexrightoffset 0\n';
   theValue += '%pageheader This is the Page Header\n';
   theValue += '%pagefooter This is the Page Footer\n';
-  theValue += '%add_all_playback_links 0 0 0 fluid\n';
+  theValue += '%add_all_playback_links 0 0 0 fatboy\n';
   theValue += '%add_all_playback_volumes 64 64\n';
   theValue += '%\n';
   theValue += '% End of PDF Tunebook Features\n\n';
@@ -21078,7 +21920,7 @@ function AddPDFPlayOnlyTemplate() {
   theValue += '%\n';
   theValue += '%pageheader Click the tune title to play\n';
   theValue += '%\n';
-  theValue += '%add_all_playback_links 0 0 0 fluid\n';
+  theValue += '%add_all_playback_links 0 0 0 fatboy\n';
   theValue += '%add_all_playback_volumes 64 64\n';
   theValue += '%\n';
   theValue += '% End of PDF Tunebook Features\n\n';
@@ -23671,6 +24513,7 @@ function GetABCFileHeader() {
     /^%%titlecaps.*$/,
     /^%%visualtranspose.*$/,
     /^%%maxstaves.*$/,
+    /^%%partsbox.*$/, 
     /^%hide_first_title_on_play.*$/,
     /^%hide_vskip_on_play.*$/,
     /^%left_justify_titles.*$/,
@@ -23712,6 +24555,7 @@ function GetABCFileHeader() {
     /^%custom_instrument_8_fade.*$/,
     /^%roll_2_params.*$/,
     /^%roll_3_params.*$/,
+    /^%tablature_only.*$/,
     /^[ABCDFGHILMmNORrSUZ]:/,
   ];
 
@@ -27925,7 +28769,10 @@ function decompressABC_Deflate(encoded) {
 // Check for a share link and process it
 // Lite: Customized (do not trap focus if notation opened in maximized state)
 //
-function processShareLink() {
+async function processShareLink() {
+  if (!gCustomInstrumentsInitComplete && gCustomInstrumentsInitPromise) {
+    await gCustomInstrumentsInitPromise;
+  }
 
   var doRender = false;
 
@@ -29591,7 +30438,29 @@ function InjectOneBagpipeDrones(theTune, droneStyle, hideDroneVoice, foldNotes, 
       }
       break;
 
-  }
+    case 20: // Custom Bagpipe Instrument
+        theDroneNotes = "D,";
+
+        if (droneMatchesTuneKey) {
+
+          theDroneShift = theDroneShift + 700;
+
+          if (theDroneShift > 500) {
+            theDroneShift -= 1200;
+          }
+
+        }
+
+        if (isNotBWW) {
+          postFix = " stems=auto transpose=0\n%%MIDI program custom1\n%voice_tuning_cents 0 " + theDroneShift;
+        } else {
+          theTune = theTune.replaceAll("%%MIDI program 109", "%%MIDI program custom1");
+          theTune = theTune.replaceAll("transpose=1", "transpose=-7");
+          theTune = theTune.replaceAll("%voice_tuning_cents 48 148", "%voice_tuning_cents 0 0");
+        }
+        break;
+
+    }
 
   if (hideDroneVoice) {
     theInjectedTune = InjectStringBelowTuneHeader(theTune, "%\n%%score (1 2)\n%\n%play_highlight_v1_only\n%\nV:1" + postFix);
@@ -29697,6 +30566,14 @@ function InjectOneBagpipeDrones(theTune, droneStyle, hideDroneVoice, foldNotes, 
           accum += "V:2 stems=down octave=2 transpose=-24\n%%MIDI program 129\n%%MIDI transpose -24\n%%voicecolor transparent\n";
         } else {
           accum += "V:2 stems=down octave=2 transpose=-24\n%%MIDI program 129\n%%MIDI transpose -24\n";
+        }
+        theInitialDynamics = "!mp! "
+        break;
+      case 20: // Custom Bagpipe Instruement
+        if (hideDroneVoice) {
+          accum += "V:2 stems=down octave=2 transpose=-24\n%%MIDI program custom1\n%%MIDI transpose -24\n%%voicecolor transparent\n";
+        } else {
+          accum += "V:2 stems=down octave=2 transpose=-24\n%%MIDI program custom1\n%%MIDI transpose -24\n";
         }
         theInitialDynamics = "!mp! "
         break;
@@ -29811,6 +30688,10 @@ function InjectBagpipeSounds() {
   }, {
     name: "  Uilleann Pipes Flat Set in A (Lynch-style drones)",
     id: 18
+  },
+  {
+    name: "  Custom Bagpipe Instrument (Drones at D,)",
+    id: 20
   }];
 
   // Setup initial values
@@ -30161,16 +31042,17 @@ var gIncipitsBuilderStripText = true;
 var gIncipitsBuilderMultiPart = true;
 var gIncipitsBuilderOwnLines = false;
 var gIncipitsTagsToStrip = "ABCDINOSWwZ";
+var gIncipitsBuilderStripChords = true;
 
 function IncipitsBuilderDialog() {
 
-  // Setup initial values
   const theData = {
     IncipitsBuilderBars: gIncipitsBuilderBars,
     IncipitsBuilderWidth: gIncipitsBuilderWidth,
     IncipitsBuilderLeftJustify: gIncipitsBuilderLeftJustify,
     IncipitsBuilderInjectNumbers: gIncipitsBuilderInjectNumbers,
     IncipitsBuilderStripText: gIncipitsBuilderStripText,
+    IncipitsBuilderStripChords: gIncipitsBuilderStripChords,
     IncipitsBuilderStripTags: gIncipitsTagsToStrip,
     IncipitsBuilderMultiPart: gIncipitsBuilderMultiPart,
     IncipitsBuilderOwnLines: gIncipitsBuilderOwnLines
@@ -30190,9 +31072,8 @@ function IncipitsBuilderDialog() {
     html: '<p style="font-size:12pt;line-height:18pt;">Clicking "Build" will extensively reformat the ABC, so you may want to grab a Snapshot or save the ABC before using this feature.</p>'
   }, {
     html: '<p style="font-size:12pt;line-height:18pt;margin-bottom:24px;">The reformatted ABC can be exported as first-line Notes Incipits from the Export PDF dialog.</p>'
-  }, 
-  {
-    html: '<p style="font-size:12pt;line-height:18pt;margin-bottom:24px;"><strong>Note:</strong> When generating multi-part incipits the staff width is not used and all text blocks are stripped.</p>'
+  }, {
+    html: '<p style="font-size:12pt;line-height:18pt;margin-bottom:24px;"><strong>Note:</strong> When generating multi-part incipits the staff width is not used.</p>'
   }, {
     name: "    Create multi-part incipits (Part A, Part B, etc.)",
     id: "IncipitsBuilderMultiPart",
@@ -30224,16 +31105,21 @@ function IncipitsBuilderDialog() {
     type: "checkbox",
     cssClass: "incipits_builder_form_text_checkbox"
   }, {
+    name: "    Strip chords",
+    id: "IncipitsBuilderStripChords",
+    type: "checkbox",
+    cssClass: "incipits_builder_form_text_checkbox"
+  }, {
     name: "    Strip all %%text, %%center, %%right, and %%begintext blocks",
     id: "IncipitsBuilderStripText",
     type: "checkbox",
     cssClass: "incipits_builder_form_text_checkbox"
-  },{
+  }, {
     name: "    Tags to strip (Default is ABCDINOSWwZ):",
     id: "IncipitsBuilderStripTags",
     type: "text",
     cssClass: "incipits_striptags_text"
-  }, ];
+  }];
 
   const modal = DayPilot.Modal.form(form, theData, {
     theme: "modal_flat",
@@ -30265,26 +31151,17 @@ function IncipitsBuilderDialog() {
       }
 
       gIncipitsBuilderLeftJustify = args.result.IncipitsBuilderLeftJustify;
-
       gIncipitsBuilderInjectNumbers = args.result.IncipitsBuilderInjectNumbers;
-
       gIncipitsBuilderStripText = args.result.IncipitsBuilderStripText;
-
+      gIncipitsBuilderStripChords = args.result.IncipitsBuilderStripChords;
       gIncipitsTagsToStrip = args.result.IncipitsBuilderStripTags;
-
       gIncipitsBuilderMultiPart = args.result.IncipitsBuilderMultiPart;
-
       gIncipitsBuilderOwnLines = args.result.IncipitsBuilderOwnLines;
 
       var nTunes = CountTunes();
 
-      // Should never get here, but just to be safe...
       if (nTunes == 0) {
-
-        var thePrompt = "No tunes for incipits building.";
-
-        // Center the string in the prompt
-        thePrompt = makeCenteredPromptString(thePrompt);
+        var thePrompt = makeCenteredPromptString("No tunes for incipits building.");
 
         DayPilot.Modal.alert(thePrompt, {
           theme: "modal_flat",
@@ -30296,101 +31173,82 @@ function IncipitsBuilderDialog() {
       }
 
       var theNotes = getABCEditorText();
-
-      // Find the tunes
       var theTunes = theNotes.split(/^X:/gm);
-
       var output = FindPreTuneHeader(theNotes);
 
       for (var i = 1; i <= nTunes; ++i) {
 
         var theTune = "X:" + theTunes[i];
-
         var stringToInject;
 
-        if (gIncipitsBuilderMultiPart){
+        if (gIncipitsBuilderStripChords) {
           theTune = StripChordsOne(theTune);
-          theTune = StripTextAnnotationsOne(theTune);
-
-          if (gIncipitsBuilderOwnLines){
-            theTune = buildABCIncipitsSingleTune(theTune,gIncipitsBuilderBars,{partsOnNewLines:true});
-          }
-          else{
-            theTune = buildABCIncipitsSingleTune(theTune,gIncipitsBuilderBars);            
-          }
         }
 
-        if (gIncipitsBuilderMultiPart){
-          if (!gIncipitsBuilderOwnLines){
-            // Inject an easily identified block of annotations
+        theTune = StripTextAnnotationsOne(theTune);
+
+        if (gIncipitsBuilderMultiPart) {
+
+          theTune = buildABCIncipitsSingleTune(theTune, gIncipitsBuilderBars, {
+            partsOnNewLines: gIncipitsBuilderOwnLines,
+            partLabelsBelowStaff: !gIncipitsBuilderStripChords
+          });
+
+        }
+
+        if (gIncipitsBuilderMultiPart) {
+          if (!gIncipitsBuilderOwnLines) {
             stringToInject = "%incipits_inject_start\n%%maxstaves 1\n%%staffwidth 556\n%%printtempo 0\n%hide_rhythm_tag\n";
           }
-          else{
-            // Inject an easily identified block of annotations
+          else {
             stringToInject = "%incipits_inject_start\n%%staffwidth 556\n%%printtempo 0\n%hide_rhythm_tag\n%%stretchlast true\n";
           }
         }
         else {
-          // Inject an easily identified block of annotations
           stringToInject = "%incipits_inject_start\n%%maxstaves 1\n%%noexpandtowidest\n%%barsperstaff " + (nBars + 1) + "\n%%staffwidth " + theWidth + "\n%%printtempo 0\n%hide_rhythm_tag\n";
-       }
+        }
 
         if (gIncipitsBuilderLeftJustify) {
           stringToInject += "%left_justify_titles\n%incipits_inject_end";
-        } else {
+        }
+        else {
           stringToInject += "%incipits_inject_end";
         }
 
-        // Remove any existing incipits annotation
         theTune = theTune.replace(/^%incipits_inject_start[\s\S]*?^%incipits_inject_end.*(\r?\n)?/gm, '');
 
         theTune = InjectStringAboveTuneHeader(theTune, stringToInject);
 
-        // Loop through each character in the control string
         for (let char of gIncipitsTagsToStrip) {
-
-          theTune = removeAllTags(theTune, char)
+          theTune = removeAllTags(theTune, char);
         }
 
         if (gIncipitsBuilderStripText) {
-
           theTune = StripTextAnnotationsOne(theTune);
-
         }
 
         output += theTune + "\n\n";
-
       }
 
       setABCEditorText(output);
 
       if (gIncipitsBuilderInjectNumbers) {
-
-        // First remove any existing tune title numers
         var theNotes = RemoveTuneTitleNumbers(false);
-
-        // Stuff it back in the work area so getTuneByIndex() returns correct value
         setABCEditorText(theNotes);
 
         var result = processTuneTitleNumbers(nTunes, theNotes);
-
-        // Stuff the final result back in the editor
         setABCEditorText(result);
-
       }
 
       SaveConfigurationSettings();
 
-      var thePrompt = "Incipits built!";
-
-      // Center the string in the prompt
-      thePrompt = makeCenteredPromptString(thePrompt);
+      var thePrompt = makeCenteredPromptString("Incipits built!");
 
       DayPilot.Modal.alert(thePrompt, {
         theme: "modal_flat",
         top: 300,
         scrollWithPage: (AllowDialogsToScroll())
-      }).then(function(){
+      }).then(function() {
 
         RenderAsync(true, null, function() {
 
@@ -30411,19 +31269,14 @@ function IncipitsBuilderDialog() {
           //   gTheABC.focus();
           // }
 
-          // Scroll to the top
           MakeTuneVisible(true);
           ensureMoreToolsVisible();
 
         });
       });
-
     }
-
   });
-
 }
-
 
 // 
 // Clean a title number from the start of a string
@@ -35566,7 +36419,20 @@ var gTheBatchMP3ExportStatusText = null;
 //
 // Append additional copies of the tune notes for long MP3 generation
 //
-function AddDuplicatesForMp3(theTune, rhythmType, count, doClickTrack, doInjectSilence) {
+function AddDuplicatesForMp3(theTune, rhythmType, count, doClickTrack, doInjectSilence, useRepeatedOneMeasureClickIntro) {
+
+  // When the Tune Trainer has both its click intro and the metronome enabled,
+  // keep the drum engine running but temporarily replace its pattern with a
+  // silent pattern during the intro. Re-enabling %%MIDI drumon after a repeated,
+  // multi-voice intro can cause the metronome to stop after the first tune bar.
+  var originalMetronomeDrumLine = null;
+
+  if (useRepeatedOneMeasureClickIntro && /^\s*%%MIDI\s+drumon\b/im.test(theTune)) {
+    var originalMetronomeDrumMatch = theTune.match(/^\s*(%%MIDI\s+drum\s+.+)$/im);
+    if (originalMetronomeDrumMatch) {
+      originalMetronomeDrumLine = originalMetronomeDrumMatch[1].trim();
+    }
+  }
 
   // Nothing to do?
   if ((count == 1) && (!doClickTrack) && (!doInjectSilence)) {
@@ -35656,28 +36522,77 @@ function AddDuplicatesForMp3(theTune, rhythmType, count, doClickTrack, doInjectS
 
     //console.log("Adding click track for rhythm type "+rhythmType);
 
-    switch (rhythmType) {
-      case "reel":
-        theTune += "V:1\nV:2\n%%MIDI program 128\n^Cz3 ^Cz3|^Cz3 ^Cz3|\nV:1\nz8|z8|\n";
-        break;
-      case "jig":
-        theTune += "V:1\nV:2\n%%MIDI program 128\n^Cz2 ^Cz2|^Cz2 ^Cz2|\nV:1\nz6|z6|\n";
-        break;
-      case "slide":
-        theTune += "V:1\nV:2\n%%MIDI program 128\n^Cz2 ^Cz2 ^Cz2 ^Cz2|\nV:1\nz12|\n";
-        break;
-      case "slipjig":
-        theTune += "V:1\nV:2\n%%MIDI program 128\n^Cz2 ^Cz2 ^Cz2|^Cz2 ^Cz2 ^Cz2|\nV:1\nz9|z9|\n";
-        break;
-      case "polka":
-        theTune += "V:1\nV:2\n%%MIDI program 128\n^Cz ^Cz|^Cz ^Cz|\nV:1\nz4|z4|\n";
-        break;
-      case "waltz":
-        theTune += "V:1\nV:2\n%%MIDI program 128\n^Cz ^Cz ^Cz|^Cz ^Cz ^Cz|\nV:1\nz6|z6|\n";
-        break;
-      default:
-        theTune += "V:1\nV:2\n%%MIDI program 128\n^Cz3 ^Cz3|^Cz3 ^Cz3|\nV:1\nz8|z8|\n";
-        break;
+    // The Tune Trainer uses one written measure enclosed in repeat marks, so it
+    // still plays a two-measure count-in without allowing a missing start repeat
+    // in the tune itself to interact with the intro. Other callers retain the
+    // original two-written-measure click intro.
+    if (useRepeatedOneMeasureClickIntro) {
+
+      if (originalMetronomeDrumLine) {
+        // A one-token rest fills the whole bar, giving a silent drum pattern
+        // without stopping and restarting the drum engine.
+        theTune += "%%MIDI drum z\n";
+      }
+
+      var clickMeasure = "^Cz3 ^Cz3";
+      var clickRestMeasure = "z8";
+
+      switch (rhythmType) {
+        case "jig":
+          clickMeasure = "^Cz2 ^Cz2";
+          clickRestMeasure = "z6";
+          break;
+        case "slide":
+          clickMeasure = "^Cz2 ^Cz2 ^Cz2 ^Cz2";
+          clickRestMeasure = "z12";
+          break;
+        case "slipjig":
+          clickMeasure = "^Cz2 ^Cz2 ^Cz2";
+          clickRestMeasure = "z9";
+          break;
+        case "polka":
+          clickMeasure = "^Cz ^Cz";
+          clickRestMeasure = "z4";
+          break;
+        case "waltz":
+          clickMeasure = "^Cz ^Cz ^Cz";
+          clickRestMeasure = "z6";
+          break;
+      }
+
+      theTune += "V:1\nV:2\n%%MIDI program 128\n|:" + clickMeasure + ":|\nV:1\n|:" + clickRestMeasure + ":|\n";
+
+      if (originalMetronomeDrumLine) {
+        // Restore the active metronome pattern at the start of the tune.
+        // The existing header-level %%MIDI drumon remains active throughout.
+        theTune += originalMetronomeDrumLine + "\n";
+      }
+
+    } else {
+
+      switch (rhythmType) {
+        case "reel":
+          theTune += "V:1\nV:2\n%%MIDI program 128\n^Cz3 ^Cz3|^Cz3 ^Cz3|\nV:1\nz8|z8|\n";
+          break;
+        case "jig":
+          theTune += "V:1\nV:2\n%%MIDI program 128\n^Cz2 ^Cz2|^Cz2 ^Cz2|\nV:1\nz6|z6|\n";
+          break;
+        case "slide":
+          theTune += "V:1\nV:2\n%%MIDI program 128\n^Cz2 ^Cz2 ^Cz2 ^Cz2|\nV:1\nz12|\n";
+          break;
+        case "slipjig":
+          theTune += "V:1\nV:2\n%%MIDI program 128\n^Cz2 ^Cz2 ^Cz2|^Cz2 ^Cz2 ^Cz2|\nV:1\nz9|z9|\n";
+          break;
+        case "polka":
+          theTune += "V:1\nV:2\n%%MIDI program 128\n^Cz ^Cz|^Cz ^Cz|\nV:1\nz4|z4|\n";
+          break;
+        case "waltz":
+          theTune += "V:1\nV:2\n%%MIDI program 128\n^Cz ^Cz ^Cz|^Cz ^Cz ^Cz|\nV:1\nz6|z6|\n";
+          break;
+        default:
+          theTune += "V:1\nV:2\n%%MIDI program 128\n^Cz3 ^Cz3|^Cz3 ^Cz3|\nV:1\nz8|z8|\n";
+          break;
+      }
     }
   }
 
@@ -44937,6 +45852,7 @@ function TuneTrainerReset() {
   var looperDoCountdown = document.getElementById("looper_docountdown").checked;
   var looperCountdown = document.getElementById("looper_countdown").value;
   var looperAddMeasure = document.getElementById("looper_addmeasure").checked;
+  var looperClickIntro = document.getElementById("looper_clickintro").checked;
 
   looperSpeedStart = parseFloat(looperSpeedStart);
   looperSpeedEnd = parseFloat(looperSpeedEnd);
@@ -44965,6 +45881,7 @@ function TuneTrainerReset() {
       gLooperCountdown = looperCountdown;
 
       gLooperAddMeasure = !!looperAddMeasure;
+      gLooperClickIntro = !!looperClickIntro;
 
       bDoReload = true;
 
@@ -45093,6 +46010,18 @@ function ToggleTuneTrainerAddMeasure() {
   }
 }
 
+//
+// Save the click intro state
+//
+function ToggleTuneTrainerClickIntro() {
+
+  gLooperClickIntro = document.getElementById("looper_clickintro").checked;
+
+  if (gLocalStorageAvailable) {
+    localStorage.LooperClickIntro = gLooperClickIntro;
+  }
+}
+
 // 
 // Save the countdown state
 //
@@ -45132,9 +46061,12 @@ var gTouchIncrementFive = false;
 var gLooperDoCountdown = true;
 var gLooperCountdown = 5;
 
-// Add a measure after in the Tune Trainer
+// Add trailing measures in the Tune Trainer
 var gLooperAddMeasure = false;
 var gLooperAddMeasureCount = 1;
+
+// Add a repeated one-measure, meter-appropriate click intro in the Tune Trainer
+var gLooperClickIntro = false;
 
 function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
 
@@ -45165,7 +46097,8 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
       document.getElementById("looper_count").value !== gTuneTrainerInitialSettings.count ||
       document.getElementById("looper_docountdown").checked !== gTuneTrainerInitialSettings.doCountdown ||
       document.getElementById("looper_countdown").value !== gTuneTrainerInitialSettings.countdownSecs ||
-      document.getElementById("looper_addmeasure").checked !== gTuneTrainerInitialSettings.addMeasure;
+      document.getElementById("looper_addmeasure").checked !== gTuneTrainerInitialSettings.addMeasure ||
+      document.getElementById("looper_clickintro").checked !== gTuneTrainerInitialSettings.clickIntro;
 
     var applyBtn = document.getElementById("looperreset");
     if (!applyBtn) return;
@@ -45187,6 +46120,15 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
 
   if (gPlayMetronome) {
     theProcessedABC = inject_one_metronome(gPlayerLooperProcessed, false);
+  }
+
+  // Optionally prepend a meter-appropriate one-measure click intro enclosed
+  // in |: and :| repeat marks. It plays twice while remaining isolated from
+  // any incomplete repeat structure in the tune itself. This modifies only
+  // the Tune Trainer playback copy, not the source ABC.
+  if (gLooperClickIntro && theProcessedABC) {
+    var rhythmType = getTuneRhythmType(theProcessedABC);
+    theProcessedABC = AddDuplicatesForMp3(theProcessedABC, rhythmType, 1, true, false, true);
   }
 
   // Optionally add one extra bar of meter-appropriate rests
@@ -45703,9 +46645,9 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
     var theHeight;
 
     if (gLargePlayerControls) {
-      theHeight = window.innerHeight - 416;
+      theHeight = window.innerHeight - 440; 
     } else {
-      theHeight = window.innerHeight - 396;
+      theHeight = window.innerHeight - 420; 
       if (isDesktopBrowser() && isSafari()) {
         theHeight -= 10;
       }
@@ -45744,15 +46686,21 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
 
     // Add the tune trainer controls
 
-    modal_msg += '<p class="configure_looper_text" style="text-align:center;margin:0px;margin-top:20px">';
+    modal_msg += '<p class="configure_looper_text" style="text-align:center;margin:0px;margin-top:16px">';
     modal_msg += '<span id="looper_text_1">Starting tempo:</span> <input style="width:75px;margin-right:4px;" id="looper_start_percent" type="number" min="1" step="1" max="400" title="Tune tempo start percentage" autocomplete="off"/><span id="looper_percent_span_1">%&nbsp;&nbsp;&nbsp;&nbsp;</span>';
     modal_msg += '<span id="looper_text_2">Ending tempo:</span> <input style="width:75px;margin-right:4px;" id="looper_end_percent" type="number" min="1" step="1" max="400" title="Tune tempo end percentage" autocomplete="off"/><span id="looper_percent_span_2">%&nbsp;&nbsp;&nbsp;&nbsp;</span>';
     modal_msg += '<span id="looper_text_3">Tempo increment:</span> <input style="width:75px;margin-right:4px;" id="looper_increment" type="number" min="0" step="1" max="400" title="Tempo increment percentage" autocomplete="off"/><span id="looper_percent_span_3">%</span>';
     modal_msg += '</p>';
-    modal_msg += '<p class="configure_looper_text" style="text-align:center;margin:0px;margin-top:20px">';
+    modal_msg += '<p class="configure_looper_text" style="text-align:center;margin:0px;margin-top:16px">';
     modal_msg += '<span id="looper_text_4">Increment tempo after how many loops:</span> <input style="width:60px;margin-right:14px;" id="looper_count" type="number" min="1" step="1" max="100" title="Increment tempo after this many times through the tune" autocomplete="off"/><span id="looper_text_5">Countdown?</span><input style="width:18px;margin-left:8px;margin-right:14px;" id="looper_docountdown" type="checkbox" onchange="ToggleLoopCountdown();"/><span id="looper_text_6">Countdown secs:</span><input style="width:60px;margin-left:8px;" id="looper_countdown" type="number" min="1" step="1" max="30" title="Countdown secs" autocomplete="off" onchange="SaveLoopCountdown();"/>';
     modal_msg += '</p>';
-    modal_msg += '<p class="configure_looper_text" style="text-align:center;margin:0px;margin-top:20px">';
+
+    modal_msg += '<p class="configure_looper_text" style="text-align:center;margin:0px;margin-top:16px">';
+    modal_msg += '<span id="looper_text_7" title="Adds a two-measure, meter-appropriate click intro before the tune begins.&nbsp;&nbsp;The intro is stored as one measure enclosed in repeat marks, so it plays twice without interacting with the tune repeats.&nbsp;&nbsp;This does not change the original tune ABC.">Add two-measure click intro?</span><input style="width:18px;margin-left:8px;margin-right:20px;" id="looper_clickintro" type="checkbox" onchange="ToggleTuneTrainerClickIntro();" title="Adds a two-measure, meter-appropriate click intro before the tune begins.&nbsp;&nbsp;The intro is stored as one measure enclosed in repeat marks, so it plays twice without interacting with the tune repeats.&nbsp;&nbsp;Click Apply Changes and Reload to use the new setting.&nbsp;&nbsp;This does not change the original tune ABC."/>';
+
+    modal_msg += '<span id="looper_text_8" title="Adds additional full measure trailing rests at the end of the ABC.&nbsp;&nbsp;The number of measures of rests to add can be configured in the Advanced Settings dialog.">Add trailing rests?</span><input style="width:18px;margin-left:8px;margin-right:14px;" id="looper_addmeasure" type="checkbox" onchange="ToggleTuneTrainerAddMeasure();" title="Adds additional full measure trailing rests at the end of the ABC.&nbsp;&nbsp;The number of measures of rests to add can be configured in the Advanced Settings dialog."/>';
+    modal_msg += '</p>';
+    modal_msg += '<p class="configure_looper_text" style="text-align:center;margin:0px;margin-top:16px">';
     modal_msg += '<input id="looperreset" class="looperreset button btn btn-looperreset" onclick="TuneTrainerReset();" type="button" value="Apply Changes and Reload" title="Applies the changed Tune Trainer settings and reloads the trainer">';
 
     if (gPlayMetronome) {
@@ -45762,11 +46710,10 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
     }
 
     modal_msg += '<input id="trainer_phrase_builder" class="trainer_phrase_builder button btn btn-phrasebuilder" onclick="TrainerPhraseBuilder(event);" type="button" value="Phrase Builder" title="Builds phrases of specified measure length for the tune and then reloads the Tune Trainer.&nbsp;&nbsp;This does not change the original tune ABC.&nbsp;&nbsp;Shift-click to restore the original tune.">';
-    
-    modal_msg += '<span id="looper_text_7" style="margin-left:12px;" title="Adds additional full measure trailing rests at the end of the ABC.&nbsp;&nbsp;The number of measures of rests to add can be configured in the Advanced Settings dialog.">Add trailing rests?</span><input style="width:18px;margin-left:8px;margin-right:14px;" id="looper_addmeasure" type="checkbox" onchange="ToggleTuneTrainerAddMeasure();" title="Adds additional full measure trailing rests at the end of the ABC.&nbsp;&nbsp;The number of measures of rests to add can be configured in the Advanced Settings dialog."/>';
-
     modal_msg += '</p>';
+
     
+    modal_msg += '<a id="looperhelp" href="https://michaeleskin.com/abctools/userguide.html#tune_trainer" target="_blank" style="text-decoration:none;" title="Learn more about the Tune Trainer" class="dialogcornerbutton">?</a>';
     modal_msg += '<p id="looperstatus"></p>';
     modal_msg += '<div id="looperstatusbar"></div>';
     modal_msg += '<div id="looperstatusbaroverlay"></div>';
@@ -45836,6 +46783,7 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
     document.getElementById("looper_countdown").value = gLooperCountdown;
 
     document.getElementById("looper_addmeasure").checked = gLooperAddMeasure;
+    document.getElementById("looper_clickintro").checked = gLooperClickIntro;
 
     // --- NEW: snapshot initial values now that controls are populated ---
     gTuneTrainerInitialSettings = {
@@ -45845,7 +46793,8 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
       count: document.getElementById("looper_count").value,
       doCountdown: document.getElementById("looper_docountdown").checked,
       countdownSecs: document.getElementById("looper_countdown").value,
-      addMeasure: document.getElementById("looper_addmeasure").checked
+      addMeasure: document.getElementById("looper_addmeasure").checked,
+      clickIntro: document.getElementById("looper_clickintro").checked
     };
 
     // --- NEW: hook listeners to mark Apply button dirty/clean ---
@@ -45858,6 +46807,9 @@ function TuneTrainerDialog(theOriginalABC, theProcessedABC, looperState) {
     if (el) el.addEventListener("change", updateApplyButtonDirtyState);
 
     el = document.getElementById("looper_addmeasure");
+    if (el) el.addEventListener("change", updateApplyButtonDirtyState);
+
+    el = document.getElementById("looper_clickintro");
     if (el) el.addEventListener("change", updateApplyButtonDirtyState);
 
     // Ensure correct initial state
@@ -46647,7 +47599,7 @@ function GetInitialConfigurationSettings() {
     resetAngloButtonNames();
   }
 
-  var theMusicXMLImportSettings = localStorage.musicXMLImportOptionsV7;
+  var theMusicXMLImportSettings = localStorage.musicXMLImportOptionsV8;
 
   if (theMusicXMLImportSettings) {
     gMusicXMLImportOptions = JSON.parse(theMusicXMLImportSettings);
@@ -46898,14 +47850,25 @@ function GetInitialConfigurationSettings() {
   }
 
   // Sound font
+  const FATBOY_SOUNDFONT =
+    "https://michaeleskin.com/abctools/soundfonts/fatboy_4/";
+
+  // One-time migration: make FatBoy the default for every user.
+  if (localStorage.FatBoyDefaultMigration1 !== "true") {
+
+    localStorage.theSoundFont4 = FATBOY_SOUNDFONT;
+    localStorage.FatBoyDefaultMigration1 = "true";
+  }
+
   val = localStorage.theSoundFont4;
+
   if (val) {
     gDefaultSoundFont = val;
-    gTheActiveSoundFont = val;
   } else {
-    gDefaultSoundFont = "https://paulrosen.github.io/midi-js-soundfonts/FluidR3_GM/";
-    gTheActiveSoundFont = gDefaultSoundFont;
+    gDefaultSoundFont = FATBOY_SOUNDFONT;
   }
+
+  gTheActiveSoundFont = gDefaultSoundFont;
 
   val = localStorage.AutoscrollPlayer;
   if (val) {
@@ -46959,7 +47922,7 @@ function GetInitialConfigurationSettings() {
     gUseCustomGMSounds = true;
   }
 
-  val = localStorage.TipJarCount;
+  val = localStorage.TipJarCountV2;
   if (val) {
     gTipJarCount = val;
   } else {
@@ -47023,6 +47986,14 @@ function GetInitialConfigurationSettings() {
   val = localStorage.PDFAutoPageNumbers;
   if (val) {
     gPDFAutoPageNumbers = (val == "true");
+  }
+
+  val = localStorage.PDFPageFitScalingPreset;
+  if (val) {
+    gPDFPageFitScalingPreset = normalizePDFPageFitStaffWidthPreset(val);
+  }
+  else{
+    gPDFPageFitScalingPreset = "standard";
   }
 
   val = localStorage.UseComhaltasABC;
@@ -47287,12 +48258,23 @@ function GetInitialConfigurationSettings() {
 
   // Get the default tune database
 
-  gDefaultTuneDatabase = 0;
+  // One-time migration to make thesession.org the new default
+  if (localStorage.TheSessionDefaultMigration1 !== "true") {
+    localStorage.DefaultTuneDatabase = "1";
+    localStorage.TheSessionDefaultMigration1 = "true";
+  }
+
+  gDefaultTuneDatabase = 1;
 
   val = localStorage.DefaultTuneDatabase;
 
-  if (val) {
-    gDefaultTuneDatabase = parseInt(val);
+  if (val !== null && val !== undefined) {
+
+    const parsedDatabase = parseInt(val, 10);
+
+    if (parsedDatabase === 0 || parsedDatabase === 1) {
+      gDefaultTuneDatabase = parsedDatabase;
+    }
   }
 
   // Tune database retry parameters
@@ -47642,6 +48624,12 @@ function GetInitialConfigurationSettings() {
     gIncipitsBuilderOwnLines = (val == "true");
   }
 
+  gIncipitsBuilderStripChords = true;
+  val = localStorage.IncipitsBuilderStripChords;
+  if (val) {
+    gIncipitsBuilderStripChords = (val == "true");
+  }
+
   val = localStorage.LastWarp;
   if (val) {
     gLastWarp = parseInt(val);
@@ -47720,6 +48708,12 @@ function GetInitialConfigurationSettings() {
   if (val) {
     gLooperAddMeasure = (val == "true");
   }
+
+  gLooperClickIntro = false;
+  val = localStorage.LooperClickIntro;
+  if (val) {
+    gLooperClickIntro = (val == "true");
+  }
   
   gLooperAddMeasureCount = 1;
   val = localStorage.LooperAddMeasureCount;
@@ -47747,6 +48741,13 @@ function GetInitialConfigurationSettings() {
   // if (val) {
   //   gUseFlatButtons = (val == "true");
   // }
+
+  // BWW uses custom1?
+  gBWWUseCustomInstrument = false;
+  val = localStorage.BWWUseCustomInstrument
+  if (val) {
+    gBWWUseCustomInstrument = (val == "true");
+  }
 
   // Save the settings, in case they were initialized
   SaveConfigurationSettings();
@@ -47808,7 +48809,7 @@ function SaveConfigurationSettings() {
     localStorage.angloButtonNames2 = JSON.stringify(gAngloButtonNames);
 
     // MusicXML import options
-    localStorage.musicXMLImportOptionsV7 = JSON.stringify(gMusicXMLImportOptions);
+    localStorage.musicXMLImportOptionsV8 = JSON.stringify(gMusicXMLImportOptions);
 
     // Large player control player options
     localStorage.LargePlayerControls = gLargePlayerControls;
@@ -47878,7 +48879,7 @@ function SaveConfigurationSettings() {
     localStorage.UseCustomGMSounds = gUseCustomGMSounds;
 
     // Save the tip jar count 
-    localStorage.TipJarCount = gTipJarCount;
+    localStorage.TipJarCountV2 = gTipJarCount;
 
     // Save the save editor state flag
     localStorage.SaveLastAutoSnapShot = gSaveLastAutoSnapShot;
@@ -48029,6 +49030,7 @@ function SaveConfigurationSettings() {
     localStorage.IncipitsTagsToStrip = gIncipitsTagsToStrip;
     localStorage.IncipitsBuilderMultiPart = gIncipitsBuilderMultiPart;
     localStorage.IncipitsBuilderOwnLines = gIncipitsBuilderOwnLines;
+    localStorage.IncipitsBuilderStripChords = gIncipitsBuilderStripChords;
 
     // Warp
     localStorage.LastWarp = gLastWarp;
@@ -48055,8 +49057,11 @@ function SaveConfigurationSettings() {
     // Always flatten parts
     localStorage.AlwaysFlattenParts = gAlwaysFlattenParts;
 
-    // Add measure in Tune Trainer
+    // Add trailing measures in Tune Trainer
     localStorage.LooperAddMeasure = gLooperAddMeasure;
+
+    // Add a two-measure click intro in Tune Trainer
+    localStorage.LooperClickIntro = gLooperClickIntro;
 
     // Number of measures to add
     localStorage.LooperAddMeasureCount = gLooperAddMeasureCount;
@@ -48066,6 +49071,12 @@ function SaveConfigurationSettings() {
 
     // Flat mode buttons
     // localStorage.UseFlatButtons = gUseFlatButtons;
+
+    // BWW uses custom1
+    localStorage.BWWUseCustomInstrument = gBWWUseCustomInstrument;
+
+    // BWW uses custom1
+    localStorage.BWWUseCustomInstrument = gBWWUseCustomInstrument;
 
   }
 }
@@ -48083,7 +49094,7 @@ function resetMusicXMLImportOptions() {
     n: 0,
     c: 0,
     v: 0,
-    d: 4,
+    d: 8,
     x: 0,
     noped: 0,
     p: '',
@@ -48119,7 +49130,7 @@ function setMusicXMLOptions() {
   gMusicXMLImportOptions.b = parseInt($('#musicxml_bpl').val() || 4);
   gMusicXMLImportOptions.n = parseInt($('#musicxml_cpl').val() || 0);
   gMusicXMLImportOptions.c = parseInt($('#musicxml_crf').val() || 0);
-  gMusicXMLImportOptions.d = parseInt($('#musicxml_den').val() || 4);
+  gMusicXMLImportOptions.d = parseInt($('#musicxml_den').val() || 8);
   gMusicXMLImportOptions.m = parseInt($('#musicxml_midi').val() || 0);
   gMusicXMLImportOptions.noped = $('#musicxml_noped').prop('checked') ? 1 : 0;
   gMusicXMLImportOptions.v1 = $('#musicxml_v1').prop('checked') ? 1 : 0;
@@ -48243,7 +49254,7 @@ function ConfigureMusicXMLImport() {
       // Save the MusicXML settings
       if (gLocalStorageAvailable) {
 
-        localStorage.musicXMLImportOptionsV7 = JSON.stringify(gMusicXMLImportOptions);
+        localStorage.musicXMLImportOptionsV8 = JSON.stringify(gMusicXMLImportOptions);
 
       }
     } else {
@@ -49604,49 +50615,83 @@ function SharingControlsDialog() {
 //
 function idlePDFExportDialog() {
 
-  function showHideIncipitsLayout(val) {
+  function getDialogControl(controlName) {
 
-    if (val != "incipits") {
+    var control = document.getElementById(controlName);
 
-      var elem = document.getElementsByName("configure_incipitscolumns");
+    if (!control) {
+      var elems = document.getElementsByName(controlName);
 
-      if (elem && (elem.length != 0)) {
-        elem[0].disabled = true;
-        elem[0].style.opacity = 0.4;
-
+      if (elems && elems.length) {
+        control = elems[0];
       }
+    }
 
-    } else {
+    return control;
+  }
 
-      var elem = document.getElementsByName("configure_incipitscolumns");
+  function setControlEnabled(controlName, enabled) {
 
-      if (elem && (elem.length != 0)) {
-        elem[0].disabled = false;
-        elem[0].style.opacity = 1.0;
-      }
+    var control = getDialogControl(controlName);
 
+    if (!control) {
+      return;
+    }
+
+    control.disabled = !enabled;
+    control.style.opacity = enabled ? 1.0 : 0.45;
+
+    // Optional tooltip-style hints when disabled.
+    switch (controlName) {
+
+      case "configure_incipitscolumns":
+        control.title = enabled ?
+          "Choose one or two columns for Notes Incipits PDF output." :
+          "Only used when Tune Layout is set to Notes Incipits.";
+        break;
+
+      case "configure_pagefitscalingpreset":
+        control.title = enabled ?
+          "For notation PDF layouts, temporarily renders the notation with optional wider staffs before exporting the PDF. Wider staffs can reduce the number of staff lines needed and help tunes fit better vertically on each page." :
+          "Only used with One Tune per Page, One Tune per Page (Centered), Multiple Tunes per Page (Natural Flow), or the Multiple Tunes per Page (Prefer 2/3/4 Tunes/Page) layouts.";
+        break;
+
+      default:
+        control.title = "";
+        break;
     }
   }
 
-  // Idle the incipits column selector
-  var elem = document.getElementsByName("configure_tunelayout");
+  function updateDependentPDFExportControls(val) {
 
-  if (elem && (elem.length != 0)) {
+    var notesIncipitsSelected = (val == "incipits");
 
-    // Initial idle of incipits layout selector
-    var val = elem[0].value;
+    var staffWidthPresetLayoutSelected =
+      ((val == "one") ||
+       (val == "one_centered") ||
+       (val == "multi") ||
+       (val == "multi_fit_2") ||
+       (val == "multi_fit_3") ||
+       (val == "multi_fit_4"));
 
-    showHideIncipitsLayout(val)
+    setControlEnabled("configure_incipitscolumns", notesIncipitsSelected);
 
-    // Idle the incipits layout selector
-    elem[0].onchange = function() {
+    setControlEnabled("configure_pagefitscalingpreset", staffWidthPresetLayoutSelected);
 
-      // Initial idle of incipits layout selector
-      var val = this.value;
+  }
 
-      showHideIncipitsLayout(val);
+  // Idle controls that depend on the Tune Layout selector.
+  var elem = getDialogControl("configure_tunelayout");
 
-    }
+  if (elem) {
+
+    updateDependentPDFExportControls(elem.value);
+
+    elem.onchange = function() {
+
+      updateDependentPDFExportControls(this.value);
+
+    };
 
   }
 }
@@ -49698,8 +50743,20 @@ function PDFExportDialog() {
       name: "  One Tune per Page",
       id: "one"
     }, {
-      name: "  Multiple Tunes per Page",
+      name: "  One Tune per Page (Centered)",
+      id: "one_centered"
+    }, {
+      name: "  Multiple Tunes per Page (Natural Flow)",
       id: "multi"
+    }, {
+      name: "  Multiple Tunes per Page (Prefer 2 Tunes/Page)",
+      id: "multi_fit_2"
+    }, {
+      name: "  Multiple Tunes per Page (Prefer 3 Tunes/Page)",
+      id: "multi_fit_3"
+    }, {
+      name: "  Multiple Tunes per Page (Prefer 4 Tunes/Page)",
+      id: "multi_fit_4"
     }, {
       name: "  Notes Incipits",
       id: "incipits"
@@ -49730,8 +50787,20 @@ function PDFExportDialog() {
       name: "  One Tune per Page",
       id: "one"
     }, {
-      name: "  Multiple Tunes per Page",
+      name: "  One Tune per Page (Centered)",
+      id: "one_centered"
+    }, {
+      name: "  Multiple Tunes per Page (Natural Flow)",
       id: "multi"
+    }, {
+      name: "  Multiple Tunes per Page (Prefer 2 Tunes/Page)",
+      id: "multi_fit_2"
+    }, {
+      name: "  Multiple Tunes per Page (Prefer 3 Tunes/Page)",
+      id: "multi_fit_3"
+    }, {
+      name: "  Multiple Tunes per Page (Prefer 4 Tunes/Page)",
+      id: "multi_fit_4"
     }, {
       name: "  Notes Incipits",
       id: "incipits"
@@ -49762,6 +50831,23 @@ function PDFExportDialog() {
   }, {
     name: "  Two Columns",
     id: 2
+  }, ];
+
+  const pagefit_scaling_preset_list = [{
+    name: "  Standard",
+    id: "standard"
+  }, {
+    name: "  Wide",
+    id: "semi_compact"
+  }, {
+    name: "  Wider",
+    id: "compact"
+  }, {
+    name: "  Extra-Wide",
+    id: "more_compact"
+  }, {
+    name: "  Maximum",
+    id: "most_compact"
   }, ];
 
   const pagenumber_list = [{
@@ -49892,12 +50978,17 @@ function PDFExportDialog() {
 
   clearGetTuneByIndexCache();
 
+  // Normalize the page-fit staffwidth preset in case an older saved value
+  // from the previous scale-based preset system is present.
+  applyPDFPageFitScalingPreset(gPDFPageFitScalingPreset);
+
   // Setup initial values
   const theData = {
     configure_papersize: thePaperSize,
     configure_tunelayout: theTuneLayout,
     configure_orientation: gPDFOrientation,
     configure_incipitscolumns: gIncipitsColumns,
+    configure_pagefitscalingpreset: gPDFPageFitScalingPreset,
     configure_pagenumber: pagenumbers,
     configure_pagenumberonfirstpage: theFirstPage,
     configure_fontname: dialog_PDFFont,
@@ -49941,6 +51032,12 @@ function PDFExportDialog() {
         type: "select",
         options: tunelayout_list,
         cssClass: "configure_pdf_tunelayout_select"
+      }, {
+        name: "Layout Staff Width:",
+        id: "configure_pagefitscalingpreset",
+        type: "select",
+        options: pagefit_scaling_preset_list,
+        cssClass: "configure_pdf_pagefit_scaling_preset_select"
       }, {
         name: "Notes Incipits Columns:",
         id: "configure_incipitscolumns",
@@ -50017,6 +51114,12 @@ function PDFExportDialog() {
         options: tunelayout_list,
         cssClass: "configure_pdf_tunelayout_select"
       }, {
+        name: "Layout Staff Width:",
+        id: "configure_pagefitscalingpreset",
+        type: "select",
+        options: pagefit_scaling_preset_list,
+        cssClass: "configure_pdf_pagefit_scaling_preset_select"
+      }, {
         name: "Notes Incipits Columns:",
         id: "configure_incipitscolumns",
         type: "select",
@@ -50091,6 +51194,12 @@ function PDFExportDialog() {
       options: tunelayout_list,
       cssClass: "configure_pdf_tunelayout_select"
     }, {
+      name: "Layout Staff Width:",
+      id: "configure_pagefitscalingpreset",
+      type: "select",
+      options: pagefit_scaling_preset_list,
+      cssClass: "configure_pdf_pagefit_scaling_preset_select"
+    }, {
       name: "Notes Incipits Columns:",
       id: "configure_incipitscolumns",
       type: "select",
@@ -50161,7 +51270,15 @@ function PDFExportDialog() {
 
     if (!args.canceled) {
 
-      gIncipitsColumns = args.result.configure_incipitscolumns;
+      if (args.result.configure_incipitscolumns) {
+        gIncipitsColumns = args.result.configure_incipitscolumns;
+      }
+
+      if (args.result.configure_pagefitscalingpreset) {
+        applyPDFPageFitScalingPreset(args.result.configure_pagefitscalingpreset);
+      } else {
+        applyPDFPageFitScalingPreset(gPDFPageFitScalingPreset);
+      }
 
       var thePaperSize = args.result.configure_papersize;
 
@@ -50535,12 +51652,12 @@ function Do_Browser_PDF_Export() {
     id: "fluidhq"
   }];
 
-  for (var i = 0; i <= MIDI_PATCH_COUNT; ++i) {
-    midi_program_list.push({
-      name: "  " + generalMIDISoundNames[i],
-      id: i
-    });
-  }
+  // for (var i = 0; i <= MIDI_PATCH_COUNT; ++i) {
+  //   midi_program_list.push({
+  //     name: "  " + generalMIDISoundNames[i],
+  //     id: i
+  //   });
+  // }
 
   // Lite: Customized
   // Replace inline styles with reusable classes
@@ -50736,6 +51853,85 @@ function Do_Browser_PDF_Export() {
 }
 
 //
+// Inject tablature-only directives into the ABC file header
+//
+function InjectTablatureOnly() {
+
+  // If currently rendering PDF, exit immediately
+  if (gRenderingPDF) {
+    return;
+  }
+
+  var theABC = getABCEditorText();
+
+  // Inject immediately before the first X: field so the directives apply to
+  // every tune in the file. Leave a blank line before the first tune.
+  var firstTuneMatch = /^X:.*$/m.exec(theABC);
+  if (!firstTuneMatch) {
+    return;
+  }
+
+  var firstTuneIndex = firstTuneMatch.index;
+  var fileHeader = theABC.substring(0, firstTuneIndex);
+  var additions = [];
+
+  // Avoid adding duplicate global directives if the button is clicked again.
+  // Each addition is a self-contained block with no trailing blank line.
+  // The blocks are joined below with exactly one blank line between them.
+  if (!/^[ \t]*%tablature_only[ \t]*$/m.test(fileHeader)) {
+    additions.push(
+      "% Show standalone stringed instrument tablature without the notation\n" +
+      "%tablature_only"
+    );
+  }
+
+  if (!/^[ \t]*%%staffsep(?:[ \t]+.*)?$/mi.test(fileHeader)) {
+    additions.push(
+      "% Increase the staff separation for the tablature\n" +
+      "%%staffsep 80"
+    );
+  }
+
+  if (additions.length) {
+    var beforeFirstTune = theABC.substring(0, firstTuneIndex);
+    var fromFirstTune = theABC.substring(firstTuneIndex);
+
+    // Normalize the join. When an existing ABC file header is present,
+    // leave a blank line before the injected directives as well as a blank
+    // line after them before the first X: field.
+    beforeFirstTune = beforeFirstTune.replace(/[ \t\r\n]*$/, "");
+
+    // Leave exactly one blank line between the two explanatory/directive
+    // blocks when both are added, and exactly one blank line after the final
+    // block before the first X: field.
+    var injected = additions.join("\n\n") + "\n\n";
+    var newABC = beforeFirstTune
+      ? beforeFirstTune + "\n\n" + injected + fromFirstTune
+      : injected + fromFirstTune;
+
+    setABCEditorText(newABC);
+    gIsDirty = true;
+  }
+  
+  var thePrompt = "%tablature_only injected!";
+
+  // Center the string in the prompt
+  thePrompt = makeCenteredPromptString(thePrompt);
+
+  DayPilot.Modal.alert(thePrompt, {
+    theme: "modal_flat",
+    top: 300,
+    scrollWithPage: (AllowDialogsToScroll())
+  }).then(function(){
+    // Force redraw
+    RenderAsync(true, null, function() {
+      ensureMoreToolsVisible();
+      FocusAfterOperation();
+    });
+  });
+}
+
+//
 // More ABC Tools Dialog
 //
 
@@ -50873,8 +52069,13 @@ function AdvancedControlsDialog() {
   // Lite: Customized
   // Replace inline styles with reusable classes
   /* ---------------- Injection tab ---------------- */
-  // Hide Export All Tunes on mobile BEFORE render to prevent a layout jump
+  // Hide Export All Tunes on mobile BEFORE render to prevent a layout jump.
+  // The tablature-only injection button remains visible and therefore centers
+  // automatically in its text-aligned container on mobile.
   var exportAllTunesStyle = isMobileBrowser() ? ' style="display:none;"' : '';
+  // var injectTablatureOnlyStyle = isMobileBrowser()
+  //   ? ' style="margin-right:0px;"'
+  //   : ' style="margin-right:24px;"';
 
   modal_msg += '<div id="adv-tab-injection" class="adv-tab-panel adv-tab-btn-container' + (isInjectionActive ? ' active' : '') + '">';
   modal_msg += '<input id="injecttunenumbers" class="advancedcontrols btn btn-injectcontrols-headers" onclick="TuneTitlesNumbersDialog()" type="button" value="Inject Tune Title Numbers">';
@@ -50891,6 +52092,9 @@ function AdvancedControlsDialog() {
 
   modal_msg += '<input id="phrasebuilder" class="advancedcontrols btn btn-phrasebuilder" onclick="PhraseBuilder(null,null)" type="button" value="Phrase Builder">';
   modal_msg += '<input id="incipitsbuilder" class="advancedcontrols incipitsbuilder btn btn-incipitsbuilder" onclick="IncipitsBuilderDialog()" type="button" value="Notes Incipits Builder">';
+  modal_msg += '<input id="addtunebackupchords" class="advancedcontrols btn btn-addtunebackupchords" onclick="AddTuneBackupChordsDialog()" type="button" value="Add Tune Backup Chords" title="Adds backup chords to the current tune or all tunes by matching measures against chorded settings from The Session">';
+
+  modal_msg += '<input id="injecttablatureonly" class="advancedcontrols btn btn-injectcontrols-headers" onclick="InjectTablatureOnly()" type="button" value="Inject %tablature_only" title="Injects %tablature_only and %%staffsep 80 before the first X: field to show standalone stringed instrument tablature without standard notation">';
   modal_msg += '<input id="configure_batch_mp3_export" class="advancedcontrols btn btn-batchmp3export" onclick="ExportAll()" type="button" value="Export All Tunes"' + exportAllTunesStyle + '>';
 
   modal_msg += '</div>';
@@ -51016,28 +52220,35 @@ function displayZipName(desc){
 var gCustomInstrumentSlots = [null, null, null, null, null, null, null, null]; // (ZipDescriptor|null)
 var gCustomInstrumentState = null; // { slots: (ZipDescriptor|null)[], pool: ZipDescriptor[], selectedPoolIndex: number|null }
 
-function processCustomInstruments(suppressStatus /* boolean */){
+function processCustomInstruments(suppressStatus /* boolean */) {
+  return new Promise((resolve) => {
 
-  // Reset defaults
-  gCustomInstrumentVolumeScaleOriginal = [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0];
-  gCustomInstrumentFadeOriginal        = [100,100,100,100,100,100,100,100];
+    // Reset defaults
+    gCustomInstrumentVolumeScaleOriginal = [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0];
+    gCustomInstrumentFadeOriginal        = [100,100,100,100,100,100,100,100];
 
-  var totalFiles = 0;
-  let index = 0;
+    var totalFiles = 0;
+    let index = 0;
 
-  function next() {
-    if (index >= gCustomInstrumentState.slots.length) {
+    function finish() {
+      resolve();
+    }
 
-      if (totalFiles == 0){
-        var thePrompt = "No Custom Instruments Loaded";
-        thePrompt = makeCenteredPromptString(thePrompt);
-        DayPilot.Modal.alert(thePrompt, {
-          theme: "modal_flat",
-          top: 300,
-          scrollWithPage: (AllowDialogsToScroll())
-        });
-        return;
-      }
+    function next() {
+      if (index >= gCustomInstrumentState.slots.length) {
+
+        if (totalFiles == 0){
+          var thePrompt = "No Custom Instruments Loaded";
+          thePrompt = makeCenteredPromptString(thePrompt);
+          DayPilot.Modal.alert(thePrompt, {
+            theme: "modal_flat",
+            top: 300,
+            scrollWithPage: (AllowDialogsToScroll())
+          });
+
+          finish();
+          return;
+        }
 
       if (gCustomInstrumentShowStatus && !suppressStatus){
         var quant = (totalFiles > 1) ? "Instruments" : "Instrument";
@@ -51061,30 +52272,34 @@ function processCustomInstruments(suppressStatus /* boolean */){
           + '<p style="font-size:12pt;line-height:18pt;"><strong>%custom_instrument_(n)_fade (fade_time_in_ms)</strong></p>'
           + '<p style="font-size:12pt;line-height:18pt;">Example:<br/>%custom_instrument_1_fade 1000</p>';
 
-        DayPilot.Modal.alert(modal_msg, {
-          theme: "modal_flat",
-          top: 50,
-          scrollWithPage: (AllowDialogsToScroll())
-        });
+          DayPilot.Modal.alert(modal_msg, {
+            theme: "modal_flat",
+            top: 50,
+            scrollWithPage: (AllowDialogsToScroll())
+          });
+        }
+
+        finish();
+        return;
       }
-      return;
+
+      const entry = gCustomInstrumentState.slots[index];
+      index++;
+
+      if (entry) {
+        totalFiles++;
+        doCustomInstrumentImport(entry, index, function () {
+          next();
+        });
+      } else {
+        gCustomInstrumentSamples[index] = [];
+        gSoundsCacheABCJS["custom" + index] = {};
+        next();
+      }
     }
 
-    const entry = gCustomInstrumentState.slots[index];
-    index++;
-
-    if (entry) {
-      totalFiles++;
-      // entry is a descriptor, not a File
-      doCustomInstrumentImport(entry, index, function () { next(); });
-    } else {
-      gCustomInstrumentSamples[index] = [];
-      gSoundsCacheABCJS["custom"+index]= {};
-      next();
-    }
-  }
-
-  next();
+    next();
+  });
 }
 
 // ===== manageCustomInstrumentSlots (no File usage after import) =====
@@ -51763,7 +52978,8 @@ function AdvancedSettings() {
     configure_jumptotune_autoscroll: gJumpToTuneAutoscroll,
     configure_force_android: gForceAndroid,
     configure_disable_android: gDisableAndroid,
-    configure_looper_add_measure_count: gLooperAddMeasureCount
+    configure_looper_add_measure_count: gLooperAddMeasureCount,
+    configure_BWWUseCustomInstrument: gBWWUseCustomInstrument
   };
 
   // Lite: Customized
@@ -51807,6 +53023,7 @@ function AdvancedSettings() {
     { name: "          Show tune rendering progress in Javascript console", id: "configure_show_render_progress", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox" },
     { name: "    Disable abcjs notation rendering", id: "configure_DisableRendering", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox" },
     { name: "    Jump to Tune always scrolls to the last selected tune", id: "configure_jumptotune_autoscroll", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox" },
+    { name: "    BWW import uses %%MIDI program custom1 (No GHB transpose or tuning)", id: "configure_BWWUseCustomInstrument", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox" },    
     { name: "    Autoscroll player when playing", id: "configure_autoscrollplayer", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox" },
     { name: "    Smooth autoscroll when playing (when Autoscroll player is enabled)", id: "configure_autoscrollsmooth", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox" },
     { name: "    Player autoscroll vertical position target percentage (default is 66):", id: "configure_autoscrolltarget", type: "text", cssClass: "advanced_settings2_form_text" },
@@ -51869,7 +53086,7 @@ function AdvancedSettings() {
 
   const modal = DayPilot.Modal.form(form, theData, {
     theme: "modal_flat",
-    top: 30,
+    top: 42,
     width: 790,
     scrollWithPage: (AllowDialogsToScroll()),
     autoFocus: false
@@ -51894,6 +53111,8 @@ function AdvancedSettings() {
         MoveModalFieldRowByName(modalRoot, "configure_show_render_progress", "adv_tab_general_fields");
         MoveModalFieldRowByName(modalRoot, "configure_DisableRendering", "adv_tab_general_fields");
         MoveModalFieldRowByName(modalRoot, "configure_jumptotune_autoscroll", "adv_tab_general_fields");
+        MoveModalFieldRowByName(modalRoot, "configure_BWWUseCustomInstrument", "adv_tab_general_fields");
+        MoveModalFieldRowByName(modalRoot, "configure_fullscreen_scaling", "adv_tab_general_fields");
 
         // Player
         MoveModalFieldRowByName(modalRoot, "configure_autoscrollplayer", "adv_tab_player_fields");
@@ -51942,6 +53161,8 @@ function AdvancedSettings() {
 
     // Get the results and store them in the global configuration
     if (!args.canceled) {
+
+      gBWWUseCustomInstrument = args.result.configure_BWWUseCustomInstrument;
 
       gJumpToTuneAutoscroll = args.result.configure_jumptotune_autoscroll;
 
@@ -56525,35 +57746,31 @@ function showWhatsNewScreen() {
 
   // Header
   modal_msg += '<div style="text-align:center; padding:14px 10px; border-radius:12px;';
-  modal_msg += 'background: linear-gradient(135deg, #0d47a1 0%, #1565c0 50%, #64b5f6 100%);';
+  modal_msg += 'background: linear-gradient(135deg, #0b2f24 0%, #116149 52%, #1f9d73 100%);';
   modal_msg += 'box-shadow: 0 6px 16px rgba(0,0,0,0.14); color:#fff;">';
   modal_msg += '<div style="font-size:20pt; line-height:24pt; font-weight:bold;">What&apos;s New</div>';
-  modal_msg += '<div style="font-size:11pt; opacity:0.92; margin-top:3px;">Version ' + gVersionNumber + ' released 16 March 2026</div>';
+  modal_msg += '<div style="font-size:11pt; opacity:0.92; margin-top:3px;">Version ' + gVersionNumber + ' released 14 June 2026</div>';
   modal_msg += '</div>';
 
-  // Short intro
-  modal_msg += '<p style="margin:24px 4px 10px 4px; font-size:12pt;">';
-  modal_msg += 'Here’s what’s new in the ABC Transcription Tools:';
-  modal_msg += '</p>';
-
-  // Feature card
-  modal_msg += '<div style="margin:10px 0 6px 0; padding:12px 12px; border-radius:12px;';
+    // Feature card
+  modal_msg += '<div style="margin:10px 0 6px 0; padding:0px 12px; border-radius:12px;';
   modal_msg += 'background:#fff; border:1px solid #e7e7e7; box-shadow: 0 2px 10px rgba(0,0,0,0.06);">';
-  
-  modal_msg += '<p style="margin:6px 0; font-size:12pt;">Added <strong>thesession.org Power Tools</strong> to the <strong>Add ABC Tunes, Templates, and PDF Features</strong> dialog.</p>';
-  modal_msg += '<p style="margin:6px 0; font-size:12pt;">Given the link to a tune page on thesession.org, downloads all the ABC tune settings.</p>'; 
-  modal_msg += '<p style="margin:6px 0; font-size:12pt;">You can also get all of a member\'s tunebook tunes, tune sets, or all the tune settings they\'ve submitted or bookmarked.</p>'; 
-  modal_msg += '<p style="margin:6px 0; font-size:12pt;">Once the tune settings are downloaded, you can save them to a file, copy them to the clipboard, or if all the tunes will fit in a share link, open them directly in the ABC Transcription Tools.</p>';
-
+  modal_msg += '<p><strong>Added a new Inject %tablature_only button on the ABC Features tab of the More ABC Tools dialog</strong></p>';
+  modal_msg += '<p>When clicked, it injects the following two annotations above the first X: tag in the ABC to make it easy to enable the standalone stringed instrument tablature display feature:</p>';
+  modal_msg += '<p><strong>%tablature_only</strong><br/>'; 
+  modal_msg += '<strong>%%staffsep 80</strong></p>'; 
   modal_msg += '</div>';
 
   // Feature card
-  modal_msg += '<div style="margin:10px 0 6px 0; padding:12px 12px; border-radius:12px;';
+  modal_msg += '<div style="margin:10px 0 6px 0; padding:0px 12px; border-radius:12px;';
   modal_msg += 'background:#fff; border:1px solid #e7e7e7; box-shadow: 0 2px 10px rgba(0,0,0,0.06);">';
-  
-  modal_msg += '<p style="margin:6px 0; font-size:12pt;"><strong>On iOS, when possible, all file saves and exports from the tool now use the native iOS file sharing dialog.</strong></p>';
-  modal_msg += '<p style="margin:6px 0; font-size:12pt;">This allows you to easily save exported files to the Files area on the device, share them with other iOS apps, or send them to another device via AirDrop.</p>';
-
+  modal_msg += '<p><strong>Standalone stringed instrument tablature without standard notation above is now possible</strong></p>';
+  modal_msg += '<p>You can now show standalone stringed instrument tablature without standard notation above by adding the following ABC annotation to either a single tune or to the ABC file header to have it apply to all the tunes in an ABC tunebook:</p>';
+  modal_msg += '<p><strong>%tablature_only</strong></p>'; 
+  modal_msg += '<p>This is only available for the stringed instrument tablatures, not tin whistle or recorder fingering tablatures.</p>'; 
+  modal_msg += '<p>When using this, you may want to add the following to the tunes or the ABC file headerto increase the staff separation:</p>';
+  modal_msg += '<p><strong>%%staffsep 80</strong></p>';  
+  modal_msg += '<p>This works for tune display, playback, as well as image, PDF and website export.</p>';
   modal_msg += '</div>';
 
   modal_msg += '</div>'; // wrapper
@@ -58743,6 +59960,10 @@ function JumpToTune() {
 var gSR_currentIndex = -1;
 var gSR_matchIndexes = [];
 
+// Editor selection/insertion point when the Find and Replace dialog was opened.
+// The first Find Next / Find Previous starts from this position.
+var gSR_startOffset = 0;
+
 var gSR_searchInput = null;
 var gSR_replaceInput = null;
 var gSR_caseSensitive = null;
@@ -58771,6 +59992,93 @@ function SR_processMatches(value, matches) {
   });
 
   return result;
+
+}
+
+function SR_getEditorSelectionStart() {
+
+  var startOffset = 0;
+
+  try {
+
+    if (gEnableSyntax) {
+
+      // CodeMirror compatibility:
+      // Your code elsewhere treats gTheCM like a textarea in some places,
+      // but this also supports real CodeMirror-style APIs if present.
+      if (gTheCM && typeof gTheCM.getCursor === "function" && typeof gTheCM.indexFromPos === "function") {
+
+        startOffset = gTheCM.indexFromPos(gTheCM.getCursor("from"));
+
+      } else if (gTheCM && typeof gTheCM.selectionStart === "number") {
+
+        startOffset = gTheCM.selectionStart;
+
+      } else if (gTheCM && typeof gTheCM.getInputField === "function") {
+
+        var inputField = gTheCM.getInputField();
+
+        if (inputField && typeof inputField.selectionStart === "number") {
+          startOffset = inputField.selectionStart;
+        }
+      }
+
+    } else {
+
+      if (gTheABC && typeof gTheABC.selectionStart === "number") {
+        startOffset = gTheABC.selectionStart;
+      }
+    }
+
+  } catch (err) {
+
+    startOffset = 0;
+
+  }
+
+  return startOffset;
+
+}
+
+function SR_setInitialSearchIndex(direction) {
+
+  if (gSR_matchIndexes.length === 0) {
+    gSR_currentIndex = -1;
+    return;
+  }
+
+  var i;
+
+  if (direction === "next") {
+
+    // Set the current index to the match immediately BEFORE the saved search
+    // selection point, so the normal SR_search("next") increment lands on
+    // the first match at or after that point.
+    gSR_currentIndex = gSR_matchIndexes.length - 1;
+
+    for (i = 0; i < gSR_matchIndexes.length; ++i) {
+
+      if (gSR_matchIndexes[i].offset >= gSR_startOffset) {
+        gSR_currentIndex = i - 1;
+        break;
+      }
+    }
+
+  } else if (direction === "previous") {
+
+    // Set the current index to the match immediately AFTER the saved search
+    // selection point, so the normal SR_search("previous") decrement lands on
+    // the first match before that point.
+    gSR_currentIndex = 0;
+
+    for (i = gSR_matchIndexes.length - 1; i >= 0; --i) {
+
+      if (gSR_matchIndexes[i].offset < gSR_startOffset) {
+        gSR_currentIndex = i + 1;
+        break;
+      }
+    }
+  }
 
 }
 
@@ -58936,6 +60244,12 @@ function SR_search(direction) {
     });
 
     return;
+  }
+
+  // First search after opening the dialog should start from the editor
+  // selection/insertion point that was active when the dialog was opened.
+  if (gSR_currentIndex === -1) {
+    SR_setInitialSearchIndex(direction);
   }
 
   if (direction === 'next') {
@@ -59216,6 +60530,11 @@ function SR_LoadFindAndReplace(file) {
 
       SR_findMatches();
 
+      // Restart from the current editor selection/insertion point,
+      // which may have changed because of a previous Find Next / Find Previous.
+      gSR_startOffset = SR_getEditorSelectionStart();
+      gSR_currentIndex = -1;
+
     } catch (err) {
 
       var thePrompt = "This is not a valid Find and Replace settings file.";
@@ -59307,6 +60626,16 @@ function FindAndReplace() {
   gSR_currentIndex = -1;
   gSR_matchIndexes = [];
 
+  // Capture this before the modal steals focus from the ABC editor.
+  // This is the selection start or insertion point that the first
+  // Find Next / Find Previous should start from.
+  gSR_startOffset = SR_getEditorSelectionStart();
+
+  // Capture this before the modal steals focus from the ABC editor.
+  // This is the selection start or insertion point that the first
+  // Find Next / Find Previous should start from.
+  gSR_startOffset = SR_getEditorSelectionStart();
+
   // Lite: Customized
   // Replace inline styles with reusable classes
   var modal_msg =
@@ -59324,7 +60653,7 @@ function FindAndReplace() {
     modal_msg += '<p style="font-size:12pt;line-height:24pt;margin-top:0px;">Find:<br/><textarea style="width:625px;padding:6px;" id="searchText" title="Enter text to find here" autocomplete="off" autocorrect="off" spellcheck="false" autocapitalize="none" placeholder="Text to find..." rows="4"></textarea></p>';    
   }
 
-  modal_msg += '<p style="font-size:12pt;line-height:12pt;margin-top:0px;">Case sensitive?&nbsp;<input id="searchCaseSensitive" type="checkbox" style="margin-top:-5px;margin-bottom:0px;" onchange="SR_findMatches();" checked/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Match using regular expression?&nbsp;<input id="searchRegex" type="checkbox" style="margin-top:-5px;margin-bottom:0px;" onchange="SR_findMatches();"/></p>';
+  modal_msg += '<p style="font-size:12pt;line-height:12pt;margin-top:0px;">Case sensitive?&nbsp;<input id="searchCaseSensitive" type="checkbox" style="margin-top:-5px;margin-bottom:0px;" onchange="SR_findMatches();gSR_startOffset=SR_getEditorSelectionStart();gSR_currentIndex=-1;" checked/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Match using regular expression?&nbsp;<input id="searchRegex" type="checkbox" style="margin-top:-5px;margin-bottom:0px;" onchange="SR_findMatches();gSR_startOffset=SR_getEditorSelectionStart();gSR_currentIndex=-1;"/></p>';
 
   if (isPureDesktopBrowser()){
     modal_msg += '<p style="font-size:12pt;line-height:24pt;margin-top:0px;">Replace with:<br/><textarea style="width:625px;padding:6px;" id="replacementText" title="Enter replacement text here" autocomplete="off" autocorrect="off" spellcheck="false" autocapitalize="none" placeholder="Replace with..." rows="7"></textarea></p>';
@@ -59407,11 +60736,21 @@ function FindAndReplace() {
 
     if (gSR_lastSearch != "") {
       SR_findMatches();
+
+      // Leave the first search anchored to the editor selection/insertion
+      // point captured when this dialog was opened.
+      gSR_currentIndex = -1;
     }
 
     gSR_searchInput.addEventListener("input", function(event) {
       gSR_lastSearch = gSR_searchInput.value;;
       SR_findMatches();
+
+      // When the find text changes, restart from the current editor
+      // selection/insertion point, which may have changed because of
+      // a previous Find Next / Find Previous.
+      gSR_startOffset = SR_getEditorSelectionStart();
+      gSR_currentIndex = -1;
     });
 
     gSR_replaceInput.addEventListener("input", function(event) {
@@ -60681,6 +62020,24 @@ function LaunchChordChartGenerator(){
   window.open(url, '_blank');
 }
 
+// Open the chord solver
+function LaunchBackupChordSolver(){
+
+  sendGoogleAnalytics("action", "LaunchBackupChordSolver");
+
+  var url = "./tools/abc_backup_chord_solver.html";
+  window.open(url, '_blank');
+}
+
+// Open the chord solver
+function LaunchBackupChordSolver(){
+
+  sendGoogleAnalytics("action", "LaunchBackupChordSolver");
+
+  var url = "https://michaeleskin.com/tools/abc_backup_chord_solver.html";
+  window.open(url, '_blank');
+}
+
 //
 // Check if an update is available
 // Lite: Customized
@@ -61689,8 +63046,56 @@ function SetupContextMenu(showUpdateItem) {
 
 // }
 
+
+// Set the flat looks
+// function setFlatButtons(enable){
+//   document.body.classList.toggle("flat-buttons", enable);
+// }
+
+//
+// For startup sequencing with custom instruments from share links
+//
+var gCustomInstrumentsInitComplete = false;
+var gCustomInstrumentsInitPromise = null;
+var gResolveCustomInstrumentsInit = null;
+
+async function initCustomInstrumentsFromDB() {
+  try {
+    if (!USE_CUSTOM_INSTRUMENT_DB) return;
+
+    await CustomInstrumentsDB.init();
+
+    const slots = await CustomInstrumentsDB.loadSlots();
+    if (!Array.isArray(slots) || !slots.some(Boolean)) return;
+
+    gCustomInstrumentSlots = slots.map(d =>
+      d ? { name: d.name, zipBytes: d.zipBytes } : null
+    );
+
+    gCustomInstrumentState = {
+      slots: gCustomInstrumentSlots.map(d =>
+        d ? { name: d.name, zipBytes: d.zipBytes } : null
+      ),
+      pool: [],
+      selectedPoolIndex: null
+    };
+
+    await processCustomInstruments(true);
+
+  } catch (err) {
+    console.warn("Custom instrument DB init failed:", err);
+  } finally {
+    gCustomInstrumentsInitComplete = true;
+    if (gResolveCustomInstrumentsInit) {
+      gResolveCustomInstrumentsInit();
+      gResolveCustomInstrumentsInit = null;
+    }
+  }
+}
+
 // Lite: Customized
-function DoStartup() {
+
+async function DoStartup() {
 
   // Init global state
   gShowAdvancedControls = false;
@@ -61746,6 +63151,13 @@ function DoStartup() {
   gForceAndroid = false;
   gDisableAndroid = false;
 
+  //
+  // For startup sequencing with custom instruments from share links
+  //
+  gCustomInstrumentsInitComplete = false;
+  gCustomInstrumentsInitPromise = new Promise((resolve) => {
+    gResolveCustomInstrumentsInit = resolve;
+  });
 
   // Is browser storage available?
   // Lite: Customized
@@ -62531,8 +63943,11 @@ function DoStartup() {
   // Save if we need to force a text box recalc after minimize
   gForceInitialTextBoxRecalc = false;
 
+  // Kick off loading any custom instruments
+  initCustomInstrumentsFromDB();
+  
   // Check for and process URL share link
-  var isFromShare = processShareLink();
+  var isFromShare = await processShareLink();
 
   // Save global is from share
   gIsFromShare = isFromShare;
@@ -63278,19 +64693,26 @@ function DoStartup() {
     gTipJarCount++;
 
     if (gLocalStorageAvailable) {
-      localStorage.TipJarCount = gTipJarCount;
+      localStorage.TipJarCountV2 = gTipJarCount;
     }
 
+    let show = false;
+
+    if (gTipJarCount === 10) show = true;
+    else if (gTipJarCount === 50) show = true;
+    else if (gTipJarCount > 50 && gTipJarCount % 50 === 0) show = true;
+
+    // Occasional reminder
+    // Lite: Customized
+    // TO DO: Find a less intrusive way to remind about tipping
+    
+    // if (show) {
+
+    //   TipJarReminderDialog();
+
+    // }
+
   }
-
-  // Occasional reminder
-  // Lite: Customized
-  // TO DO: Find a less intrusive way to remind about tipping
-  // if ((gTipJarCount == 25) || (gTipJarCount == 75) || (gTipJarCount == 150) || (gTipJarCount == 300)) {
-
-  //   TipJarReminderDialog();
-
-  // }
 
   // Setup MIDI inputs
   if (gAllowMIDIInput) {
@@ -63313,42 +64735,6 @@ function DoStartup() {
 
   // Init the samples database
   initSamplesDB();
-
-  // ===== Startup: restore instruments from DB and suppress initial modal =====
-  (async function initCustomInstrumentsFromDB() {
-
-    if (!USE_CUSTOM_INSTRUMENT_DB) {
-      // Skipping instrument DB init (e.g., Firefox or persistence disabled).
-      return;
-    }
-
-    try {
-      await CustomInstrumentsDB.init(); // ensure DB & store exist
-
-      // Load descriptors: [{ name: string, zipBytes: ArrayBuffer } | null] x 8
-      const slots = await CustomInstrumentsDB.loadSlots();
-
-      // Nothing stored yet
-      if (!Array.isArray(slots) || !slots.some(Boolean)) return;
-
-      // Restore globals with descriptors only (no File objects)
-      gCustomInstrumentSlots = slots.map(d => d ? { name: d.name, zipBytes: d.zipBytes } : null);
-
-      gCustomInstrumentState = {
-        // Use fresh objects to avoid accidental external mutation
-        slots: gCustomInstrumentSlots.map(d => d ? { name: d.name, zipBytes: d.zipBytes } : null),
-        pool: [],
-        selectedPoolIndex: null
-      };
-
-      // Process silently on startup
-      processCustomInstruments(/* suppressStatus */ true);
-
-    } catch (err) {
-      console.warn("Custom instrument DB init failed:", err);
-    }
-  })();
-
 
   // Listen for online state changes
   window.addEventListener('online', doOnlineCheck);
@@ -63397,13 +64783,13 @@ function DoStartup() {
     !gIsFirstRun
   ) {
 
-    var updatePresented = localStorage.sawUpdate032026;
+    var updatePresented = localStorage.sawUpdate_13jun2026b;
 
     if (updatePresented != "true") {
 
       showWhatsNewScreen();
 
-      localStorage.sawUpdate032026 = true;
+      localStorage.sawUpdate_13jun2026b = true;
 
     }
 
@@ -65025,13 +66411,39 @@ function OpenInABCEncoder(abcText){
     }
     else{
 
-      DayPilot.Modal.alert('<p style="text-align:center;">Share URL is too long to open in the ABC Encoder.</p>', {
+      DayPilot.Modal.alert('<p style="text-align:center;font-family:var(--abctools-font-fallback-ui);font-size:12pt;">Share URL is too long to open in the ABC Encoder.</p>', {
         theme: "modal_flat",
         top: 230,
         scrollWithPage: (AllowDialogsToScroll())
       });
 
     }
+}
+
+function OpenInChordSolver(abcText){
+
+  sendGoogleAnalytics("action", "OpenInChordSolver");
+
+  var encoder = new TextEncoder();
+  var utf8Bytes = encoder.encode(abcText);
+  var deflated = pako.deflate(utf8Bytes, { level: 6 });
+  var theDef = def_bytesToBase64URL(deflated);
+
+  var theURL = "https://michaeleskin.com/tools/abc_backup_chord_solver.html?def="+theDef;
+
+  if (theURL.length < 8100)
+  {
+    var w = window.open(theURL);
+  }
+  else{
+
+      DayPilot.Modal.alert('<p style="text-align:center;">Share URL is too long to open in the ABC Encoder.</p>', {
+        theme: "modal_flat",
+        top: 230,
+        scrollWithPage: (AllowDialogsToScroll())
+      });
+
+  }
 }
 
 function openInExternalTool(theABC){
@@ -65048,7 +66460,7 @@ function openInExternalTool(theABC){
 
   // Lite: Customized
   // Convert non-interactive elements into proper buttons
-  modal_msg += '<p class="btn-container btn-container-center"  style="text-align:center;">';
+  modal_msg += '<p class="btn-container btn-container-center" style="text-align:center;">';
   modal_msg += '<button class="btn-lite external-tool">';
   modal_msg += '<img id="external_pureocarinas" src="img/pureocarinas.png" title="Open the ABC in the Pure Ocarinas Phrase-by-phrase ABC tune practice tool" alt="Pure Ocarinas Phrase-by-phrase ABC practice tool"><br> <span style="font-size:1.2em;">Phrase-by-phrase ABC practice tool</span>';
   modal_msg += '</button>';
@@ -65060,6 +66472,9 @@ function openInExternalTool(theABC){
   modal_msg += '</button>';
   modal_msg += '<button class="btn-lite external-tool">';
   modal_msg += '<img id="external_abc_encoder" src="img/abc-encoder-logo.svg" title="Export the tunes to Anton Zille\'s ABC Encoder for auto-formatting headers and sorting sets of tunes or ABC collections" aria-label="Export the tunes to Anton Zille\'s ABC Encoder for auto-formatting headers and sorting sets of tunes or ABC collections"><br> <span style="font-size:1.2em;"><br>N.S.S.S. ABC Encoder</span>';
+  modal_msg += '</button>';
+  modal_msg += '<button class="btn-lite external-tool">';
+  modal_msg += '<img id="external_chord_solver" src="img/tool_abc_chord_solver_1.jpg" title="Export the tunes to the ABC Tune Backup Chord Solver" alt="ABC Tune Backup Chord Solver"><br> <span style="font-size:1.2em;">ABC Tune Backup Chord Solver</span>';
   modal_msg += '</button>';
   modal_msg += '</p>';
 
@@ -65088,6 +66503,11 @@ function openInExternalTool(theABC){
   elem = document.getElementById("external_abc_encoder");
   if (elem) elem.onclick = function(){
     OpenInABCEncoder(theABC);
+  };
+
+  elem = document.getElementById("external_chord_solver");
+  if (elem) elem.onclick = function(){
+    OpenInChordSolver(theABC);
   };
 
 }
@@ -65191,6 +66611,12 @@ function OtherABCTools(){
   + '      </button>'
 
   + '      <button id="other_tools_chordchart" class="tuning-tool btn-lite" style="text-align:center; width:200px;">'
+  + '        <img id="other_tools_backupchordsolver" src="img/tool_abc_chord_solver_1.jpg" title="ABC Tune Backup Chord Solver" alt="ABC Tune Backup Chord Solver"'
+  + '             style="width:170px;height:auto;">'
+  + '        <span style="font-size:1rem; margin-top:6px; height:3.2em; display:flex; align-items:center; justify-content:center; line-height:1.2em;">ABC Tune Backup Chord Solver</span>'
+  + '      </button>'
+
+  + '      <button id="other_tools_chordchart" class="tuning-tool btn-lite" style="text-align:center; width:200px;">'
   + '        <img src="img/tool_chordchart_2.jpg" title="ABC Chord Chart Generator" alt="ABC Chord Chart Generator"'
   + '             style="width:170px;height:auto;">'
   + '        <span style="font-size:1rem; margin-top:6px; height:3.2em; display:flex; align-items:center; justify-content:center; line-height:1.2em;">ABC Chord Chart Generator</span>'
@@ -65213,7 +66639,7 @@ function OtherABCTools(){
   DayPilot.Modal.alert(modal_msg, {
     theme: "modal_flat",
     top: 25,
-    width: 650,
+    width: 680,
     scrollWithPage: (AllowDialogsToScroll())
   });
 
@@ -65222,6 +66648,9 @@ function OtherABCTools(){
 
   elem = document.getElementById("other_tools_chordchart");
   if (elem) elem.onclick = function(){ LaunchChordChartGenerator(); };
+
+  elem = document.getElementById("other_tools_backupchordsolver");
+  if (elem) elem.onclick = function(){ LaunchBackupChordSolver(); };
 
   elem = document.getElementById("other_tools_abc2csv");
   if (elem) elem.onclick = function(){ LaunchCSVTagExtractor(); };
@@ -65506,7 +66935,7 @@ const ABC_THEME_ITEMS = [
     color:"#005231", styleWeight:"italic", sample:"% comment" },
 
   { id:"cm-abc-extended-directive", label:"Tool-private Directives", className:"cm-abc-extended-directive",
-    color:"#B00023", styleWeight:"normal", sample:"%soundfont fluid" },
+    color:"#B00023", styleWeight:"normal", sample:"%soundfont fatboy" },
 
   { id:"cm-abc-note",         label:"Notes and Rests",         className:"cm-abc-note",
     color:"#000000", styleWeight:"normal", sample:"A B c d' e'' z" },
@@ -66309,7 +67738,7 @@ CodeMirror.defineMode("abc-plus", function () {
       }
 
       // ===== Extended %directives =====
-      if (stream.sol() && stream.match(/^%(?:pdfquality|pdf_between_tune_space|pdfname|pdffont|addtitle|addsubtitle|urladdtitle|urladdsubtitle|titlefontsize|subtitlefontsize|titlelinespacing|subtitlelinespacing|addtoc|addsortedtoc|addlinkbacktotoc|tocheader|toctopoffset|toctitleoffset|toctitlefontsize|tocfontsize|toclinespacing|addindex|addsortedindex|addlinkbacktoindex|indexheader|indextopoffset|indextitleoffset|indextitlefontsize|indexfontsize|indexlinespacing|no_toc_or_index_links|toc_no_page_numbers|index_no_page_numbers|firstpagenumber|pagenumberhoffset|pagenumbervoffset|pageheader|pagefooter|headerfooterfontsize|headervoffset|footervoffset|urlpageheader|urlpagefooter|textincipitsfontsize|textincipitslinespacing|add_all_links_to_thesession|add_all_playback_links|add_all_playback_volumes|playback_links_are_complete_tunebook|add_all_fonts|swing_all_hornpipes|noswing_all_hornpipes|no_edit_allowed|links_open_in_editor|qrcode|caption_for_qrcode|abcjs_soundfont|soundfont|hyperlink|add_link_to_thesession|add_playback_link|swing|swing_offset|noswing|bodhran_tuning|bodhran_pitch|banjo_style|grace_duration_ms|roll_2_params|roll_3_params|use_original_abcjs_roll_solution|abcjs_release_decay_time|use_custom_gm_sounds|disable_play_highlight|play_highlight_v1_only|irish_rolls_on|irish_rolls_off|voice_tuning_cents|tab_first_voice_only|tab_first_voice_exclude|reverb|ornament_divider|ornament_offset|tremolo_divider|play_flatten_parts|allow_lowercase_chords|hide_first_title_on_play|hide_vskip_on_play|hide_information_labels|hide_rhythm_tag|hide_composer_tag|hide_part_tags|hide_player_part_tags|hide_dynamics|hide_cautionary_ks|left_justify_titles|no_title_reverser|whistle_tab_key|whistle_tab_octave|recorder_tab_key|recorder_tab_octave|enable_hyperlinks|disable_hyperlinks|play_alternate_chords|force_power_chords|custom_instrument_volume_scale|custom_instrument_[1-8]_volume_scale|custom_instrument_fade|custom_instrument_[1-8]_fade|abcjs_render_params|tocleftoffset|tocrightoffset|indexleftoffset|indexrightoffset|pdf_notation_width|pdf_left_margin|toc_index_backlink_vpos|pdf_notation_percent_width)\b.*/i)) {
+      if (stream.sol() && stream.match(/^%(?:pdfquality|pdf_between_tune_space|pdfname|pdffont|addtitle|addsubtitle|urladdtitle|urladdsubtitle|titlefontsize|subtitlefontsize|titlelinespacing|subtitlelinespacing|addtoc|addsortedtoc|addlinkbacktotoc|tocheader|toctopoffset|toctitleoffset|toctitlefontsize|tocfontsize|toclinespacing|addindex|addsortedindex|addlinkbacktoindex|indexheader|indextopoffset|indextitleoffset|indextitlefontsize|indexfontsize|indexlinespacing|no_toc_or_index_links|toc_no_page_numbers|index_no_page_numbers|firstpagenumber|pagenumberhoffset|pagenumbervoffset|pageheader|pagefooter|headerfooterfontsize|headervoffset|footervoffset|urlpageheader|urlpagefooter|textincipitsfontsize|textincipitslinespacing|add_all_links_to_thesession|add_all_playback_links|add_all_playback_volumes|playback_links_are_complete_tunebook|add_all_fonts|swing_all_hornpipes|noswing_all_hornpipes|no_edit_allowed|links_open_in_editor|qrcode|caption_for_qrcode|abcjs_soundfont|soundfont|hyperlink|add_link_to_thesession|add_playback_link|swing|swing_offset|noswing|bodhran_tuning|bodhran_pitch|banjo_style|grace_duration_ms|roll_2_params|roll_3_params|use_original_abcjs_roll_solution|abcjs_release_decay_time|use_custom_gm_sounds|disable_play_highlight|play_highlight_v1_only|irish_rolls_on|irish_rolls_off|voice_tuning_cents|tab_first_voice_only|tab_first_voice_exclude|reverb|ornament_divider|ornament_offset|tremolo_divider|play_flatten_parts|allow_lowercase_chords|hide_first_title_on_play|hide_vskip_on_play|hide_information_labels|hide_rhythm_tag|hide_composer_tag|hide_part_tags|hide_player_part_tags|hide_dynamics|hide_cautionary_ks|left_justify_titles|no_title_reverser|whistle_tab_key|whistle_tab_octave|recorder_tab_key|recorder_tab_octave|enable_hyperlinks|disable_hyperlinks|play_alternate_chords|force_power_chords|custom_instrument_volume_scale|custom_instrument_[1-8]_volume_scale|custom_instrument_fade|custom_instrument_[1-8]_fade|abcjs_render_params|tocleftoffset|tocrightoffset|indexleftoffset|indexrightoffset|pdf_notation_width|pdf_left_margin|toc_index_backlink_vpos|pdf_notation_percent_width|tablature_only)\b.*/i)) {
         return "abc-extended-directive";
       }
 

@@ -1,4 +1,35 @@
-<!DOCTYPE html>
+<!-- 
+ * 
+ * thesession_power_tools.html - All code for the thesession.org Power Tools
+ *
+ * Project repo at: https://github.com/seisiuneer/abctools/tree/main/tools/thesession_power_tools.html
+ * 
+ *
+ * MIT License
+ * 
+ * Copyright (c) 2026 Michael Eskin
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ * 
+ -->
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -30,7 +61,7 @@
       --fs-base: clamp(15px, 1.05vw + 12px, 17px);
       --fs-small: clamp(13px, 0.7vw + 11px, 14.5px);
       --fs-h2: clamp(20px, 1.2vw + 16px, 24px);
-      --page-pad: 24px;
+      --page-pad: 32px;
       --page-pad-top: 18px;
 
       --helpbar-pad-y: 12px;
@@ -2344,6 +2375,13 @@ function buildMemberABCFromIncluded(included, sourceLabel) {
   };
 }
 
+function cleanABCHeaderValue(value) {
+  return String(value || "")
+    .replace(/[\r\n]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function buildSingleSettingABCFromIncludedItem(it, xNum) {
   const rLine = it.tuneType || "reel";
   const mLine = defaultMForRhythm(rLine) || "4/4";
@@ -2355,12 +2393,20 @@ function buildSingleSettingABCFromIncludedItem(it, xNum) {
 
   const settingMemberName =
     (it.setting && it.setting.member && typeof it.setting.member.name === "string")
-      ? it.setting.member.name.trim()
+      ? cleanABCHeaderValue(it.setting.member.name)
       : "";
+
+  const composerName =
+    (typeof it.tuneComposer === "string" && it.tuneComposer)
+      ? cleanABCHeaderValue(it.tuneComposer)
+      : ((it.setting && typeof it.setting.composer === "string")
+          ? cleanABCHeaderValue(it.setting.composer)
+          : "");
 
   const header =
     `X:${xNum}\n` +
     `T:${tLine}\n` +
+    (composerName ? `C:${composerName}\n` : "") +
     `R:${rLine}\n` +
     `M:${mLine}\n` +
     `L:${lLine}\n` +
@@ -2395,6 +2441,33 @@ function buildSingleSetCombinedABC(setTitle, setEntries) {
   for (let i = 0; i < setEntries.length; i++) {
 
     let chunk = buildSingleSettingABCFromIncludedItem(setEntries[i], i + 1).trim();
+
+    // Tune Sets should not inject composer C: tags, even when composer metadata
+    // is available from the fetched tune JSON.
+    chunk = chunk.replace(/^C:\s*.*\r?\n/gim, "");
+
+    const setTuneComposer =
+      (typeof setEntries[i].tuneComposer === "string" && setEntries[i].tuneComposer)
+        ? cleanABCHeaderValue(setEntries[i].tuneComposer)
+        : ((setEntries[i].setting && typeof setEntries[i].setting.composer === "string")
+            ? cleanABCHeaderValue(setEntries[i].setting.composer)
+            : "");
+
+    if (setTuneComposer) {
+      // For Tune Sets, include composer details as an N: note for this tune
+      // instead of changing the title or adding a C: tag.
+      // Only the first T: tag for this specific tune is used.
+      chunk = chunk.replace(
+        /^T:\s*(.*)$/m,
+        function(match, titleText) {
+          const cleanTitle = cleanABCHeaderValue(titleText);
+          if (!cleanTitle) {
+            return match;
+          }
+          return `${match}\nN:"${cleanTitle}" composed by ${setTuneComposer}`;
+        }
+      );
+    }
 
     // Remove all Z: tags everywhere
     chunk = chunk.replace(/^Z:\s*.*\r?\n/gim, "");
@@ -2615,7 +2688,10 @@ async function fetchMemberTunebookAsABC(items, memberName, onlyChords, memberSor
         const tuneType =
           (tuneData && tuneData.type) ? normalizeTuneType(String(tuneData.type)) : "";
 
-        const okObj = { tuneData, tuneUrlNoHash, tuneTitle, tuneType, failed: false };
+        const tuneComposer =
+          (tuneData && typeof tuneData.composer === "string") ? cleanABCHeaderValue(tuneData.composer) : "";
+
+        const okObj = { tuneData, tuneUrlNoHash, tuneTitle, tuneType, tuneComposer, failed: false };
         tuneCache.set(tuneId, okObj);
         return okObj;
 
@@ -2705,6 +2781,7 @@ async function fetchMemberTunebookAsABC(items, memberName, onlyChords, memberSor
         bodyNormalized,
         tuneTitle: cached.tuneTitle,
         tuneType: cached.tuneType,
+        tuneComposer: cached.tuneComposer || "",
         sourceSettingUrl
       });
     }
@@ -2842,7 +2919,10 @@ async function fetchMemberSetsAsABC(items, memberName, onlyChords, memberSortMod
         const tuneType =
           (tuneData && tuneData.type) ? normalizeTuneType(String(tuneData.type)) : "";
 
-        const okObj = { tuneData, tuneUrlNoHash, tuneTitle, tuneType, failed: false };
+        const tuneComposer =
+          (tuneData && typeof tuneData.composer === "string") ? cleanABCHeaderValue(tuneData.composer) : "";
+
+        const okObj = { tuneData, tuneUrlNoHash, tuneTitle, tuneType, tuneComposer, failed: false };
         tuneCache.set(tuneId, okObj);
         return okObj;
 
@@ -2925,6 +3005,7 @@ async function fetchMemberSetsAsABC(items, memberName, onlyChords, memberSortMod
         bodyNormalized,
         tuneTitle: cached.tuneTitle,
         tuneType: cached.tuneType || normalizeTuneType(settingRef.type || ""),
+        tuneComposer: cached.tuneComposer || "",
         sourceSettingUrl: settingUrl
       });
     }
@@ -3166,7 +3247,10 @@ async function fetchTuneOrBookmarksAsABC(inputUrl, opts) {
         const tuneType =
           (tuneData && tuneData.type) ? normalizeTuneType(String(tuneData.type)) : "";
 
-        const okObj = { tuneData, tuneUrlNoHash, tuneTitle, tuneType, failed: false };
+        const tuneComposer =
+          (tuneData && typeof tuneData.composer === "string") ? cleanABCHeaderValue(tuneData.composer) : "";
+
+        const okObj = { tuneData, tuneUrlNoHash, tuneTitle, tuneType, tuneComposer, failed: false };
         tuneCache.set(tuneId, okObj);
         return okObj;
 
@@ -3240,6 +3324,7 @@ async function fetchTuneOrBookmarksAsABC(inputUrl, opts) {
       bodyNormalized,
       tuneTitle: cached.tuneTitle,
       tuneType: cached.tuneType,
+      tuneComposer: cached.tuneComposer || "",
       sourceSettingUrl: settingUrl
     };
 
@@ -3416,6 +3501,7 @@ async function fetchAllTuneVersionsAsABC(tuneUrl, opts) {
 
   const tuneTitle = (data && data.name) ? String(data.name) : `Tune ${tuneId}`;
   const tuneType  = (data && data.type) ? normalizeTuneType(String(data.type)) : "";
+  const tuneComposer = (data && typeof data.composer === "string") ? cleanABCHeaderValue(data.composer) : "";
 
   const settings = (data && Array.isArray(data.settings)) ? data.settings : [];
   if (!settings.length) throw new Error("Error: No settings found for tune: " + tuneUrl);
@@ -3469,9 +3555,11 @@ async function fetchAllTuneVersionsAsABC(tuneUrl, opts) {
 
     const memberName =
       (setting && setting.member && typeof setting.member.name === "string")
-        ? setting.member.name.trim()
+        ? cleanABCHeaderValue(setting.member.name)
         : "";
     const zLine = memberName;
+
+    const composerName = tuneComposer;
 
     let sUrl = "";
     if (setting && typeof setting.url === "string" && setting.url.trim()) {
@@ -3483,6 +3571,7 @@ async function fetchAllTuneVersionsAsABC(tuneUrl, opts) {
     const header =
       `X:${xNum}\n` +
       `T:${tLine}\n` +
+      (composerName ? `C:${composerName}\n` : "") +
       `R:${rLine}\n` +
       `M:${mLine}\n` +
       `L:${lLine}\n` +
