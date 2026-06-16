@@ -288,6 +288,9 @@ function getImpulse_DB(style,callback) {
 //
 // Init the tune search database
 //
+// Lite: Customized
+// No forced download of TuneDB files on app startup (user setting enables)
+// By default, TuneDB is updated only if tool with DB dependency is launched
 
 var gTuneDB = null;
 
@@ -343,7 +346,7 @@ function fetchTuneDatabaseJSON(url, dataVersion) {
 		});
 }
 
-function initTuneDB(callback) {
+function initTuneDB(callback, isForcedDBUpdate) {
 
 	//console.log("initTuneDB");
 
@@ -384,9 +387,25 @@ function initTuneDB(callback) {
 
 		gTuneDB = event.target.result;
 
-		// Automatically refresh tunedb2 when the current saved copy is missing,
-		// was saved by the previous schema, or has old metadata.
-		ensureTuneDB2IsCurrent(function() {
+		//
+		// Lite: Customized (auto-update only if user setting is ON)
+		//
+
+		if (isForcedDBUpdate) {
+
+			// Automatically refresh tunedb2 when the current saved copy is missing,
+			// was saved by the previous schema, or has old metadata.
+			ensureTuneDB2IsCurrent(function() {
+
+				gTuneDBInitInProgress = false;
+				gTuneDBInitComplete = true;
+
+				if (callback) {
+					callback(true);
+				}
+			});
+
+		} else {
 
 			gTuneDBInitInProgress = false;
 			gTuneDBInitComplete = true;
@@ -394,7 +413,7 @@ function initTuneDB(callback) {
 			if (callback) {
 				callback(true);
 			}
-		});
+		}
 	};
 
 	request.onupgradeneeded = function(event) {

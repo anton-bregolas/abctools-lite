@@ -574,6 +574,10 @@ var gAlwaysFlattenParts = false;
 // BWW uses custom instrument
 var gBWWUseCustomInstrument = false;
 
+// Lite: Customized (off by default)
+// Check for Search Tune DB update on startup?
+var gForceUpdateTuneDBOnStartup = false;
+
 // Global reference to the ABC editor
 var gTheABC = document.getElementById("abc");
 
@@ -20963,7 +20967,7 @@ function AddABC() {
   /* ---------------- Search DB tab ---------------- */
   modal_msg += '<div id="addabc-tab-search-db" class="adv-tab-panel adv-tab-mixed-container' + (isSearchDBActive ? ' active' : '') + '">';
   modal_msg += '<p>Click here to fetch Search Database (~20-30MB files)</p>';
-  modal_msg += '<p>Search and add tunes from 65,000 combined items</p>';
+  modal_msg += '<p>Search and add tunes from 74,000 combined items</p>';
   modal_msg += '<input id="searchandaddtunes" class="advancedcontrols btn btn-injectcontrols-addabc" onclick="AddFromSearch(null,AddABCCallback);" type="button" value="Tune Search Engine" title="Fetch Search Database files from Michael Eskin\'s website.&nbsp;&nbsp;Pick preferred DB and add tunes from 65,000 items">';
   modal_msg += '</div>';
 
@@ -48749,6 +48753,13 @@ function GetInitialConfigurationSettings() {
     gBWWUseCustomInstrument = (val == "true");
   }
 
+  // Check for Search Tune DB update on startup?
+  gForceUpdateTuneDBOnStartup = false;
+  val = localStorage.ForceUpdateTuneDBOnStartup
+  if (val) {
+    gForceUpdateTuneDBOnStartup = (val == "true");
+  }
+
   // Save the settings, in case they were initialized
   SaveConfigurationSettings();
 
@@ -49075,8 +49086,8 @@ function SaveConfigurationSettings() {
     // BWW uses custom1
     localStorage.BWWUseCustomInstrument = gBWWUseCustomInstrument;
 
-    // BWW uses custom1
-    localStorage.BWWUseCustomInstrument = gBWWUseCustomInstrument;
+    // Check for Search Tune DB update on startup?
+    localStorage.ForceUpdateTuneDBOnStartup = gForceUpdateTuneDBOnStartup;
 
   }
 }
@@ -52979,7 +52990,8 @@ function AdvancedSettings() {
     configure_force_android: gForceAndroid,
     configure_disable_android: gDisableAndroid,
     configure_looper_add_measure_count: gLooperAddMeasureCount,
-    configure_BWWUseCustomInstrument: gBWWUseCustomInstrument
+    configure_BWWUseCustomInstrument: gBWWUseCustomInstrument,
+    configure_ForceUpdateTuneDBOnStartup: gForceUpdateTuneDBOnStartup
   };
 
   // Lite: Customized
@@ -53024,6 +53036,7 @@ function AdvancedSettings() {
     { name: "    Disable abcjs notation rendering", id: "configure_DisableRendering", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox" },
     { name: "    Jump to Tune always scrolls to the last selected tune", id: "configure_jumptotune_autoscroll", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox" },
     { name: "    BWW import uses %%MIDI program custom1 (No GHB transpose or tuning)", id: "configure_BWWUseCustomInstrument", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox" },    
+    { name: "    Auto-update Tune Search Engine DB on startup", id: "configure_ForceUpdateTuneDBOnStartup", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox lite-custom-setting" },    
     { name: "    Autoscroll player when playing", id: "configure_autoscrollplayer", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox" },
     { name: "    Smooth autoscroll when playing (when Autoscroll player is enabled)", id: "configure_autoscrollsmooth", type: "checkbox", cssClass: "advanced_settings2_form_text_checkbox" },
     { name: "    Player autoscroll vertical position target percentage (default is 66):", id: "configure_autoscrolltarget", type: "text", cssClass: "advanced_settings2_form_text" },
@@ -53112,6 +53125,7 @@ function AdvancedSettings() {
         MoveModalFieldRowByName(modalRoot, "configure_DisableRendering", "adv_tab_general_fields");
         MoveModalFieldRowByName(modalRoot, "configure_jumptotune_autoscroll", "adv_tab_general_fields");
         MoveModalFieldRowByName(modalRoot, "configure_BWWUseCustomInstrument", "adv_tab_general_fields");
+        MoveModalFieldRowByName(modalRoot, "configure_ForceUpdateTuneDBOnStartup", "adv_tab_general_fields");
         MoveModalFieldRowByName(modalRoot, "configure_fullscreen_scaling", "adv_tab_general_fields");
 
         // Player
@@ -53163,6 +53177,8 @@ function AdvancedSettings() {
     if (!args.canceled) {
 
       gBWWUseCustomInstrument = args.result.configure_BWWUseCustomInstrument;
+
+      gForceUpdateTuneDBOnStartup = args.result.configure_ForceUpdateTuneDBOnStartup;
 
       gJumpToTuneAutoscroll = args.result.configure_jumptotune_autoscroll;
 
@@ -64735,7 +64751,7 @@ async function DoStartup() {
   initImpulseDB();
 
   // Init the tune search database
-  initTuneDB();
+  initTuneDB(null, gForceUpdateTuneDBOnStartup);
 
   // Init the samples database
   initSamplesDB();
